@@ -11,7 +11,10 @@
     <version>${project.parent.version}</version>
     <artifactId>openjob-server-openapi</artifactId>
 
-    <properties>
-    </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-repository</artifactId>
+        </dependency>
+    </dependencies>
 </project>

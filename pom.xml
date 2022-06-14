@@ -31,13 +31,18 @@
         <dependencies>
             <dependency>
                 <groupId>io.openjob</groupId>
-                <artifactId>openjob-server-admin</artifactId>
+                <artifactId>openjob-server-repository</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.openjob</groupId>
                 <artifactId>openjob-server-openapi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openjob</groupId>
+                <artifactId>openjob-server-admin</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
