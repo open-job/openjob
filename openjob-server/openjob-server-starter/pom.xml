@@ -9,7 +9,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>${project.parent.version}</version>
     <artifactId>openjob-server-starter</artifactId>
 
     <properties>

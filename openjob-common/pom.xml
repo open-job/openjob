@@ -8,7 +8,6 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>${project.parent.version}</version>
     <groupId>io.openjob.common</groupId>
     <artifactId>openjob-common</artifactId>
 </project>
