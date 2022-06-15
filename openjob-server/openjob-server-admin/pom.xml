@@ -8,6 +8,12 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>${project.parent.version}</version>
     <artifactId>openjob-server-admin</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>

@@ -7,35 +7,33 @@
         <groupId>io.openjob</groupId>
         <version>1.0.0</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjob-server-starter</artifactId>
-
-    <properties>
-        <java.version>18</java.version>
-    </properties>
+    <artifactId>openjob-server-repository</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
+            <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- H2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-admin</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-openapi</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
