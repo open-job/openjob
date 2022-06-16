@@ -39,8 +39,14 @@ public class ServerActorSystem implements InitializingBean {
 
         // Create actor system
         this.actorSystem = ActorSystem.create(ActorConstant.SYSTEM_NAME, mergedConfig);
-        this.actorSystem.actorOf(Props.create(ClusterActor.class), ActorConstant.CLUSTER_NAME);
-        this.actorSystem.actorOf(Props.create(ServerActor.class), ActorConstant.SERVER_NAME);
+
+        // Cluster actor
+        Props clusterProps = Props.create(ClusterActor.class).withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
+        this.actorSystem.actorOf(clusterProps, ActorConstant.CLUSTER_NAME);
+
+        // Server actor
+        Props serverProps = Props.create(ServerActor.class).withDispatcher(ActorConstant.SERVER_DISPATCHER);
+        this.actorSystem.actorOf(serverProps, ActorConstant.SERVER_NAME);
     }
 
     /**
