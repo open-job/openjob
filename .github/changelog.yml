@@ -32,4 +32,4 @@ rules:
     contains: [feature, 'feat:']
   - name: Update
     start_withs: [update, 'up:']
-    contains: []
+    contains: ['up:', 'update:']
