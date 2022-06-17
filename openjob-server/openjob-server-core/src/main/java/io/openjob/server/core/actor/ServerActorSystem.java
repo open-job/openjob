@@ -18,7 +18,6 @@ import java.util.Map;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Component
 public class ServerActorSystem implements InitializingBean {
     /**
      * Akka path format
