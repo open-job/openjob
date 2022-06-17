@@ -1,26 +1,26 @@
-package io.openjob.server.core.event;
+package io.openjob.server.event;
 
-import io.openjob.server.core.Server;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.openjob.server.cluster.ClusterManager;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Component
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
-    private final Server server;
 
-    @Autowired
-    public ApplicationReadyEventListener(Server server) {
-        this.server = server;
+    private final ClusterManager clusterManager;
+
+    public ApplicationReadyEventListener(ClusterManager clusterManager) {
+        this.clusterManager = clusterManager;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        this.server.start();
+        // Init cluster manager
+        this.clusterManager.init();
+
+        // Init worker manager
     }
 }

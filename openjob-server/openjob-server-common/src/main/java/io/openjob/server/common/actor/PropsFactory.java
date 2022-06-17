@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class SpringExtension implements Extension {
+public class PropsFactory implements Extension {
     private ApplicationContext context;
 
     public void init(ApplicationContext context) {
