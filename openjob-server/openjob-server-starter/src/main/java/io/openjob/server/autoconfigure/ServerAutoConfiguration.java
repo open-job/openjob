@@ -39,7 +39,7 @@ public class ServerAutoConfiguration {
     public ActorSystem actorSystem(ApplicationContext applicationContext) {
         // Merge config
         Map<String, Object> newConfig = new HashMap<>();
-        Config defaultConfig = ConfigFactory.load(AkkaConfigConstant.AKKA_CONFIG_NAME);
+        Config defaultConfig = ConfigFactory.load(AkkaConfigConstant.AKKA_CONFIG);
         Config mergedConfig = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
 
         // Create actor system

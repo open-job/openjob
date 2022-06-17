@@ -10,6 +10,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -32,6 +33,13 @@ public class ServerDAOImpl implements ServerDAO {
         server.setStatus(ServerStatusConstant.OK.getStatus());
 
         return serverRepository.saveAndFlush(server).getId();
+    }
+
+    @Override
+    public Optional<Server> getOne(String akkaAddress) {
+        Server server = new Server();
+        server.setAkkaAddress(akkaAddress);
+        return serverRepository.findOne(Example.of(server));
     }
 
     @Override
