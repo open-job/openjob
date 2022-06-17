@@ -29,7 +29,8 @@ public class Server {
     /**
      * Server address
      */
-    private String address;
+    @Column(name = "akka_address")
+    private String akkaAddress;
 
     /**
      * Server status

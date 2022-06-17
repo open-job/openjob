@@ -9,7 +9,7 @@ import io.openjob.server.common.constant.ActorConstant;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ActorUtil {
+public class AkkaUtil {
     /**
      * Akka path format
      */

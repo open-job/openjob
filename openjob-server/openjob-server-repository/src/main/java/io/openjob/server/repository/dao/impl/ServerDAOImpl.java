@@ -1,9 +1,12 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.util.DateUtil;
+import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,6 +26,11 @@ public class ServerDAOImpl implements ServerDAO {
 
     @Override
     public Long save(Server server) {
+        Integer now = DateUtil.now();
+        server.setCreateTime(now);
+        server.setUpdateTime(now);
+        server.setStatus(ServerStatusConstant.OK.getStatus());
+
         return serverRepository.saveAndFlush(server).getId();
     }
 
@@ -33,6 +41,8 @@ public class ServerDAOImpl implements ServerDAO {
 
     @Override
     public List<Server> listServers(Integer status) {
-        return null;
+        Server server = new Server();
+        server.setStatus(status);
+        return serverRepository.findAll(Example.of(server));
     }
 }

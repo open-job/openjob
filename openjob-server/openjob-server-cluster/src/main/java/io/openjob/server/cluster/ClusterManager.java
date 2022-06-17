@@ -28,5 +28,11 @@ public class ClusterManager {
                 .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
 
         actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
+
+        // Register server
+
+        // Refresh job sharding
+
+        // Broadcast cluster servers
     }
 }
