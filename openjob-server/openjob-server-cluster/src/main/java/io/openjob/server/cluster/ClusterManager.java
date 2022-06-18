@@ -26,6 +26,7 @@ public class ClusterManager {
     }
 
     public void init() {
+        //Create actor
         Props serverProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
                 .Create(ActorConstant.CLUSTER_ACTOR_NAME)
@@ -33,18 +34,10 @@ public class ClusterManager {
 
         actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
 
-        // Register server
-        Long serverId = this.registerServer();
-
-        // Refresh job sharding
-
-        // Broadcast cluster servers
-    }
-
-    private Long registerServer() {
+        // Join server
         Config config = actorSystem.settings().config();
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
-        return this.serverService.registerServer(hostname, port);
+        serverService.join(hostname, port);
     }
 }

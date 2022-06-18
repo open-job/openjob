@@ -21,7 +21,7 @@ public class AkkaUtil {
      * @param address address
      * @return actor
      */
-    public ActorSelection getClusterActor(String address) {
+    public static ActorSelection getClusterActor(String address) {
         return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.CLUSTER_NAME));
     }
 
@@ -31,7 +31,7 @@ public class AkkaUtil {
      * @param address address
      * @return actor
      */
-    public ActorSelection getServerActor(String address) {
+    public static ActorSelection getServerActor(String address) {
         return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.SERVER_NAME));
     }
 
@@ -41,7 +41,7 @@ public class AkkaUtil {
      * @param address address
      * @return actor
      */
-    public ActorSelection getWorkerActor(String address) {
+    public static ActorSelection getWorkerActor(String address) {
         return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.WORKER_NAME));
     }
 
@@ -50,7 +50,7 @@ public class AkkaUtil {
      * @param name    actor name
      * @return actor path
      */
-    private String getActorPath(String address, String name) {
-        return String.format(AKKA_PATH_FORMAT, address, ActorConstant.SYSTEM_NAME, name);
+    private static String getActorPath(String address, String name) {
+        return String.format(AKKA_PATH_FORMAT, ActorConstant.SYSTEM_NAME, address, name);
     }
 }
