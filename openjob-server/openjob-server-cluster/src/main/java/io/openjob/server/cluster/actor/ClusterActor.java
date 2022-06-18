@@ -20,6 +20,7 @@ public class ClusterActor extends AbstractActor {
         return receiveBuilder()
                 .match(Ping.class, this::receivePing)
                 .match(Join.class, this::receiveJoin)
+                .matchAny(obj -> System.out.println("akk mesage tst"))
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class ClusterActor extends AbstractActor {
     }
 
     public void receiveJoin(Join join) {
-        getSender().tell("ok", getSelf());
+        System.out.println("receive message");
+        System.out.println(join);
     }
 }
