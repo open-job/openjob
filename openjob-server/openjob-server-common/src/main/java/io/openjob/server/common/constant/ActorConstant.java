@@ -22,7 +22,24 @@ public class ActorConstant {
     public static final String SERVER_NAME = "server";
 
     /**
+     * Cluster actor name
+     */
+    public static final String CLUSTER_ACTOR_NAME = "clusterActor";
+
+    /**
      * Worker name
      */
     public static final String WORKER_NAME = "worker";
+
+    /**
+     * Cluster dispatcher
+     */
+    public static final String CLUSTER_DISPATCHER = "akka.actor.cluster-dispatcher";
+
+    /**
+     * Server dispatcher
+     */
+    public static final String SERVER_DISPATCHER = "akka.actor.server-dispatcher";
+
+
 }

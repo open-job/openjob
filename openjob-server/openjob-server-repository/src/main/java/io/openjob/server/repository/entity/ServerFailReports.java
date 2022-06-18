@@ -15,37 +15,19 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "server")
-public class Server {
+@Table(name = "server_fail_reports")
+public class ServerFailReports {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Server IP
-     */
-    private String ip;
+    @Column(name = "server_id")
+    private Long serverId;
 
-    /**
-     * Server address
-     */
-    @Column(name = "akka_address")
-    private String akkaAddress;
+    @Column(name = "report_server_id")
+    private Long reportServerId;
 
-    /**
-     * Server status
-     */
-    private Integer status;
-
-    /**
-     * Create time
-     */
     @Column(name = "create_time")
     private Integer createTime;
-
-    /**
-     * Update time
-     */
-    @Column(name = "update_time")
-    private Integer updateTime;
 }
