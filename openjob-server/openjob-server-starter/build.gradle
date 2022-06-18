@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.6.8'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.7.0'
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.6.8'
     implementation project(':openjob-server-admin')
     implementation project(':openjob-server-openapi')
