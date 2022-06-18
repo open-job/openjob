@@ -33,12 +33,18 @@ public class ServerService {
     public void join(String hostname, Integer port) {
         Server server = this.registerServer(hostname, port);
 
-        this.refreshNodes();
+        this.refreshNodes(server);
 
         this.messageManager.join(server);
     }
 
-    private void refreshNodes() {
+    private void refreshNodes(Server server) {
+        Node currentNode = new Node();
+        currentNode.setServerId(server.getId());
+        currentNode.setIp(server.getIp());
+        currentNode.setAkkaAddress(server.getAkkaAddress());
+        Cluster.setCurrentNode(currentNode);
+
         List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
         Map<Long, Node> nodes = new HashMap<>();
         servers.forEach(s -> {
