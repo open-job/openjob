@@ -35,6 +35,8 @@ public class ServerService {
 
         this.refreshNodes(server);
 
+        // Reset slots
+
         this.messageManager.join(server);
     }
 

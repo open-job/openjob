@@ -8,5 +8,5 @@ public class ClusterConstant {
     /**
      * ms
      */
-    public static Long CLUSTER_NODE_TIMEOUT = 15000L;
+    public static Integer CLUSTER_NODE_TIMEOUT = 15000;
 }

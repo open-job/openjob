@@ -24,28 +24,6 @@ public class HealthScheduler {
     }
 
     private void check() {
-        Map<Long, Node> nodesMap = Cluster.getNodesMap();
-        List<Long> serverIds = new ArrayList<>();
-        Long currentServerId = Cluster.getCurrentNode().getServerId();
-        nodesMap.forEach((id, n) -> {
-            if (currentServerId != id) {
-                serverIds.add(id);
-            }
-        });
 
-        serverIds.forEach(serverId -> {
-            Node node = nodesMap.get(serverId);
-            boolean success = false;
-            try {
-                AkkaUtil.clusterAsk(node.getAkkaAddress(), new Ping());
-                success = true;
-            } catch (Exception e) {
-
-            }
-
-            if (!success) {
-
-            }
-        });
     }
 }
