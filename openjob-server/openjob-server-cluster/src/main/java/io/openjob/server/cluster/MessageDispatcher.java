@@ -24,8 +24,8 @@ public class MessageDispatcher {
         join.setAkkaAddress(server.getAkkaAddress());
 
         Cluster.getNodesMap().forEach((i, s) -> {
-            if (!Objects.equals(s.getServerId(), server.getId())) {
-                AkkaUtil.getServerActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
+            if (Objects.equals(s.getServerId(), server.getId())) {
+                AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
                 log.info("join message");
             }
         });
