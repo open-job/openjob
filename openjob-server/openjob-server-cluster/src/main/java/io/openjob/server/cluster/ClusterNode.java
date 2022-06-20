@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class ClusterManager {
+public class ClusterNode {
     private final ActorSystem actorSystem;
     private final ServerService serverService;
 
     @Autowired
-    public ClusterManager(ActorSystem actorSystem, ServerService serverService) {
+    public ClusterNode(ActorSystem actorSystem, ServerService serverService) {
         this.actorSystem = actorSystem;
         this.serverService = serverService;
     }

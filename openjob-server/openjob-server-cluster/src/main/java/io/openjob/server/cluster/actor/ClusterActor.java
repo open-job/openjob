@@ -1,11 +1,11 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
-import io.openjob.server.cluster.message.Join;
-import io.openjob.server.cluster.message.Ping;
-import io.openjob.server.cluster.message.Pong;
+import io.openjob.server.cluster.ClusterStatus;
+import io.openjob.server.cluster.context.Node;
+import io.openjob.server.cluster.dto.NodeJoinDTO;
+import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.PongDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -22,23 +22,23 @@ public class ClusterActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(Ping.class, this::receivePing)
-                .match(Join.class, this::receiveJoin)
+                .match(NodePingDTO.class, this::receivePing)
+                .match(NodeJoinDTO.class, this::receiveJoin)
                 .matchAny(obj -> System.out.println("akk mesage tst"))
                 .build();
     }
 
-    public void receivePing(Ping ping) {
-        getSender().tell(new Pong(), getSelf());
+    public void receivePing(NodePingDTO ping) {
+        getSender().tell(new PongDTO(), getSelf());
     }
 
-    public void receiveJoin(Join join) {
+    public void receiveJoin(NodeJoinDTO join) {
         Node node = new Node();
         node.setAkkaAddress(join.getAkkaAddress());
         node.setIp(join.getIp());
         node.setServerId(join.getServerId());
 
-        Cluster.addNode(join.getServerId(), node);
+        ClusterStatus.addNode(join.getServerId(), node);
 
         log.info("join node success!");
     }

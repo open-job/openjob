@@ -1,15 +1,13 @@
-package io.openjob.server.cluster.message;
+package io.openjob.server.cluster.context;
 
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class Join implements Serializable {
+public class Node {
     private Long serverId;
     private String ip;
     private String akkaAddress;

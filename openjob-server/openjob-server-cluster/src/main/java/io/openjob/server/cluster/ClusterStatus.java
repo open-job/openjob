@@ -1,6 +1,8 @@
-package io.openjob.server.cluster.cluster;
+package io.openjob.server.cluster;
 
 import com.google.common.collect.Maps;
+import io.openjob.server.cluster.context.Node;
+import io.openjob.server.cluster.context.Slots;
 
 import java.util.Map;
 
@@ -8,7 +10,7 @@ import java.util.Map;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class Cluster {
+public class ClusterStatus {
     private static volatile Node currentNode;
     private static volatile Map<Long, Slots> slotsMap = Maps.newConcurrentMap();
     private static volatile Map<Long, Node> nodesMap = Maps.newConcurrentMap();
@@ -26,7 +28,7 @@ public class Cluster {
     }
 
     public static synchronized void setCurrentNode(Node currentNode) {
-        Cluster.currentNode = currentNode;
+        ClusterStatus.currentNode = currentNode;
     }
 
     public static Node getCurrentNode() {

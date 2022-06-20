@@ -1,8 +1,8 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.server.cluster.MessageDispatcher;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
+import io.openjob.server.cluster.message.ClusterMessage;
+import io.openjob.server.cluster.ClusterStatus;
+import io.openjob.server.cluster.context.Node;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
@@ -21,10 +21,10 @@ import java.util.Optional;
 @Service
 public class ServerService {
     private final ServerDAO serverDAO;
-    private final MessageDispatcher messageManager;
+    private final ClusterMessage messageManager;
 
     @Autowired
-    public ServerService(ServerDAO serverDAO, MessageDispatcher messageManager) {
+    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager) {
         this.serverDAO = serverDAO;
         this.messageManager = messageManager;
     }
@@ -34,6 +34,8 @@ public class ServerService {
         Server server = this.registerServer(hostname, port);
 
         this.refreshNodes(server);
+
+
 
         // Reset slots
 
@@ -45,7 +47,7 @@ public class ServerService {
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
-        Cluster.setCurrentNode(currentNode);
+        ClusterStatus.setCurrentNode(currentNode);
 
         List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
         Map<Long, Node> nodes = new HashMap<>();
@@ -56,7 +58,7 @@ public class ServerService {
             node.setAkkaAddress(s.getAkkaAddress());
             nodes.put(s.getId(), node);
         });
-        Cluster.refreshNodes(nodes);
+        ClusterStatus.refreshNodes(nodes);
     }
 
     private Server registerServer(String hostname, Integer port) {

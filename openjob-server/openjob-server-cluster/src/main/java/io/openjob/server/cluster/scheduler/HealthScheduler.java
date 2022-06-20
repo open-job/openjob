@@ -1,16 +1,7 @@
 package io.openjob.server.cluster.scheduler;
 
-import com.google.common.primitives.Booleans;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
-import io.openjob.server.cluster.message.Ping;
-import io.openjob.server.common.util.AkkaUtil;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author stelin <swoft@qq.com>

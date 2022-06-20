@@ -3,7 +3,7 @@ package io.openjob.server.autoconfigure;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.openjob.server.cluster.ClusterManager;
+import io.openjob.server.cluster.ClusterNode;
 import io.openjob.server.common.SpringContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class ServerAutoConfiguration {
 
     @Bean
-    public ApplicationReadyEventListener listener(ClusterManager clusterManager) {
+    public ApplicationReadyEventListener listener(ClusterNode clusterManager) {
         return new ApplicationReadyEventListener(clusterManager);
     }
 

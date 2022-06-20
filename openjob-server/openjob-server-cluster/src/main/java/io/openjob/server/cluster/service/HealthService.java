@@ -2,10 +2,10 @@ package io.openjob.server.cluster.service;
 
 import akka.actor.ActorRef;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
-import io.openjob.server.cluster.message.Fail;
-import io.openjob.server.cluster.message.Ping;
+import io.openjob.server.cluster.ClusterStatus;
+import io.openjob.server.cluster.context.Node;
+import io.openjob.server.cluster.dto.NodeFailDTO;
+import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -35,10 +35,10 @@ public class HealthService {
     }
 
     public void check() {
-        Map<Long, Node> nodesMap = Cluster.getNodesMap();
+        Map<Long, Node> nodesMap = ClusterStatus.getNodesMap();
         Integer nodeCount = nodesMap.size();
         List<Long> serverIds = new ArrayList<>();
-        Long currentServerId = Cluster.getCurrentNode().getServerId();
+        Long currentServerId = ClusterStatus.getCurrentNode().getServerId();
         nodesMap.forEach((id, n) -> {
             if (currentServerId != id) {
                 serverIds.add(id);
@@ -49,7 +49,7 @@ public class HealthService {
             Node node = nodesMap.get(serverId);
             boolean success = false;
             try {
-                AkkaUtil.clusterAsk(node.getAkkaAddress(), new Ping());
+                AkkaUtil.clusterAsk(node.getAkkaAddress(), new NodePingDTO());
                 success = true;
             } catch (Exception e) {
 
@@ -75,9 +75,9 @@ public class HealthService {
     }
 
     private void fail(Node failNode) {
-        Cluster.getNodesMap().forEach(((id, node) -> {
+        ClusterStatus.getNodesMap().forEach(((id, node) -> {
             if (!Objects.equals(failNode.getServerId(), node.getServerId())) {
-                AkkaUtil.getClusterActor(node.getAkkaAddress()).tell(new Fail(), ActorRef.noSender());
+                AkkaUtil.getClusterActor(node.getAkkaAddress()).tell(new NodeFailDTO(), ActorRef.noSender());
             }
         }));
     }

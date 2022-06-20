@@ -1,8 +1,8 @@
-package io.openjob.server.cluster;
+package io.openjob.server.cluster.message;
 
 import akka.actor.ActorRef;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.message.Join;
+import io.openjob.server.cluster.ClusterStatus;
+import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
@@ -16,14 +16,14 @@ import java.util.Objects;
  */
 @Component
 @Log4j2
-public class MessageDispatcher {
+public class ClusterMessage {
     public void join(Server server) {
-        Join join = new Join();
+        NodeJoinDTO join = new NodeJoinDTO();
         join.setIp(server.getIp());
         join.setServerId(server.getId());
         join.setAkkaAddress(server.getAkkaAddress());
 
-        Cluster.getNodesMap().forEach((i, s) -> {
+        ClusterStatus.getNodesMap().forEach((i, s) -> {
             if (Objects.equals(s.getServerId(), server.getId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
                 log.info("join message");
