@@ -1,5 +1,6 @@
 package io.openjob.server.cluster;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
@@ -27,17 +28,22 @@ public class ClusterNode {
 
     public void init() {
         //Create actor
-        Props serverProps = PropsFactoryManager.getFactory()
-                .get(actorSystem)
-                .create(ActorConstant.CLUSTER_ACTOR_NAME)
-                .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
-
-        actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
+        this.createActor();
 
         // Join server
         Config config = actorSystem.settings().config();
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
         serverService.join(hostname, port);
+    }
+
+    public void createActor() {
+        Props serverProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ActorConstant.CLUSTER_ACTOR_NAME)
+                .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
+
+        ActorRef clusterActorRef = actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
+        ClusterStatus.setClusterActorRef(clusterActorRef);
     }
 }

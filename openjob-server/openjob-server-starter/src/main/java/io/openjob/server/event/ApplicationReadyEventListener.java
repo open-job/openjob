@@ -10,17 +10,15 @@ import org.springframework.context.ApplicationListener;
  */
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 
-    private final ClusterNode clusterManager;
+    private final ClusterNode clusterNode;
 
     public ApplicationReadyEventListener(ClusterNode clusterManager) {
-        this.clusterManager = clusterManager;
+        this.clusterNode = clusterManager;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        // Init cluster manager
-        this.clusterManager.init();
-
-        // Init worker manager
+        // Initialize cluster node.
+        this.clusterNode.init();
     }
 }

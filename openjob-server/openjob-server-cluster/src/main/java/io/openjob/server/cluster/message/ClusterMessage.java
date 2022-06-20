@@ -26,7 +26,6 @@ public class ClusterMessage {
         ClusterStatus.getNodesMap().forEach((i, s) -> {
             if (Objects.equals(s.getServerId(), server.getId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
-                log.info("join message");
             }
         });
     }

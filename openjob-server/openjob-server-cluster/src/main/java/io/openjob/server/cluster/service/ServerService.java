@@ -21,44 +21,26 @@ import java.util.Optional;
 @Service
 public class ServerService {
     private final ServerDAO serverDAO;
-    private final ClusterMessage messageManager;
+    private final ClusterMessage ClusterMessage;
 
     @Autowired
     public ServerService(ServerDAO serverDAO, ClusterMessage messageManager) {
         this.serverDAO = serverDAO;
-        this.messageManager = messageManager;
+        this.ClusterMessage = messageManager;
     }
-
 
     public void join(String hostname, Integer port) {
+        // Register server.
         Server server = this.registerServer(hostname, port);
 
+        // Refresh nodes.
         this.refreshNodes(server);
 
+        // Refresh slots.
+        this.refreshSlots();
 
-
-        // Reset slots
-
-        this.messageManager.join(server);
-    }
-
-    private void refreshNodes(Server server) {
-        Node currentNode = new Node();
-        currentNode.setServerId(server.getId());
-        currentNode.setIp(server.getIp());
-        currentNode.setAkkaAddress(server.getAkkaAddress());
-        ClusterStatus.setCurrentNode(currentNode);
-
-        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
-        Map<Long, Node> nodes = new HashMap<>();
-        servers.forEach(s -> {
-            Node node = new Node();
-            node.setServerId(s.getId());
-            node.setIp(s.getIp());
-            node.setAkkaAddress(s.getAkkaAddress());
-            nodes.put(s.getId(), node);
-        });
-        ClusterStatus.refreshNodes(nodes);
+        // Akka message for join.
+        this.ClusterMessage.join(server);
     }
 
     private Server registerServer(String hostname, Integer port) {
@@ -82,4 +64,26 @@ public class ServerService {
         return server;
     }
 
+    private void refreshNodes(Server server) {
+        Node currentNode = new Node();
+        currentNode.setServerId(server.getId());
+        currentNode.setIp(server.getIp());
+        currentNode.setAkkaAddress(server.getAkkaAddress());
+        ClusterStatus.setCurrentNode(currentNode);
+
+        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        Map<Long, Node> nodes = new HashMap<>();
+        servers.forEach(s -> {
+            Node node = new Node();
+            node.setServerId(s.getId());
+            node.setIp(s.getIp());
+            node.setAkkaAddress(s.getAkkaAddress());
+            nodes.put(s.getId(), node);
+        });
+        ClusterStatus.refreshNodes(nodes);
+    }
+
+    public void refreshSlots() {
+
+    }
 }
