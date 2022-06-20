@@ -28,7 +28,6 @@
         <scala.binary.version>2.13</scala.binary.version>
         <checkstyle.version>3.1.2</checkstyle.version>
         <pmd.version>3.14.0</pmd.version>
-        <spotbugs.version>4.1.4</spotbugs.version>
         <p3c.pmd.version>2.1.0</p3c.pmd.version>
     </properties>
 
@@ -145,22 +144,6 @@
                 <executions>
                     <execution>
                         <id>pmd</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Spotbugs -->
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
-                <executions>
-                    <execution>
-                        <id>spotbugs</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
