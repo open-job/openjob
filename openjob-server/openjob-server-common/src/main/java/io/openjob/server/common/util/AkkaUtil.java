@@ -50,11 +50,25 @@ public class AkkaUtil {
         return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.WORKER_NAME));
     }
 
+    /**
+     * Cluster ask
+     *
+     * @param address address
+     * @param message message
+     * @return Object
+     */
     public static Object clusterAsk(String address, Object message) {
         ActorSelection clusterActor = getClusterActor(address);
         return ask(clusterActor, message);
     }
 
+    /**
+     * Ask for actor selection
+     *
+     * @param actorSelection actorSelection
+     * @param message        message
+     * @return Object
+     */
     public static Object ask(ActorSelection actorSelection, Object message) {
         try {
             CompletionStage<Object> ask = Patterns.ask(actorSelection, message, Duration.ofMillis(200));

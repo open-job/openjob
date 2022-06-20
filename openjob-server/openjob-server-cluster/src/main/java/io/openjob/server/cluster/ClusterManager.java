@@ -29,7 +29,7 @@ public class ClusterManager {
         //Create actor
         Props serverProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .Create(ActorConstant.CLUSTER_ACTOR_NAME)
+                .create(ActorConstant.CLUSTER_ACTOR_NAME)
                 .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
 
         actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
