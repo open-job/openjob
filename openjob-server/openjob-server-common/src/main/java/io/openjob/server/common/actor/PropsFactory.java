@@ -15,7 +15,7 @@ public class PropsFactory implements Extension {
         this.context = context;
     }
 
-    public Props Create(String beanName) {
+    public Props create(String beanName) {
         return Props.create(ActorProducer.class, this.context, beanName);
     }
 }
