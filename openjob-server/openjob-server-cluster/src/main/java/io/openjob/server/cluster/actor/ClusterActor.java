@@ -1,9 +1,12 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
+import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.PongDTO;
+import io.openjob.server.cluster.dto.WorkerFailDTO;
+import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.service.NodeService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,9 @@ public class ClusterActor extends AbstractActor {
         return receiveBuilder()
                 .match(NodePingDTO.class, this::receivePing)
                 .match(NodeJoinDTO.class, nodeService::receiveNodeJoin)
+                .match(NodeFailDTO.class, nodeService::receiveNodeFail)
+                .match(WorkerJoinDTO.class, nodeService::receiveWorkerJoin)
+                .match(WorkerFailDTO.class, nodeService::receiveWorkerFail)
                 .matchAny(obj -> System.out.println("akk mesage tst"))
                 .build();
     }

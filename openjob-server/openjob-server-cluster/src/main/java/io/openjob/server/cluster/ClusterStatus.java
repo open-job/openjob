@@ -4,13 +4,17 @@ import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
 import io.openjob.server.cluster.context.Node;
 import io.openjob.server.cluster.context.Slots;
+import lombok.extern.log4j.Log4j2;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Log4j2
 public class ClusterStatus {
 
     /**
@@ -42,6 +46,26 @@ public class ClusterStatus {
         slotsMap = slots;
     }
 
+    public static synchronized void addSlots(Long serverId, Set<Long> slotsIds) {
+        if (!slotsMap.containsKey(serverId)) {
+            log.error("Cluster status add slots fail.");
+            return;
+        }
+
+        Slots slots = slotsMap.get(serverId);
+        slots.getSlotsIds().addAll(slotsIds);
+    }
+
+    public static synchronized void removeSlots(Long serverId, Set<Long> slotsIds) {
+        if (!slotsMap.containsKey(serverId)) {
+            log.error("Cluster status remote slots fail.");
+            return;
+        }
+
+        Slots slots = slotsMap.get(serverId);
+        slots.getSlotsIds().removeAll(slotsIds);
+    }
+
     /**
      * Refresh nodes.
      *
@@ -57,8 +81,17 @@ public class ClusterStatus {
      * @param serverId serverId
      * @param node     node
      */
-    public static synchronized void appendNode(Long serverId, Node node) {
+    public static synchronized void addNode(Long serverId, Node node) {
         nodesMap.put(serverId, node);
+    }
+
+    /**
+     * Removes node.
+     *
+     * @param serverId serverId
+     */
+    public static synchronized void remote(Long serverId) {
+        nodesMap.remove(serverId);
     }
 
     /**
