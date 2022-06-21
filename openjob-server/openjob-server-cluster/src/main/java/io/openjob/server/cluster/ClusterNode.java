@@ -5,9 +5,13 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import io.openjob.server.cluster.service.ServerService;
+import io.openjob.server.common.SpringContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
+import io.openjob.server.repository.dao.TaskSlotsDAO;
+import io.openjob.server.repository.dao.impl.TaskSlotsDAOImpl;
+import io.openjob.server.repository.entity.TaskSlots;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

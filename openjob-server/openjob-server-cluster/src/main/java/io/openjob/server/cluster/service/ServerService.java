@@ -5,7 +5,9 @@ import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.context.Node;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.ServerDAO;
+import io.openjob.server.repository.dao.TaskSlotsDAO;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.repository.entity.TaskSlots;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +24,13 @@ import java.util.Optional;
 public class ServerService {
     private final ServerDAO serverDAO;
     private final ClusterMessage ClusterMessage;
+    private final TaskSlotsDAO taskSlotsDAO;
 
     @Autowired
-    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager) {
+    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager, TaskSlotsDAO taskSlotsDAO) {
         this.serverDAO = serverDAO;
         this.ClusterMessage = messageManager;
+        this.taskSlotsDAO = taskSlotsDAO;
     }
 
     public void join(String hostname, Integer port) {
@@ -34,10 +38,10 @@ public class ServerService {
         Server server = this.registerServer(hostname, port);
 
         // Refresh nodes.
-        this.refreshNodes(server);
+        List<Server> servers = this.refreshNodes(server);
 
         // Refresh slots.
-        this.refreshSlots();
+        this.refreshSlots(servers);
 
         // Akka message for join.
         this.ClusterMessage.join(server);
@@ -64,7 +68,7 @@ public class ServerService {
         return server;
     }
 
-    private void refreshNodes(Server server) {
+    private List<Server> refreshNodes(Server server) {
         Node currentNode = new Node();
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
@@ -81,9 +85,11 @@ public class ServerService {
             nodes.put(s.getId(), node);
         });
         ClusterStatus.refreshNodes(nodes);
+
+        return servers;
     }
 
-    public void refreshSlots() {
-
+    public void refreshSlots(List<Server> servers) {
+        List<TaskSlots> taskSlots = taskSlotsDAO.listTaskSlots();
     }
 }
