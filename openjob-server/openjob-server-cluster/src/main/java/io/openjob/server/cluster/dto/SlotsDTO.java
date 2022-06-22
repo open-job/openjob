@@ -2,7 +2,7 @@ package io.openjob.server.cluster.dto;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -11,6 +11,6 @@ import java.util.Set;
 @Data
 public class SlotsDTO {
     private Long serverId;
-    private Set<Long> addSlots;
-    private Set<Long> remoteSlots;
+    private List<Long> addSlots;
+    private List<Long> remoteSlots;
 }

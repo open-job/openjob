@@ -3,11 +3,15 @@ package io.openjob.server.cluster.message;
 import akka.actor.ActorRef;
 import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
+import io.openjob.server.cluster.dto.SlotsDTO;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -17,11 +21,20 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class ClusterMessage {
-    public void join(Server server) {
+    public void join(Server server, Map<Long, List<Long>> removeSlots) {
         NodeJoinDTO join = new NodeJoinDTO();
         join.setIp(server.getIp());
         join.setServerId(server.getId());
         join.setAkkaAddress(server.getAkkaAddress());
+
+        List<SlotsDTO> slotsList = new ArrayList<>();
+        removeSlots.forEach((serverId, removeIds) -> {
+            SlotsDTO slotsDTO = new SlotsDTO();
+            slotsDTO.setServerId(serverId);
+            slotsDTO.setRemoteSlots(removeIds);
+            slotsList.add(slotsDTO);
+        });
+        join.setSlotsDTOS(slotsList);
 
         ClusterStatus.getNodesMap().forEach((i, s) -> {
             if (Objects.equals(s.getServerId(), server.getId())) {

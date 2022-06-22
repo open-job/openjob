@@ -14,4 +14,6 @@ public interface TaskSlotsDAO {
     List<TaskSlots> listTaskSlots(Long serverId);
 
     List<TaskSlots> listTaskSlots();
+
+    Long updateByIds(Long serverId, List<Long> slots);
 }
