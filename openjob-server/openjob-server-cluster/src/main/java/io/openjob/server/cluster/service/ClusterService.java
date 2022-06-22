@@ -10,10 +10,8 @@ import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +20,7 @@ import java.util.stream.Collectors;
  */
 @Log4j2
 @Service
-public class NodeService {
+public class ClusterService {
 
     /**
      * Receive node join message.

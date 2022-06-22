@@ -56,7 +56,7 @@ public class ClusterStatus {
         slots.getSlotsIds().addAll(slotsIds);
     }
 
-    public static synchronized void removeSlots(Long serverId, Set<Long> slotsIds) {
+    public static synchronized void removeSlots(Long serverId, List<Long> slotsIds) {
         if (!slotsMap.containsKey(serverId)) {
             log.error("Cluster status remote slots fail.");
             return;

@@ -2,7 +2,7 @@ package io.openjob.server.cluster.context;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -10,5 +10,5 @@ import java.util.Set;
  */
 @Data
 public class Slots {
-    private Set<Long> slotsIds;
+    private List<Long> slotsIds;
 }

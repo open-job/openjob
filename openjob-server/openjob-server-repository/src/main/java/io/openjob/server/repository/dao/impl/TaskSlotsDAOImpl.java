@@ -5,6 +5,7 @@ import io.openjob.server.repository.dao.TaskSlotsDAO;
 import io.openjob.server.repository.entity.TaskSlots;
 import io.openjob.server.repository.repository.TaskSlotsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -32,7 +33,9 @@ public class TaskSlotsDAOImpl implements TaskSlotsDAO {
 
     @Override
     public List<TaskSlots> listTaskSlots(Long serverId) {
-        return null;
+        TaskSlots taskSlots = new TaskSlots();
+        taskSlots.setServerId(serverId);
+        return taskSlotsRepository.findAll(Example.of(taskSlots));
     }
 
     @Override
