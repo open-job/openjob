@@ -1,6 +1,6 @@
 package io.openjob.server.event;
 
-import io.openjob.server.cluster.ClusterNode;
+import io.openjob.server.cluster.ClusterServer;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -10,9 +10,9 @@ import org.springframework.context.ApplicationListener;
  */
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 
-    private final ClusterNode clusterNode;
+    private final ClusterServer clusterNode;
 
-    public ApplicationReadyEventListener(ClusterNode clusterManager) {
+    public ApplicationReadyEventListener(ClusterServer clusterManager) {
         this.clusterNode = clusterManager;
     }
 

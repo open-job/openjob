@@ -26,17 +26,17 @@ public class ClusterService {
      * Receive node join message.
      */
     public void receiveNodeJoin(NodeJoinDTO join) {
-        Node node = new Node();
-        node.setAkkaAddress(join.getAkkaAddress());
-        node.setIp(join.getIp());
-        node.setServerId(join.getServerId());
+        Node joinNode = new Node();
+        joinNode.setAkkaAddress(join.getAkkaAddress());
+        joinNode.setIp(join.getIp());
+        joinNode.setServerId(join.getServerId());
 
-        // Add node.
-        ClusterStatus.addNode(join.getServerId(), node);
-        log.info("Cluster add node {}({})", join.getAkkaAddress(), join.getServerId());
+        // Add joinNode.
+        ClusterStatus.addNode(join.getServerId(), joinNode);
+        log.info("Cluster add joinNode {}({})", join.getAkkaAddress(), join.getServerId());
 
         if (Objects.isNull(join.getSlotsDTOS())) {
-            log.info("Cluster node join message is incomplete(Join slots)");
+            log.info("Cluster joinNode join message is incomplete(Join slots)");
             return;
         }
 
@@ -45,19 +45,41 @@ public class ClusterService {
         Node currentNode = ClusterStatus.getCurrentNode();
         SlotsDTO slotsDTO = slotsMap.get(currentNode.getServerId());
         if (Objects.isNull(slotsDTO) || Objects.isNull(slotsDTO.getRemoteSlots())) {
-            log.error("Cluster node join message is incomplete(Join remove slots)");
+            log.error("Cluster joinNode join message is incomplete(Join remove slots)");
             return;
         }
 
         // Remove cluster status slots.
-        ClusterStatus.removeSlots(currentNode.getServerId(), slotsDTO.getRemoteSlots());
+        ClusterStatus.removeSlots(slotsDTO.getRemoteSlots());
         log.info("Cluster remove slots({})", slotsDTO.getRemoteSlots());
 
         // Remove timing wheel slots.
     }
 
     public void receiveNodeFail(NodeFailDTO nodeFailDTO) {
-        ClusterStatus.remote(nodeFailDTO.getServerId());
+        // Remove node.
+        ClusterStatus.removeNode(nodeFailDTO.getServerId());
+        log.info("Cluster remove node {}({})", nodeFailDTO.getAkkaAddress(), nodeFailDTO.getServerId());
+
+        if (Objects.isNull(nodeFailDTO.getSlotsDTOS())) {
+            log.info("Cluster node fail message is incomplete(Join slots)");
+            return;
+        }
+
+        // Fail slots.
+        Map<Long, SlotsDTO> slotsMap = nodeFailDTO.getSlotsDTOS().stream().collect(Collectors.toMap(SlotsDTO::getServerId, slots -> slots));
+        Node currentNode = ClusterStatus.getCurrentNode();
+        SlotsDTO slotsDTO = slotsMap.get(currentNode.getServerId());
+        if (Objects.isNull(slotsDTO) || Objects.isNull(slotsDTO.getAddSlots())) {
+            log.error("Cluster node join message is incomplete(Join remove slots)");
+            return;
+        }
+
+        // Add cluster status slots.
+        ClusterStatus.addSlots(slotsDTO.getAddSlots());
+        log.info("Cluster remove slots({})", slotsDTO.getAddSlots());
+
+        // Add timingWheel slots and Add job instance to timingWheel
     }
 
 

@@ -44,16 +44,16 @@ public class ServerService {
     @Transactional
     public void doJoin(String hostname, Integer port, Map<Long, List<Long>> removeSlots) {
         // Register server.
-        Server server = this.registerServer(hostname, port);
+        Server currentServer = this.registerServer(hostname, port);
 
         // Refresh nodes.
-        this.refreshNodes(server);
+        this.refreshNodes(currentServer);
 
         // Update slots
         removeSlots.forEach(taskSlotsDAO::updateByIds);
 
         // Akka message for join.
-        this.ClusterMessage.join(server, removeSlots);
+        this.ClusterMessage.join(currentServer, removeSlots);
     }
 
     private Server registerServer(String hostname, Integer port) {

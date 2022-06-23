@@ -72,16 +72,16 @@ public class HealthService {
     }
 
     @Transactional
-    public void checkFailReport(Long serverId, Node node) {
+    public void checkFailReport(Long failServerId, Node failNode) {
         ServerFailReports serverFailReports = new ServerFailReports();
-        serverFailReports.setServerId(node.getServerId());
-        serverFailReports.setReportServerId(serverId);
+        serverFailReports.setServerId(failNode.getServerId());
+        serverFailReports.setReportServerId(failServerId);
         serverFailReportsDAO.save(serverFailReports);
 
         Integer startTime = DateUtil.now() - ClusterConstant.CLUSTER_NODE_TIMEOUT / 1000 * 2;
         Long reportsCount = serverFailReportsDAO.countServerFailReports(startTime);
         if (reportsCount > ClusterConstant.CLUSTER_FAIL_TIMES) {
-            this.doFail(node);
+            this.doFail(failNode);
         }
     }
 

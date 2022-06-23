@@ -12,8 +12,20 @@ import java.util.Map;
  */
 @Data
 public class NodeJoinDTO implements Serializable {
+    /**
+     * Join server id.
+     */
     private Long serverId;
+
+    /**
+     * Join server ip.
+     */
     private String ip;
+
+    /**
+     * Join server akka address
+     */
     private String akkaAddress;
+    
     private List<SlotsDTO> slotsDTOS;
 }

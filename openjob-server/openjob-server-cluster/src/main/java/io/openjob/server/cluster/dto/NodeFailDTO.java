@@ -11,8 +11,20 @@ import java.util.List;
  */
 @Data
 public class NodeFailDTO implements Serializable {
+    /**
+     * Fail server id.
+     */
     private Long serverId;
+
+    /**
+     * Fail server ip.
+     */
     private String ip;
+
+    /**
+     * Fail server akka address.
+     */
     private String akkaAddress;
+
     private List<SlotsDTO> slotsDTOS;
 }

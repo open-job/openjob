@@ -6,6 +6,8 @@ import io.openjob.server.cluster.context.Node;
 import io.openjob.server.cluster.context.Slots;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,41 +32,21 @@ public class ClusterStatus {
     /**
      * Job instance slots.
      */
-    private static volatile Map<Long, Slots> slotsMap = Maps.newConcurrentMap();
+    private static final List<Long> currentSlots = new ArrayList<>();
 
     /**
      * Cluster nodes.
      */
     private static volatile Map<Long, Node> nodesMap = Maps.newConcurrentMap();
 
-    /**
-     * Refresh slots.
-     *
-     * @param slots slots
-     */
-    public static synchronized void refreshSlots(Map<Long, Slots> slots) {
-        slotsMap = slots;
+    public static synchronized void removeSlots(List<Long> slotsIds) {
+        currentSlots.removeAll(slotsIds);
     }
 
-    public static synchronized void addSlots(Long serverId, Set<Long> slotsIds) {
-        if (!slotsMap.containsKey(serverId)) {
-            log.error("Cluster status add slots fail.");
-            return;
-        }
-
-        Slots slots = slotsMap.get(serverId);
-        slots.getSlotsIds().addAll(slotsIds);
+    public static synchronized void addSlots(List<Long> slotsIds) {
+        currentSlots.addAll(slotsIds);
     }
 
-    public static synchronized void removeSlots(Long serverId, List<Long> slotsIds) {
-        if (!slotsMap.containsKey(serverId)) {
-            log.error("Cluster status remote slots fail.");
-            return;
-        }
-
-        Slots slots = slotsMap.get(serverId);
-        slots.getSlotsIds().removeAll(slotsIds);
-    }
 
     /**
      * Refresh nodes.
@@ -90,7 +72,7 @@ public class ClusterStatus {
      *
      * @param serverId serverId
      */
-    public static synchronized void remote(Long serverId) {
+    public static synchronized void removeNode(Long serverId) {
         nodesMap.remove(serverId);
     }
 
@@ -121,13 +103,8 @@ public class ClusterStatus {
         return nodesMap;
     }
 
-    /**
-     * Return job instance slots.
-     *
-     * @return Map<Long, Slots>
-     */
-    public static Map<Long, Slots> getSlotsMap() {
-        return slotsMap;
+    public static List<Long> getCurrentSlots() {
+        return currentSlots;
     }
 
     public static ActorRef getClusterActorRef() {

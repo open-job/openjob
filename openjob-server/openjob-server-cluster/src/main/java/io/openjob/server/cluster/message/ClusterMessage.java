@@ -21,11 +21,11 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class ClusterMessage {
-    public void join(Server server, Map<Long, List<Long>> removeSlots) {
+    public void join(Server currentServer, Map<Long, List<Long>> removeSlots) {
         NodeJoinDTO join = new NodeJoinDTO();
-        join.setIp(server.getIp());
-        join.setServerId(server.getId());
-        join.setAkkaAddress(server.getAkkaAddress());
+        join.setIp(currentServer.getIp());
+        join.setServerId(currentServer.getId());
+        join.setAkkaAddress(currentServer.getAkkaAddress());
 
         List<SlotsDTO> slotsList = new ArrayList<>();
         removeSlots.forEach((serverId, removeIds) -> {
@@ -37,7 +37,7 @@ public class ClusterMessage {
         join.setSlotsDTOS(slotsList);
 
         ClusterStatus.getNodesMap().forEach((i, s) -> {
-            if (Objects.equals(s.getServerId(), server.getId())) {
+            if (Objects.equals(s.getServerId(), currentServer.getId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
             }
         });

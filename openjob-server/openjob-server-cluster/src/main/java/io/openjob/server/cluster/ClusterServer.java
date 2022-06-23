@@ -5,13 +5,9 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import io.openjob.server.cluster.service.ServerService;
-import io.openjob.server.common.SpringContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
-import io.openjob.server.repository.dao.TaskSlotsDAO;
-import io.openjob.server.repository.dao.impl.TaskSlotsDAOImpl;
-import io.openjob.server.repository.entity.TaskSlots;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +16,12 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class ClusterNode {
+public class ClusterServer {
     private final ActorSystem actorSystem;
     private final ServerService serverService;
 
     @Autowired
-    public ClusterNode(ActorSystem actorSystem, ServerService serverService) {
+    public ClusterServer(ActorSystem actorSystem, ServerService serverService) {
         this.actorSystem = actorSystem;
         this.serverService = serverService;
     }
