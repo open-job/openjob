@@ -1,16 +1,9 @@
 package io.openjob.server.cluster.scheduler;
 
-import com.google.common.primitives.Booleans;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
-import io.openjob.server.cluster.message.Ping;
-import io.openjob.server.common.util.AkkaUtil;
+import io.openjob.server.cluster.service.HealthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -18,12 +11,15 @@ import java.util.Map;
  */
 @Component
 public class HealthScheduler {
-    @Scheduled(fixedRate = 3 * 1000L)
-    public void healthCheck() {
-//        check();
+    private final HealthService healthService;
+
+    @Autowired
+    public HealthScheduler(HealthService healthService) {
+        this.healthService = healthService;
     }
 
-    private void check() {
-
+    @Scheduled(initialDelay = 3000L, fixedDelay = 2000L)
+    public void healthCheck() {
+//        healthService.check();
     }
 }

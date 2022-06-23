@@ -1,4 +1,4 @@
-package io.openjob.server.cluster.cluster;
+package io.openjob.server.cluster.context;
 
 import lombok.Data;
 

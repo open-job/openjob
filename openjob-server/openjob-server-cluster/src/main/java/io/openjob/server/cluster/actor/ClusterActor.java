@@ -1,12 +1,15 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
-import io.openjob.server.cluster.cluster.Cluster;
-import io.openjob.server.cluster.cluster.Node;
-import io.openjob.server.cluster.message.Join;
-import io.openjob.server.cluster.message.Ping;
-import io.openjob.server.cluster.message.Pong;
+import io.openjob.server.cluster.dto.NodeFailDTO;
+import io.openjob.server.cluster.dto.NodeJoinDTO;
+import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.PongDTO;
+import io.openjob.server.cluster.dto.WorkerFailDTO;
+import io.openjob.server.cluster.dto.WorkerJoinDTO;
+import io.openjob.server.cluster.service.ClusterService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,27 +22,27 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClusterActor extends AbstractActor {
+    private final ClusterService clusterService;
+
+    @Autowired
+    public ClusterActor(ClusterService nodeService) {
+        this.clusterService = nodeService;
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(Ping.class, this::receivePing)
-                .match(Join.class, this::receiveJoin)
+                .match(NodePingDTO.class, this::receivePing)
+                .match(NodeJoinDTO.class, clusterService::receiveNodeJoin)
+                .match(NodeFailDTO.class, clusterService::receiveNodeFail)
+                .match(WorkerJoinDTO.class, clusterService::receiveWorkerJoin)
+                .match(WorkerFailDTO.class, clusterService::receiveWorkerFail)
                 .matchAny(obj -> System.out.println("akk mesage tst"))
                 .build();
     }
 
-    public void receivePing(Ping ping) {
-        getSender().tell(new Pong(), getSelf());
-    }
 
-    public void receiveJoin(Join join) {
-        Node node = new Node();
-        node.setAkkaAddress(join.getAkkaAddress());
-        node.setIp(join.getIp());
-        node.setServerId(join.getServerId());
-
-        Cluster.addNode(join.getServerId(), node);
-
-        log.info("join node success!");
+    public void receivePing(NodePingDTO nodePingDTO) {
+        getSender().tell(new PongDTO(), getSelf());
     }
 }
