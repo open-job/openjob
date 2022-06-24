@@ -2,7 +2,6 @@ package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.util.DateUtil;
 
-import javax.swing.tree.ExpandVetoException;
 import java.util.Objects;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,7 @@ public class TimerTaskList implements Delayed {
 
             synchronized (this) {
                 synchronized (timerTaskEntry) {
-                    if (Objects.nonNull(timerTaskEntry.getTimerTaskList())) {
+                    if (Objects.isNull(timerTaskEntry.getTimerTaskList())) {
                         TimerTaskEntry tail = root.getPrev();
                         timerTaskEntry.setNext(root);
                         timerTaskEntry.setPrev(tail);
@@ -79,8 +78,8 @@ public class TimerTaskList implements Delayed {
         }
     }
 
-    public void setExpiration(AtomicLong expiration) {
-        this.expiration = expiration;
+    public Boolean setExpiration(Long expiration) {
+        return this.expiration.getAndSet(expiration) != expiration;
     }
 
     @Override
@@ -93,7 +92,12 @@ public class TimerTaskList implements Delayed {
     }
 
     @Override
-    public int compareTo(Delayed o) {
-        return 0;
+    public int compareTo(Delayed d) {
+        TimerTaskList other = null;
+        if (d instanceof TimerTaskList) {
+            other = (TimerTaskList) d;
+        }
+
+        return Long.compare(getExpiration(), other.getExpiration());
     }
 }
