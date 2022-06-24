@@ -8,17 +8,18 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjob-server-openapi</artifactId>
+
+    <artifactId>openjob-sever-scheduler</artifactId>
+
+    <properties>
+
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-repository</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-sever-scheduler</artifactId>
+            <artifactId>openjob-common</artifactId>
         </dependency>
     </dependencies>
+
 </project>
