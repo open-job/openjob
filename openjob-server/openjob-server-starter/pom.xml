@@ -29,6 +29,11 @@
 
         <dependency>
             <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-cluster</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.openjob</groupId>
             <artifactId>openjob-server-admin</artifactId>
         </dependency>
 

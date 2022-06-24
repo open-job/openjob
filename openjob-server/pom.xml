@@ -14,7 +14,6 @@
         <module>openjob-server-common</module>
         <module>openjob-server-repository</module>
         <module>openjob-server-cluster</module>
-        <module>openjob-server-core</module>
         <module>openjob-server-admin</module>
         <module>openjob-server-openapi</module>
         <module>openjob-server-starter</module>
@@ -37,12 +36,6 @@
             <dependency>
                 <groupId>io.openjob</groupId>
                 <artifactId>openjob-server-cluster</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.openjob</groupId>
-                <artifactId>openjob-server-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

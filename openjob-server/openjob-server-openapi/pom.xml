@@ -13,7 +13,8 @@
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-core</artifactId>
+            <artifactId>openjob-server-repository</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
