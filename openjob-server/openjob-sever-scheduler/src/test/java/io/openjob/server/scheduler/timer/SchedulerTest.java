@@ -16,6 +16,7 @@ public class SchedulerTest {
 
         systemTimer.add(new TimerTask(2L));
         systemTimer.add(new TimerTask(5L));
+        systemTimer.add(new TimerTask(5L));
         systemTimer.add(new TimerTask(8L));
         systemTimer.add(new TimerTask(28L));
 
