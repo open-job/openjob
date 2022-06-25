@@ -9,12 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>openjob-server-core</artifactId>
+    <artifactId>openjob-sever-scheduler</artifactId>
+
+    <properties>
+
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-cluster</artifactId>
+            <artifactId>openjob-common</artifactId>
         </dependency>
     </dependencies>
+
 </project>
