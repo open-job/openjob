@@ -20,18 +20,15 @@ public class Scheduler {
     public void start() {
         for (int i = 0; i < 3; i++) {
             int finalI = i;
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    String name = "timer" + finalI;
-                    SystemTimer systemTimer = new SystemTimer(name);
-                    times.add(systemTimer);
+            Runnable r = () -> {
+                String name = "timer" + finalI;
+                SystemTimer systemTimer = new SystemTimer(name);
+                times.add(systemTimer);
 
-                    do {
-                        systemTimer.advanceClock(200L);
-                        System.out.println(name + " clock");
-                    } while (true);
-                }
+                do {
+                    systemTimer.advanceClock(200L);
+                    System.out.println(name + " clock");
+                } while (true);
             };
 
             new Thread(r, "name").start();
@@ -40,18 +37,18 @@ public class Scheduler {
 
     @SneakyThrows
     public void add() {
-            Thread.sleep(1000L);
+        Thread.sleep(1000L);
         System.out.println(times.size());
 
         int i = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i).add(new TimerTask(2L));
+        times.get(i).add(new TimerTask(1L, 2L));
         int i2 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i2).add(new TimerTask(5L));
+        times.get(i2).add(new TimerTask(1L, 5L));
         int i3 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i3).add(new TimerTask(5L));
+        times.get(i3).add(new TimerTask(1L, 5L));
         int i4 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i4).add(new TimerTask(8L));
+        times.get(i4).add(new TimerTask(1L, 8L));
         int i5 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i5).add(new TimerTask(28L));
+        times.get(i5).add(new TimerTask(1L, 28L));
     }
 }

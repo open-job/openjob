@@ -14,9 +14,11 @@ import java.util.Objects;
 public class TimerTask implements Runnable {
     protected Long delay = 1L;
     protected TimerTaskEntry timerTaskEntry;
+    protected Long taskId;
 
-    public TimerTask(Long delay) {
+    public TimerTask(Long taskId, Long delay) {
         this.delay = delay;
+        this.taskId = taskId;
     }
 
     public void cancel() {
@@ -37,11 +39,15 @@ public class TimerTask implements Runnable {
         }
     }
 
+    public Long getTaskId() {
+        return taskId;
+    }
+
     @Override
     public void run() {
         Date date = new Date();
         String strDateFormat = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-        System.out.println("do task" + sdf.format(date)+Thread.currentThread().getName());
+        System.out.println("do task" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId);
     }
 }
