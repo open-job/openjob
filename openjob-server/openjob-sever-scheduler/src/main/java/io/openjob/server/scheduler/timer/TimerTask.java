@@ -42,6 +42,6 @@ public class TimerTask implements Runnable {
         Date date = new Date();
         String strDateFormat = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-        System.out.println("do task" + sdf.format(date));
+        System.out.println("do task" + sdf.format(date)+Thread.currentThread().getName());
     }
 }

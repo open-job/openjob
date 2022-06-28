@@ -26,5 +26,7 @@ public class ApplicationReadyEventListener implements ApplicationListener<Applic
 
         // Start scheduler
         this.scheduler.start();
+
+//        this.scheduler.add();
     }
 }

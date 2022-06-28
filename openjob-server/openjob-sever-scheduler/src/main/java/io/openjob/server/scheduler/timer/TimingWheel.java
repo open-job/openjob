@@ -33,6 +33,10 @@ public class TimingWheel {
      */
     private Long currentTime;
 
+    /**
+     * overflowWheel can potentially be updated and read by two concurrent threads through add().
+     * Therefore, it needs to be volatile due to Double-Checked Locking pattern with JVM
+     */
     private volatile TimingWheel overflowWheel;
 
     private TimerTaskList[] buckets;

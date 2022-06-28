@@ -22,12 +22,12 @@ public class ClusterStatus {
     /**
      * Cluster actor reference.
      */
-    private static volatile ActorRef clusterActorRef;
+    private static ActorRef clusterActorRef;
 
     /**
      * Current node.
      */
-    private static volatile Node currentNode;
+    private static Node currentNode;
 
     /**
      * Job instance slots.
@@ -37,7 +37,7 @@ public class ClusterStatus {
     /**
      * Cluster nodes.
      */
-    private static volatile Map<Long, Node> nodesMap = Maps.newConcurrentMap();
+    private static Map<Long, Node> nodesMap = Maps.newConcurrentMap();
 
     public static synchronized void removeSlots(List<Long> slotsIds) {
         currentSlots.removeAll(slotsIds);
