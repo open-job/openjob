@@ -7,7 +7,7 @@ import io.openjob.server.cluster.message.ClusterMessage;
 import io.openjob.server.common.SpringContext;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.ServerDAO;
-import io.openjob.server.repository.dao.TaskSlotsDAO;
+import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.entity.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +27,13 @@ import java.util.Optional;
 public class ServerService {
     private final ServerDAO serverDAO;
     private final ClusterMessage ClusterMessage;
-    private final TaskSlotsDAO taskSlotsDAO;
+    private final JobSlotsDAO jobSlotsDAO;
 
     @Autowired
-    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager, TaskSlotsDAO taskSlotsDAO) {
+    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
         this.ClusterMessage = messageManager;
-        this.taskSlotsDAO = taskSlotsDAO;
+        this.jobSlotsDAO = jobSlotsDAO;
     }
 
     public void join(String hostname, Integer port) {
@@ -50,7 +50,7 @@ public class ServerService {
         this.refreshNodes(currentServer);
 
         // Update slots
-        removeSlots.forEach(taskSlotsDAO::updateByIds);
+        removeSlots.forEach(jobSlotsDAO::updateByIds);
 
         // Akka message for join.
         this.ClusterMessage.join(currentServer, removeSlots);
@@ -99,7 +99,7 @@ public class ServerService {
 
     private Map<Long, List<Long>> computeSlots() {
         Map<Long, List<Long>> serverIdToSlots = Maps.newHashMap();
-        taskSlotsDAO.listTaskSlots().forEach(taskSlots -> {
+        jobSlotsDAO.listJobSlots().forEach(taskSlots -> {
             if (taskSlots.getServerId() > 0) {
                 List<Long> slots = serverIdToSlots.computeIfAbsent(taskSlots.getServerId(), m -> new ArrayList<>());
                 slots.add(taskSlots.getId());

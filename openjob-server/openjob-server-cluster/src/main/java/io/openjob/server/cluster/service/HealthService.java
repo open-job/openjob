@@ -15,10 +15,10 @@ import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
-import io.openjob.server.repository.dao.TaskSlotsDAO;
+import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.ServerFailReports;
-import io.openjob.server.repository.entity.TaskSlots;
+import io.openjob.server.repository.entity.JobSlots;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,13 +38,13 @@ import java.util.stream.Collectors;
 public class HealthService {
     private final ServerDAO serverDAO;
     private final ServerFailReportsDAO serverFailReportsDAO;
-    private final TaskSlotsDAO taskSlotsDAO;
+    private final JobSlotsDAO jobSlotsDAO;
 
     @Autowired
-    public HealthService(ServerDAO serverDAO, ServerFailReportsDAO serverFailReportsDAO, TaskSlotsDAO taskSlotsDAO) {
+    public HealthService(ServerDAO serverDAO, ServerFailReportsDAO serverFailReportsDAO, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
         this.serverFailReportsDAO = serverFailReportsDAO;
-        this.taskSlotsDAO = taskSlotsDAO;
+        this.jobSlotsDAO = jobSlotsDAO;
     }
 
     public void check() {
@@ -86,7 +86,7 @@ public class HealthService {
     }
 
     private Map<Long, List<Long>> computeSlots(Long serverId, List<Server> servers) {
-        List<TaskSlots> taskSlots = taskSlotsDAO.listTaskSlots(serverId);
+        List<JobSlots> taskSlots = jobSlotsDAO.listJobSlots(serverId);
         int removeSize = (int) Math.floor(taskSlots.size() * (1.0 / servers.size()));
 
         int index = 0;
@@ -98,7 +98,7 @@ public class HealthService {
 
             List<Long> slotsIds = taskSlots.subList(index, removeSize)
                     .stream()
-                    .map(TaskSlots::getId)
+                    .map(JobSlots::getId)
                     .collect(Collectors.toList());
 
             addSlots.put(s.getId(), slotsIds);
@@ -117,7 +117,7 @@ public class HealthService {
 
         // Refresh current slots.
         Map<Long, List<Long>> addSlots = computeSlots(serverId, servers);
-        addSlots.forEach(taskSlotsDAO::updateByIds);
+        addSlots.forEach(jobSlotsDAO::updateByIds);
 
         NodeFailDTO nodeFailDTO = new NodeFailDTO();
         nodeFailDTO.setServerId(failNode.getServerId());
