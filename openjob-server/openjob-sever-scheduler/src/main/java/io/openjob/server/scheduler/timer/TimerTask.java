@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.timer;
 
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @Data
+@Log4j2
 public class TimerTask implements Runnable {
     protected Long delay = 1L;
     protected TimerTaskEntry timerTaskEntry;
@@ -48,6 +50,6 @@ public class TimerTask implements Runnable {
         Date date = new Date();
         String strDateFormat = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-        System.out.println("do task" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId);
+        log.info("do task" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId);
     }
 }

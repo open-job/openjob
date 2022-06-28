@@ -29,7 +29,7 @@ public class Scheduler {
         for (int i = 0; i < 5; i++) {
             int finalI = i;
             taskExecutor.submit(() -> {
-                String name = "timer-"+ finalI +"-";
+                String name = "timer-" + finalI + "-";
                 SystemTimer systemTimer = new SystemTimer(name);
                 times.add(systemTimer);
 
