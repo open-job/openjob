@@ -44,6 +44,11 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
     }
 
     @Override
+    public List<JobSlots> listJobSlotsForUpdate() {
+        return null;
+    }
+
+    @Override
     public Long updateByIds(Long serverId, List<Long> slots) {
         return jobSlotsRepository.updateByIds(slots, serverId, DateUtil.now());
     }

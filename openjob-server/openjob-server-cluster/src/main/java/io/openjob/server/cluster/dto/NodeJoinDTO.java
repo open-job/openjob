@@ -3,8 +3,6 @@ package io.openjob.server.cluster.dto;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -26,6 +24,4 @@ public class NodeJoinDTO implements Serializable {
      * Join server akka address
      */
     private String akkaAddress;
-    
-    private List<SlotsDTO> slotsDTOS;
 }

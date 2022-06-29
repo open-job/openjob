@@ -4,10 +4,9 @@ import com.google.common.collect.Maps;
 import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.context.Node;
 import io.openjob.server.cluster.message.ClusterMessage;
-import io.openjob.server.common.SpringContext;
 import io.openjob.server.repository.constant.ServerStatusConstant;
-import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.JobSlotsDAO;
+import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,26 +35,43 @@ public class ServerService {
         this.jobSlotsDAO = jobSlotsDAO;
     }
 
-    public void join(String hostname, Integer port) {
-        Map<Long, List<Long>> removeSlots = this.computeSlots();
-        SpringContext.getBean(ServerService.class).doJoin(hostname, port, removeSlots);
-    }
+    /**
+     * Start server
+     *
+     * @param hostname server hostname.
+     * @param port     server port.
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void start(String hostname, Integer port) {
+        // Job slots for update to lock.
+        Map<Long, List<Long>> removeSlots = this.calculateRemoveSlots();
 
-    @Transactional
-    public void doJoin(String hostname, Integer port, Map<Long, List<Long>> removeSlots) {
+        // Update slots.
+        removeSlots.forEach(jobSlotsDAO::updateByIds);
+
         // Register server.
         Server currentServer = this.registerServer(hostname, port);
 
-        // Refresh nodes.
-        this.refreshNodes(currentServer);
+        // Set current node.
+        this.SetCurrentNode(currentServer);
 
-        // Update slots
-        removeSlots.forEach(jobSlotsDAO::updateByIds);
+        // Refresh nodes.
+        this.refreshNodes();
+
+        // Refresh slots.
 
         // Akka message for join.
-        this.ClusterMessage.join(currentServer, removeSlots);
+        this.ClusterMessage.join(currentServer);
     }
 
+    /**
+     * Register server.
+     * If server is exists to update.
+     *
+     * @param hostname server hostname.
+     * @param port     server port.
+     * @return Server
+     */
     private Server registerServer(String hostname, Integer port) {
         // Has been registered
         String akkaAddress = String.format("%s:%d", hostname, port);
@@ -77,13 +93,23 @@ public class ServerService {
         return server;
     }
 
-    private void refreshNodes(Server server) {
+    /**
+     * Set current node.
+     *
+     * @param server server
+     */
+    private void SetCurrentNode(Server server) {
         Node currentNode = new Node();
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
         ClusterStatus.setCurrentNode(currentNode);
+    }
 
+    /**
+     * Refresh nodes.
+     */
+    private void refreshNodes() {
         List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
         Map<Long, Node> nodes = new HashMap<>();
         servers.forEach(s -> {
@@ -97,9 +123,14 @@ public class ServerService {
         ClusterStatus.refreshNodeList(nodes);
     }
 
-    private Map<Long, List<Long>> computeSlots() {
+    /**
+     * Calculate remove slots.
+     *
+     * @return slots map.
+     */
+    private Map<Long, List<Long>> calculateRemoveSlots() {
         Map<Long, List<Long>> serverIdToSlots = Maps.newHashMap();
-        jobSlotsDAO.listJobSlots().forEach(taskSlots -> {
+        jobSlotsDAO.listJobSlotsForUpdate().forEach(taskSlots -> {
             if (taskSlots.getServerId() > 0) {
                 List<Long> slots = serverIdToSlots.computeIfAbsent(taskSlots.getServerId(), m -> new ArrayList<>());
                 slots.add(taskSlots.getId());

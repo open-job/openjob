@@ -15,5 +15,8 @@ public interface JobSlotsDAO {
 
     List<JobSlots> listJobSlots();
 
+    List<JobSlots> listJobSlotsForUpdate();
+
     Long updateByIds(Long serverId, List<Long> slots);
+
 }

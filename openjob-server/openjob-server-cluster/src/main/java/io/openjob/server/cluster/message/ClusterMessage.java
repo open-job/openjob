@@ -21,20 +21,11 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class ClusterMessage {
-    public void join(Server currentServer, Map<Long, List<Long>> removeSlots) {
+    public void join(Server currentServer) {
         NodeJoinDTO join = new NodeJoinDTO();
         join.setIp(currentServer.getIp());
         join.setServerId(currentServer.getId());
         join.setAkkaAddress(currentServer.getAkkaAddress());
-
-        List<SlotsDTO> slotsList = new ArrayList<>();
-        removeSlots.forEach((serverId, removeIds) -> {
-            SlotsDTO slotsDTO = new SlotsDTO();
-            slotsDTO.setServerId(serverId);
-            slotsDTO.setRemoteSlots(removeIds);
-            slotsList.add(slotsDTO);
-        });
-        join.setSlotsDTOS(slotsList);
 
         ClusterStatus.getNodesList().forEach((i, s) -> {
             if (Objects.equals(s.getServerId(), currentServer.getId())) {

@@ -26,7 +26,10 @@ public class ClusterServer {
         this.serverService = serverService;
     }
 
-    public void init() {
+    /**
+     * Cluster Start
+     */
+    public void start() {
         //Create actor
         this.createActor();
 
@@ -34,9 +37,12 @@ public class ClusterServer {
         Config config = actorSystem.settings().config();
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
-        serverService.join(hostname, port);
+        serverService.start(hostname, port);
     }
 
+    /**
+     * Create cluster actor
+     */
     public void createActor() {
         Props serverProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)

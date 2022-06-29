@@ -17,4 +17,6 @@ public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
     @Transactional
     @Query("update JobSlots set serverId=?2,createTime=?3 where id in (?1)")
     Long updateByIds(List<Long> ids, Long serverId, Integer updateTime);
+
+    List<JobSlots> findAllForUpdate();
 }
