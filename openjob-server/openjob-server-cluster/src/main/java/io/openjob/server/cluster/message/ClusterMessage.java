@@ -36,7 +36,7 @@ public class ClusterMessage {
         });
         join.setSlotsDTOS(slotsList);
 
-        ClusterStatus.getNodesMap().forEach((i, s) -> {
+        ClusterStatus.getNodesList().forEach((i, s) -> {
             if (Objects.equals(s.getServerId(), currentServer.getId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
             }

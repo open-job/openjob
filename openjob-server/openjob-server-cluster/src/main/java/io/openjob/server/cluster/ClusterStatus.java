@@ -3,12 +3,9 @@ package io.openjob.server.cluster;
 import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
 import io.openjob.server.cluster.context.Node;
-import io.openjob.server.cluster.context.Slots;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,50 +27,47 @@ public class ClusterStatus {
     private static Node currentNode;
 
     /**
-     * Job instance slots.
+     * Current slots
      */
-    private static final List<Long> currentSlots = new ArrayList<>();
+    private static final Set<Long> currentSlots = new HashSet<>();
+
+    /**
+     * Slots list map.
+     * Key is slots id, Value is server id.
+     */
+    private static final Map<Long, Long> slotsListMap = Maps.newHashMap();
 
     /**
      * Cluster nodes.
+     * Key is server id, Value is server node.
      */
-    private static Map<Long, Node> nodesMap = Maps.newConcurrentMap();
+    private static final Map<Long, Node> nodesList = Maps.newConcurrentMap();
 
-    public static synchronized void removeSlots(List<Long> slotsIds) {
-        currentSlots.removeAll(slotsIds);
-    }
-
-    public static synchronized void addSlots(List<Long> slotsIds) {
+    /**
+     * Refresh Current node.
+     *
+     * @param slotsIds Current slots ids.
+     */
+    public static synchronized void refreshCurrentSlots(Set<Long> slotsIds) {
         currentSlots.addAll(slotsIds);
     }
-
 
     /**
      * Refresh nodes.
      *
      * @param nodes nodes
      */
-    public static synchronized void refreshNodes(Map<Long, Node> nodes) {
-        nodesMap = nodes;
+    public static synchronized void refreshNodeList(Map<Long, Node> nodes) {
+        nodesList.putAll(nodes);
     }
 
     /**
-     * Append node.
+     * Refresh slots list.
      *
-     * @param serverId serverId
-     * @param node     node
+     * @param slotsList Slots list.
      */
-    public static synchronized void addNode(Long serverId, Node node) {
-        nodesMap.put(serverId, node);
-    }
-
-    /**
-     * Removes node.
-     *
-     * @param serverId serverId
-     */
-    public static synchronized void removeNode(Long serverId) {
-        nodesMap.remove(serverId);
+    public static synchronized void refreshSlotsListMap(Map<Long, Long> slotsList) {
+        slotsListMap.putAll(slotsList);
     }
 
     /**
@@ -94,17 +88,23 @@ public class ClusterStatus {
         ClusterStatus.currentNode = currentNode;
     }
 
+
+    /**
+     * Return current slots.
+     *
+     * @return Set<Long>
+     */
+    public static Set<Long> getCurrentSlots() {
+        return currentSlots;
+    }
+
     /**
      * Return nodes.
      *
      * @return Map<Long, Node>
      */
-    public static Map<Long, Node> getNodesMap() {
-        return nodesMap;
-    }
-
-    public static List<Long> getCurrentSlots() {
-        return currentSlots;
+    public static Map<Long, Node> getNodesList() {
+        return nodesList;
     }
 
     public static ActorRef getClusterActorRef() {

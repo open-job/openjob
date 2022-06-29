@@ -18,6 +18,7 @@
         <module>openjob-server-openapi</module>
         <module>openjob-server-starter</module>
         <module>openjob-sever-scheduler</module>
+        <module>openjob-server-dispatcher</module>
     </modules>
 
     <dependencyManagement>

@@ -49,7 +49,7 @@ public class HealthService {
 
     public void check() {
         // Ping server list.
-        Map<Long, Node> nodesMap = ClusterStatus.getNodesMap();
+        Map<Long, Node> nodesMap = ClusterStatus.getNodesList();
         Node currentNode = ClusterStatus.getCurrentNode();
         List<Long> fixedPingList = this.getFixedPingList(nodesMap, currentNode);
 

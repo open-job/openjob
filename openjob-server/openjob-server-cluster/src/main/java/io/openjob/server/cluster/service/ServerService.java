@@ -94,7 +94,7 @@ public class ServerService {
             nodes.put(s.getId(), node);
         });
 
-        ClusterStatus.refreshNodes(nodes);
+        ClusterStatus.refreshNodeList(nodes);
     }
 
     private Map<Long, List<Long>> computeSlots() {

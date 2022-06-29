@@ -32,7 +32,6 @@ public class ClusterService {
         joinNode.setServerId(join.getServerId());
 
         // Add joinNode.
-        ClusterStatus.addNode(join.getServerId(), joinNode);
         log.info("Cluster add joinNode {}({})", join.getAkkaAddress(), join.getServerId());
 
         if (Objects.isNull(join.getSlotsDTOS())) {
@@ -50,7 +49,6 @@ public class ClusterService {
         }
 
         // Remove cluster status slots.
-        ClusterStatus.removeSlots(slotsDTO.getRemoteSlots());
         log.info("Cluster remove slots({})", slotsDTO.getRemoteSlots());
 
         // Remove timing wheel slots.
@@ -58,7 +56,6 @@ public class ClusterService {
 
     public void receiveNodeFail(NodeFailDTO nodeFailDTO) {
         // Remove node.
-        ClusterStatus.removeNode(nodeFailDTO.getServerId());
         log.info("Cluster remove node {}({})", nodeFailDTO.getAkkaAddress(), nodeFailDTO.getServerId());
 
         if (Objects.isNull(nodeFailDTO.getSlotsDTOS())) {
@@ -76,7 +73,6 @@ public class ClusterService {
         }
 
         // Add cluster status slots.
-        ClusterStatus.addSlots(slotsDTO.getAddSlots());
         log.info("Cluster remove slots({})", slotsDTO.getAddSlots());
 
         // Add timingWheel slots and Add job instance to timingWheel
