@@ -2,10 +2,13 @@ package io.openjob.server.repository.repository;
 
 import io.openjob.server.repository.entity.JobSlots;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 
 /**
@@ -14,9 +17,10 @@ import java.util.List;
  */
 public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
     @Modifying
-    @Transactional
-    @Query("update JobSlots set serverId=?2,createTime=?3 where id in (?1)")
-    Long updateByIds(List<Long> ids, Long serverId, Integer updateTime);
+    @Query("update JobSlots set serverId=:serverId,updateTime=:updateTime where id in (:ids)")
+    Integer updateByServerId(@Param("ids") List<Long> ids, @Param("serverId") Long serverId, @Param("updateTime") Integer updateTime);
 
-    List<JobSlots> findAllForUpdate();
+    @Modifying
+    @Query("update JobSlots set serverId=:serverId,updateTime=:updateTime")
+    Integer updateByServerId(@Param("serverId") Long serverId, @Param("updateTime") Integer updateTime);
 }

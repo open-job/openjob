@@ -43,14 +43,14 @@ public class ServerService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void start(String hostname, Integer port) {
-        // Job slots for update to lock.
-        Map<Long, List<Long>> removeSlots = this.calculateRemoveSlots();
-
-        // Update slots.
-        removeSlots.forEach(jobSlotsDAO::updateByIds);
-
         // Register server.
         Server currentServer = this.registerServer(hostname, port);
+
+        // Job slots for update to lock.
+        List<Long> migratedSlots = this.migratedSlotsForJoin();
+
+        // Migrate slots.
+        this.migrateSlots(currentServer, migratedSlots);
 
         // Set current node.
         this.SetCurrentNode(currentServer);
@@ -62,6 +62,22 @@ public class ServerService {
 
         // Akka message for join.
         this.ClusterMessage.join(currentServer);
+    }
+
+    /**
+     * Migrate Slots to current server.
+     *
+     * @param currentServer server
+     * @param slots         slots
+     */
+    private void migrateSlots(Server currentServer, List<Long> slots) {
+        // First server node.
+        if (slots.isEmpty()) {
+            jobSlotsDAO.updateByServerId(currentServer.getId());
+            return;
+        }
+
+        jobSlotsDAO.updateByServerId(currentServer.getId(), slots);
     }
 
     /**
@@ -128,7 +144,7 @@ public class ServerService {
      *
      * @return slots map.
      */
-    private Map<Long, List<Long>> calculateRemoveSlots() {
+    private List<Long> migratedSlotsForJoin() {
         Map<Long, List<Long>> serverIdToSlots = Maps.newHashMap();
         jobSlotsDAO.listJobSlotsForUpdate().forEach(taskSlots -> {
             if (taskSlots.getServerId() > 0) {
@@ -140,13 +156,13 @@ public class ServerService {
 
         // Remove server slots.
         int slotsServerCount = serverIdToSlots.size();
-        Map<Long, List<Long>> serverRemoveSlots = Maps.newHashMap();
+        List<Long> migratedList = new ArrayList<>();
         serverIdToSlots.forEach((id, slots) -> {
-            int remoteSize = (int) Math.floor(slots.size() * (1.0 / (slotsServerCount + 1)));
-            List<Long> removeIds = slots.subList(0, remoteSize - 1);
-            serverRemoveSlots.put(id, removeIds);
+            int migratedSize = (int) Math.floor(slots.size() * (1.0 / (slotsServerCount + 1)));
+            List<Long> migratedIds = slots.subList(0, migratedSize - 1);
+            migratedList.addAll(migratedIds);
         });
 
-        return serverRemoveSlots;
+        return migratedList;
     }
 }

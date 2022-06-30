@@ -117,7 +117,7 @@ public class HealthService {
 
         // Refresh current slots.
         Map<Long, List<Long>> addSlots = computeSlots(serverId, servers);
-        addSlots.forEach(jobSlotsDAO::updateByIds);
+        addSlots.forEach(jobSlotsDAO::updateByServerId);
 
         NodeFailDTO nodeFailDTO = new NodeFailDTO();
         nodeFailDTO.setServerId(failNode.getServerId());
