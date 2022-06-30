@@ -32,7 +32,7 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
     }
 
     @Override
-    public List<JobSlots> listJobSlots(Long serverId) {
+    public List<JobSlots> listJobSlotsByServerId(Long serverId) {
         JobSlots taskSlots = new JobSlots();
         taskSlots.setServerId(serverId);
         return jobSlotsRepository.findAll(Example.of(taskSlots));
@@ -40,11 +40,6 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
 
     @Override
     public List<JobSlots> listJobSlots() {
-        return jobSlotsRepository.findAll();
-    }
-
-    @Override
-    public List<JobSlots> listJobSlotsForUpdate() {
         return jobSlotsRepository.findAll();
     }
 

@@ -44,7 +44,7 @@ public class ServerDAOImpl implements ServerDAO {
 
     @Override
     public Integer update(Long id, Integer status) {
-        return serverRepository.update(id, status, 1);
+        return serverRepository.update(id, status, DateUtil.now());
     }
 
     @Override

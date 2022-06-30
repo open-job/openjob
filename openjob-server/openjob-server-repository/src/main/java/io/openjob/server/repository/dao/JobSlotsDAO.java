@@ -11,11 +11,9 @@ import java.util.List;
 public interface JobSlotsDAO {
     Long save(JobSlots taskSlots);
 
-    List<JobSlots> listJobSlots(Long serverId);
+    List<JobSlots> listJobSlotsByServerId(Long serverId);
 
     List<JobSlots> listJobSlots();
-
-    List<JobSlots> listJobSlotsForUpdate();
 
     Integer updateByServerId(Long serverId, List<Long> slots);
 

@@ -1,17 +1,14 @@
 package io.openjob.server.cluster.message;
 
 import akka.actor.ActorRef;
-import io.openjob.server.cluster.ClusterStatus;
+import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
-import io.openjob.server.cluster.dto.SlotsDTO;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -21,15 +18,18 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class ClusterMessage {
-    public void join(Server currentServer) {
-        NodeJoinDTO join = new NodeJoinDTO();
-        join.setIp(currentServer.getIp());
-        join.setServerId(currentServer.getId());
-        join.setAkkaAddress(currentServer.getAkkaAddress());
+    public void join(NodeJoinDTO node, List<Server> servers) {
+        servers.forEach(s -> {
+            if (Objects.equals(s.getId(), node.getServerId())) {
+                AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(node, ActorRef.noSender());
+            }
+        });
+    }
 
-        ClusterStatus.getNodesList().forEach((i, s) -> {
-            if (Objects.equals(s.getServerId(), currentServer.getId())) {
-                AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(join, ActorRef.noSender());
+    public void fail(NodeFailDTO failDTO, List<Server> servers) {
+        servers.forEach(s -> {
+            if (Objects.equals(s.getId(), failDTO.getServerId())) {
+                AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(failDTO, ActorRef.noSender());
             }
         });
     }

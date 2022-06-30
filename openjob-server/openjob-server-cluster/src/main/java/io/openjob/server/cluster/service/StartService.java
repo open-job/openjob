@@ -3,6 +3,7 @@ package io.openjob.server.cluster.service;
 import com.google.common.collect.Maps;
 import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.context.Node;
+import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.JobSlotsDAO;
@@ -23,13 +24,13 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Service
-public class ServerService {
+public class StartService {
     private final ServerDAO serverDAO;
     private final ClusterMessage ClusterMessage;
     private final JobSlotsDAO jobSlotsDAO;
 
     @Autowired
-    public ServerService(ServerDAO serverDAO, ClusterMessage messageManager, JobSlotsDAO jobSlotsDAO) {
+    public StartService(ServerDAO serverDAO, ClusterMessage messageManager, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
         this.ClusterMessage = messageManager;
         this.jobSlotsDAO = jobSlotsDAO;
@@ -44,13 +45,10 @@ public class ServerService {
     @Transactional(rollbackFor = Exception.class)
     public void start(String hostname, Integer port) {
         // Register server.
-        Server currentServer = this.registerServer(hostname, port);
-
-        // Job slots for update to lock.
-        List<Long> migratedSlots = this.migratedSlotsForJoin();
+        Server currentServer = this.registerOrUpdateServer(hostname, port);
 
         // Migrate slots.
-        this.migrateSlots(currentServer, migratedSlots);
+        List<Server> servers = this.migrateSlots(currentServer);
 
         // Set current node.
         this.SetCurrentNode(currentServer);
@@ -58,26 +56,8 @@ public class ServerService {
         // Refresh nodes.
         this.refreshNodes();
 
-        // Refresh slots.
-
         // Akka message for join.
-        this.ClusterMessage.join(currentServer);
-    }
-
-    /**
-     * Migrate Slots to current server.
-     *
-     * @param currentServer server
-     * @param slots         slots
-     */
-    private void migrateSlots(Server currentServer, List<Long> slots) {
-        // First server node.
-        if (slots.isEmpty()) {
-            jobSlotsDAO.updateByServerId(currentServer.getId());
-            return;
-        }
-
-        jobSlotsDAO.updateByServerId(currentServer.getId(), slots);
+        this.sendClusterStartMessage(servers);
     }
 
     /**
@@ -88,7 +68,7 @@ public class ServerService {
      * @param port     server port.
      * @return Server
      */
-    private Server registerServer(String hostname, Integer port) {
+    private Server registerOrUpdateServer(String hostname, Integer port) {
         // Has been registered
         String akkaAddress = String.format("%s:%d", hostname, port);
         Optional<Server> optionalServer = serverDAO.getOne(akkaAddress);
@@ -144,9 +124,9 @@ public class ServerService {
      *
      * @return slots map.
      */
-    private List<Long> migratedSlotsForJoin() {
+    private List<Server> migrateSlots(Server currentServer) {
         Map<Long, List<Long>> serverIdToSlots = Maps.newHashMap();
-        jobSlotsDAO.listJobSlotsForUpdate().forEach(taskSlots -> {
+        jobSlotsDAO.listJobSlots().forEach(taskSlots -> {
             if (taskSlots.getServerId() > 0) {
                 List<Long> slots = serverIdToSlots.computeIfAbsent(taskSlots.getServerId(), m -> new ArrayList<>());
                 slots.add(taskSlots.getId());
@@ -155,7 +135,8 @@ public class ServerService {
         });
 
         // Remove server slots.
-        int slotsServerCount = serverIdToSlots.size();
+        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        int slotsServerCount = servers.size() - 1;
         List<Long> migratedList = new ArrayList<>();
         serverIdToSlots.forEach((id, slots) -> {
             int migratedSize = (int) Math.floor(slots.size() * (1.0 / (slotsServerCount + 1)));
@@ -163,6 +144,23 @@ public class ServerService {
             migratedList.addAll(migratedIds);
         });
 
-        return migratedList;
+
+        // First server node.
+        if (migratedList.isEmpty()) {
+            jobSlotsDAO.updateByServerId(currentServer.getId());
+            return servers;
+        }
+
+        jobSlotsDAO.updateByServerId(currentServer.getId(), migratedList);
+        return servers;
+    }
+
+    private void sendClusterStartMessage(List<Server> servers) {
+        Node currentNode = ClusterStatus.getCurrentNode();
+        NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
+        nodeJoinDTO.setIp(currentNode.getIp());
+        nodeJoinDTO.setServerId(currentNode.getServerId());
+        nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
+        this.ClusterMessage.join(nodeJoinDTO, servers);
     }
 }

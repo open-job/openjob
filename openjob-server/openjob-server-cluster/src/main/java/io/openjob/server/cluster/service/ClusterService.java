@@ -55,25 +55,25 @@ public class ClusterService {
     }
 
     public void receiveNodeFail(NodeFailDTO nodeFailDTO) {
-        // Remove node.
-        log.info("Cluster remove node {}({})", nodeFailDTO.getAkkaAddress(), nodeFailDTO.getServerId());
-
-        if (Objects.isNull(nodeFailDTO.getSlotsDTOS())) {
-            log.info("Cluster node fail message is incomplete(Join slots)");
-            return;
-        }
-
-        // Fail slots.
-        Map<Long, SlotsDTO> slotsMap = nodeFailDTO.getSlotsDTOS().stream().collect(Collectors.toMap(SlotsDTO::getServerId, slots -> slots));
-        Node currentNode = ClusterStatus.getCurrentNode();
-        SlotsDTO slotsDTO = slotsMap.get(currentNode.getServerId());
-        if (Objects.isNull(slotsDTO) || Objects.isNull(slotsDTO.getAddSlots())) {
-            log.error("Cluster node join message is incomplete(Join remove slots)");
-            return;
-        }
+//        // Remove node.
+//        log.info("Cluster remove node {}({})", nodeFailDTO.getAkkaAddress(), nodeFailDTO.getServerId());
+//
+//        if (Objects.isNull(nodeFailDTO.getSlotsDTOS())) {
+//            log.info("Cluster node fail message is incomplete(Join slots)");
+//            return;
+//        }
+//
+//        // Fail slots.
+//        Map<Long, SlotsDTO> slotsMap = nodeFailDTO.getSlotsDTOS().stream().collect(Collectors.toMap(SlotsDTO::getServerId, slots -> slots));
+//        Node currentNode = ClusterStatus.getCurrentNode();
+//        SlotsDTO slotsDTO = slotsMap.get(currentNode.getServerId());
+//        if (Objects.isNull(slotsDTO) || Objects.isNull(slotsDTO.getAddSlots())) {
+//            log.error("Cluster node join message is incomplete(Join remove slots)");
+//            return;
+//        }
 
         // Add cluster status slots.
-        log.info("Cluster remove slots({})", slotsDTO.getAddSlots());
+//        log.info("Cluster remove slots({})", slotsDTO.getAddSlots());
 
         // Add timingWheel slots and Add job instance to timingWheel
     }

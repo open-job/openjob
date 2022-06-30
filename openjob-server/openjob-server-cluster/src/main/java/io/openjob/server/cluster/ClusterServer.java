@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
-import io.openjob.server.cluster.service.ServerService;
+import io.openjob.server.cluster.service.StartService;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClusterServer {
     private final ActorSystem actorSystem;
-    private final ServerService serverService;
+    private final StartService serverService;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, ServerService serverService) {
+    public ClusterServer(ActorSystem actorSystem, StartService serverService) {
         this.actorSystem = actorSystem;
         this.serverService = serverService;
     }

@@ -86,7 +86,7 @@ public class HealthService {
     }
 
     private Map<Long, List<Long>> computeSlots(Long serverId, List<Server> servers) {
-        List<JobSlots> taskSlots = jobSlotsDAO.listJobSlots(serverId);
+        List<JobSlots> taskSlots = jobSlotsDAO.listJobSlotsByServerId(serverId);
         int removeSize = (int) Math.floor(taskSlots.size() * (1.0 / servers.size()));
 
         int index = 0;
@@ -132,7 +132,7 @@ public class HealthService {
             slotsDTO.setAddSlots(slotsIds);
             slotsList.add(slotsDTO);
         });
-        nodeFailDTO.setSlotsDTOS(slotsList);
+//        nodeFailDTO.setSlotsDTOS(slotsList);
 
         servers.forEach(s -> {
             if (!Objects.equals(failNode.getServerId(), s.getId())) {

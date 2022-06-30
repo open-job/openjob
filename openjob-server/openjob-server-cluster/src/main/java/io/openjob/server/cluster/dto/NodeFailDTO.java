@@ -25,6 +25,4 @@ public class NodeFailDTO implements Serializable {
      * Fail server akka address.
      */
     private String akkaAddress;
-
-    private List<SlotsDTO> slotsDTOS;
 }
