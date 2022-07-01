@@ -9,7 +9,6 @@ import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.server.common.SpringContext;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.AkkaUtil;
-import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
 import io.openjob.server.repository.entity.ServerFailReports;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +27,11 @@ import java.util.Map;
 @Service
 public class HealthService {
     private final FailManager failManager;
-    private final JobSlotsDAO jobSlotsDAO;
     private final ServerFailReportsDAO serverFailReportsDAO;
 
     @Autowired
-    public HealthService(ServerFailReportsDAO serverFailReportsDAO, JobSlotsDAO jobSlotsDAO, FailManager failManager) {
+    public HealthService(ServerFailReportsDAO serverFailReportsDAO, FailManager failManager) {
         this.serverFailReportsDAO = serverFailReportsDAO;
-        this.jobSlotsDAO = jobSlotsDAO;
         this.failManager = failManager;
     }
 
@@ -42,7 +39,7 @@ public class HealthService {
         // Ping server list.
         Map<Long, Node> nodesMap = ClusterStatus.getNodesList();
         Node currentNode = ClusterStatus.getCurrentNode();
-        List<Long> fixedPingList = this.getFixedPingList(nodesMap, currentNode);
+        List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
 
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));
     }
@@ -76,12 +73,18 @@ public class HealthService {
         }
     }
 
-    public List<Long> getFixedPingList(Map<Long, Node> nodesMap, Node currentNode) {
+    public List<Long> getFixedPingSeverList(Map<Long, Node> nodesMap, Node currentNode) {
         ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
         Collections.sort(serverIds);
         int serverSize = serverIds.size();
         int currentIndex = serverIds.indexOf(currentNode.getServerId());
-        List<Long> pingList = serverIds.subList(currentIndex, ClusterConstant.CLUSTER_PING_SIZE);
+
+        int subSize = serverSize - currentIndex - 1;
+        if (subSize > ClusterConstant.CLUSTER_PING_SIZE) {
+            subSize = ClusterConstant.CLUSTER_PING_SIZE;
+        }
+
+        List<Long> pingList = serverIds.subList(currentIndex, subSize);
         int pingSize = pingList.size();
         int remainPingSize = ClusterConstant.CLUSTER_PING_SIZE - pingSize;
         int needPingSize = remainPingSize;
