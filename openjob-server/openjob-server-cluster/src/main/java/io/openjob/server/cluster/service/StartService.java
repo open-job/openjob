@@ -5,6 +5,7 @@ import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
+import io.openjob.server.cluster.util.ClusterStatusUtil;
 import io.openjob.server.repository.constant.ServerStatusConstant;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -54,7 +55,7 @@ public class StartService {
         this.SetCurrentNode(currentServer);
 
         // Refresh nodes.
-        this.refreshNodes();
+        ClusterStatusUtil.refreshNodes(servers);
 
         // Akka message for join.
         this.sendClusterStartMessage(servers);
@@ -105,18 +106,7 @@ public class StartService {
     /**
      * Refresh nodes.
      */
-    private void refreshNodes() {
-        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
-        Map<Long, Node> nodes = new HashMap<>();
-        servers.forEach(s -> {
-            Node node = new Node();
-            node.setServerId(s.getId());
-            node.setIp(s.getIp());
-            node.setAkkaAddress(s.getAkkaAddress());
-            nodes.put(s.getId(), node);
-        });
-
-        ClusterStatus.refreshNodeList(nodes);
+    private void refreshNodes(List<Server> servers) {
     }
 
     /**
