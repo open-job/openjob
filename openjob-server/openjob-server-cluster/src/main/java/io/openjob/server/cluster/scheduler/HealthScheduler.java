@@ -20,6 +20,6 @@ public class HealthScheduler {
 
     @Scheduled(initialDelay = 3000L, fixedDelay = 2000L)
     public void healthCheck() {
-//        healthService.check();
+        healthService.check();
     }
 }

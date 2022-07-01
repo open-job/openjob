@@ -1,7 +1,6 @@
-package io.openjob.server.cluster.service;
+package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
-import io.openjob.server.cluster.ClusterStatus;
 import io.openjob.server.cluster.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
@@ -13,6 +12,7 @@ import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -24,35 +24,33 @@ import java.util.stream.Collectors;
  */
 @Service
 @Log4j2
-public class StopService {
+public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final ClusterMessage clusterMessage;
 
     @Autowired
-    public StopService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterMessage clusterMessage) {
+    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterMessage clusterMessage) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.clusterMessage = clusterMessage;
     }
 
-    public void stop() {
-        Node currentNode = ClusterStatus.getCurrentNode();
-
+    @Transactional(rollbackFor = Exception.class)
+    public void fail(Node stopNode) {
         // Update server status.
-        this.serverDAO.update(currentNode.getServerId(), ServerStatusConstant.FAIL.getStatus());
+        this.serverDAO.update(stopNode.getServerId(), ServerStatusConstant.FAIL.getStatus());
+        log.info("Update server to fail status {}", stopNode.getServerId());
 
         // Migrate slots.
-        List<Server> servers = this.migrateSlots(currentNode);
-
-        log.info("Cluster server shutdown {}", currentNode.getAkkaAddress());
+        List<Server> servers = this.migrateSlots(stopNode);
 
         // Akka message for stop.
-        this.sendClusterStopMessage(currentNode, servers);
+        this.sendClusterStopMessage(stopNode, servers);
     }
 
-    private List<Server> migrateSlots(Node currentNode) {
-        List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
+    private List<Server> migrateSlots(Node stopNode) {
+        List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(stopNode.getServerId());
         List<Server> servers = this.serverDAO.listServers(ServerStatusConstant.OK.getStatus());
 
         // Exclude current server.
@@ -61,6 +59,7 @@ public class StopService {
         // Only one server.
         if (serverCount == 0) {
             jobSlotsDAO.updateByServerId(0L);
+            log.info("Migrate slots to 0");
             return servers;
         }
 
@@ -72,7 +71,7 @@ public class StopService {
             Server s = servers.get(i);
 
             // Ignore current server.
-            if (s.getId().equals(currentNode.getServerId())) {
+            if (s.getId().equals(stopNode.getServerId())) {
                 break;
             }
 
@@ -96,14 +95,15 @@ public class StopService {
         }
 
         migrationSlots.forEach(this.jobSlotsDAO::updateByServerId);
+        log.info("Migration slots {}", migrationSlots);
         return servers;
     }
 
-    private void sendClusterStopMessage(Node currentNode, List<Server> servers) {
+    private void sendClusterStopMessage(Node stopNode, List<Server> servers) {
         NodeFailDTO failDTO = new NodeFailDTO();
-        failDTO.setIp(currentNode.getIp());
-        failDTO.setServerId(currentNode.getServerId());
-        failDTO.setAkkaAddress(currentNode.getAkkaAddress());
+        failDTO.setIp(stopNode.getIp());
+        failDTO.setServerId(stopNode.getServerId());
+        failDTO.setAkkaAddress(stopNode.getAkkaAddress());
         this.clusterMessage.fail(failDTO, servers);
     }
 }
