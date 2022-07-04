@@ -31,6 +31,7 @@ public class SchedulerTest {
         systemTimer.removeByTaskId(5L);
 
         do {
+            System.out.println(systemTimer);
             systemTimer.advanceClock(500L);
             System.out.println(systemTimer.size());
         } while (true);

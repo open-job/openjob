@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.timer;
 
 import com.google.common.collect.Maps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.DelayQueue;
@@ -46,6 +47,7 @@ public class TimingWheel {
 
     private Map<Long, TimerTaskEntry> taskEntryMap = Maps.newConcurrentMap();
 
+
     public TimingWheel(Long tickTime, Integer wheelSize, Long startTime, AtomicInteger taskCounter,
                        DelayQueue<TimerTaskList> delayQueue) {
         this.tickTime = tickTime;
@@ -58,7 +60,7 @@ public class TimingWheel {
 
         this.buckets = new TimerTaskList[wheelSize];
         for (int i = 0; i < buckets.length; i++) {
-            this.buckets[i] = new TimerTaskList(taskCounter);
+            this.buckets[i] = new TimerTaskList(this, taskCounter);
         }
     }
 
@@ -77,7 +79,6 @@ public class TimingWheel {
             int index = (int) (virtualId % wheelSize);
             TimerTaskList bucket = buckets[index];
             timerTaskEntry.setCurrentBucket(index);
-            System.out.println(String.format("%d-%d-%d", expiration, virtualId, index));
             bucket.add(timerTaskEntry);
 
             if (timerTaskEntry.getTimerTask().getTaskId().equals(5L)) {
@@ -100,7 +101,7 @@ public class TimingWheel {
     }
 
     public void removeByTaskId(Long taskId) {
-        TimerTaskEntry timerTaskEntry = taskEntryMap.get(taskId);
+        TimerTaskEntry timerTaskEntry = taskEntryMap.remove(taskId);
         if (Objects.nonNull(timerTaskEntry)) {
             TimerTaskList bucket = buckets[timerTaskEntry.getCurrentBucket()];
             bucket.remove(timerTaskEntry);
@@ -120,6 +121,10 @@ public class TimingWheel {
                 overflowWheel.advanceClock(currentTime);
             }
         }
+    }
+
+    public void removeFromEntryMap(Long taskId) {
+        this.taskEntryMap.remove(taskId);
     }
 
     private void addOverflowWheel() {

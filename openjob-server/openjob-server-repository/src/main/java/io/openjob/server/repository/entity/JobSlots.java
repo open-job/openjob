@@ -38,4 +38,9 @@ public class JobSlots {
      */
     @Column(name = "update_time")
     private Integer updateTime;
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }

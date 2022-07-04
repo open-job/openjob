@@ -21,12 +21,15 @@ public class TimerTaskList implements Delayed {
 
     private AtomicLong expiration;
 
-    public TimerTaskList(AtomicInteger taskCounter) {
+    private TimingWheel timingWheel;
+
+    public TimerTaskList(TimingWheel timingWheel, AtomicInteger taskCounter) {
         this.taskCounter = taskCounter;
         this.root = new TimerTaskEntry(null, -1L);
         this.root.setNext(root);
         this.root.setPrev(root);
         this.expiration = new AtomicLong(-1L);
+        this.timingWheel = timingWheel;
     }
 
     public void add(TimerTaskEntry timerTaskEntry) {
@@ -61,6 +64,7 @@ public class TimerTaskList implements Delayed {
                     timerTaskEntry.setPrev(null);
                     timerTaskEntry.setTimerTaskList(null);
                     taskCounter.decrementAndGet();
+                    this.timingWheel.removeFromEntryMap(timerTaskEntry.getTimerTask().getTaskId());
                 }
             }
         }

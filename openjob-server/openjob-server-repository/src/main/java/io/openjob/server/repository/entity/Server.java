@@ -48,4 +48,12 @@ public class Server {
      */
     @Column(name = "update_time")
     private Integer updateTime;
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "id=" + id +
+                ", akkaAddress='" + akkaAddress + '\'' +
+                '}';
+    }
 }
