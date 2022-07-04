@@ -12,6 +12,7 @@ import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.scheduler.Scheduler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class ClusterService {
         Set<Long> removeSlots = this.refreshJobSlots(true);
 
         // Remove job instance from timing wheel.
+        Scheduler.removeBySlotsId(removeSlots);
 
         log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
     }

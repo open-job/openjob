@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,11 +19,11 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class Scheduler {
-    private final List<SystemTimer> times = new ArrayList<>();
+    private static final List<SystemTimer> times = new ArrayList<>();
 
-    private ThreadPoolExecutor taskExecutor;
+    private static ThreadPoolExecutor taskExecutor;
 
-    public void start() {
+    public static void start() {
         taskExecutor = new ThreadPoolExecutor(5, 5, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, "wheel"));
 
@@ -39,6 +40,14 @@ public class Scheduler {
                 } while (true);
             });
         }
+    }
+
+    public static void removeByTaskId(Set<Long> taskIds) {
+
+    }
+
+    public static void removeBySlotsId(Set<Long> slotsIds) {
+
     }
 
     @SneakyThrows

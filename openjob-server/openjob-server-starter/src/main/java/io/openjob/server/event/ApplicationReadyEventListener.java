@@ -13,11 +13,9 @@ import org.springframework.context.ApplicationListener;
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private final ClusterServer clusterServer;
-    private final Scheduler scheduler;
 
-    public ApplicationReadyEventListener(ClusterServer clusterManager, Scheduler scheduler) {
+    public ApplicationReadyEventListener(ClusterServer clusterManager) {
         this.clusterServer = clusterManager;
-        this.scheduler = scheduler;
     }
 
     @Override
@@ -26,6 +24,6 @@ public class ApplicationReadyEventListener implements ApplicationListener<Applic
         this.clusterServer.start();
 
         // Start scheduler.
-        this.scheduler.start();
+        Scheduler.start();
     }
 }
