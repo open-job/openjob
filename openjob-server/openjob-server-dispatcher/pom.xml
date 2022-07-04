@@ -9,7 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>openjob-server-cluster</artifactId>
+    <artifactId>openjob-server-dispatcher</artifactId>
+
+    <properties>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>

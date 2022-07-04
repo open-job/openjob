@@ -65,6 +65,11 @@
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-remote_${scala.binary.version}</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

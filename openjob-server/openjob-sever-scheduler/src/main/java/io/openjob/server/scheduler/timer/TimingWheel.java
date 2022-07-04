@@ -1,5 +1,8 @@
 package io.openjob.server.scheduler.timer;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,9 +36,15 @@ public class TimingWheel {
      */
     private Long currentTime;
 
+    /**
+     * overflowWheel can potentially be updated and read by two concurrent threads through add().
+     * Therefore, it needs to be volatile due to Double-Checked Locking pattern with JVM
+     */
     private volatile TimingWheel overflowWheel;
 
     private TimerTaskList[] buckets;
+
+    private Map<Long, TimerTaskEntry> taskEntryMap = Maps.newConcurrentMap();
 
     public TimingWheel(Long tickTime, Integer wheelSize, Long startTime, AtomicInteger taskCounter,
                        DelayQueue<TimerTaskList> delayQueue) {
@@ -67,9 +76,15 @@ public class TimingWheel {
             long virtualId = expiration / tickTime;
             int index = (int) (virtualId % wheelSize);
             TimerTaskList bucket = buckets[index];
+            timerTaskEntry.setCurrentBucket(index);
             System.out.println(String.format("%d-%d-%d", expiration, virtualId, index));
             bucket.add(timerTaskEntry);
 
+            if (timerTaskEntry.getTimerTask().getTaskId().equals(5L)) {
+                System.out.println(index);
+            }
+
+            taskEntryMap.put(timerTaskEntry.getTimerTask().getTaskId(), timerTaskEntry);
             if (bucket.setExpiration(virtualId * tickTime)) {
                 delayQueue.offer(bucket);
             }
@@ -82,6 +97,19 @@ public class TimingWheel {
         }
 
         return overflowWheel.add(timerTaskEntry);
+    }
+
+    public void removeByTaskId(Long taskId) {
+        TimerTaskEntry timerTaskEntry = taskEntryMap.get(taskId);
+        if (Objects.nonNull(timerTaskEntry)) {
+            TimerTaskList bucket = buckets[timerTaskEntry.getCurrentBucket()];
+            bucket.remove(timerTaskEntry);
+            return;
+        }
+
+        if (Objects.nonNull(overflowWheel)) {
+            overflowWheel.removeByTaskId(taskId);
+        }
     }
 
     public void advanceClock(Long time) {

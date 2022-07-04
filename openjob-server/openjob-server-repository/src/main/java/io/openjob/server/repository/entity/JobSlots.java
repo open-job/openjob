@@ -15,8 +15,8 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "task_slots")
-public class TaskSlots {
+@Table(name = "job_slots")
+public class JobSlots {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

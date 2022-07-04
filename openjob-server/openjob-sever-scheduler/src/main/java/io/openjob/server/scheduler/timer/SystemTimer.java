@@ -33,7 +33,7 @@ public class SystemTimer implements Timer {
 
     public SystemTimer(String executorName) {
         taskExecutor = new ThreadPoolExecutor(1, 1, 0L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(executorName));
+                TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, executorName));
 
         timingWheel = new TimingWheel(TimerConstant.tickTime, TimerConstant.wheelSize, DateUtil.instant().getEpochSecond(),
                 taskCounter, delayQueue);
@@ -79,6 +79,10 @@ public class SystemTimer implements Timer {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void removeByTaskId(Long taskId) {
+        timingWheel.removeByTaskId(taskId);
     }
 
     @Override
