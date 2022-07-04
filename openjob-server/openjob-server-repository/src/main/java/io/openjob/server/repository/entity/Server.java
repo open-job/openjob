@@ -51,9 +51,10 @@ public class Server {
 
     @Override
     public String toString() {
-        return "Server{" +
-                "id=" + id +
-                ", akkaAddress='" + akkaAddress + '\'' +
-                '}';
+        return "Server{"
+                + "id="
+                + id
+                + ", akkaAddress='" + akkaAddress + '\''
+                + '}';
     }
 }

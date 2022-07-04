@@ -11,7 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 public interface ServerRepository extends JpaRepository<Server, Long> {
-    @Transactional
+    /**
+     * Update server by id.
+     *
+     * @param id         id
+     * @param status     status
+     * @param updateTime updateTime
+     * @return Effected rows.
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update Server as s set s.status=?2,s.updateTime=?3 where s.id=?1")
     Integer update(Long id, Integer status, Integer updateTime);

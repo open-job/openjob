@@ -10,6 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum StatusEnum {
+    /**
+     * Success.
+     */
     SUCCESS(200, "ok"),
     ;
     private Integer status;

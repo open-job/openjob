@@ -23,6 +23,9 @@ public class Scheduler {
 
     private static ThreadPoolExecutor taskExecutor;
 
+    /**
+     * Start Scheduler.
+     */
     public static void start() {
         taskExecutor = new ThreadPoolExecutor(5, 5, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, "wheel"));
@@ -42,10 +45,20 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Remove task from timing wheel by task ids.
+     *
+     * @param taskIds taskIds
+     */
     public static void removeByTaskId(Set<Long> taskIds) {
 
     }
 
+    /**
+     * Remove task from timing wheel by slots ids.
+     *
+     * @param slotsIds slotsIds
+     */
     public static void removeBySlotsId(Set<Long> slotsIds) {
 
     }

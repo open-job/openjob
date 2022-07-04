@@ -10,7 +10,14 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ServerStatusConstant {
+    /**
+     * Success.
+     */
     OK(1, "ok"),
+
+    /**
+     * Failed.
+     */
     FAIL(2, "fail"),
     ;
 

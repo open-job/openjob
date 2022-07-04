@@ -8,7 +8,19 @@ import io.openjob.server.repository.entity.ServerFailReports;
  */
 public interface ServerFailReportsDAO {
 
+    /**
+     * Save server fail reports.
+     *
+     * @param serverFailReports serverFailReports
+     * @return Save id.
+     */
     Long save(ServerFailReports serverFailReports);
 
+    /**
+     * Fail reported count.
+     *
+     * @param startTime startTime
+     * @return Long
+     */
     Long countServerFailReports(Integer startTime);
 }
