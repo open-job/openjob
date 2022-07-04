@@ -27,8 +27,8 @@ import java.util.Map;
 public class ServerAutoConfiguration {
 
     @Bean
-    public ApplicationReadyEventListener listener(ClusterServer clusterManager, Scheduler scheduler) {
-        return new ApplicationReadyEventListener(clusterManager, scheduler);
+    public ApplicationReadyEventListener listener(ClusterServer clusterManager) {
+        return new ApplicationReadyEventListener(clusterManager);
     }
 
     @Bean

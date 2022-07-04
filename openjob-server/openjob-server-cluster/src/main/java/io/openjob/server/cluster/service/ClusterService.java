@@ -12,6 +12,7 @@ import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.scheduler.Scheduler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,9 +47,10 @@ public class ClusterService {
         this.refreshNodes();
 
         // Refresh slots.
-        this.refreshJobSlots(true);
+        Set<Long> removeSlots = this.refreshJobSlots(true);
 
-        // Remove timing wheel slots.
+        // Remove job instance from timing wheel.
+        Scheduler.removeBySlotsId(removeSlots);
 
         log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
     }
@@ -60,7 +62,9 @@ public class ClusterService {
         this.refreshNodes();
 
         // Refresh slots.
-        this.refreshJobSlots(false);
+        Set<Long> addSlots = this.refreshJobSlots(false);
+
+        // Add job instance to timing wheel.
 
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
     }
@@ -79,23 +83,29 @@ public class ClusterService {
     private void refreshNodes() {
         List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
         ClusterStatusUtil.refreshNodes(servers);
+        log.info("Refresh nodes {}", servers);
     }
 
-    private void refreshJobSlots(Boolean isJoin) {
+    private Set<Long> refreshJobSlots(Boolean isJoin) {
         Node currentNode = ClusterStatus.getCurrentNode();
         Set<Long> currentSlots = ClusterStatus.getCurrentSlots();
         List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
         Set<Long> newSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
 
-        if (isJoin) {
-            ClusterStatus.refreshCurrentSlots(newSlots);
-            currentSlots.removeAll(newSlots);
+        // Refresh current slots.
+        ClusterStatus.refreshCurrentSlots(newSlots);
 
-        } else {
-            ClusterStatus.refreshCurrentSlots(newSlots);
-            newSlots.removeAll(currentSlots);
-        }
-
+        log.info("Refresh slots {}", jobSlots);
         ClusterStatusUtil.refreshSlotsListMap(jobSlots);
+
+        if (isJoin) {
+            // Node remove slots.
+            currentSlots.removeAll(newSlots);
+            return currentSlots;
+        } else {
+            // Node add slots.
+            newSlots.removeAll(currentSlots);
+            return newSlots;
+        }
     }
 }
