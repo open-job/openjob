@@ -23,6 +23,8 @@ public class Scheduler {
 
     private static ThreadPoolExecutor taskExecutor;
 
+    private static final Integer TIME_COUNT = 5;
+
     /**
      * Start Scheduler.
      */
@@ -30,7 +32,7 @@ public class Scheduler {
         taskExecutor = new ThreadPoolExecutor(5, 5, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, "wheel"));
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < TIME_COUNT; i++) {
             int finalI = i;
             taskExecutor.submit(() -> {
                 String name = "timer-" + finalI + "-";
