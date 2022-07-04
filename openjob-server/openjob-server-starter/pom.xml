@@ -12,7 +12,6 @@
     <artifactId>openjob-server-starter</artifactId>
 
     <properties>
-        <java.version>18</java.version>
     </properties>
 
     <dependencies>

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class StartService {
         List<Server> servers = this.migrateSlots(currentServer);
 
         // Set current node.
-        this.SetCurrentNode(currentServer);
+        this.setCurrentNode(currentServer);
 
         // Refresh nodes.
         ClusterStatusUtil.refreshNodes(servers);
@@ -95,7 +94,7 @@ public class StartService {
      *
      * @param server server
      */
-    private void SetCurrentNode(Server server) {
+    private void setCurrentNode(Server server) {
         Node currentNode = new Node();
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());

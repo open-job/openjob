@@ -19,20 +19,25 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class Scheduler {
-    private static final List<SystemTimer> times = new ArrayList<>();
+    private static final List<SystemTimer> TIMES = new ArrayList<>();
 
     private static ThreadPoolExecutor taskExecutor;
 
+    private static final Integer TIME_COUNT = 5;
+
+    /**
+     * Start Scheduler.
+     */
     public static void start() {
         taskExecutor = new ThreadPoolExecutor(5, 5, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, "wheel"));
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < TIME_COUNT; i++) {
             int finalI = i;
             taskExecutor.submit(() -> {
                 String name = "timer-" + finalI + "-";
                 SystemTimer systemTimer = new SystemTimer(name);
-                times.add(systemTimer);
+                TIMES.add(systemTimer);
 
                 do {
                     systemTimer.advanceClock(200L);
@@ -42,10 +47,20 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Remove task from timing wheel by task ids.
+     *
+     * @param taskIds taskIds
+     */
     public static void removeByTaskId(Set<Long> taskIds) {
 
     }
 
+    /**
+     * Remove task from timing wheel by slots ids.
+     *
+     * @param slotsIds slotsIds
+     */
     public static void removeBySlotsId(Set<Long> slotsIds) {
 
     }
@@ -53,17 +68,17 @@ public class Scheduler {
     @SneakyThrows
     public void add() {
         Thread.sleep(3000L);
-        System.out.println(times.size());
+        System.out.println(TIMES.size());
 
-        int i = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i).add(new TimerTask(1L, 1L, 2L));
-        int i2 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i2).add(new TimerTask(2L, 1L, 5L));
-        int i3 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i3).add(new TimerTask(3L, 2L, 5L));
-        int i4 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i4).add(new TimerTask(4L, 2L, 8L));
-        int i5 = ThreadLocalRandom.current().nextInt(times.size());
-        times.get(i5).add(new TimerTask(5L, 3L, 28L));
+        int i = ThreadLocalRandom.current().nextInt(TIMES.size());
+        TIMES.get(i).add(new TimerTask(1L, 1L, 2L));
+        int i2 = ThreadLocalRandom.current().nextInt(TIMES.size());
+        TIMES.get(i2).add(new TimerTask(2L, 1L, 5L));
+        int i3 = ThreadLocalRandom.current().nextInt(TIMES.size());
+        TIMES.get(i3).add(new TimerTask(3L, 2L, 5L));
+        int i4 = ThreadLocalRandom.current().nextInt(TIMES.size());
+        TIMES.get(i4).add(new TimerTask(4L, 2L, 8L));
+        int i5 = ThreadLocalRandom.current().nextInt(TIMES.size());
+        TIMES.get(i5).add(new TimerTask(5L, 3L, 28L));
     }
 }

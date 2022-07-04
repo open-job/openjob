@@ -7,5 +7,11 @@ import io.openjob.server.repository.entity.Job;
  * @since 1.0.0
  */
 public interface JobDAO {
+    /**
+     * Save job.
+     *
+     * @param job job
+     * @return Long
+     */
     Long save(Job job);
 }

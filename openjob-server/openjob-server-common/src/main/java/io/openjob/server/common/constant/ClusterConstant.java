@@ -6,14 +6,17 @@ package io.openjob.server.common.constant;
  */
 public class ClusterConstant {
     /**
-     * ms
+     * Cluster node timeout(ms).
      */
-    public final static Integer CLUSTER_NODE_TIMEOUT = 15000;
+    public static final Integer CLUSTER_NODE_TIMEOUT = 15000;
 
     /**
-     *
+     * Cluster ping size.
      */
-    public final static Integer CLUSTER_PING_SIZE = 5;
+    public static final Integer CLUSTER_PING_SIZE = 5;
 
-    public final static Integer CLUSTER_FAIL_TIMES = 3;
+    /**
+     * Cluster fail times.
+     */
+    public static final Integer CLUSTER_FAIL_TIMES = 3;
 }

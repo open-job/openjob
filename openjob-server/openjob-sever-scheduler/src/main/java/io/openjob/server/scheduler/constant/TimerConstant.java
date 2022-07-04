@@ -8,7 +8,7 @@ public class TimerConstant {
     /**
      * seconds.
      */
-    public final static Long tickTime = 1L;
+    public final static Long TICK_TIME = 1L;
 
-    public final static Integer wheelSize = 20;
+    public final static Integer WHEEL_SIZE = 20;
 }

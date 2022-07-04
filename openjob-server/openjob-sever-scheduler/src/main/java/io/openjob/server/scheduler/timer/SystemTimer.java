@@ -35,7 +35,7 @@ public class SystemTimer implements Timer {
         taskExecutor = new ThreadPoolExecutor(1, 1, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, executorName));
 
-        timingWheel = new TimingWheel(TimerConstant.tickTime, TimerConstant.wheelSize, DateUtil.instant().getEpochSecond(),
+        timingWheel = new TimingWheel(TimerConstant.TICK_TIME, TimerConstant.WHEEL_SIZE, DateUtil.instant().getEpochSecond(),
                 taskCounter, delayQueue);
     }
 

@@ -30,11 +30,11 @@ public class SchedulerTest {
         systemTimer.removeByTaskId(4L);
         systemTimer.removeByTaskId(5L);
 
-        do {
-            System.out.println(systemTimer);
-            systemTimer.advanceClock(500L);
-            System.out.println(systemTimer.size());
-        } while (true);
+//        do {
+//            System.out.println(systemTimer);
+//            systemTimer.advanceClock(500L);
+//            System.out.println(systemTimer.size());
+//        } while (true);
     }
 
     @Test
@@ -53,11 +53,11 @@ public class SchedulerTest {
         System.out.println(sdf.format(date));
 
 
-        do {
-            System.out.println(systemTimer);
-            systemTimer.advanceClock(500L);
-            System.out.println(systemTimer.size());
-        } while (true);
+//        do {
+//            System.out.println(systemTimer);
+//            systemTimer.advanceClock(500L);
+//            System.out.println(systemTimer.size());
+//        } while (true);
     }
 
     @Test

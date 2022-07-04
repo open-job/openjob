@@ -8,5 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface ServerFailReportsRepository extends JpaRepository<ServerFailReports, Long> {
+    /**
+     * Fail reported count.
+     *
+     * @param createTime createTime
+     * @return Long
+     */
     Long countByCreateTimeGreaterThanEqual(Integer createTime);
 }

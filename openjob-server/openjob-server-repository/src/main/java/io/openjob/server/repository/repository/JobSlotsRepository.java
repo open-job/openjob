@@ -14,13 +14,28 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
+    /**
+     * Update slots by ids.
+     *
+     * @param ids        ids
+     * @param serverId   serverId
+     * @param updateTime updateTime
+     * @return Effected rows.
+     */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Query("update JobSlots set serverId=:serverId,updateTime=:updateTime where id in (:ids)")
     Integer updateByServerId(@Param("ids") List<Long> ids, @Param("serverId") Long serverId, @Param("updateTime") Integer updateTime);
 
+    /**
+     * Update all slots.
+     *
+     * @param serverId   serverId
+     * @param updateTime updateTime
+     * @return Effected rows.
+     */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Query("update JobSlots set serverId=?1,updateTime=?2")
     Integer updateByServerId(Long serverId, Integer updateTime);
 }
