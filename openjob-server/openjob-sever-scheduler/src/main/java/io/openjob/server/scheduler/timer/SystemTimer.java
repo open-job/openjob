@@ -85,6 +85,10 @@ public class SystemTimer implements Timer {
         timingWheel.removeByTaskId(taskId);
     }
 
+    public void removeBySlotsId(Long slotsId) {
+        timingWheel.removeBySlotsId(slotsId);
+    }
+
     @Override
     public Integer size() {
         return taskCounter.get();

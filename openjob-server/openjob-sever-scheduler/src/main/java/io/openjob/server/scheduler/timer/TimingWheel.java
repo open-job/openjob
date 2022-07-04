@@ -2,9 +2,12 @@ package io.openjob.server.scheduler.timer;
 
 import com.google.common.collect.Maps;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,6 +50,8 @@ public class TimingWheel {
 
     private Map<Long, TimerTaskEntry> taskEntryMap = Maps.newConcurrentMap();
 
+    private Map<Long, Set<Long>> slotsToTaskMap = Maps.newConcurrentMap();
+
 
     public TimingWheel(Long tickTime, Integer wheelSize, Long startTime, AtomicInteger taskCounter,
                        DelayQueue<TimerTaskList> delayQueue) {
@@ -81,11 +86,12 @@ public class TimingWheel {
             timerTaskEntry.setCurrentBucket(index);
             bucket.add(timerTaskEntry);
 
-            if (timerTaskEntry.getTimerTask().getTaskId().equals(5L)) {
-                System.out.println(index);
-            }
-
-            taskEntryMap.put(timerTaskEntry.getTimerTask().getTaskId(), timerTaskEntry);
+            Long taskId = timerTaskEntry.getTimerTask().getTaskId();
+            Long slotsId = timerTaskEntry.getTimerTask().getSlotsId();
+            this.taskEntryMap.put(taskId, timerTaskEntry);
+            Set<Long> defaultSet = new HashSet<>();
+            this.slotsToTaskMap.getOrDefault(slotsId, defaultSet).add(taskId);
+            this.slotsToTaskMap.putIfAbsent(slotsId, defaultSet);
             if (bucket.setExpiration(virtualId * tickTime)) {
                 delayQueue.offer(bucket);
             }
@@ -103,6 +109,10 @@ public class TimingWheel {
     public void removeByTaskId(Long taskId) {
         TimerTaskEntry timerTaskEntry = taskEntryMap.remove(taskId);
         if (Objects.nonNull(timerTaskEntry)) {
+            // Remove slots.
+            Set<Long> slotsIds = this.slotsToTaskMap.remove(timerTaskEntry.getTimerTask().getSlotsId());
+            Optional.ofNullable(slotsIds).ifPresent(s -> s.remove(taskId));
+
             TimerTaskList bucket = buckets[timerTaskEntry.getCurrentBucket()];
             bucket.remove(timerTaskEntry);
             return;
@@ -110,6 +120,16 @@ public class TimingWheel {
 
         if (Objects.nonNull(overflowWheel)) {
             overflowWheel.removeByTaskId(taskId);
+        }
+    }
+
+    public void removeBySlotsId(Long slotsId) {
+        Optional.ofNullable(this.slotsToTaskMap.remove(slotsId))
+                .ifPresent(s -> s.forEach(this::removeByTaskId));
+
+
+        if (Objects.nonNull(overflowWheel)) {
+            this.overflowWheel.removeBySlotsId(slotsId);
         }
     }
 

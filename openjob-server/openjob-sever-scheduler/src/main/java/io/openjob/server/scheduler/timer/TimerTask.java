@@ -17,9 +17,11 @@ public class TimerTask implements Runnable {
     protected Long delay = 1L;
     protected TimerTaskEntry timerTaskEntry;
     protected Long taskId;
+    protected Long slotsId;
 
-    public TimerTask(Long taskId, Long delay) {
+    public TimerTask(Long taskId, Long slotsId, Long delay) {
         this.delay = delay;
+        this.slotsId = slotsId;
         this.taskId = taskId;
     }
 

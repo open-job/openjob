@@ -12,14 +12,14 @@ import java.util.UUID;
  */
 public class SchedulerTest {
     @Test
-    public void testScheduler() {
+    public void testSchedulerByTaskId() {
         SystemTimer systemTimer = new SystemTimer("timer");
 //
-        systemTimer.add(new TimerTask(1L, 2L));
-        systemTimer.add(new TimerTask(2L, 5L));
-        systemTimer.add(new TimerTask(3L, 5L));
-        systemTimer.add(new TimerTask(4L, 8L));
-        systemTimer.add(new TimerTask(5L, 28L));
+        systemTimer.add(new TimerTask(1L, 1L, 2L));
+        systemTimer.add(new TimerTask(2L, 1L, 5L));
+        systemTimer.add(new TimerTask(3L, 1L, 5L));
+        systemTimer.add(new TimerTask(4L, 1L, 8L));
+        systemTimer.add(new TimerTask(5L, 1L, 28L));
 
         Date date = new Date();
         String strDateFormat = "yyyy-MM-dd HH:mm:ss";
@@ -38,9 +38,32 @@ public class SchedulerTest {
     }
 
     @Test
+    public void testSchedulerBySlotsId() {
+        SystemTimer systemTimer = new SystemTimer("timer");
+        systemTimer.add(new TimerTask(1L, 1L, 2L));
+        systemTimer.add(new TimerTask(2L, 1L, 5L));
+        systemTimer.add(new TimerTask(3L, 3L, 5L));
+        systemTimer.add(new TimerTask(4L, 3L, 8L));
+        systemTimer.add(new TimerTask(5L, 3L, 28L));
+
+        systemTimer.removeBySlotsId(3L);
+        Date date = new Date();
+        String strDateFormat = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        System.out.println(sdf.format(date));
+
+
+        do {
+            System.out.println(systemTimer);
+            systemTimer.advanceClock(500L);
+            System.out.println(systemTimer.size());
+        } while (true);
+    }
+
+    @Test
     public void testCrc16() {
         for (int i = 0; i < 1000; i++) {
-            System.out.println(CRC16.CRC_X25(UUID.randomUUID().toString().getBytes())%18364);
+            System.out.println(CRC16.CRC_X25(UUID.randomUUID().toString().getBytes()) % 18364);
         }
     }
 
