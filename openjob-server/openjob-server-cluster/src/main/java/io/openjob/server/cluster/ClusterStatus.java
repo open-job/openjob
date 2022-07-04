@@ -41,7 +41,7 @@ public class ClusterStatus {
      * Cluster nodes.
      * Key is server id, Value is server node.
      */
-    private static final Map<Long, Node> nodesList = Maps.newConcurrentMap();
+    private static final Map<Long, Node> NODES_LIST = Maps.newConcurrentMap();
 
     /**
      * Refresh Current node.
@@ -58,7 +58,7 @@ public class ClusterStatus {
      * @param nodes nodes
      */
     public static synchronized void refreshNodeList(Map<Long, Node> nodes) {
-        nodesList.putAll(nodes);
+        NODES_LIST.putAll(nodes);
     }
 
     /**
@@ -104,7 +104,7 @@ public class ClusterStatus {
      * @return Map<Long, Node>
      */
     public static Map<Long, Node> getNodesList() {
-        return nodesList;
+        return NODES_LIST;
     }
 
     public static ActorRef getClusterActorRef() {
