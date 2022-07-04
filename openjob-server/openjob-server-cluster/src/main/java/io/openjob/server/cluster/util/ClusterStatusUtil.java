@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class ClusterStatusUtil {
     public static void refreshNodes(List<Server> servers) {
-        Map<Long, Node> nodes = new HashMap<>();
+        Map<Long, Node> nodes = new HashMap<>(16);
         servers.forEach(s -> {
             Node node = new Node();
             node.setServerId(s.getId());

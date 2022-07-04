@@ -6,7 +6,6 @@ import io.openjob.server.cluster.context.Node;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,13 +29,13 @@ public class ClusterStatus {
     /**
      * Current slots
      */
-    private static final Set<Long> currentSlots = new HashSet<>();
+    private static final Set<Long> CURRENT_SLOTS = new HashSet<>();
 
     /**
      * Slots list map.
      * Key is slots id, Value is server id.
      */
-    private static final Map<Long, Long> slotsListMap = Maps.newHashMap();
+    private static final Map<Long, Long> SLOTS_LIST_MAP = Maps.newHashMap();
 
     /**
      * Cluster nodes.
@@ -50,7 +49,7 @@ public class ClusterStatus {
      * @param slotsIds Current slots ids.
      */
     public static synchronized void refreshCurrentSlots(Set<Long> slotsIds) {
-        currentSlots.addAll(slotsIds);
+        CURRENT_SLOTS.addAll(slotsIds);
     }
 
     /**
@@ -68,7 +67,7 @@ public class ClusterStatus {
      * @param slotsList Slots list.
      */
     public static synchronized void refreshSlotsListMap(Map<Long, Long> slotsList) {
-        slotsListMap.putAll(slotsList);
+        SLOTS_LIST_MAP.putAll(slotsList);
     }
 
     /**
@@ -96,7 +95,7 @@ public class ClusterStatus {
      * @return Set<Long>
      */
     public static Set<Long> getCurrentSlots() {
-        return currentSlots;
+        return CURRENT_SLOTS;
     }
 
     /**
