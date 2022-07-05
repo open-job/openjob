@@ -53,6 +53,15 @@ public class TimingWheel {
     private Map<Long, Set<Long>> slotsToTaskMap = Maps.newConcurrentMap();
 
 
+    /**
+     * Timing wheel.
+     *
+     * @param tickTime    tickTime
+     * @param wheelSize   wheelSize
+     * @param startTime   startTime
+     * @param taskCounter taskCounter
+     * @param delayQueue  delayQueue
+     */
     public TimingWheel(Long tickTime, Integer wheelSize, Long startTime, AtomicInteger taskCounter,
                        DelayQueue<TimerTaskList> delayQueue) {
         this.tickTime = tickTime;
@@ -69,6 +78,12 @@ public class TimingWheel {
         }
     }
 
+    /**
+     * Add timer task entry.
+     *
+     * @param timerTaskEntry timerTaskEntry
+     * @return Boolean
+     */
     public Boolean add(TimerTaskEntry timerTaskEntry) {
         long expiration = timerTaskEntry.getExpiration();
         if (timerTaskEntry.canceled()) {
@@ -106,6 +121,11 @@ public class TimingWheel {
         return overflowWheel.add(timerTaskEntry);
     }
 
+    /**
+     * Remove by task id.
+     *
+     * @param taskId task id.
+     */
     public void removeByTaskId(Long taskId) {
         TimerTaskEntry timerTaskEntry = taskEntryMap.remove(taskId);
         if (Objects.nonNull(timerTaskEntry)) {
@@ -123,6 +143,11 @@ public class TimingWheel {
         }
     }
 
+    /**
+     * Remove by slots' id.
+     *
+     * @param slotsId slotsId
+     */
     public void removeBySlotsId(Long slotsId) {
         Optional.ofNullable(this.slotsToTaskMap.remove(slotsId))
                 .ifPresent(s -> s.forEach(this::removeByTaskId));
@@ -133,6 +158,11 @@ public class TimingWheel {
         }
     }
 
+    /**
+     * Advance clock by time.
+     *
+     * @param time time
+     */
     public void advanceClock(Long time) {
         if (time >= currentTime + tickTime) {
             currentTime = time - (time % tickTime);
@@ -143,10 +173,18 @@ public class TimingWheel {
         }
     }
 
+    /**
+     * Remove entry map by taskId.
+     *
+     * @param taskId taskId
+     */
     public void removeFromEntryMap(Long taskId) {
         this.taskEntryMap.remove(taskId);
     }
 
+    /**
+     * Add overflow wheel.
+     */
     private void addOverflowWheel() {
         synchronized (this) {
             if (Objects.isNull(overflowWheel)) {

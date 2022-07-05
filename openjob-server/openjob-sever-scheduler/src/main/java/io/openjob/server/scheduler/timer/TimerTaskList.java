@@ -23,6 +23,12 @@ public class TimerTaskList implements Delayed {
 
     private TimingWheel timingWheel;
 
+    /**
+     * Timer task list.
+     *
+     * @param timingWheel timingWheel
+     * @param taskCounter taskCounter
+     */
     public TimerTaskList(TimingWheel timingWheel, AtomicInteger taskCounter) {
         this.taskCounter = taskCounter;
         this.root = new TimerTaskEntry(null, -1L);
@@ -32,6 +38,11 @@ public class TimerTaskList implements Delayed {
         this.timingWheel = timingWheel;
     }
 
+    /**
+     * Add timer task entry.
+     *
+     * @param timerTaskEntry timerTaskEntry
+     */
     public void add(TimerTaskEntry timerTaskEntry) {
         boolean done = false;
         while (!done) {
@@ -54,6 +65,11 @@ public class TimerTaskList implements Delayed {
         }
     }
 
+    /**
+     * Remove timer task entry.
+     *
+     * @param timerTaskEntry timerTaskEntry
+     */
     public void remove(TimerTaskEntry timerTaskEntry) {
         synchronized (this) {
             synchronized (timerTaskEntry) {
@@ -70,6 +86,11 @@ public class TimerTaskList implements Delayed {
         }
     }
 
+    /**
+     * Flush timer task entry.
+     *
+     * @param function function
+     */
     public void flush(Function<TimerTaskEntry, Void> function) {
         synchronized (this) {
             TimerTaskEntry head = root.getNext();
@@ -82,17 +103,28 @@ public class TimerTaskList implements Delayed {
         }
     }
 
+    /**
+     * Setter for expiration.
+     *
+     * @param expiration expiration
+     * @return Boolean
+     */
     public Boolean setExpiration(Long expiration) {
         return this.expiration.getAndSet(expiration) != expiration;
+    }
+
+    /**
+     * Get expiration.
+     *
+     * @return Long
+     */
+    public Long getExpiration() {
+        return this.expiration.get();
     }
 
     @Override
     public long getDelay(TimeUnit unit) {
         return unit.convert(this.getExpiration() - DateUtil.now(), TimeUnit.SECONDS);
-    }
-
-    public Long getExpiration() {
-        return this.expiration.get();
     }
 
     @Override

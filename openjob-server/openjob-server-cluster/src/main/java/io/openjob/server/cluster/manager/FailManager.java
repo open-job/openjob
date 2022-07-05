@@ -36,6 +36,11 @@ public class FailManager {
         this.clusterMessage = clusterMessage;
     }
 
+    /**
+     * Node fail.
+     *
+     * @param stopNode stopNode
+     */
     @Transactional(rollbackFor = Exception.class)
     public void fail(Node stopNode) {
         // Update server status.
@@ -49,6 +54,12 @@ public class FailManager {
         this.sendClusterStopMessage(stopNode, servers);
     }
 
+    /**
+     * Migrate slots.
+     *
+     * @param stopNode stopNode
+     * @return List
+     */
     private List<Server> migrateSlots(Node stopNode) {
         List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(stopNode.getServerId());
         List<Server> servers = this.serverDAO.listServers(ServerStatusConstant.OK.getStatus());
@@ -99,6 +110,12 @@ public class FailManager {
         return servers;
     }
 
+    /**
+     * Send cluster stop message.
+     *
+     * @param stopNode stopNode
+     * @param servers  servers
+     */
     private void sendClusterStopMessage(Node stopNode, List<Server> servers) {
         NodeFailDTO failDTO = new NodeFailDTO();
         failDTO.setIp(stopNode.getIp());

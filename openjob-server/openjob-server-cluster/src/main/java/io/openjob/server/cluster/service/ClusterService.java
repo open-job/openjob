@@ -39,6 +39,8 @@ public class ClusterService {
 
     /**
      * Receive node join message.
+     *
+     * @param join join
      */
     public void receiveNodeJoin(NodeJoinDTO join) {
         log.info("Join node starting {}({})", join.getAkkaAddress(), join.getServerId());
@@ -55,6 +57,11 @@ public class ClusterService {
         log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
     }
 
+    /**
+     * Receive node fail message.
+     *
+     * @param fail fail
+     */
     public void receiveNodeFail(NodeFailDTO fail) {
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
 
@@ -69,10 +76,20 @@ public class ClusterService {
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
     }
 
+    /**
+     * Receive worker join success message.
+     *
+     * @param workerJoinDTO workerJoinDTO
+     */
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
         System.out.println(workerJoinDTO);
     }
 
+    /**
+     * Receive worker fail success message.
+     *
+     * @param workerFailDTO workerFailDTO
+     */
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
         System.out.println(workerFailDTO);
     }
@@ -86,6 +103,12 @@ public class ClusterService {
         log.info("Refresh nodes {}", servers);
     }
 
+    /**
+     * Refresh job slots.
+     *
+     * @param isJoin isJoin
+     * @return Set
+     */
     private Set<Long> refreshJobSlots(Boolean isJoin) {
         Node currentNode = ClusterStatus.getCurrentNode();
         Set<Long> currentSlots = ClusterStatus.getCurrentSlots();

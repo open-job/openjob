@@ -35,6 +35,9 @@ public class HealthService {
         this.failManager = failManager;
     }
 
+    /**
+     * Check health.
+     */
     public void check() {
         // Ping server list.
         Map<Long, Node> nodesMap = ClusterStatus.getNodesList();
@@ -44,6 +47,12 @@ public class HealthService {
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));
     }
 
+    /**
+     * Do check.
+     *
+     * @param nodesMap nodesMap
+     * @param serverId serverId
+     */
     public void doCheck(Map<Long, Node> nodesMap, Long serverId) {
         Node node = nodesMap.get(serverId);
         boolean success = false;
@@ -55,12 +64,18 @@ public class HealthService {
         }
 
         if (!success) {
-            SpringContext.getBean(HealthService.class).checkFailReport(serverId, node);
+            SpringContext.getBean(HealthService.class).checkFailReports(serverId, node);
         }
     }
 
+    /**
+     * Check fail reports.
+     *
+     * @param failServerId failServerId
+     * @param failNode     failNode
+     */
     @Transactional(rollbackFor = Exception.class)
-    public void checkFailReport(Long failServerId, Node failNode) {
+    public void checkFailReports(Long failServerId, Node failNode) {
         ServerFailReports serverFailReports = new ServerFailReports();
         serverFailReports.setServerId(failNode.getServerId());
         serverFailReports.setReportServerId(failServerId);
@@ -73,6 +88,13 @@ public class HealthService {
         }
     }
 
+    /**
+     * Get fixed ping server list.
+     *
+     * @param nodesMap    nodesMap
+     * @param currentNode currentNode
+     * @return List
+     */
     public List<Long> getFixedPingSeverList(Map<Long, Node> nodesMap, Node currentNode) {
         ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
         Collections.sort(serverIds);

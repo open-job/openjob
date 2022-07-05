@@ -19,12 +19,22 @@ public class TimerTask implements Runnable {
     protected Long taskId;
     protected Long slotsId;
 
+    /**
+     * Timer task.
+     *
+     * @param taskId  taskId
+     * @param slotsId slotsId
+     * @param delay   delay
+     */
     public TimerTask(Long taskId, Long slotsId, Long delay) {
         this.delay = delay;
         this.slotsId = slotsId;
         this.taskId = taskId;
     }
 
+    /**
+     * Cancel timer task.
+     */
     public void cancel() {
         synchronized (this) {
             if (Objects.nonNull(timerTaskEntry)) {
@@ -35,14 +45,26 @@ public class TimerTask implements Runnable {
         }
     }
 
+    /**
+     * Set time task entry.
+     *
+     * @param entry entry
+     */
     public void setTimerTaskEntry(TimerTaskEntry entry) {
         synchronized (this) {
-            if (Objects.nonNull(timerTaskEntry) && timerTaskEntry != entry) {
+            if (Objects.nonNull(timerTaskEntry) && Objects.nonNull(timerTaskEntry)) {
+                timerTaskEntry.remove();
             }
+
             timerTaskEntry = entry;
         }
     }
 
+    /**
+     * Getter for task id.
+     *
+     * @return Long
+     */
     public Long getTaskId() {
         return taskId;
     }

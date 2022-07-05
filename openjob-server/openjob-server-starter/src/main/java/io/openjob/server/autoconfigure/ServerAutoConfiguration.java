@@ -9,7 +9,6 @@ import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import io.openjob.server.event.ApplicationReadyEventListener;
-import io.openjob.server.scheduler.Scheduler;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +25,12 @@ import java.util.Map;
 @EnableConfigurationProperties(ServerProperties.class)
 public class ServerAutoConfiguration {
 
+    /**
+     * Application ready event listener.
+     *
+     * @param clusterManager clusterManager
+     * @return ApplicationReadyEventListener
+     */
     @Bean
     public ApplicationReadyEventListener listener(ClusterServer clusterManager) {
         return new ApplicationReadyEventListener(clusterManager);
@@ -36,6 +41,12 @@ public class ServerAutoConfiguration {
         return new SpringContext();
     }
 
+    /**
+     * Actor system.
+     *
+     * @param applicationContext applicationContext
+     * @return ActorSystem
+     */
     @Bean
     public ActorSystem actorSystem(ApplicationContext applicationContext) {
         // Merge config

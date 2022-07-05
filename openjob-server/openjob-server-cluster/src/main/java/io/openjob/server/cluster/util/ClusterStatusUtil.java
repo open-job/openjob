@@ -15,6 +15,11 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class ClusterStatusUtil {
+    /**
+     * Refresh nodes.
+     *
+     * @param servers servers
+     */
     public static void refreshNodes(List<Server> servers) {
         Map<Long, Node> nodes = new HashMap<>(16);
         servers.forEach(s -> {

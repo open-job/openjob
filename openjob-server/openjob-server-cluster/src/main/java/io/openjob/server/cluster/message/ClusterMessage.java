@@ -18,6 +18,12 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class ClusterMessage {
+    /**
+     * Join message.
+     *
+     * @param node    node
+     * @param servers servers
+     */
     public void join(NodeJoinDTO node, List<Server> servers) {
         servers.forEach(s -> {
             if (Objects.equals(s.getId(), node.getServerId())) {
@@ -26,6 +32,12 @@ public class ClusterMessage {
         });
     }
 
+    /**
+     * Fail message.
+     *
+     * @param failDTO failDTO
+     * @param servers servers
+     */
     public void fail(NodeFailDTO failDTO, List<Server> servers) {
         servers.forEach(s -> {
             if (Objects.equals(s.getId(), failDTO.getServerId())) {

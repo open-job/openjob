@@ -6,9 +6,12 @@ package io.openjob.server.scheduler.constant;
  */
 public class TimerConstant {
     /**
-     * seconds.
+     * Tick time(s).
      */
-    public final static Long TICK_TIME = 1L;
+    public static final Long TICK_TIME = 1L;
 
-    public final static Integer WHEEL_SIZE = 20;
+    /**
+     * Wheel size.
+     */
+    public static final Integer WHEEL_SIZE = 20;
 }
