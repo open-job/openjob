@@ -20,6 +20,10 @@
             <groupId>io.openjob</groupId>
             <artifactId>openjob-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-repository</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
