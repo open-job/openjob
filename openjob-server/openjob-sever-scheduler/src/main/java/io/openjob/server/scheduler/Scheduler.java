@@ -36,7 +36,8 @@ public class Scheduler {
     @SuppressWarnings("InfiniteLoopStatement")
     public static void start() {
         int coreCpu = RuntimeUtil.processors();
-        taskExecutor = new ThreadPoolExecutor(coreCpu, coreCpu, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, "wheel"));
+        LinkedBlockingDeque<Runnable> queue = new LinkedBlockingDeque<>(Integer.MAX_VALUE);
+        taskExecutor = new ThreadPoolExecutor(coreCpu, coreCpu, 0L, TimeUnit.MILLISECONDS, queue, r -> new Thread(r, "wheel"));
 
         for (int i = 0; i < coreCpu; i++) {
             int index = i;
@@ -95,6 +96,12 @@ public class Scheduler {
         slotsIds.forEach(id -> getSystemTimer(id).removeBySlotsId(id));
     }
 
+    /**
+     * Get system timer.
+     *
+     * @param slotsId slotsId
+     * @return SystemTimer
+     */
     public static SystemTimer getSystemTimer(Long slotsId) {
         int size = SYSTEM_TIMERS.size() - 1;
         int index = (int) (slotsId % size);
