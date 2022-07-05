@@ -17,6 +17,12 @@ public class TimerTaskEntry implements Comparable<TimerTaskEntry> {
     private final Long expiration;
     private Integer currentBucket;
 
+    /**
+     * Timer task entry.
+     *
+     * @param timerTask  timerTask
+     * @param expiration expiration
+     */
     public TimerTaskEntry(TimerTask timerTask, Long expiration) {
         if (Objects.nonNull(timerTask)) {
             timerTask.setTimerTaskEntry(this);
@@ -26,10 +32,18 @@ public class TimerTaskEntry implements Comparable<TimerTaskEntry> {
         this.expiration = expiration;
     }
 
+    /**
+     * Canceled
+     *
+     * @return Boolean
+     */
     public Boolean canceled() {
         return timerTask.getTimerTaskEntry() != this;
     }
 
+    /**
+     * Remove all.
+     */
     public void remove() {
         TimerTaskList currentTaskList = timerTaskList;
 

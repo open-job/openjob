@@ -30,7 +30,11 @@ public class SystemTimer implements Timer {
     private final ReentrantReadWriteLock.ReadLock readLock = readWriteLock.readLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
 
-
+    /**
+     * System timer.
+     *
+     * @param executorName executorName
+     */
     public SystemTimer(String executorName) {
         taskExecutor = new ThreadPoolExecutor(1, 1, 0L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(Integer.MAX_VALUE), r -> new Thread(r, executorName));
@@ -81,10 +85,20 @@ public class SystemTimer implements Timer {
         return false;
     }
 
+    /**
+     * Remove by taskId.
+     *
+     * @param taskId taskId
+     */
     public void removeByTaskId(Long taskId) {
         timingWheel.removeByTaskId(taskId);
     }
 
+    /**
+     * Remove by slots' id.
+     *
+     * @param slotsId slotsId
+     */
     public void removeBySlotsId(Long slotsId) {
         timingWheel.removeBySlotsId(slotsId);
     }
@@ -99,6 +113,11 @@ public class SystemTimer implements Timer {
         taskExecutor.shutdown();
     }
 
+    /**
+     * Add timer task entry.
+     *
+     * @param timerTaskEntry timerTaskEntry
+     */
     public void addTimerTaskEntry(TimerTaskEntry timerTaskEntry) {
         if (!timingWheel.add(timerTaskEntry)) {
             if (!timerTaskEntry.canceled()) {

@@ -26,13 +26,13 @@ import java.util.Optional;
 @Service
 public class StartService {
     private final ServerDAO serverDAO;
-    private final ClusterMessage ClusterMessage;
+    private final ClusterMessage clusterMessage;
     private final JobSlotsDAO jobSlotsDAO;
 
     @Autowired
     public StartService(ServerDAO serverDAO, ClusterMessage messageManager, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
-        this.ClusterMessage = messageManager;
+        this.clusterMessage = messageManager;
         this.jobSlotsDAO = jobSlotsDAO;
     }
 
@@ -150,6 +150,6 @@ public class StartService {
         nodeJoinDTO.setIp(currentNode.getIp());
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
-        this.ClusterMessage.join(nodeJoinDTO, servers);
+        this.clusterMessage.join(nodeJoinDTO, servers);
     }
 }
