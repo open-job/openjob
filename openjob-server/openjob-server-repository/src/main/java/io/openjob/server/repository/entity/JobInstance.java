@@ -30,6 +30,6 @@ public class JobInstance {
     /**
      * Job slots id.
      */
-    @Column(name = "job_slots_id")
-    private Long jobSlotsId;
+    @Column(name = "slots_id")
+    private Long slotsId;
 }

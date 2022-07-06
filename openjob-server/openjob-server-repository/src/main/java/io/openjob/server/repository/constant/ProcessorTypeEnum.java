@@ -7,20 +7,20 @@ import lombok.Getter;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@AllArgsConstructor
 @Getter
-public enum ServerStatusConstant {
+@AllArgsConstructor
+public enum ProcessorTypeEnum {
     /**
-     * Success.
+     * Java.
      */
-    OK(1, "ok"),
+    JAVA(1, "java"),
 
     /**
-     * Failed.
+     * Shell.
      */
-    FAIL(2, "fail"),
+    SHELL(2, "shell"),
     ;
 
-    private final Integer status;
+    private final Integer type;
     private final String message;
 }

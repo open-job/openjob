@@ -7,7 +7,7 @@ import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.util.ClusterStatusUtil;
-import io.openjob.server.repository.constant.ServerStatusConstant;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
@@ -98,7 +98,7 @@ public class ClusterService {
      * Refresh nodes.
      */
     private void refreshNodes() {
-        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
         ClusterStatusUtil.refreshNodes(servers);
         log.info("Refresh nodes {}", servers);
     }

@@ -1,7 +1,7 @@
 package io.openjob.server.repository.dao.impl;
 
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.repository.constant.ServerStatusConstant;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.repository.ServerRepository;
@@ -30,7 +30,7 @@ public class ServerDAOImpl implements ServerDAO {
         Integer now = DateUtil.now();
         server.setCreateTime(now);
         server.setUpdateTime(now);
-        server.setStatus(ServerStatusConstant.OK.getStatus());
+        server.setStatus(ServerStatusEnum.OK.getStatus());
 
         return serverRepository.saveAndFlush(server).getId();
     }
