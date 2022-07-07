@@ -22,14 +22,50 @@ public class JobInstance {
     private Long id;
 
     /**
+     * Namespace id.
+     */
+    @Column(name = "namespace_id")
+    private Long namespaceId;
+
+    @Column(name = "app_id")
+    private Long appId;
+
+    /**
      * Job id.
      */
     @Column(name = "job_id")
     private Long jobId;
+
+    @Column(name = "job_params")
+    private String jobParams;
+
+    @Column(name = "status")
+    private Integer status;
 
     /**
      * Job slots id.
      */
     @Column(name = "slots_id")
     private Long slotsId;
+
+    @Column(name = "execute_time")
+    private Integer executeTime;
+
+    @Column(name = "complete_time")
+    private Integer completeTime;
+
+    @Column(name = "last_report_time")
+    private Integer lastReportTime;
+
+    /**
+     * Create time
+     */
+    @Column(name = "create_time")
+    private Integer createTime;
+
+    /**
+     * Update time
+     */
+    @Column(name = "update_time")
+    private Integer updateTime;
 }

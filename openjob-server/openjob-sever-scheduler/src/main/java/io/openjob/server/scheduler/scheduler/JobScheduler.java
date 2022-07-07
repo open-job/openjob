@@ -1,6 +1,7 @@
-package io.openjob.server.cluster.scheduler;
+package io.openjob.server.scheduler.scheduler;
 
-import io.openjob.server.cluster.service.JobSchedulerService;
+import io.openjob.server.scheduler.constant.SchedulerConstant;
+import io.openjob.server.scheduler.service.JobSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class JobScheduler {
         this.jobSchedulerService = jobSchedulerService;
     }
 
-    @Scheduled(initialDelay = 3000L, fixedDelay = 60000L)
+    @Scheduled(initialDelay = SchedulerConstant.JOB_INITIAL_DELAY, fixedDelay = SchedulerConstant.JOB_FIXED_DELAY)
     public void scheduleJob() {
         this.jobSchedulerService.scheduleJob();
     }
