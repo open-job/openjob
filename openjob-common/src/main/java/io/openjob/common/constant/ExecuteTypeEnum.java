@@ -1,4 +1,4 @@
-package io.openjob.server.repository.constant;
+package io.openjob.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +18,17 @@ public enum ExecuteTypeEnum {
     /**
      * Broadcast.
      */
-    BROADCAST(2, "broadcast"),
+    BROADCAST(3, "broadcast"),
 
     /**
      * MapReduce.
      */
-    MAP_REDUCE(3, "mapReduce"),
+    MAP_REDUCE(5, "mapReduce"),
+
+    /**
+     * Sharding.
+     */
+    Sharding(7, "sharding"),
     ;
 
     private final Integer type;

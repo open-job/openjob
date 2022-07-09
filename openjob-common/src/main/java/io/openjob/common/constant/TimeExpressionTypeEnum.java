@@ -1,10 +1,7 @@
-package io.openjob.server.repository.constant;
+package io.openjob.common.constant;
 
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -13,29 +10,33 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum TimeExpressionTypeEnum {
+
+    /**
+     * None for workflow.
+     */
+    NONE(1, "none"),
+
     /**
      * Cron.
      */
-    cron(1, "cron"),
+    CRON(3, "cron"),
 
     /**
      * Fixed rate.
      */
-    FIXED_RATE(3, "fixedRate"),
+    FIXED_RATE(5, "fixedRate"),
 
     /**
      * Second delay.
      */
-    SECOND_DELAY(5, "secondDelay"),
+    SECOND_DELAY(7, "secondDelay"),
 
     /**
-     * Delay.
+     * One time.
      */
-    DELAY(7, "delay"),
+    ONE_TIME(9, "oneTime"),
     ;
 
     private final Integer type;
     private final String message;
-
-    public static final List<Integer> SECOND_TYPES = Lists.newArrayList(FIXED_RATE.type, SECOND_DELAY.type);
 }

@@ -29,10 +29,13 @@ public class Job {
     private Long appId;
 
     @Column(name = "slots_id")
-    private int slotsId;
+    private Long slotsId;
+
+    @Column(name = "workflow_id")
+    private Long workflowId;
 
     @Column(name = "status")
-    private byte status;
+    private Integer status;
 
     @Column(name = "description")
     private String description;
@@ -41,39 +44,39 @@ public class Job {
     private String name;
 
     @Column(name = "processor_type")
-    private byte processorType;
+    private Integer processorType;
 
     @Column(name = "processor_info")
     private String processorInfo;
 
     @Column(name = "execute_type")
-    private byte executeType;
+    private Integer executeType;
 
     @Column(name = "params")
     private String params;
 
     @Column(name = "fail_retry_times")
-    private int failRetryTimes;
+    private Integer failRetryTimes;
 
     @Column(name = "fail_retry_interval")
-    private int failRetryInterval;
+    private Integer failRetryInterval;
 
     @Column(name = "concurrency")
-    private int concurrency;
+    private Integer concurrency;
 
     @Column(name = "time_expression_type")
-    private byte timeExpressionType;
+    private Integer timeExpressionType;
 
     @Column(name = "time_expression")
     private String timeExpression;
 
     @Column(name = "next_execute_time")
-    private int nextExecuteTime;
+    private Integer nextExecuteTime;
 
     @Column(name = "create_time")
-    private int createTime;
+    private Integer createTime;
 
     @Basic
     @Column(name = "update_time")
-    private int updateTime;
+    private Integer updateTime;
 }

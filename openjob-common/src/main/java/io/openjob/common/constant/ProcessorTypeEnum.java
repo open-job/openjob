@@ -1,4 +1,4 @@
-package io.openjob.server.repository.constant;
+package io.openjob.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +18,12 @@ public enum ProcessorTypeEnum {
     /**
      * Shell.
      */
-    SHELL(2, "shell"),
+    SHELL(3, "shell"),
+
+    /**
+     * Http.
+     */
+    HTTP(5, "http"),
     ;
 
     private final Integer type;

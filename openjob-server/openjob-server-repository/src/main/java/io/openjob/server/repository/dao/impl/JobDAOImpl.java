@@ -1,13 +1,14 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.server.repository.constant.JobStatusEnum;
-import io.openjob.server.repository.constant.TimeExpressionTypeEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,8 +30,9 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
-    public List<Job> listScheduledCronJobs(List<Long> slotIds, Integer time) {
-        return jobRepository.findBySlotsIdInAndAndStatusAndTimeExpressionTypeAndNextExecuteTimeLessThanEqual(slotIds, JobStatusEnum.RUNNING.getStatus(), TimeExpressionTypeEnum.cron.getType(), time);
+    public List<Job> listScheduledJobs(List<Long> slotIds, Integer time) {
+        List<Integer> notTypes = Arrays.asList(TimeExpressionTypeEnum.NONE.getType(), TimeExpressionTypeEnum.SECOND_DELAY.getType());
+        return jobRepository.findBySlotsIdInAndStatusAndTimeExpressionTypeNotInAndNextExecuteTimeLessThanEqual(slotIds, JobStatusEnum.RUNNING.getStatus(), notTypes, time);
     }
 
     @Override
