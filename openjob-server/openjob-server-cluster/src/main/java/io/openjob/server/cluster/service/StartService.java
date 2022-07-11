@@ -1,14 +1,15 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Maps;
-import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
 import io.openjob.server.cluster.util.ClusterStatusUtil;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
+import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -56,8 +59,22 @@ public class StartService {
         // Refresh nodes.
         ClusterStatusUtil.refreshNodes(servers);
 
+        // Refresh current slots.
+        this.refreshCurrentSlots(currentServer);
+
         // Akka message for join.
         this.sendClusterStartMessage(servers);
+    }
+
+    /**
+     * Refresh current slots.
+     *
+     * @param currentServer currentServer
+     */
+    private void refreshCurrentSlots(Server currentServer) {
+        List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentServer.getId());
+        Set<Long> currentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
+        ClusterContext.refreshCurrentSlots(currentSlots);
     }
 
     /**
@@ -100,12 +117,6 @@ public class StartService {
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
         ClusterContext.setCurrentNode(currentNode);
-    }
-
-    /**
-     * Refresh nodes.
-     */
-    private void refreshNodes(List<Server> servers) {
     }
 
     /**

@@ -26,7 +26,7 @@ public class ClusterMessage {
      */
     public void join(NodeJoinDTO node, List<Server> servers) {
         servers.forEach(s -> {
-            if (Objects.equals(s.getId(), node.getServerId())) {
+            if (!Objects.equals(s.getId(), node.getServerId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(node, ActorRef.noSender());
             }
         });
@@ -40,7 +40,7 @@ public class ClusterMessage {
      */
     public void fail(NodeFailDTO failDTO, List<Server> servers) {
         servers.forEach(s -> {
-            if (Objects.equals(s.getId(), failDTO.getServerId())) {
+            if (!Objects.equals(s.getId(), failDTO.getServerId())) {
                 AkkaUtil.getClusterActor(s.getAkkaAddress()).tell(failDTO, ActorRef.noSender());
             }
         });
