@@ -7,7 +7,19 @@ import io.openjob.server.repository.entity.JobInstance;
  * @since 1.0.0
  */
 public interface JobInstanceDAO {
+    /**
+     * Save
+     *
+     * @param jobInstance jobInstance
+     * @return Insert id.
+     */
     Long save(JobInstance jobInstance);
 
+    /**
+     * Update
+     *
+     * @param jobInstance jobInstance
+     * @return Effected rows.
+     */
     Long update(JobInstance jobInstance);
 }

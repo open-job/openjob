@@ -17,9 +17,28 @@ public interface JobDAO {
      */
     Long save(Job job);
 
+    /**
+     * Update
+     *
+     * @param job job
+     * @return Long
+     */
     Long update(Job job);
 
+    /**
+     * List scheduled jobs.
+     *
+     * @param slotIds slotIds
+     * @param time    time
+     * @return List
+     */
     List<Job> listScheduledJobs(List<Long> slotIds, Integer time);
 
+    /**
+     * List seconds scheduled jobs.
+     *
+     * @param slotIds slotIds
+     * @return List
+     */
     List<Job> listScheduledSecondJobs(List<Long> slotIds);
 }

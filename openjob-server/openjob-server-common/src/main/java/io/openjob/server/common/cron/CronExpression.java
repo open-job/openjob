@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -20,6 +21,7 @@ import java.util.TreeSet;
 public class CronExpression implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 12423409423L;
+    private static final Long DEFAULT_DIFFERENCE = 1000L;
 
     protected static final int SECOND = 0;
     protected static final int MINUTE = 1;
@@ -185,7 +187,7 @@ public class CronExpression implements Serializable, Cloneable {
         //keep getting the next included time until it's farther than one second
         // apart. At that point, lastDate is the last valid fire time. We return
         // the second immediately following it.
-        while (difference == 1000) {
+        while (difference == DEFAULT_DIFFERENCE) {
             newDate = getTimeAfter(lastDate);
             if (newDate == null) {
                 break;
@@ -193,7 +195,7 @@ public class CronExpression implements Serializable, Cloneable {
 
             difference = newDate.getTime() - lastDate.getTime();
 
-            if (difference == 1000) {
+            if (difference == DEFAULT_DIFFERENCE) {
                 lastDate = newDate;
             }
         }
@@ -255,39 +257,17 @@ public class CronExpression implements Serializable, Cloneable {
         new CronExpression(cronExpression);
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////
-    //
-    // Expression Parsing Functions
-    //
-    ////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * Expression Parsing Functions
+     *
+     * @param expression expression
+     * @throws ParseException ParseException
+     */
     protected void buildExpression(String expression) throws ParseException {
         expressionParsed = true;
 
         try {
-
-            if (seconds == null) {
-                seconds = new TreeSet<Integer>();
-            }
-            if (minutes == null) {
-                minutes = new TreeSet<Integer>();
-            }
-            if (hours == null) {
-                hours = new TreeSet<Integer>();
-            }
-            if (daysOfMonth == null) {
-                daysOfMonth = new TreeSet<Integer>();
-            }
-            if (months == null) {
-                months = new TreeSet<Integer>();
-            }
-            if (daysOfWeek == null) {
-                daysOfWeek = new TreeSet<Integer>();
-            }
-            if (years == null) {
-                years = new TreeSet<Integer>();
-            }
+            initBuildExpression();
 
             int exprOn = SECOND;
 
@@ -331,11 +311,11 @@ public class CronExpression implements Serializable, Cloneable {
             TreeSet<Integer> dom = getSet(DAY_OF_MONTH);
 
             // Copying the logic from the UnsupportedOperationException below
-            boolean dayOfMSpec = !dom.contains(NO_SPEC);
+            boolean dayOfSpec = !dom.contains(NO_SPEC);
             boolean dayOfWSpec = !dow.contains(NO_SPEC);
 
-            if (!dayOfMSpec || dayOfWSpec) {
-                if (!dayOfWSpec || dayOfMSpec) {
+            if (!dayOfSpec || dayOfWSpec) {
+                if (!dayOfWSpec || dayOfSpec) {
                     throw new ParseException(
                             "Support for specifying both a day-of-week AND a day-of-month parameter is not implemented.", 0);
                 }
@@ -344,13 +324,11 @@ public class CronExpression implements Serializable, Cloneable {
             throw pe;
         } catch (Exception e) {
             throw new ParseException("Illegal cron expression format ("
-                    + e.toString() + ")", 0);
+                    + e + ")", 0);
         }
     }
 
-    protected int storeExpressionVals(int pos, String s, int type)
-            throws ParseException {
-
+    protected int storeExpressionVals(int pos, String s, int type) throws ParseException {
         int incr = 0;
         int i = skipWhiteSpace(pos, s);
         if (i >= s.length()) {
@@ -1506,6 +1484,30 @@ public class CronExpression implements Serializable, Cloneable {
             default:
                 throw new IllegalArgumentException("Illegal month number: "
                         + monthNum);
+        }
+    }
+
+    protected void initBuildExpression() {
+        if (Objects.isNull(seconds)) {
+            seconds = new TreeSet<>();
+        }
+        if (Objects.isNull(minutes)) {
+            minutes = new TreeSet<>();
+        }
+        if (hours == null) {
+            hours = new TreeSet<>();
+        }
+        if (daysOfMonth == null) {
+            daysOfMonth = new TreeSet<>();
+        }
+        if (months == null) {
+            months = new TreeSet<>();
+        }
+        if (daysOfWeek == null) {
+            daysOfWeek = new TreeSet<>();
+        }
+        if (years == null) {
+            years = new TreeSet<>();
         }
     }
 

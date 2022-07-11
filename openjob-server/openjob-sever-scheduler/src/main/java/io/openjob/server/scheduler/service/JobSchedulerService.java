@@ -37,12 +37,20 @@ public class JobSchedulerService {
         this.jobInstanceDAO = jobInstanceDAO;
     }
 
+    /**
+     * Schedule job.
+     */
     public void scheduleJob() {
         List<Long> currentSlots = new ArrayList<>(ClusterContext.getCurrentSlots());
         // Cron jobs.
         this.scheduleCronJob(currentSlots);
     }
 
+    /**
+     * Schedule cron job.
+     *
+     * @param currentSlots currentSlots
+     */
     @Transactional(rollbackFor = Exception.class)
     public void scheduleCronJob(List<Long> currentSlots) {
         Integer maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);

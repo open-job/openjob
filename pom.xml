@@ -134,6 +134,7 @@
                     <excludes>
                         <exclude>**/*Bean.java</exclude>
                         <exclude>**/generated/**.java</exclude>
+                        <exclude>**/CronExpression.java</exclude>
                     </excludes>
                     <failOnViolation>true</failOnViolation>
                     <failurePriority>5</failurePriority>
