@@ -2,6 +2,8 @@ package io.openjob.server.repository.dao.impl;
 
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.JobInstance;
+import io.openjob.server.repository.repository.JobInstanceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,13 +12,15 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JobInstanceDAOImpl implements JobInstanceDAO {
-    @Override
-    public Long save(JobInstance jobInstance) {
-        return null;
+    private final JobInstanceRepository jobInstanceRepository;
+
+    @Autowired
+    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository) {
+        this.jobInstanceRepository = jobInstanceRepository;
     }
 
     @Override
-    public Long update(JobInstance jobInstance) {
-        return null;
+    public Long save(JobInstance jobInstance) {
+        return this.jobInstanceRepository.save(jobInstance).getId();
     }
 }

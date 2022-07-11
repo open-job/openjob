@@ -77,7 +77,7 @@ public class JobSchedulerService {
                 job.setId(j.getId());
                 job.setNextExecuteTime(nextExecuteTime);
                 job.setUpdateTime(DateUtil.now());
-                jobDAO.update(job);
+                jobDAO.save(job);
             } catch (ParseException parseException) {
                 log.error("Cron expression({}) is invalid!", j.getTimeExpression());
             }

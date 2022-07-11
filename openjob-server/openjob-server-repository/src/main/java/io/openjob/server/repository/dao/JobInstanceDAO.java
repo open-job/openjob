@@ -14,12 +14,4 @@ public interface JobInstanceDAO {
      * @return Insert id.
      */
     Long save(JobInstance jobInstance);
-
-    /**
-     * Update
-     *
-     * @param jobInstance jobInstance
-     * @return Effected rows.
-     */
-    Long update(JobInstance jobInstance);
 }
