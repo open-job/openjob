@@ -4,7 +4,7 @@ package io.openjob.server.common.util;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class CRCUtil {
+public class CrcUtil {
     /**
      * CRC16 table.
      */
@@ -50,10 +50,10 @@ public class CRCUtil {
      */
     public static Integer crc16(byte[] message) {
         // CRC校验时初值
-        int crc_reg = 0xffff;
+        int crcReg = 0xffff;
         for (byte b : message) {
-            crc_reg = (crc_reg >> 8) ^ CRC16_CCITT_TABLE[(crc_reg ^ b) & 0xff];
+            crcReg = (crcReg >> 8) ^ CRC16_CCITT_TABLE[(crcReg ^ b) & 0xff];
         }
-        return ~crc_reg & 0xffff;
+        return ~crcReg & 0xffff;
     }
 }

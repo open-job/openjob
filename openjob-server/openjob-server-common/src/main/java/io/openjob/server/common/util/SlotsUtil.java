@@ -8,7 +8,7 @@ public class SlotsUtil {
     /**
      * Max slots.
      */
-    private final static Integer MAX_SLOTS = 18364;
+    private static final Integer MAX_SLOTS = 18364;
 
     /**
      * Get slots id
@@ -17,6 +17,6 @@ public class SlotsUtil {
      * @return Integer
      */
     public static Integer getSlotsId(String key) {
-        return CRCUtil.crc16(key.getBytes()) % MAX_SLOTS;
+        return CrcUtil.crc16(key.getBytes()) % MAX_SLOTS;
     }
 }
