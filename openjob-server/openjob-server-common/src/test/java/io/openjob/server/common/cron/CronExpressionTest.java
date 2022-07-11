@@ -12,7 +12,7 @@ import java.util.Date;
 public class CronExpressionTest {
     @Test
     public void testExpression() throws ParseException {
-        CronExpression cronExpression = new CronExpression("0 */30 * * * ?");
+        CronExpression cronExpression = new CronExpression("*/30 * * * * ?");
         String cronExpression1 = cronExpression.getCronExpression();
         cronExpression.getNextValidTimeAfter(new Date());
     }

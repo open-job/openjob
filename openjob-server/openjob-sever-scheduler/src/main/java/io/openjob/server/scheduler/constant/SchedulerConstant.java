@@ -13,5 +13,5 @@ public class SchedulerConstant {
     /**
      * Fixed_delay
      */
-    public static final long JOB_FIXED_DELAY = 60000L;
+    public static final long JOB_FIXED_DELAY = 10000L;
 }
