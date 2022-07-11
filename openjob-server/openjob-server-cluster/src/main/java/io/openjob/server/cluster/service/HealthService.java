@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.common.util.DateUtil;
-import io.openjob.common.ClusterStatus;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.ResponseDTO;
@@ -40,8 +40,8 @@ public class HealthService {
      */
     public void check() {
         // Ping server list.
-        Map<Long, Node> nodesMap = ClusterStatus.getNodesList();
-        Node currentNode = ClusterStatus.getCurrentNode();
+        Map<Long, Node> nodesMap = ClusterContext.getNodesList();
+        Node currentNode = ClusterContext.getCurrentNode();
         List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
 
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));

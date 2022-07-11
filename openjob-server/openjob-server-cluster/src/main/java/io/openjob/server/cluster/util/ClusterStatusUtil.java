@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.util;
 
-import io.openjob.common.ClusterStatus;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
@@ -30,10 +30,10 @@ public class ClusterStatusUtil {
             nodes.put(s.getId(), node);
         });
 
-        ClusterStatus.refreshNodeList(nodes);
+        ClusterContext.refreshNodeList(nodes);
     }
 
     public static void refreshSlotsListMap(List<JobSlots> jobSlots) {
-        ClusterStatus.refreshSlotsListMap(jobSlots.stream().collect(Collectors.toMap(JobSlots::getId, JobSlots::getServerId)));
+        ClusterContext.refreshSlotsListMap(jobSlots.stream().collect(Collectors.toMap(JobSlots::getId, JobSlots::getServerId)));
     }
 }

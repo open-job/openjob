@@ -1,4 +1,4 @@
-package io.openjob.common;
+package io.openjob.server.common;
 
 import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ClusterStatus {
+public class ClusterContext {
 
     /**
      * Cluster actor reference.
@@ -74,7 +74,7 @@ public class ClusterStatus {
      * @param clusterActorRef clusterActorRef
      */
     public static synchronized void setClusterActorRef(ActorRef clusterActorRef) {
-        ClusterStatus.clusterActorRef = clusterActorRef;
+        ClusterContext.clusterActorRef = clusterActorRef;
     }
 
     /**
@@ -83,7 +83,7 @@ public class ClusterStatus {
      * @param currentNode currentNode
      */
     public static synchronized void setCurrentNode(Node currentNode) {
-        ClusterStatus.currentNode = currentNode;
+        ClusterContext.currentNode = currentNode;
     }
 
 

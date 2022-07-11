@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.common.ClusterStatus;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
@@ -110,13 +110,13 @@ public class ClusterService {
      * @return Set
      */
     private Set<Long> refreshJobSlots(Boolean isJoin) {
-        Node currentNode = ClusterStatus.getCurrentNode();
-        Set<Long> currentSlots = ClusterStatus.getCurrentSlots();
+        Node currentNode = ClusterContext.getCurrentNode();
+        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
         List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
         Set<Long> newSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
 
         // Refresh current slots.
-        ClusterStatus.refreshCurrentSlots(newSlots);
+        ClusterContext.refreshCurrentSlots(newSlots);
 
         log.info("Refresh slots {}", jobSlots);
         ClusterStatusUtil.refreshSlotsListMap(jobSlots);

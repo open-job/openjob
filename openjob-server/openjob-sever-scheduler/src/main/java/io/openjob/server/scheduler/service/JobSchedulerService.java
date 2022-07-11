@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.service;
 
-import io.openjob.common.ClusterStatus;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.cron.CronExpression;
@@ -38,7 +38,7 @@ public class JobSchedulerService {
     }
 
     public void scheduleJob() {
-        List<Long> currentSlots = new ArrayList<>(ClusterStatus.getCurrentSlots());
+        List<Long> currentSlots = new ArrayList<>(ClusterContext.getCurrentSlots());
         // Cron jobs.
         this.scheduleCronJob(currentSlots);
     }

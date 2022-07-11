@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Maps;
-import io.openjob.common.ClusterStatus;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
@@ -99,7 +99,7 @@ public class StartService {
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
-        ClusterStatus.setCurrentNode(currentNode);
+        ClusterContext.setCurrentNode(currentNode);
     }
 
     /**
@@ -145,7 +145,7 @@ public class StartService {
     }
 
     private void sendClusterStartMessage(List<Server> servers) {
-        Node currentNode = ClusterStatus.getCurrentNode();
+        Node currentNode = ClusterContext.getCurrentNode();
         NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
         nodeJoinDTO.setIp(currentNode.getIp());
         nodeJoinDTO.setServerId(currentNode.getServerId());
