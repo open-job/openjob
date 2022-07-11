@@ -49,7 +49,6 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -135,6 +134,7 @@
                     <excludes>
                         <exclude>**/*Bean.java</exclude>
                         <exclude>**/generated/**.java</exclude>
+                        <exclude>**/CronExpression.java</exclude>
                     </excludes>
                     <failOnViolation>true</failOnViolation>
                     <failurePriority>5</failurePriority>

@@ -1,10 +1,10 @@
 package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
-import io.openjob.server.repository.constant.ServerStatusConstant;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
@@ -44,7 +44,7 @@ public class FailManager {
     @Transactional(rollbackFor = Exception.class)
     public void fail(Node stopNode) {
         // Update server status.
-        this.serverDAO.update(stopNode.getServerId(), ServerStatusConstant.FAIL.getStatus());
+        this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus());
         log.info("Update server to fail status {}", stopNode.getServerId());
 
         // Migrate slots.
@@ -62,7 +62,7 @@ public class FailManager {
      */
     private List<Server> migrateSlots(Node stopNode) {
         List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(stopNode.getServerId());
-        List<Server> servers = this.serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        List<Server> servers = this.serverDAO.listServers(ServerStatusEnum.OK.getStatus());
 
         // Exclude current server.
         int serverCount = servers.size();

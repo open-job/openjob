@@ -84,7 +84,7 @@ public class Scheduler {
      * @param jobInstances jobInstances
      */
     public static void removeByTaskId(List<JobInstance> jobInstances) {
-        jobInstances.forEach(j -> getSystemTimer(j.getJobSlotsId()).removeByTaskId(j.getId()));
+        jobInstances.forEach(j -> getSystemTimer(j.getSlotsId()).removeByTaskId(j.getId()));
     }
 
     /**

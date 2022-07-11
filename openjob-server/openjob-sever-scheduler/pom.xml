@@ -25,5 +25,4 @@
             <artifactId>openjob-server-repository</artifactId>
         </dependency>
     </dependencies>
-
 </project>

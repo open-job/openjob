@@ -1,7 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.RepositoryTest;
-import io.openjob.server.repository.constant.ServerStatusConstant;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.repository.ServerRepository;
 import org.junit.jupiter.api.Assertions;
@@ -60,7 +60,7 @@ public class ServerDAOTest extends RepositoryTest {
 
     @Test
     public void testListServers() {
-        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
         Assertions.assertNotNull(servers);
     }
 

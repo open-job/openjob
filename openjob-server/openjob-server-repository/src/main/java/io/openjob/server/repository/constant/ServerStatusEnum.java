@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum ServerStatusConstant {
+public enum ServerStatusEnum {
     /**
      * Success.
      */

@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.cluster.service.StartService;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
@@ -50,6 +51,6 @@ public class ClusterServer {
                 .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
 
         ActorRef clusterActorRef = actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
-        ClusterStatus.setClusterActorRef(clusterActorRef);
+        ClusterContext.setClusterActorRef(clusterActorRef);
     }
 }

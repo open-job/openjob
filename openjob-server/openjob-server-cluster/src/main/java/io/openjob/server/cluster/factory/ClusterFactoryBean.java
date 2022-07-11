@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.factory;
 
-import io.openjob.server.cluster.ClusterStatus;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.manager.FailManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,7 +25,7 @@ public class ClusterFactoryBean implements DisposableBean {
 
     @Override
     public void destroy() {
-        Node currentNode = ClusterStatus.getCurrentNode();
+        Node currentNode = ClusterContext.getCurrentNode();
         this.failManager.fail(currentNode);
 
         log.info("Server shutdown {}", currentNode.getAkkaAddress());

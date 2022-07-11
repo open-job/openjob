@@ -1,12 +1,12 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Maps;
-import io.openjob.server.cluster.ClusterStatus;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
 import io.openjob.server.cluster.util.ClusterStatusUtil;
-import io.openjob.server.repository.constant.ServerStatusConstant;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
@@ -76,7 +76,7 @@ public class StartService {
             // Update status
             Server server = optionalServer.get();
             Long id = server.getId();
-            serverDAO.update(id, ServerStatusConstant.OK.getStatus());
+            serverDAO.update(id, ServerStatusEnum.OK.getStatus());
             return server;
         }
 
@@ -99,7 +99,7 @@ public class StartService {
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
-        ClusterStatus.setCurrentNode(currentNode);
+        ClusterContext.setCurrentNode(currentNode);
     }
 
     /**
@@ -124,7 +124,7 @@ public class StartService {
         });
 
         // Remove server slots.
-        List<Server> servers = serverDAO.listServers(ServerStatusConstant.OK.getStatus());
+        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
         int slotsServerCount = servers.size() - 1;
         List<Long> migratedList = new ArrayList<>();
         serverIdToSlots.forEach((id, slots) -> {
@@ -145,7 +145,7 @@ public class StartService {
     }
 
     private void sendClusterStartMessage(List<Server> servers) {
-        Node currentNode = ClusterStatus.getCurrentNode();
+        Node currentNode = ClusterContext.getCurrentNode();
         NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
         nodeJoinDTO.setIp(currentNode.getIp());
         nodeJoinDTO.setServerId(currentNode.getServerId());
