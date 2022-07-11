@@ -4,6 +4,7 @@ import io.openjob.server.common.ClusterContext;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.cron.CronExpression;
+import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.repository.constant.InstanceStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
@@ -21,6 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author stelin <swoft@qq.com>
