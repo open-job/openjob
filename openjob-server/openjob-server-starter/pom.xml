@@ -41,5 +41,4 @@
             <artifactId>openjob-server-openapi</artifactId>
         </dependency>
     </dependencies>
-
 </project>

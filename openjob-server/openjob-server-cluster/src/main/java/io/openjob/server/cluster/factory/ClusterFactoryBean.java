@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.factory;
 
-import io.openjob.server.cluster.ClusterStatus;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.common.ClusterStatus;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.manager.FailManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.DisposableBean;

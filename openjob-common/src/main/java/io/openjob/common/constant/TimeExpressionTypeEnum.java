@@ -3,6 +3,9 @@ package io.openjob.common.constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -39,4 +42,6 @@ public enum TimeExpressionTypeEnum {
 
     private final Integer type;
     private final String message;
+
+    public static final List<Integer> CRON_TYPES = Arrays.asList(CRON.type, FIXED_RATE.type, ONE_TIME.type);
 }

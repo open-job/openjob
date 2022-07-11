@@ -1,9 +1,8 @@
-package io.openjob.server.cluster;
+package io.openjob.common;
 
 import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
-import io.openjob.server.cluster.context.Node;
-import lombok.extern.log4j.Log4j2;
+import io.openjob.common.context.Node;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -13,7 +12,6 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
 public class ClusterStatus {
 
     /**

@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.message.ClusterMessage;
 import io.openjob.server.repository.constant.ServerStatusEnum;

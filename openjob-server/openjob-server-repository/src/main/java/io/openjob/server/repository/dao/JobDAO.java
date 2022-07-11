@@ -17,6 +17,8 @@ public interface JobDAO {
      */
     Long save(Job job);
 
+    Long update(Job job);
+
     List<Job> listScheduledJobs(List<Long> slotIds, Integer time);
 
     List<Job> listScheduledSecondJobs(List<Long> slotIds);

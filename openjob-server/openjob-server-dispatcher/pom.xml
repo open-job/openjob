@@ -11,9 +11,6 @@
 
     <artifactId>openjob-server-dispatcher</artifactId>
 
-    <properties>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>

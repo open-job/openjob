@@ -24,11 +24,5 @@
             <groupId>io.openjob</groupId>
             <artifactId>openjob-server-repository</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-cluster</artifactId>
-        </dependency>
     </dependencies>
-
 </project>

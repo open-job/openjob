@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.server.cluster.ClusterStatus;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.common.ClusterStatus;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;

@@ -30,6 +30,11 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
+    public Long update(Job job) {
+        return null;
+    }
+
+    @Override
     public List<Job> listScheduledJobs(List<Long> slotIds, Integer time) {
         List<Integer> notTypes = Arrays.asList(TimeExpressionTypeEnum.NONE.getType(), TimeExpressionTypeEnum.SECOND_DELAY.getType());
         return jobRepository.findBySlotsIdInAndStatusAndTimeExpressionTypeNotInAndNextExecuteTimeLessThanEqual(slotIds, JobStatusEnum.RUNNING.getStatus(), notTypes, time);

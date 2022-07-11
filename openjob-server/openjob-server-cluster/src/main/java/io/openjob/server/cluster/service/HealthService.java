@@ -1,8 +1,8 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.cluster.ClusterStatus;
-import io.openjob.server.cluster.context.Node;
+import io.openjob.common.ClusterStatus;
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.ResponseDTO;
 import io.openjob.server.cluster.manager.FailManager;
