@@ -18,7 +18,6 @@
     <modules>
         <module>openjob-common</module>
         <module>openjob-worker</module>
-        <module>openjob-agent</module>
         <module>openjob-server</module>
     </modules>
 
