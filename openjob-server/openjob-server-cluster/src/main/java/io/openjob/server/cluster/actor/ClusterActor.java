@@ -41,7 +41,6 @@ public class ClusterActor extends AbstractActor {
                 .build();
     }
 
-
     public void receivePing(NodePingDTO nodePingDTO) {
         getSender().tell(new PongDTO(), getSelf());
     }
