@@ -30,12 +30,12 @@ public class ConfigUtil {
     /**
      * Classpath.
      */
-    private static final String CLASSPATH_PREFIX = "classpath:";
+    public static final String CLASSPATH_PREFIX = "classpath:";
 
     /**
      * Default charset.
      */
-    private static final Charset DEFAULT_CHARSET = Charset.forName(StandardCharsets.UTF_8.name());
+    public static final Charset DEFAULT_CHARSET = Charset.forName(StandardCharsets.UTF_8.name());
 
     /**
      * Load properties.
