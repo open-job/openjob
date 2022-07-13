@@ -12,6 +12,7 @@ public interface JobProcessor extends BaseProcessor {
      * Pre.
      *
      * @param context context
+     * @throws Exception exception.
      */
     void preProcess(JobContext context) throws Exception;
 
@@ -20,6 +21,7 @@ public interface JobProcessor extends BaseProcessor {
      *
      * @param context job context.
      * @return ProcessResult
+     * @throws Exception exception.
      */
     ProcessResult process(JobContext context) throws Exception;
 
@@ -28,6 +30,7 @@ public interface JobProcessor extends BaseProcessor {
      *
      * @param context context
      * @return ProcessResult
+     * @throws Exception exception.
      */
     ProcessResult postProcess(JobContext context) throws Exception;
 

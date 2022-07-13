@@ -6,19 +6,19 @@ import io.openjob.worker.context.JobContext;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public abstract class JavaProcessor implements JobProcessor {
+public class JavaProcessor implements JobProcessor {
     @Override
-    public void preProcess(JobContext context) throws Exception {
+    public void preProcess(JobContext context) {
 
     }
 
     @Override
-    public ProcessResult process(JobContext context) throws Exception {
+    public ProcessResult process(JobContext context) {
         return null;
     }
 
     @Override
-    public ProcessResult postProcess(JobContext context) throws Exception {
+    public ProcessResult postProcess(JobContext context) {
         return null;
     }
 

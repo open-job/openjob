@@ -6,7 +6,7 @@ import io.openjob.worker.context.JobContext;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public abstract class ShellProcessor implements JobProcessor {
+public class ShellProcessor implements JobProcessor {
     @Override
     public void preProcess(JobContext context) {
 

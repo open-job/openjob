@@ -10,14 +10,50 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TaskStatusEnum {
-    UNKNOWN(0, "未知", false),
-    INIT(1, "初始化", false),
-    PULLED(2, "已拉取", false),
-    RUNNING(3, "运行", false),
-    SUCCESS(4, "成功", true),
-    FAILED(5, "失败", true);
 
-    private final Integer value;
-    private final String description;
-    private final Boolean isFinish;
+    /**
+     * Unknown.
+     */
+    UNKNOWN(1, "unknown", false),
+
+    /**
+     * Init.
+     */
+    INIT(3, "init", false),
+
+    /**
+     * Pulled.
+     */
+    PULLED(5, "pulled", false),
+
+    /**
+     * running.
+     */
+    RUNNING(7, "running", false),
+
+    /**
+     * Success.
+     */
+    SUCCESS(9, "success", true),
+
+    /**
+     * Fail.
+     */
+    FAIL(11, "fail", true),
+    ;
+
+    /**
+     * Status.
+     */
+    private final Integer status;
+
+    /**
+     * Message.
+     */
+    private final String message;
+
+    /**
+     * Finish.
+     */
+    private final Boolean finish;
 }
