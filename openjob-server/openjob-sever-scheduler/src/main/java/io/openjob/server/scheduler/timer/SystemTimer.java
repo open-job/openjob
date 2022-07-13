@@ -47,7 +47,7 @@ public class SystemTimer implements Timer {
     public void add(TimerTask timerTask) {
         readLock.lock();
         try {
-            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getDelay() + DateUtil.now()));
+            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getExecuteTime()));
         } finally {
             readLock.unlock();
         }

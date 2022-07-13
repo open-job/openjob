@@ -101,6 +101,7 @@ public class JobSchedulerService {
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             TimerTask timerTask = new TimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime() - DateUtil.now());
+            timerTask.setExecuteTime(Long.valueOf(j.getNextExecuteTime()));
             timerTasks.add(timerTask);
         });
 

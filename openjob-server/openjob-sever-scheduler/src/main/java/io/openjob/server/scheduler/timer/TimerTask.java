@@ -14,10 +14,11 @@ import java.util.Objects;
 @Data
 @Log4j2
 public class TimerTask implements Runnable {
-    protected Long delay = 1L;
+    protected Long delay;
     protected TimerTaskEntry timerTaskEntry;
     protected Long taskId;
     protected Long slotsId;
+    protected Long executeTime;
 
     /**
      * Timer task.
