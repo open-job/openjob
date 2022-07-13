@@ -1,4 +1,4 @@
-package io.openjob.server.common;
+package io.openjob.common;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

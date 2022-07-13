@@ -3,7 +3,7 @@ package io.openjob.server.common.util;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
-import io.openjob.server.common.SpringContext;
+import io.openjob.common.SpringContext;
 import io.openjob.server.common.constant.ActorConstant;
 
 import java.time.Duration;
