@@ -5,4 +5,5 @@ package io.openjob.worker.actor;
  * @since 1.0.0
  */
 public class ManagerActor {
+
 }

@@ -35,13 +35,13 @@ public class ConfigLoader {
     /**
      * Properties.
      */
-    private static final Properties properties = new Properties();
+    private static final Properties PROPERTIES = new Properties();
 
     static {
         try {
             load();
         } catch (Throwable e) {
-            log.error("Failed to load openjob config file.");
+            log.error("Failed to load openjob config file.", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class ConfigLoader {
 
         // Load info.
         if (Objects.nonNull(prop) && !prop.isEmpty()) {
-            properties.putAll(prop);
+            PROPERTIES.putAll(prop);
             log.info("Loading openjob config from {}", filename);
         }
 
@@ -72,8 +72,8 @@ public class ConfigLoader {
         for (Map.Entry<Object, Object> entry : new CopyOnWriteArraySet<>(System.getProperties().entrySet())) {
             String configKey = entry.getKey().toString();
             String newConfigValue = entry.getValue().toString();
-            String oldConfigValue = properties.getProperty(configKey);
-            properties.put(configKey, newConfigValue);
+            String oldConfigValue = PROPERTIES.getProperty(configKey);
+            PROPERTIES.put(configKey, newConfigValue);
             if (oldConfigValue != null) {
                 log.info("JVM parameter overrides {}: {} -> {}", configKey, oldConfigValue, newConfigValue);
             }
@@ -86,6 +86,6 @@ public class ConfigLoader {
      * @return Properties
      */
     public static Properties getProperties() {
-        return properties;
+        return PROPERTIES;
     }
 }

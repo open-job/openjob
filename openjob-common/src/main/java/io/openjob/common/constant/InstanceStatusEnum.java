@@ -1,4 +1,4 @@
-package io.openjob.server.repository.constant;
+package io.openjob.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

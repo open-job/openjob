@@ -6,7 +6,7 @@ import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.ResponseDTO;
 import io.openjob.server.cluster.manager.FailManager;
-import io.openjob.server.common.SpringContext;
+import io.openjob.common.SpringContext;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
