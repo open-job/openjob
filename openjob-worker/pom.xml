@@ -23,4 +23,11 @@
 
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.openjob</groupId>
+            <artifactId>openjob-common</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
