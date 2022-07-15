@@ -3,7 +3,6 @@ package io.openjob.server.scheduler.timer;
 import com.google.common.collect.Maps;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -109,7 +108,6 @@ public class TimingWheel {
             this.slotsToTaskMap.putIfAbsent(slotsId, defaultSet);
 
             if (bucket.setExpiration(virtualId * tickTime)) {
-                System.out.println(" ex=" + virtualId * tickTime + " p=" + bucket.getExpiration() + " pion=" + expiration + " tickTime=" + tickTime);
                 delayQueue.offer(bucket);
             }
 

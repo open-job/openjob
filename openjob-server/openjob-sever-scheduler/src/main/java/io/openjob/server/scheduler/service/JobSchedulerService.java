@@ -1,10 +1,10 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.cron.CronExpression;
-import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
@@ -17,13 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.Bidi;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -70,7 +68,6 @@ public class JobSchedulerService {
 
                 // Calculate next execute time.
                 Integer nextExecuteTime = this.calculateNextExecuteTime(j, now);
-                System.out.println("now=" + DateUtil.now() + " next=" + nextExecuteTime);
 
                 // Update next execute time.
                 j.setNextExecuteTime(nextExecuteTime);
