@@ -33,7 +33,7 @@ public class TimingWheel {
 
     private AtomicInteger taskCounter;
 
-    private DelayQueue<TimerTaskList> delayQueue;
+    private volatile DelayQueue<TimerTaskList> delayQueue;
 
     /**
      * second.
@@ -44,7 +44,7 @@ public class TimingWheel {
      * overflowWheel can potentially be updated and read by two concurrent threads through add().
      * Therefore, it needs to be volatile due to Double-Checked Locking pattern with JVM
      */
-    private volatile TimingWheel overflowWheel;
+    private TimingWheel overflowWheel;
 
     private TimerTaskList[] buckets;
 
@@ -107,7 +107,9 @@ public class TimingWheel {
             Set<Long> defaultSet = new HashSet<>();
             this.slotsToTaskMap.getOrDefault(slotsId, defaultSet).add(taskId);
             this.slotsToTaskMap.putIfAbsent(slotsId, defaultSet);
+
             if (bucket.setExpiration(virtualId * tickTime)) {
+                System.out.println(" ex=" + virtualId * tickTime + " p=" + bucket.getExpiration() + " pion=" + expiration + " tickTime=" + tickTime);
                 delayQueue.offer(bucket);
             }
 

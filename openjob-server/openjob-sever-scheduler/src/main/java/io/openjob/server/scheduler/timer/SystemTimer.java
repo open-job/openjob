@@ -47,7 +47,7 @@ public class SystemTimer implements Timer {
     public void add(TimerTask timerTask) {
         readLock.lock();
         try {
-            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getExecuteTime()));
+            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getExpiration()));
         } finally {
             readLock.unlock();
         }
@@ -58,6 +58,7 @@ public class SystemTimer implements Timer {
         try {
             TimerTaskList bucket = delayQueue.poll(timeout, TimeUnit.MILLISECONDS);
             if (Objects.nonNull(bucket)) {
+                System.out.println("bucket=" + bucket.getExpiration() + " now=" + DateUtil.now());
                 writeLock.lock();
                 try {
                     while (Objects.nonNull(bucket)) {
@@ -121,10 +122,6 @@ public class SystemTimer implements Timer {
     public void addTimerTaskEntry(TimerTaskEntry timerTaskEntry) {
         if (!timingWheel.add(timerTaskEntry)) {
             if (!timerTaskEntry.canceled()) {
-                Date date = new Date();
-                String strDateFormat = "yyyy-MM-dd HH:mm:ss";
-                SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-                System.out.println(sdf.format(date));
                 taskExecutor.submit(timerTaskEntry.getTimerTask());
             }
         }

@@ -134,6 +134,7 @@ public class TimerTaskList implements Delayed {
             other = (TimerTaskList) d;
         }
 
+        assert other != null;
         return Long.compare(getExpiration(), other.getExpiration());
     }
 }
