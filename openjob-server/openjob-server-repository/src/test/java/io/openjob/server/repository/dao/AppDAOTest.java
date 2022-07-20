@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Sql(scripts = "classpath:db/schema/job.sql")
+@Sql(scripts = "classpath:db/schema/app.sql")
 public class AppDAOTest extends RepositoryTest {
     private final AppDAO appDAO;
 
