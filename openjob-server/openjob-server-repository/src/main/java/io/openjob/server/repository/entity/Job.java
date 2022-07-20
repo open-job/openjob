@@ -76,7 +76,6 @@ public class Job {
     @Column(name = "create_time")
     private Integer createTime;
 
-    @Basic
     @Column(name = "update_time")
     private Integer updateTime;
 }
