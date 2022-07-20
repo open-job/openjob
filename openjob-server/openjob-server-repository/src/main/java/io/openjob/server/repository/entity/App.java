@@ -23,6 +23,12 @@ public class App {
     private Long id;
 
     /**
+     * NamespaceId
+     */
+    @Column(name = "namespace_id")
+    private Long namespaceId;
+
+    /**
      * App name
      */
     @Column(name = "name")

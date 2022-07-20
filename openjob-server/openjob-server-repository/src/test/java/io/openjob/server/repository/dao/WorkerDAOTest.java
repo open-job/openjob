@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 
 /**
@@ -72,7 +71,7 @@ public class WorkerDAOTest extends RepositoryTest {
 
     @Test
     public void testListOnlineWorkersByAppName() {
-        List<Worker> workers = workerDAO.listOnlineWorkersByAppName("xxx-service");
+        List<Worker> workers = workerDAO.listOnlineWorkers();
 
         Assertions.assertNotNull(workers);
         Assertions.assertEquals(workers.size(), 2);

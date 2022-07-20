@@ -6,7 +6,7 @@ import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
-import io.openjob.server.cluster.util.ClusterStatusUtil;
+import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -99,7 +99,7 @@ public class ClusterService {
      */
     private void refreshNodes() {
         List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterStatusUtil.refreshNodes(servers);
+        ClusterUtil.refreshNodes(servers);
         log.info("Refresh nodes {}", servers);
     }
 
@@ -119,7 +119,7 @@ public class ClusterService {
         ClusterContext.refreshCurrentSlots(newSlots);
 
         log.info("Refresh slots {}", jobSlots);
-        ClusterStatusUtil.refreshSlotsListMap(jobSlots);
+        ClusterUtil.refreshSlotsListMap(jobSlots);
 
         if (isJoin) {
             // Node remove slots.

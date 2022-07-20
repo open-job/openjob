@@ -12,5 +12,5 @@ import java.util.List;
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Worker findByAddress(String address);
 
-    List<Worker> findByAppNameAndStatus(String appName, Integer status);
+    List<Worker> findByAppStatus(Integer status);
 }

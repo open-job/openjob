@@ -14,5 +14,5 @@ public interface WorkerDAO {
 
     Worker getByAddress(String address);
 
-    List<Worker> listOnlineWorkersByAppName(String appName);
+    List<Worker> listOnlineWorkers();
 }

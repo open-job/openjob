@@ -3,7 +3,7 @@ package io.openjob.server.cluster.manager;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
-import io.openjob.server.cluster.message.ClusterMessage;
+import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -27,13 +27,11 @@ import java.util.stream.Collectors;
 public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
-    private final ClusterMessage clusterMessage;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterMessage clusterMessage) {
+    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
-        this.clusterMessage = clusterMessage;
     }
 
     /**
@@ -121,6 +119,6 @@ public class FailManager {
         failDTO.setIp(stopNode.getIp());
         failDTO.setServerId(stopNode.getServerId());
         failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-        this.clusterMessage.fail(failDTO, servers);
+        ClusterUtil.sendMessage(failDTO, servers);
     }
 }

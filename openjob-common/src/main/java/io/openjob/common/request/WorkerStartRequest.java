@@ -11,12 +11,21 @@ import java.io.Serializable;
 @Data
 public class WorkerStartRequest implements Serializable {
 
-    private String workerId;
+    private String workerKey;
 
-    private String appid;
+    private String appName;
 
     private String address;
 
     private String version;
+
+    private String protocolType;
+
+    private Metric metric;
+
+    @Data
+    public static class Metric {
+
+    }
 }
 

@@ -3,8 +3,10 @@ package io.openjob.server.common;
 import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
+import io.openjob.server.common.dto.WorkerDTO;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +44,11 @@ public class ClusterContext {
     private static final Map<Long, Node> NODES_LIST = Maps.newConcurrentMap();
 
     /**
+     * App worker list.
+     */
+    private static final Map<Long, List<WorkerDTO>> APP_WORKERS = Maps.newConcurrentMap();
+
+    /**
      * Refresh Current node.
      *
      * @param slotsIds Current slots ids.
@@ -57,6 +64,14 @@ public class ClusterContext {
      */
     public static synchronized void refreshNodeList(Map<Long, Node> nodes) {
         NODES_LIST.putAll(nodes);
+    }
+
+    /**
+     * Refresh app worker.
+     * @param workers workers
+     */
+    public static synchronized void refreshAppWorkers(Map<Long, List<WorkerDTO>> workers) {
+        APP_WORKERS.putAll(workers);
     }
 
     /**
