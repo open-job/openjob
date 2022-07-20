@@ -3,9 +3,10 @@ package io.openjob.server.cluster;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
-import io.openjob.server.common.ClusterContext;
 import io.openjob.server.cluster.service.StartService;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
@@ -39,18 +40,34 @@ public class ClusterServer {
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
         serverService.start(hostname, port);
+
     }
 
     /**
      * Create cluster actor
      */
     public void createActor() {
-        Props serverProps = PropsFactoryManager.getFactory()
+        Props clusterProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
                 .create(ActorConstant.CLUSTER_ACTOR_NAME)
                 .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
 
-        ActorRef clusterActorRef = actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
+        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ActorConstant.CLUSTER_NAME);
         ClusterContext.setClusterActorRef(clusterActorRef);
+
+        Props workerHeartbeatProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create("workerHeartbeatReportActor")
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher("akka.actor.worker-heartbeat-dispatcher");
+        actorSystem.actorOf(workerHeartbeatProps, "worker_heartbeat");
+
+
+        Props workerProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create("workerActor")
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher("akka.actor.worker-dispatcher");
+        actorSystem.actorOf(workerProps, "worker");
     }
 }

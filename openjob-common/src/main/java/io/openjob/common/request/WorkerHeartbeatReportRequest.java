@@ -6,6 +6,6 @@ import java.io.Serializable;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class WorkerHeartbeatRequest implements Serializable {
-    
+public class WorkerHeartbeatReportRequest implements Serializable {
+
 }

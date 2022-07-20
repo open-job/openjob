@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
-import io.openjob.common.request.WorkerStartRequest;
+import io.openjob.common.request.WorkerHeartbeatReportRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -14,15 +14,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerActor extends AbstractActor {
+public class WorkerHeartbeatReportActor extends AbstractActor {
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(WorkerStartRequest.class, this::workerStart)
+                .match(WorkerHeartbeatReportRequest.class, this::workerHeartbeatReport)
                 .build();
     }
 
-    public void workerStart(WorkerStartRequest workerStartRequest) {
-        System.out.println(workerStartRequest);
+    public void workerHeartbeatReport(WorkerHeartbeatReportRequest workerHeartbeatReportRequest) {
+        System.out.println(workerHeartbeatReportRequest);
     }
 }

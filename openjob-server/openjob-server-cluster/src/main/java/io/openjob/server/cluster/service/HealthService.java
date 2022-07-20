@@ -11,6 +11,7 @@ import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.AkkaUtil;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
 import io.openjob.server.repository.entity.ServerFailReports;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +20,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Service
+@Log4j2
 public class HealthService {
     private final FailManager failManager;
     private final ServerFailReportsDAO serverFailReportsDAO;
@@ -42,8 +45,13 @@ public class HealthService {
         // Ping server list.
         Map<Long, Node> nodesMap = ClusterContext.getNodesList();
         Node currentNode = ClusterContext.getCurrentNode();
-        List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
 
+        if (Objects.isNull(currentNode)) {
+            log.warn("Health check ignore, cluster server is starting.");
+            return;
+        }
+
+        List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));
     }
 
@@ -99,6 +107,7 @@ public class HealthService {
         ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
         Collections.sort(serverIds);
         int serverSize = serverIds.size();
+
         int currentIndex = serverIds.indexOf(currentNode.getServerId());
 
         int subSize = serverSize - currentIndex - 1;

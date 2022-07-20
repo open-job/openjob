@@ -40,6 +40,4 @@ public class ActorConstant {
      * Server dispatcher
      */
     public static final String SERVER_DISPATCHER = "akka.actor.server-dispatcher";
-
-
 }

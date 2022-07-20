@@ -4,14 +4,12 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
-import akka.routing.RoundRobinRoutingLogic;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.request.WorkerHeartbeatRequest;
-import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
-import io.openjob.worker.actor.HeartbeatActor;
+import io.openjob.worker.actor.WorkerHeartbeatActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.util.WorkerIdUtil;
@@ -60,7 +58,6 @@ public class OpenjobWorker implements InitializingBean {
 
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
-            WorkerHeartbeatRequest workerHeartbeatRequest = new WorkerHeartbeatRequest();
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
     }
 
@@ -80,7 +77,7 @@ public class OpenjobWorker implements InitializingBean {
 
         // Heartbeat actor.
         int heartbeatNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM);
-        Props props = Props.create(HeartbeatActor.class)
+        Props props = Props.create(WorkerHeartbeatActor.class)
                 .withRouter(new RoundRobinPool(heartbeatNum))
                 .withDispatcher("heartbeat-dispatcher");
         actorSystem.actorOf(props, WorkerConstant.ROUTING_HEARTBEAT);
