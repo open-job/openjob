@@ -10,8 +10,10 @@ import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
+import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.scheduler.Scheduler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +32,13 @@ import java.util.stream.Collectors;
 public class ClusterService {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
+    private final WorkerDAO workerDAO;
 
     @Autowired
-    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
+    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
+        this.workerDAO = workerDAO;
     }
 
     /**
@@ -72,7 +76,6 @@ public class ClusterService {
         Set<Long> addSlots = this.refreshJobSlots(false);
 
         // Add job instance to timing wheel.
-
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
     }
 
@@ -82,7 +85,9 @@ public class ClusterService {
      * @param workerJoinDTO workerJoinDTO
      */
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
-        System.out.println(workerJoinDTO);
+        // Refresh app workers.
+        List<Worker> workers = workerDAO.listOnlineWorkers();
+        ClusterUtil.refreshAppWorkers(workers);
     }
 
     /**
@@ -91,7 +96,9 @@ public class ClusterService {
      * @param workerFailDTO workerFailDTO
      */
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
-        System.out.println(workerFailDTO);
+        // Refresh app workers.
+        List<Worker> workers = workerDAO.listOnlineWorkers();
+        ClusterUtil.refreshAppWorkers(workers);
     }
 
     /**

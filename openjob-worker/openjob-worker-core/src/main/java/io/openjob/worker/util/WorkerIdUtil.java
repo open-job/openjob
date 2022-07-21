@@ -16,7 +16,7 @@ public class WorkerIdUtil {
         if (Objects.isNull(workerId)) {
             synchronized (WorkerIdUtil.class) {
                 if (Objects.isNull(workerId)) {
-                    workerId = String.format("%s:%dt@%d", IpUtil.getLocalAddress(), port, DateUtil.now());
+                    workerId = String.format("%s-%d-%d", IpUtil.getFormatAddress(), port, DateUtil.now());
                 }
             }
         }

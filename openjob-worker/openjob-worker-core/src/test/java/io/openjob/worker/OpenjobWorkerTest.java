@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Test;
  */
 public class OpenjobWorkerTest {
     @Test
-    public void testStart() {
+    public void testStart() throws InterruptedException {
         OpenjobWorker openjobWorker = new OpenjobWorker();
         openjobWorker.init();
+
+        Thread.currentThread().join();
     }
 }

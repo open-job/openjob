@@ -4,7 +4,8 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import io.openjob.common.SpringContext;
-import io.openjob.server.common.constant.ActorConstant;
+import io.openjob.common.constant.AkkaConstant;
+import io.openjob.server.common.constant.ServerActorConstant;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
@@ -27,7 +28,7 @@ public class AkkaUtil {
      * @return actor
      */
     public static ActorSelection getClusterActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.CLUSTER_NAME));
+        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ServerActorConstant.CLUSTER_NAME));
     }
 
     /**
@@ -37,7 +38,7 @@ public class AkkaUtil {
      * @return actor
      */
     public static ActorSelection getServerActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.SERVER_NAME));
+        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ServerActorConstant.SERVER_NAME));
     }
 
     /**
@@ -47,7 +48,7 @@ public class AkkaUtil {
      * @return actor
      */
     public static ActorSelection getWorkerActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.WORKER_NAME));
+        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ServerActorConstant.WORKER_NAME));
     }
 
     /**
@@ -84,6 +85,6 @@ public class AkkaUtil {
      * @return actor path
      */
     private static String getActorPath(String address, String name) {
-        return String.format(AKKA_PATH_FORMAT, ActorConstant.SYSTEM_NAME, address, name);
+        return String.format(AKKA_PATH_FORMAT, AkkaConstant.SERVER_SYSTEM_NAME, address, name);
     }
 }

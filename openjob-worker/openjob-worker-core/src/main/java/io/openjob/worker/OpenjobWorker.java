@@ -1,5 +1,6 @@
 package io.openjob.worker;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
@@ -8,6 +9,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.request.WorkerHeartbeatRequest;
+import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.util.IpUtil;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
 import io.openjob.worker.config.OpenjobConfig;
@@ -58,7 +60,16 @@ public class OpenjobWorker implements InitializingBean {
 
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
+            System.out.println("heartbeat");
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
+
+        String format = String.format("akka://%s@%s/user/%s", "openjob", "127.0.0.1:25520", "worker");
+        actorSystem.actorSelection(format).tell(new WorkerStartRequest(), ActorRef.noSender());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("shutdown");
+            System.out.println("shutdown");
+        }));
     }
 
     private String actorSystem() {
@@ -79,7 +90,7 @@ public class OpenjobWorker implements InitializingBean {
         int heartbeatNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM);
         Props props = Props.create(WorkerHeartbeatActor.class)
                 .withRouter(new RoundRobinPool(heartbeatNum))
-                .withDispatcher("heartbeat-dispatcher");
+                .withDispatcher("akka.actor.heartbeat-dispatcher");
         actorSystem.actorOf(props, WorkerConstant.ROUTING_HEARTBEAT);
 
         // Job instance actor.

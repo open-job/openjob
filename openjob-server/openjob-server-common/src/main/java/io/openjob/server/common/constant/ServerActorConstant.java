@@ -4,12 +4,7 @@ package io.openjob.server.common.constant;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ActorConstant {
-
-    /**
-     * System name
-     */
-    public static final String SYSTEM_NAME = "openjob";
+public class ServerActorConstant {
 
     /**
      * Cluster name
@@ -40,4 +35,11 @@ public class ActorConstant {
      * Server dispatcher
      */
     public static final String SERVER_DISPATCHER = "akka.actor.server-dispatcher";
+
+
+    // Actor name.
+
+    // Actor bean name.
+
+    // Dispatcher name.
 }

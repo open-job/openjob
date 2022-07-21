@@ -5,10 +5,11 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
+import io.openjob.common.constant.AkkaConstant;
 import io.openjob.server.cluster.service.StartService;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
-import io.openjob.server.common.constant.ActorConstant;
+import io.openjob.server.common.constant.ServerActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,10 +50,10 @@ public class ClusterServer {
     public void createActor() {
         Props clusterProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create(ActorConstant.CLUSTER_ACTOR_NAME)
-                .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
+                .create(ServerActorConstant.CLUSTER_ACTOR_NAME)
+                .withDispatcher(ServerActorConstant.CLUSTER_DISPATCHER);
 
-        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ActorConstant.CLUSTER_NAME);
+        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ServerActorConstant.CLUSTER_NAME);
         ClusterContext.setClusterActorRef(clusterActorRef);
 
         Props workerHeartbeatProps = PropsFactoryManager.getFactory()
@@ -60,7 +61,7 @@ public class ClusterServer {
                 .create("workerHeartbeatReportActor")
                 .withRouter(new RoundRobinPool(2))
                 .withDispatcher("akka.actor.worker-heartbeat-dispatcher");
-        actorSystem.actorOf(workerHeartbeatProps, "worker_heartbeat");
+        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_HEARTBEAT_ACTOR_NAME);
 
 
         Props workerProps = PropsFactoryManager.getFactory()
@@ -68,6 +69,6 @@ public class ClusterServer {
                 .create("workerActor")
                 .withRouter(new RoundRobinPool(2))
                 .withDispatcher("akka.actor.worker-dispatcher");
-        actorSystem.actorOf(workerProps, "worker");
+        actorSystem.actorOf(workerProps, AkkaConstant.SERVER_WORKER_ACTOR_NAME);
     }
 }

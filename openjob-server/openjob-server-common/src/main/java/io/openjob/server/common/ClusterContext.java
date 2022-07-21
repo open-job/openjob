@@ -54,6 +54,7 @@ public class ClusterContext {
      * @param slotsIds Current slots ids.
      */
     public static synchronized void refreshCurrentSlots(Set<Long> slotsIds) {
+        CURRENT_SLOTS.clear();
         CURRENT_SLOTS.addAll(slotsIds);
     }
 
@@ -63,14 +64,17 @@ public class ClusterContext {
      * @param nodes nodes
      */
     public static synchronized void refreshNodeList(Map<Long, Node> nodes) {
+        NODES_LIST.clear();
         NODES_LIST.putAll(nodes);
     }
 
     /**
      * Refresh app worker.
+     *
      * @param workers workers
      */
     public static synchronized void refreshAppWorkers(Map<Long, List<WorkerDTO>> workers) {
+        APP_WORKERS.clear();
         APP_WORKERS.putAll(workers);
     }
 
@@ -80,6 +84,7 @@ public class ClusterContext {
      * @param slotsList Slots list.
      */
     public static synchronized void refreshSlotsListMap(Map<Long, Long> slotsList) {
+        SLOTS_LIST_MAP.clear();
         SLOTS_LIST_MAP.putAll(slotsList);
     }
 
@@ -101,6 +106,13 @@ public class ClusterContext {
         ClusterContext.currentNode = currentNode;
     }
 
+    public static Map<Long, Long> getSlotsListMap() {
+        return SLOTS_LIST_MAP;
+    }
+
+    public static Map<Long, List<WorkerDTO>> get() {
+        return APP_WORKERS;
+    }
 
     /**
      * Return current slots.
@@ -110,6 +122,7 @@ public class ClusterContext {
     public static Set<Long> getCurrentSlots() {
         return CURRENT_SLOTS;
     }
+
 
     /**
      * Return nodes.

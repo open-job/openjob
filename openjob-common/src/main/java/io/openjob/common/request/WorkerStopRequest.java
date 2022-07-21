@@ -10,5 +10,9 @@ import java.io.Serializable;
  */
 @Data
 public class WorkerStopRequest implements Serializable {
+    private String workerKey;
 
+    private String appName;
+
+    private String address;
 }

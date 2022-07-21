@@ -34,6 +34,6 @@ public class WorkerDAOImpl implements WorkerDAO {
 
     @Override
     public List<Worker> listOnlineWorkers() {
-        return workerRepository.findByAppStatus(WorkerStatusConstant.ONLINE.getStatus());
+        return workerRepository.findByStatus(WorkerStatusConstant.ONLINE.getStatus());
     }
 }
