@@ -6,40 +6,16 @@ package io.openjob.server.common.constant;
  */
 public class ServerActorConstant {
 
-    /**
-     * Cluster name
-     */
-    public static final String CLUSTER_NAME = "cluster";
-
-    /**
-     * Server name
-     */
-    public static final String SERVER_NAME = "server";
-
-    /**
-     * Cluster actor name
-     */
-    public static final String CLUSTER_ACTOR_NAME = "clusterActor";
-
-    /**
-     * Worker name
-     */
-    public static final String WORKER_NAME = "worker";
-
-    /**
-     * Cluster dispatcher
-     */
-    public static final String CLUSTER_DISPATCHER = "akka.actor.cluster-dispatcher";
-
-    /**
-     * Server dispatcher
-     */
-    public static final String SERVER_DISPATCHER = "akka.actor.server-dispatcher";
-
-
     // Actor name.
+    public static final String ACTOR_CLUSTER = "cluster";
 
     // Actor bean name.
+    public static final String BEAN_ACTOR_CLUSTER = "clusterActor";
+    public static final String BEAN_ACTOR_WORKER = "workerActor";
+    public static final String BEAN_ACTOR_WORKER_HEARTBEAT_REPORT = "workerHeartbeatReportActor";
 
     // Dispatcher name.
+    public static final String DISPATCHER_CLUSTER = "akka.actor.cluster-dispatcher";
+    public static final String DISPATCHER_WORKER = "akka.actor.worker-dispatcher";
+    public static final String DISPATCHER_WORKER_HEARTBEAT_REPORT = "akka.actor.worker-heartbeat-report-dispatcher";
 }

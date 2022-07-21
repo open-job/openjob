@@ -50,25 +50,26 @@ public class ClusterServer {
     public void createActor() {
         Props clusterProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create(ServerActorConstant.CLUSTER_ACTOR_NAME)
-                .withDispatcher(ServerActorConstant.CLUSTER_DISPATCHER);
+                .create(ServerActorConstant.BEAN_ACTOR_CLUSTER)
+                .withDispatcher(ServerActorConstant.DISPATCHER_CLUSTER);
 
-        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ServerActorConstant.CLUSTER_NAME);
+        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ServerActorConstant.ACTOR_CLUSTER);
         ClusterContext.setClusterActorRef(clusterActorRef);
 
-        Props workerHeartbeatProps = PropsFactoryManager.getFactory()
-                .get(actorSystem)
-                .create("workerHeartbeatReportActor")
-                .withRouter(new RoundRobinPool(2))
-                .withDispatcher("akka.actor.worker-heartbeat-dispatcher");
-        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_HEARTBEAT_ACTOR_NAME);
-
-
+        // Worker actor.
         Props workerProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create("workerActor")
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER)
                 .withRouter(new RoundRobinPool(2))
-                .withDispatcher("akka.actor.worker-dispatcher");
-        actorSystem.actorOf(workerProps, AkkaConstant.SERVER_WORKER_ACTOR_NAME);
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER);
+        actorSystem.actorOf(workerProps, AkkaConstant.SERVER_ACTOR_WORKER);
+
+        // Worker heartbeat.
+        Props workerHeartbeatProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_HEARTBEAT_REPORT)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_HEARTBEAT_REPORT);
+        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_ACTOR_HEARTBEAT);
     }
 }
