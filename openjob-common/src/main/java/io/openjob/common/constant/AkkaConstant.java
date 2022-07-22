@@ -13,12 +13,12 @@ public class AkkaConstant {
     public static final String SERVER_SYSTEM_NAME = "openjob-server";
     public static final String SERVER_ACTOR_WORKER = "worker";
     public static final String SERVER_ACTOR_WORKER_HEARTBEAT = "worker-heartbeat";
-    public static final String SERVER_ACTOR_worker_MASTER = "worker-master";
+    public static final String SERVER_ACTOR_WORKER_TASK_MASTER = "worker-task-master";
 
     // Worker
     public static final String WORKER_SYSTEM_NAME = "openjob-worker";
     public static final String WORKER_ACTOR_HEARTBEAT = "heartbeat";
-    public static final String WORKER_ACTOR_MASTER = "master";
-    public static final String WORKER_ACTOR_MANAGER = "manager";
+    public static final String WORKER_ACTOR_MASTER = "task-master";
+    public static final String WORKER_ACTOR_MANAGER = "task-manager";
     public static final String WORKER_ACTOR_TASK = "task";
 }
