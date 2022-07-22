@@ -13,24 +13,23 @@ public enum ExecuteTypeEnum {
     /**
      * Standalone.
      */
-    STANDALONE(1, "standalone"),
+    STANDALONE("standalone"),
 
     /**
      * Broadcast.
      */
-    BROADCAST(3, "broadcast"),
+    BROADCAST("broadcast"),
 
     /**
      * MapReduce.
      */
-    MAP_REDUCE(5, "mapReduce"),
+    MAP_REDUCE("mapReduce"),
 
     /**
      * Sharding.
      */
-    Sharding(7, "sharding"),
+    Sharding("sharding"),
     ;
 
-    private final Integer type;
-    private final String message;
+    private final String type;
 }

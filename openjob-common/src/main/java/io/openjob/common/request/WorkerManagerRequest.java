@@ -9,6 +9,5 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class ServerStopJobInstanceRequest implements Serializable {
-    private Long jobInstanceId;
+public class WorkerManagerRequest implements Serializable {
 }
