@@ -13,13 +13,13 @@ import io.openjob.worker.constant.WorkerConstant;
 public class WorkerUtil {
 
     public static ActorSelection getServerWorkerActor() {
-        String address = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
-        return OpenjobWorker.getActorSystem().actorSelection(getWorkerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER));
+        String address = getServerAddress();
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER));
     }
 
     public static ActorSelection getServerHeartbeatActor() {
-        String address = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
-        return OpenjobWorker.getActorSystem().actorSelection(getWorkerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));
+        String address = getServerAddress();
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));
     }
 
     /**
@@ -38,5 +38,9 @@ public class WorkerUtil {
      */
     private static String getWorkerActorPath(String address, String name) {
         return String.format(AkkaConstant.AKKA_PATH_FORMAT, AkkaConstant.WORKER_SYSTEM_NAME, address, name);
+    }
+
+    private static String getServerAddress() {
+        return String.format("%s:%d", OpenjobConfig.getString(WorkerConstant.SERVER_HOST), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 }

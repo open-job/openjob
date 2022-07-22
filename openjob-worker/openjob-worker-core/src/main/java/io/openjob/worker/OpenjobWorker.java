@@ -1,7 +1,5 @@
 package io.openjob.worker;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
@@ -9,9 +7,13 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.constant.ProtocolTypeEnum;
 import io.openjob.common.request.WorkerStartRequest;
+import io.openjob.common.response.Result;
+import io.openjob.common.response.ServerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
+import io.openjob.common.util.ResultUtil;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -61,9 +63,9 @@ public class OpenjobWorker implements InitializingBean {
     public synchronized void init() throws Exception {
         this.checkConfig();
 
-        this.start();
-
         this.actorSystem();
+
+        this.start();
 
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
@@ -75,17 +77,25 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     public void start() throws Exception {
+        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
         String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
         int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
 
         String workerAddress = String.format("%s:%d", hostname, port);
         WorkerStartRequest startReq = new WorkerStartRequest();
         startReq.setAddress(workerAddress);
+        startReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
+        startReq.setProtocolType(ProtocolTypeEnum.AKKA.getType());
 
         try {
-            FutureUtil.ask(WorkerUtil.getServerWorkerActor(), startReq, 3L);
+            Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerWorkerActor(), startReq, 3L);
+            if (!ResultUtil.isSuccess(result)) {
+                log.error("Register worker fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, result.getMessage());
+                throw new RuntimeException(String.format("Register worker fail! message=%s", result.getMessage()));
+            }
+
+            log.info("Register worker success. serverAddress={} workerAddress={}", serverAddress, workerAddress);
         } catch (Throwable e) {
-            String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
             log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, workerAddress);
             throw e;
         }
@@ -96,9 +106,9 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     private void checkConfig() {
-        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
+        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
         if (Objects.isNull(serverAddress)) {
-            throw new RuntimeException(String.format("%s must be config", WorkerConstant.SERVER_ADDRESS));
+            throw new RuntimeException(String.format("%s must be config", WorkerConstant.SERVER_HOST));
         }
 
         String appid = OpenjobConfig.getString(WorkerConstant.WORKER_APPID);

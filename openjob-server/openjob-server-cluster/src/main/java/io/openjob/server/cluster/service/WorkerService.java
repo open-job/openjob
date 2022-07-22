@@ -76,10 +76,15 @@ public class WorkerService {
     }
 
     private void updateWorkerForStart(WorkerStartRequest startReq) {
-        int now = DateUtil.now();
-        Worker worker = workerDAO.getByAddress(startReq.getAddress());
+        // app
+        App app = appDAO.getAppByName(startReq.getAppName());
+        if (Objects.isNull(app)) {
+            throw new RuntimeException(String.format("app(%s) do not exist!", startReq.getAppName()));
+        }
 
         // Update worker.
+        int now = DateUtil.now();
+        Worker worker = workerDAO.getByAddress(startReq.getAddress());
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
             worker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
@@ -87,25 +92,22 @@ public class WorkerService {
             return;
         }
 
-        // app
-        App app = appDAO.getAppByName(startReq.getAppName());
-        if (Objects.isNull(app)) {
-            throw new RuntimeException(String.format("app(%s) do not exist!", startReq.getAppName()));
-        }
-
         // save
         Worker saveWorker = new Worker();
         saveWorker.setUpdateTime(now);
+        saveWorker.setCreateTime(now);
         saveWorker.setWorkerKey(startReq.getWorkerKey());
         saveWorker.setAddress(startReq.getAddress());
         saveWorker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
         saveWorker.setAppId(app.getId());
         saveWorker.setAppName(startReq.getAppName());
-        saveWorker.setCreateTime(now);
         saveWorker.setLastHeartbeatTime(now);
         saveWorker.setNamespaceId(app.getNamespaceId());
         saveWorker.setProtocolType(startReq.getProtocolType());
         saveWorker.setVersion(startReq.getVersion());
+        saveWorker.setMetric("");
+        saveWorker.setVersion("");
+        saveWorker.setWorkerKey("");
         workerDAO.save(saveWorker);
     }
 }

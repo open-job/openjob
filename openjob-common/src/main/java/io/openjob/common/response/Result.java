@@ -6,45 +6,48 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author lilin <lilin@kzl.com.cn>
- * @date 2020-07-23 19:52:46
+ * @author stelin <swoft@qq.com>
+ * @since 1.0.0
  */
 @Data
 public class Result<T> implements Serializable {
+    public static final Integer SUCCESS = 0;
+    public static final Integer FAIL = 1;
+
     /**
-     * 数据
+     * data
      */
     private T data;
 
     /**
-     * 请求状态
+     * status
      */
-    private Integer status = 0;
+    private Integer status = SUCCESS;
 
     /**
-     * 业务状态
+     * code
      */
     private Integer code = 0;
 
     /**
-     * 消息
+     * message
      */
     private String message = "";
 
     /**
-     * 当前时间(ms)
+     * server time.
      */
     private Long serverTime = DateUtil.milliLongTime();
 
     /**
-     * 数据初始化
+     * init
      */
     public Result(T data) {
         this.data = data;
     }
 
     /**
-     * 数据+业务Code+消息 初始化
+     * init
      */
     public Result(T data, Integer code, String message) {
         this.code = code;
@@ -53,7 +56,7 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 全数据初始化
+     * init
      */
     public Result(T data, Integer status, Integer code, String message) {
         this.data = data;
@@ -63,21 +66,21 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 请求成功
+     * success
      */
     public static <T> Result<T> success(T data) {
         return new Result<>(data);
     }
 
     /**
-     * 业务成功
+     * success
      */
     public static <T> Result<T> success(T data, Integer code, String message) {
         return new Result<>(data, code, message);
     }
 
     /**
-     * 请求失败
+     * fail
      */
     public static Result<Object> fatal(String message) {
         return new Result<>(new Object(), 1, 0, message);
@@ -88,7 +91,7 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 自定义返回
+     * normal
      */
     public static <T> Result<T> normal(T data, Integer status, Integer code, String message) {
         return new Result<>(data, status, code, message);

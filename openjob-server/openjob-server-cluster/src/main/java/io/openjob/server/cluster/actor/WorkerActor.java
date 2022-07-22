@@ -3,6 +3,8 @@ package io.openjob.server.cluster.actor;
 import akka.actor.AbstractActor;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
+import io.openjob.common.response.Result;
+import io.openjob.common.response.ServerResponse;
 import io.openjob.server.cluster.service.WorkerService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,18 @@ public class WorkerActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(WorkerStartRequest.class, this.workerService::workerStart)
+                .match(WorkerStartRequest.class, this::workerStart)
                 .match(WorkerStopRequest.class, this.workerService::workerStop)
                 .build();
+    }
+
+    public void workerStart(WorkerStartRequest workerStartRequest) {
+        try {
+            this.workerService.workerStart(workerStartRequest);
+            log.info("Worker register success! address={}", workerStartRequest.getAddress());
+        } catch (Throwable e) {
+            getSender().tell(Result.fail(e.getMessage()), getSelf());
+        }
+        getSender().tell(Result.success(new ServerResponse()), getSelf());
     }
 }

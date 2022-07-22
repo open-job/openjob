@@ -7,7 +7,8 @@ package io.openjob.worker.constant;
 public class WorkerConstant {
 
     // Server config key.
-    public static final String SERVER_ADDRESS = "server.address";
+    public static final String SERVER_HOST = "server.host";
+    public static final String SERVER_PORT = "server.port";
 
     // Routing
     public static final String ROUTING_HEARTBEAT = "heartbeat";
