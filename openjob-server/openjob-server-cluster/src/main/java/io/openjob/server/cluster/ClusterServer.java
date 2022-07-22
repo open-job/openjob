@@ -67,9 +67,9 @@ public class ClusterServer {
         // Worker heartbeat.
         Props workerHeartbeatProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create(ServerActorConstant.BEAN_ACTOR_WORKER_HEARTBEAT_REPORT)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_HEARTBEAT)
                 .withRouter(new RoundRobinPool(2))
-                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_HEARTBEAT_REPORT);
-        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_ACTOR_HEARTBEAT);
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_HEARTBEAT);
+        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT);
     }
 }

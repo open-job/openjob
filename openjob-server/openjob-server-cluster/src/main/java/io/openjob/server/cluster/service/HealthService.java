@@ -8,7 +8,7 @@ import io.openjob.server.cluster.dto.ResponseDTO;
 import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.common.SpringContext;
 import io.openjob.server.common.constant.ClusterConstant;
-import io.openjob.server.common.util.AkkaUtil;
+import io.openjob.server.common.util.ServerAkkaUtil;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
 import io.openjob.server.repository.entity.ServerFailReports;
 import lombok.extern.log4j.Log4j2;
@@ -65,7 +65,7 @@ public class HealthService {
         Node node = nodesMap.get(serverId);
         boolean success = false;
         try {
-            ResponseDTO responseDTO = (ResponseDTO) AkkaUtil.clusterAsk(node.getAkkaAddress(), new NodePingDTO());
+            ResponseDTO responseDTO = (ResponseDTO) ServerAkkaUtil.clusterAsk(node.getAkkaAddress(), new NodePingDTO());
             success = true;
         } catch (Exception e) {
             System.out.println(e);

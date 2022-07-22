@@ -12,10 +12,10 @@ public class ServerActorConstant {
     // Actor bean name.
     public static final String BEAN_ACTOR_CLUSTER = "clusterActor";
     public static final String BEAN_ACTOR_WORKER = "workerActor";
-    public static final String BEAN_ACTOR_WORKER_HEARTBEAT_REPORT = "workerHeartbeatReportActor";
+    public static final String BEAN_ACTOR_WORKER_HEARTBEAT = "workerHeartbeatActor";
 
     // Dispatcher name.
     public static final String DISPATCHER_CLUSTER = "akka.actor.cluster-dispatcher";
     public static final String DISPATCHER_WORKER = "akka.actor.worker-dispatcher";
-    public static final String DISPATCHER_WORKER_HEARTBEAT_REPORT = "akka.actor.worker-heartbeat-report-dispatcher";
+    public static final String DISPATCHER_WORKER_HEARTBEAT = "akka.actor.worker-heartbeat-dispatcher";
 }

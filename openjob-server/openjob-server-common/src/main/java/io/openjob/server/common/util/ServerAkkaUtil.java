@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class AkkaUtil {
+public class ServerAkkaUtil {
     /**
      * Akka path format
      */

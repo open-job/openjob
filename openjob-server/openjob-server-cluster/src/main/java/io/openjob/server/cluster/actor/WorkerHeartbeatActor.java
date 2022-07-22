@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerHeartbeatReportActor extends AbstractActor {
+public class WorkerHeartbeatActor extends AbstractActor {
 
     @Override
     public Receive createReceive() {

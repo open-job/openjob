@@ -8,13 +8,15 @@ import akka.routing.RoundRobinPool;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.openjob.common.request.WorkerHeartbeatRequest;
+import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.request.WorkerStartRequest;
+import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
 import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.util.WorkerIdUtil;
+import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -38,12 +40,10 @@ public class OpenjobWorker implements InitializingBean {
      */
     private static ScheduledExecutorService heartbeatService;
 
-    private static ActorSelection serverActor;
-
     /**
      * Actor system.
      */
-    public static ActorSystem actorSystem;
+    private static ActorSystem actorSystem;
 
     static {
         heartbeatService = new ScheduledThreadPoolExecutor(
@@ -53,56 +53,47 @@ public class OpenjobWorker implements InitializingBean {
         );
     }
 
-    public synchronized void init() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.init();
+    }
+
+    public synchronized void init() throws Exception {
         this.checkConfig();
 
-        String workerId = this.actorSystem();
+        this.start();
+
+        this.actorSystem();
 
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
             System.out.println("heartbeat");
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
 
-        String format = String.format("akka://%s@%s/user/%s", "openjob", "127.0.0.1:25520", "worker");
-        actorSystem.actorSelection(format).tell(new WorkerStartRequest(), ActorRef.noSender());
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("shutdown");
-            System.out.println("shutdown");
-        }));
+        // Shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
-    private String actorSystem() {
-        String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
+    public void start() throws Exception {
         String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
         int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
 
-        Config defaultConfig = ConfigFactory.load(akkaConfigFile);
-        Map<String, String> newConfig = new HashMap<>(16);
+        String workerAddress = String.format("%s:%d", hostname, port);
+        WorkerStartRequest startReq = new WorkerStartRequest();
+        startReq.setAddress(workerAddress);
 
-        String workerId = WorkerIdUtil.getId(port);
-        Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
-        actorSystem = ActorSystem.create(workerId, config);
-
-        log.info("Worker actor system started,address={} workerId={}", actorSystem.provider().getDefaultAddress(), workerId);
-
-        // Heartbeat actor.
-        int heartbeatNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM);
-        Props props = Props.create(WorkerHeartbeatActor.class)
-                .withRouter(new RoundRobinPool(heartbeatNum))
-                .withDispatcher("akka.actor.heartbeat-dispatcher");
-        actorSystem.actorOf(props, WorkerConstant.ROUTING_HEARTBEAT);
-
-        // Job instance actor.
-
-        // Manager actor.
-
-        // Task actor.
-
-        // Persistence actor.
-        return workerId;
+        try {
+            FutureUtil.ask(WorkerUtil.getServerWorkerActor(), startReq, 3L);
+        } catch (Throwable e) {
+            String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
+            log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, workerAddress);
+            throw e;
+        }
     }
 
+    public void shutdown() {
+
+    }
 
     private void checkConfig() {
         String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_ADDRESS);
@@ -116,8 +107,33 @@ public class OpenjobWorker implements InitializingBean {
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    private void actorSystem() {
+        String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
+        Config defaultConfig = ConfigFactory.load(akkaConfigFile);
+        Map<String, String> newConfig = new HashMap<>(16);
 
+        Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
+        actorSystem = ActorSystem.create(AkkaConstant.WORKER_SYSTEM_NAME, config);
+
+        log.info("Worker actor system started,address={}", actorSystem.provider().getDefaultAddress());
+
+        // Heartbeat actor.
+        int heartbeatNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM);
+        Props props = Props.create(WorkerHeartbeatActor.class)
+                .withRouter(new RoundRobinPool(heartbeatNum))
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_HEARTBEAT);
+        actorSystem.actorOf(props, AkkaConstant.WORKER_ACTOR_HEARTBEAT);
+
+        // Master actor.
+
+        // Manager actor.
+
+        // Task actor.
+
+        // Persistence actor.
+    }
+
+    public static ActorSystem getActorSystem() {
+        return actorSystem;
     }
 }
