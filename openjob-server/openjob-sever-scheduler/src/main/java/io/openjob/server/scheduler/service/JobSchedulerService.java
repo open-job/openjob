@@ -1,10 +1,10 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.cron.CronExpression;
-import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -63,12 +64,22 @@ public class JobSchedulerService {
         // Update job next execute time.
         jobs.forEach(j -> {
             try {
+                Integer now = DateUtil.now();
+
                 // Calculate next execute time.
-                Integer nextExecuteTime = this.calculateNextExecuteTime(j);
+                Integer nextExecuteTime = this.calculateNextExecuteTime(j, now);
 
                 // Update next execute time.
                 j.setNextExecuteTime(nextExecuteTime);
-                j.setUpdateTime(DateUtil.now());
+                j.setUpdateTime(now);
+
+                if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / 1000)) {
+                    this.createJobInstance(Arrays.asList(j));
+
+                    // Update next execute time.
+                    j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
+                }
+
                 jobDAO.save(j);
             } catch (ParseException parseException) {
                 log.error("Cron expression({}) is invalid!", j.getTimeExpression());
@@ -100,18 +111,23 @@ public class JobSchedulerService {
             jobInstance.setLastReportTime(0);
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
-            TimerTask timerTask = new TimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime() - DateUtil.now());
+            TimerTask timerTask = new TimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime());
             timerTasks.add(timerTask);
         });
 
         Scheduler.addTimerTask(timerTasks);
     }
 
-    private Integer calculateNextExecuteTime(Job job) throws ParseException {
+    private Integer calculateNextExecuteTime(Job job, Integer now) throws ParseException {
         // Cron type job.
         if (TimeExpressionTypeEnum.CRON_TYPES.contains(job.getTimeExpressionType())) {
             CronExpression cronExpression = new CronExpression(job.getTimeExpression());
-            return (int) cronExpression.getNextValidTimeAfter(new Date()).toInstant().getEpochSecond();
+            long afterTime = job.getNextExecuteTime();
+            if (afterTime < now) {
+                afterTime = now;
+            }
+            Date date = new Date(afterTime * 1000L);
+            return (int) cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
         }
 
         // Fixed rate job.

@@ -4,8 +4,6 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.scheduler.constant.TimerConstant;
 import io.openjob.server.scheduler.contract.Timer;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +45,7 @@ public class SystemTimer implements Timer {
     public void add(TimerTask timerTask) {
         readLock.lock();
         try {
-            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getDelay() + DateUtil.now()));
+            this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getExpiration()));
         } finally {
             readLock.unlock();
         }
@@ -68,9 +66,6 @@ public class SystemTimer implements Timer {
                         });
 
                         bucket = delayQueue.poll();
-                        if (bucket != null) {
-                            System.out.println(bucket.getExpiration());
-                        }
                     }
                 } finally {
                     writeLock.unlock();
@@ -121,10 +116,6 @@ public class SystemTimer implements Timer {
     public void addTimerTaskEntry(TimerTaskEntry timerTaskEntry) {
         if (!timingWheel.add(timerTaskEntry)) {
             if (!timerTaskEntry.canceled()) {
-                Date date = new Date();
-                String strDateFormat = "yyyy-MM-dd HH:mm:ss";
-                SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-                System.out.println(sdf.format(date));
                 taskExecutor.submit(timerTaskEntry.getTimerTask());
             }
         }

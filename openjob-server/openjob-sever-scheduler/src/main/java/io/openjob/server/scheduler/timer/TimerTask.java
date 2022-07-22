@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.timer;
 
+import io.openjob.common.util.DateUtil;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -14,20 +15,20 @@ import java.util.Objects;
 @Data
 @Log4j2
 public class TimerTask implements Runnable {
-    protected Long delay = 1L;
     protected TimerTaskEntry timerTaskEntry;
     protected Long taskId;
     protected Long slotsId;
+    protected Long expiration;
 
     /**
      * Timer task.
      *
-     * @param taskId  taskId
-     * @param slotsId slotsId
-     * @param delay   delay
+     * @param taskId     taskId
+     * @param slotsId    slotsId
+     * @param expiration expiration
      */
-    public TimerTask(Long taskId, Long slotsId, Long delay) {
-        this.delay = delay;
+    public TimerTask(Long taskId, Long slotsId, Long expiration) {
+        this.expiration = expiration;
         this.slotsId = slotsId;
         this.taskId = taskId;
     }
@@ -74,6 +75,6 @@ public class TimerTask implements Runnable {
         Date date = new Date();
         String strDateFormat = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-        log.info("do task" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId);
+        log.info("do task time=" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId + " now=" + DateUtil.now() + " expiration=" + this.getExpiration());
     }
 }

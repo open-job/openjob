@@ -4,7 +4,8 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import io.openjob.common.SpringContext;
-import io.openjob.server.common.constant.ActorConstant;
+import io.openjob.common.constant.AkkaConstant;
+import io.openjob.server.common.constant.ServerActorConstant;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class AkkaUtil {
+public class ServerAkkaUtil {
     /**
      * Akka path format
      */
@@ -27,27 +28,7 @@ public class AkkaUtil {
      * @return actor
      */
     public static ActorSelection getClusterActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.CLUSTER_NAME));
-    }
-
-    /**
-     * Server actor
-     *
-     * @param address address
-     * @return actor
-     */
-    public static ActorSelection getServerActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.SERVER_NAME));
-    }
-
-    /**
-     * Worker actor
-     *
-     * @param address address
-     * @return actor
-     */
-    public static ActorSelection getWorkerActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ActorConstant.WORKER_NAME));
+        return SpringContext.getBean(ActorSystem.class).actorSelection(getActorPath(address, ServerActorConstant.ACTOR_CLUSTER));
     }
 
     /**
@@ -84,6 +65,6 @@ public class AkkaUtil {
      * @return actor path
      */
     private static String getActorPath(String address, String name) {
-        return String.format(AKKA_PATH_FORMAT, ActorConstant.SYSTEM_NAME, address, name);
+        return String.format(AKKA_PATH_FORMAT, AkkaConstant.SERVER_SYSTEM_NAME, address, name);
     }
 }

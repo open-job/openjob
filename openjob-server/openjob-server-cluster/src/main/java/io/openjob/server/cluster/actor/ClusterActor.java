@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
+import io.openjob.common.response.Result;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
@@ -42,6 +43,5 @@ public class ClusterActor extends AbstractActor {
     }
 
     public void receivePing(NodePingDTO nodePingDTO) {
-        getSender().tell(new PongDTO(), getSelf());
     }
 }

@@ -3,10 +3,10 @@ package io.openjob.server.autoconfigure;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.openjob.server.cluster.ClusterServer;
 import io.openjob.common.SpringContext;
+import io.openjob.common.constant.AkkaConstant;
+import io.openjob.server.cluster.ClusterServer;
 import io.openjob.server.common.actor.PropsFactoryManager;
-import io.openjob.server.common.constant.ActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import io.openjob.server.event.ApplicationReadyEventListener;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,7 +55,7 @@ public class ServerAutoConfiguration {
         Config mergedConfig = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
 
         // Create actor system
-        ActorSystem system = ActorSystem.create(ActorConstant.SYSTEM_NAME, mergedConfig);
+        ActorSystem system = ActorSystem.create(AkkaConstant.SERVER_SYSTEM_NAME, mergedConfig);
 
         // Set ApplicationContext
         PropsFactoryManager.getFactory().get(system).init(applicationContext);

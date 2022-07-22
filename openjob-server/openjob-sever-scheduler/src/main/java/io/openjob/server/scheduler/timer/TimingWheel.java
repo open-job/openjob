@@ -3,7 +3,6 @@ package io.openjob.server.scheduler.timer;
 import com.google.common.collect.Maps;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class TimingWheel {
 
     private AtomicInteger taskCounter;
 
-    private DelayQueue<TimerTaskList> delayQueue;
+    private volatile DelayQueue<TimerTaskList> delayQueue;
 
     /**
      * second.
@@ -44,7 +43,7 @@ public class TimingWheel {
      * overflowWheel can potentially be updated and read by two concurrent threads through add().
      * Therefore, it needs to be volatile due to Double-Checked Locking pattern with JVM
      */
-    private volatile TimingWheel overflowWheel;
+    private TimingWheel overflowWheel;
 
     private TimerTaskList[] buckets;
 
@@ -107,6 +106,7 @@ public class TimingWheel {
             Set<Long> defaultSet = new HashSet<>();
             this.slotsToTaskMap.getOrDefault(slotsId, defaultSet).add(taskId);
             this.slotsToTaskMap.putIfAbsent(slotsId, defaultSet);
+
             if (bucket.setExpiration(virtualId * tickTime)) {
                 delayQueue.offer(bucket);
             }

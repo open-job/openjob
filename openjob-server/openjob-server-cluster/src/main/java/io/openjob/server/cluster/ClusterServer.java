@@ -3,11 +3,13 @@ package io.openjob.server.cluster;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
-import io.openjob.server.common.ClusterContext;
+import io.openjob.common.constant.AkkaConstant;
 import io.openjob.server.cluster.service.StartService;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
-import io.openjob.server.common.constant.ActorConstant;
+import io.openjob.server.common.constant.ServerActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,18 +41,35 @@ public class ClusterServer {
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
         serverService.start(hostname, port);
+
     }
 
     /**
      * Create cluster actor
      */
     public void createActor() {
-        Props serverProps = PropsFactoryManager.getFactory()
+        Props clusterProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create(ActorConstant.CLUSTER_ACTOR_NAME)
-                .withDispatcher(ActorConstant.CLUSTER_DISPATCHER);
+                .create(ServerActorConstant.BEAN_ACTOR_CLUSTER)
+                .withDispatcher(ServerActorConstant.DISPATCHER_CLUSTER);
 
-        ActorRef clusterActorRef = actorSystem.actorOf(serverProps, ActorConstant.CLUSTER_NAME);
+        ActorRef clusterActorRef = actorSystem.actorOf(clusterProps, ServerActorConstant.ACTOR_CLUSTER);
         ClusterContext.setClusterActorRef(clusterActorRef);
+
+        // Worker actor.
+        Props workerProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER);
+        actorSystem.actorOf(workerProps, AkkaConstant.SERVER_ACTOR_WORKER);
+
+        // Worker heartbeat.
+        Props workerHeartbeatProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_HEARTBEAT)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_HEARTBEAT);
+        actorSystem.actorOf(workerHeartbeatProps, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT);
     }
 }

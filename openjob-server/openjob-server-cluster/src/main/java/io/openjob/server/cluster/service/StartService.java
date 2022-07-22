@@ -3,8 +3,7 @@ package io.openjob.server.cluster.service;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
-import io.openjob.server.cluster.message.ClusterMessage;
-import io.openjob.server.cluster.util.ClusterStatusUtil;
+import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
@@ -29,13 +28,11 @@ import java.util.stream.Collectors;
 @Service
 public class StartService {
     private final ServerDAO serverDAO;
-    private final ClusterMessage clusterMessage;
     private final JobSlotsDAO jobSlotsDAO;
 
     @Autowired
-    public StartService(ServerDAO serverDAO, ClusterMessage messageManager, JobSlotsDAO jobSlotsDAO) {
+    public StartService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
         this.serverDAO = serverDAO;
-        this.clusterMessage = messageManager;
         this.jobSlotsDAO = jobSlotsDAO;
     }
 
@@ -57,7 +54,7 @@ public class StartService {
         this.setCurrentNode(currentServer);
 
         // Refresh nodes.
-        ClusterStatusUtil.refreshNodes(servers);
+        ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
         this.refreshCurrentSlots(currentServer);
@@ -161,6 +158,6 @@ public class StartService {
         nodeJoinDTO.setIp(currentNode.getIp());
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
-        this.clusterMessage.join(nodeJoinDTO, servers);
+        ClusterUtil.sendMessage(nodeJoinDTO, servers);
     }
 }
