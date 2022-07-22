@@ -33,5 +33,5 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_JOB_INSTANCE_TASK_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_MANAGER_TASK_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_PERSISTENCE_ACTOR_NUM = 128;
-    public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 3;
+    public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
 }

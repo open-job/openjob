@@ -42,6 +42,7 @@ public class WorkerActor extends AbstractActor {
             log.info("Worker register success! address={}", workerStartRequest.getAddress());
         } catch (Throwable e) {
             getSender().tell(Result.fail(e.getMessage()), getSelf());
+            return;
         }
         getSender().tell(Result.success(new ServerResponse()), getSelf());
     }

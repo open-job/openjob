@@ -8,9 +8,9 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.ProtocolTypeEnum;
+import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.response.Result;
-import io.openjob.common.response.ServerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
 import io.openjob.common.util.ResultUtil;
@@ -67,21 +67,16 @@ public class OpenjobWorker implements InitializingBean {
 
         this.start();
 
-        int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
-        heartbeatService.scheduleAtFixedRate(() -> {
-            System.out.println("heartbeat");
-        }, 5, heartbeatInterval, TimeUnit.SECONDS);
+        this.doHeartbeat();
 
         // Shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
     public void start() throws Exception {
+        String workerAddress = this.getWorkerAddress();
         String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
-        String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
-        int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
 
-        String workerAddress = String.format("%s:%d", hostname, port);
         WorkerStartRequest startReq = new WorkerStartRequest();
         startReq.setAddress(workerAddress);
         startReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
@@ -102,7 +97,32 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     public void shutdown() {
+        heartbeatService.shutdownNow();
+    }
 
+    private void doHeartbeat() {
+        int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
+        heartbeatService.scheduleAtFixedRate(() -> {
+            String workerAddress = this.getWorkerAddress();
+            String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+
+            WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
+            heartbeatReq.setAddress(workerAddress);
+            heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
+            heartbeatReq.setVersion("1.0");
+            try {
+                Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, 3L);
+                if (!ResultUtil.isSuccess(result)) {
+                    log.error("Worker heartbeat fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, result.getMessage());
+                    throw new RuntimeException(String.format("Register worker fail! message=%s", result.getMessage()));
+                }
+
+                log.info("Worker heartbeat success. serverAddress={} workerAddress={}", serverAddress, workerAddress);
+            } catch (Throwable e) {
+                log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, workerAddress);
+            }
+
+        }, 5, heartbeatInterval, TimeUnit.SECONDS);
     }
 
     private void checkConfig() {
@@ -141,6 +161,12 @@ public class OpenjobWorker implements InitializingBean {
         // Task actor.
 
         // Persistence actor.
+    }
+
+    public String getWorkerAddress() {
+        String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
+        int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
+        return String.format("%s:%d", hostname, port);
     }
 
     public static ActorSystem getActorSystem() {

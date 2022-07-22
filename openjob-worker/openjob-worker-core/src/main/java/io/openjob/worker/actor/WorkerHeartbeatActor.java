@@ -1,7 +1,7 @@
 package io.openjob.worker.actor;
 
 import akka.actor.AbstractActor;
-import io.openjob.common.request.WorkerHeartbeatReportRequest;
+import io.openjob.common.request.ServerWorkerHeartbeatRequest;
 import io.openjob.common.response.Result;
 
 /**
@@ -12,11 +12,11 @@ public class WorkerHeartbeatActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(WorkerHeartbeatReportRequest.class, this::WorkerHeartbeatCheckRequest)
+                .match(ServerWorkerHeartbeatRequest.class, this::WorkerHeartbeatCheckRequest)
                 .build();
     }
 
-    public void WorkerHeartbeatCheckRequest(WorkerHeartbeatReportRequest workerHeartbeatCheckRequest) {
+    public void WorkerHeartbeatCheckRequest(ServerWorkerHeartbeatRequest workerHeartbeatCheckRequest) {
         getSender().tell(Result.success(new Object()), getSelf());
     }
 }

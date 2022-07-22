@@ -27,7 +27,7 @@ public class WorkerUtil {
      * @param name    actor name
      * @return actor path
      */
-    private static String getServerActorPath(String address, String name) {
+    public static String getServerActorPath(String address, String name) {
         return String.format(AkkaConstant.AKKA_PATH_FORMAT, AkkaConstant.SERVER_SYSTEM_NAME, address, name);
     }
 
@@ -36,11 +36,11 @@ public class WorkerUtil {
      * @param name    actor name
      * @return actor path
      */
-    private static String getWorkerActorPath(String address, String name) {
+    public static String getWorkerActorPath(String address, String name) {
         return String.format(AkkaConstant.AKKA_PATH_FORMAT, AkkaConstant.WORKER_SYSTEM_NAME, address, name);
     }
 
-    private static String getServerAddress() {
+    public static String getServerAddress() {
         return String.format("%s:%d", OpenjobConfig.getString(WorkerConstant.SERVER_HOST), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 }

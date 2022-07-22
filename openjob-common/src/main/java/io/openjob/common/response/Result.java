@@ -87,7 +87,7 @@ public class Result<T> implements Serializable {
     }
 
     public static <T> Result<T> fail(String message) {
-        return new Result<>(null, 1, 0, message);
+        return new Result<>(null, FAIL, 0, message);
     }
 
     /**
