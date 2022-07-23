@@ -20,7 +20,7 @@ public class WorkerConstant {
     public static final String WORKER_AKKA_CONFIG_FILE = "worker.akka.file";
     public static final String WORKER_HEARTBEAT_ACTOR_NUM = "worker.heartbeat.actor.num";
     public static final String WORKER_JOB_INSTANCE_ACTOR_NUM = "worker.job.instance.actor.num";
-    public static final String WORKER_MANAGER_ACTOR_NUM = "worker.manager.actor.num";
+    public static final String WORKER_CONTAINER_ACTOR_NUM = "worker.container.actor.num";
     public static final String WORKER_TASK_ACTOR_NUM = "worker.task.actor.num";
     public static final String WORKER_PERSISTENCE_ACTOR_NUM = "worker.persistence.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "worker.heartbeat.interval";
@@ -31,7 +31,7 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_TASK_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_JOB_INSTANCE_TASK_ACTOR_NUM = 128;
-    public static final Integer DEFAULT_WORKER_MANAGER_TASK_ACTOR_NUM = 128;
+    public static final Integer DEFAULT_WORKER_CONTAINER_TASK_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_PERSISTENCE_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
 }

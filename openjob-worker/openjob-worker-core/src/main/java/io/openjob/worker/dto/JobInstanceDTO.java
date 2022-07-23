@@ -10,7 +10,8 @@ import java.util.List;
  */
 @Data
 public class JobInstanceDTO {
-    private Long id;
+    private Long jobId;
+    private Long jobInstanceId;
     private String executeType;
     private List<String> workerAddresses;
 }

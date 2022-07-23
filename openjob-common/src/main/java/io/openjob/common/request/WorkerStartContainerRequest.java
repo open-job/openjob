@@ -9,5 +9,8 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class WorkerManagerRequest implements Serializable {
+public class WorkerStartContainerRequest implements Serializable {
+    private Long jobId;
+    private Long jobInstanceId;
+    private Long taskId;
 }

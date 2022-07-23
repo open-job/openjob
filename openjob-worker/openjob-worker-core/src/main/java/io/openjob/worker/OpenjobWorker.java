@@ -156,7 +156,7 @@ public class OpenjobWorker implements InitializingBean {
 
         // Master actor.
 
-        // Manager actor.
+        // Container actor.
 
         // Task actor.
 

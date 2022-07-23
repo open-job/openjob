@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 
 /**
  * @author stelin <swoft@qq.com>
+ * @see StandaloneTaskMaster
  * @since 1.0.0
  */
 public class TaskMasterFactory {

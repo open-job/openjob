@@ -13,7 +13,7 @@ public class TaskMasterFactoryTest {
     @Test
     public void testCreate() {
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
-        jobInstanceDTO.setId(1L);
+        jobInstanceDTO.setJobInstanceId(1L);
         jobInstanceDTO.setExecuteType(ExecuteTypeEnum.STANDALONE.getType());
 
         TaskMaster taskMaster = TaskMasterFactory.create(jobInstanceDTO, null);
