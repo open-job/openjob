@@ -13,7 +13,6 @@ public class ThreadTaskContainer extends BaseTaskContainer {
 
     @Override
     public void start() {
-
     }
 
     @Override
