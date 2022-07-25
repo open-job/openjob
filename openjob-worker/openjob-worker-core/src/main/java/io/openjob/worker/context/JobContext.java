@@ -20,13 +20,13 @@ public class JobContext {
     private String jobName;
     private Integer scheduleTime;
     private Integer dataTime;
-    private String executeMode;
-    private String jobType;
+    private String executeType;
+    private String processorType;
+    private String processorInfo;
     private String instanceMasterActorPath;
     private String taskName;
     private Object task;
     private String groupId;
-    private String content;
     private String user;
 
     /**

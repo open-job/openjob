@@ -11,4 +11,8 @@ import lombok.Data;
 public class ProcessResult {
     private InstanceStatusEnum status;
     private String result;
+
+    public ProcessResult(Boolean result) {
+        this.status = result ? InstanceStatusEnum.SUCCESS : InstanceStatusEnum.FAIL;
+    }
 }

@@ -23,7 +23,7 @@ public class JavaProcessor implements JobProcessor {
     }
 
     @Override
-    public void kill(JobContext context) {
+    public void stop(JobContext context) {
 
     }
 }
