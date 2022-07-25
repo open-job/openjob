@@ -17,31 +17,30 @@ public enum TimeExpressionTypeEnum {
     /**
      * None for workflow.
      */
-    NONE(1, "none"),
+    NONE("none"),
 
     /**
      * Cron.
      */
-    CRON(3, "cron"),
+    CRON("cron"),
 
     /**
      * Fixed rate.
      */
-    FIXED_RATE(5, "fixedRate"),
+    FIXED_RATE("fixedRate"),
 
     /**
      * Second delay.
      */
-    SECOND_DELAY(7, "secondDelay"),
+    SECOND_DELAY("secondDelay"),
 
     /**
      * One time.
      */
-    ONE_TIME(9, "oneTime"),
+    ONE_TIME("oneTime"),
     ;
 
-    private final Integer type;
-    private final String message;
+    private final String type;
 
-    public static final List<Integer> CRON_TYPES = Arrays.asList(CRON.type, FIXED_RATE.type, ONE_TIME.type);
+    public static final List<String> CRON_TYPES = Arrays.asList(CRON.type, FIXED_RATE.type, ONE_TIME.type);
 }
