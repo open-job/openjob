@@ -27,7 +27,7 @@ public class WorkerConstant {
 
     // Default worker config.
     public static final String DEFAULT_WORKER_AKKA_CONFIG_FILENAME = "akka-worker.conf";
-    public static final Integer DEFAULT_WORKER_PORT = 27777;
+    public static final Integer DEFAULT_WORKER_PORT = 25521;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_TASK_ACTOR_NUM = 128;
     public static final Integer DEFAULT_WORKER_JOB_INSTANCE_TASK_ACTOR_NUM = 128;

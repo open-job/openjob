@@ -1,11 +1,18 @@
 package io.openjob.server.scheduler.timer;
 
+import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.FutureUtil;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.server.common.dto.WorkerDTO;
+import io.openjob.server.common.util.ServerUtil;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -15,10 +22,27 @@ import java.util.Objects;
 @Data
 @Log4j2
 public class TimerTask implements Runnable {
-    protected TimerTaskEntry timerTaskEntry;
-    protected Long taskId;
-    protected Long slotsId;
-    protected Long expiration;
+    private TimerTaskEntry timerTaskEntry;
+    private Long jobId;
+
+    private String jobParams;
+
+    /**
+     * Job instance id.
+     */
+    private Long taskId;
+    private Long appid;
+    private Long slotsId;
+    private Long expiration;
+    private Long workflowId;
+    private String processorType;
+    private String processorInfo;
+    private String executeType;
+    private Integer failRetryTimes;
+    private Integer failRetryInterval;
+    private Integer concurrency;
+    private String timeExpressionType;
+    private String timeExpression;
 
     /**
      * Timer task.
@@ -72,9 +96,19 @@ public class TimerTask implements Runnable {
 
     @Override
     public void run() {
-        Date date = new Date();
-        String strDateFormat = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
-        log.info("do task time=" + sdf.format(date) + Thread.currentThread().getName() + " id=" + taskId + " now=" + DateUtil.now() + " expiration=" + this.getExpiration());
+        Map<Long, List<WorkerDTO>> appWorkers = ClusterContext.getAppWorkers();
+        if (!appWorkers.containsKey(this.appid)) {
+            log.error("Worker do not exist! appid={}", this.appid);
+            return;
+        }
+
+        try {
+            ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
+            WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
+            FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 3L);
+            log.info("Task dispatch success! taskId={}", this.taskId);
+        } catch (Throwable ex) {
+            log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());
+        }
     }
 }

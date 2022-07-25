@@ -10,5 +10,16 @@ import java.io.Serializable;
  */
 @Data
 public class ServerSubmitJobInstanceRequest implements Serializable {
+    private Long jobId;
     private Long jobInstanceId;
+    private String jobParams;
+    private Long workflowId;
+    private String processorType;
+    private String processorInfo;
+    private String executeType;
+    private Integer failRetryTimes;
+    private Integer failRetryInterval;
+    private Integer concurrency;
+    private String timeExpressionType;
+    private String timeExpression;
 }

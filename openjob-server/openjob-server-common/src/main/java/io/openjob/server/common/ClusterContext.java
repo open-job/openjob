@@ -114,6 +114,10 @@ public class ClusterContext {
         return APP_WORKERS;
     }
 
+    public static Map<Long, List<WorkerDTO>> getAppWorkers() {
+        return APP_WORKERS;
+    }
+
     /**
      * Return current slots.
      *

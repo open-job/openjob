@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.common.dto.WorkerDTO;
-import io.openjob.server.common.util.ServerAkkaUtil;
+import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
@@ -59,7 +59,7 @@ public class ClusterUtil {
     public static void sendMessage(Object message, List<Server> servers) {
         servers.forEach(s -> {
             if (!Objects.equals(s.getId(), ClusterContext.getCurrentNode().getServerId())) {
-                ServerAkkaUtil.getClusterActor(s.getAkkaAddress()).tell(message, ActorRef.noSender());
+                ServerUtil.getServerClusterActor(s.getAkkaAddress()).tell(message, ActorRef.noSender());
             }
         });
     }

@@ -1,14 +1,14 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodePingDTO;
-import io.openjob.server.cluster.dto.ResponseDTO;
 import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.common.SpringContext;
 import io.openjob.server.common.constant.ClusterConstant;
-import io.openjob.server.common.util.ServerAkkaUtil;
+import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
 import io.openjob.server.repository.entity.ServerFailReports;
 import lombok.extern.log4j.Log4j2;
@@ -65,7 +65,7 @@ public class HealthService {
         Node node = nodesMap.get(serverId);
         boolean success = false;
         try {
-            ResponseDTO responseDTO = (ResponseDTO) ServerAkkaUtil.clusterAsk(node.getAkkaAddress(), new NodePingDTO());
+            FutureUtil.ask(ServerUtil.getServerClusterActor(node.getAkkaAddress()), new NodePingDTO(), 3L);
             success = true;
         } catch (Exception e) {
             System.out.println(e);

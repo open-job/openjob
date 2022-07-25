@@ -8,6 +8,7 @@ public class ServerActorConstant {
 
     // Actor name.
     public static final String ACTOR_CLUSTER = "cluster";
+    public static final String ACTOR_HEARTBEAT = "heartbeat";
 
     // Actor bean name.
     public static final String BEAN_ACTOR_CLUSTER = "clusterActor";

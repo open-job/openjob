@@ -112,6 +112,18 @@ public class JobSchedulerService {
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             TimerTask timerTask = new TimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime());
+            timerTask.setJobId(j.getId());
+            timerTask.setJobParams(j.getParams());
+            timerTask.setAppid(j.getAppId());
+            timerTask.setWorkflowId(j.getWorkflowId());
+            timerTask.setProcessorInfo(j.getProcessorInfo());
+            timerTask.setProcessorType(j.getProcessorType());
+            timerTask.setExecuteType(j.getExecuteType());
+            timerTask.setFailRetryTimes(j.getFailRetryTimes());
+            timerTask.setFailRetryInterval(j.getFailRetryInterval());
+            timerTask.setConcurrency(j.getConcurrency());
+            timerTask.setTimeExpressionType(j.getTimeExpressionType());
+            timerTask.setTimeExpression(j.getTimeExpression());
             timerTasks.add(timerTask);
         });
 
