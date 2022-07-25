@@ -26,5 +26,5 @@ public abstract class TaskContainerPool {
 
     abstract public void submit(Long jobId, Long jonInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
 
-    abstract public void destroy( Long jonInstanceId);
+    abstract public void destroy(Long jonInstanceId);
 }

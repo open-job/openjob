@@ -24,4 +24,8 @@ public class TaskContainerFactory {
             throw new RuntimeException("Task master is not exist! executeType=" + containerType);
         }
     }
+
+    public static TaskContainerPool getPool() {
+        return ThreadTaskContainerPool.INSTANCE;
+    }
 }

@@ -13,7 +13,12 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 public class ThreadTaskContainerPool extends TaskContainerPool {
+    public static final ThreadTaskContainerPool INSTANCE = new ThreadTaskContainerPool();
     private Map<Long, ExecutorService> threadPoolMap = Maps.newConcurrentMap();
+
+    private ThreadTaskContainerPool() {
+
+    }
 
     @Override
     public void submit(Long jobId, Long jonInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer) {

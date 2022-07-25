@@ -14,6 +14,8 @@ import io.openjob.common.response.Result;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
 import io.openjob.common.util.ResultUtil;
+import io.openjob.worker.actor.TaskContainerActor;
+import io.openjob.worker.actor.TaskMasterActor;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -155,12 +157,16 @@ public class OpenjobWorker implements InitializingBean {
         actorSystem.actorOf(props, AkkaConstant.WORKER_ACTOR_HEARTBEAT);
 
         // Master actor.
+        Props masterProps = Props.create(TaskMasterActor.class)
+                .withRouter(new RoundRobinPool(4))
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_MASTER);
+        actorSystem.actorOf(masterProps, AkkaConstant.WORKER_ACTOR_MASTER);
 
         // Container actor.
-
-        // Task actor.
-
-        // Persistence actor.
+        Props containerProps = Props.create(TaskContainerActor.class)
+                .withRouter(new RoundRobinPool(3))
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
+        actorSystem.actorOf(containerProps);
     }
 
     public String getWorkerAddress() {
