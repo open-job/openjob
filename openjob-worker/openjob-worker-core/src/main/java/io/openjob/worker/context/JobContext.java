@@ -15,34 +15,21 @@ import java.util.Map;
 public class JobContext {
     private Long jobId;
     private Long jobInstanceId;
-    private Long wfInstanceId;
-    private Long taskId = 0L;
+    private Long taskId;
+    private String jobParams;
     private String jobName;
-    private Integer scheduleTime;
-    private Integer dataTime;
     private String executeType;
     private String processorType;
     private String processorInfo;
     private String instanceMasterActorPath;
-    private String taskName;
-    private Object task;
-    private String groupId;
-    private String user;
+
+    private Integer failRetryTimes;
 
     /**
-     * Max retry times.
+     * Current fail times.
      */
-    private Integer maxAttempt;
-
-    /**
-     * Current retry times.
-     */
-    private Integer attempt;
-
-    /**
-     * Job custom params.
-     */
-    private String jobParams;
+    private Integer failAttemptTimes;
+    private Integer failRetryInterval;
 
     /**
      * Workflow upstream data.
@@ -58,21 +45,6 @@ public class JobContext {
      * Child task status.
      */
     private Map<Long, TaskStatusEnum> taskStatuses;
-
-    /**
-     * Task max retry times.
-     */
-    private Integer taskMaxAttempt;
-
-    /**
-     * Task current retry times.
-     */
-    private Integer taskAttempt = 0;
-
-    /**
-     * Task retry interval.
-     */
-    private Integer taskAttemptInterval;
 
     /**
      * Execute times for second job.
@@ -92,11 +64,17 @@ public class JobContext {
     /**
      * Sharding num.
      */
-    private Integer shardingNum = 0;
+    private Integer shardingNum;
 
-    private List<String> allWorkerAddresses;
-    private String workerAddress;
+    private Integer concurrency;
 
-    private Integer timeType;
+    private List<String> workerAddresses;
+    private String timeExpressionType;
     private String timeExpression;
+
+    public JobContext() {
+        this.serialNum = 0L;
+        this.shardingNum = 0;
+        this.failAttemptTimes = 0;
+    }
 }

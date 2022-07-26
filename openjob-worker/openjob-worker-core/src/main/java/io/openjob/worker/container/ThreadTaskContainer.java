@@ -31,7 +31,7 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         String uniqueId = "";
 
         // Running
-        if (this.jobContext.getTaskAttempt() == 0) {
+        if (this.jobContext.getFailAttemptTimes() == 0) {
 
         }
 
