@@ -1,6 +1,5 @@
 package io.openjob.worker;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
@@ -43,7 +42,7 @@ public class OpenjobWorker implements InitializingBean {
     /**
      * Worker heartbeat
      */
-    private static ScheduledExecutorService heartbeatService;
+    private static final ScheduledExecutorService heartbeatService;
 
     /**
      * Actor system.
@@ -144,6 +143,9 @@ public class OpenjobWorker implements InitializingBean {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
+        newConfig.put("akka.remote.artery.canonical.hostname", this.getWorkerHostname());
+        newConfig.put("akka.remote.artery.canonical.port", String.valueOf(this.getWorkerPort()));
+
 
         Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
         actorSystem = ActorSystem.create(AkkaConstant.WORKER_SYSTEM_NAME, config);
@@ -171,12 +173,20 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     public String getWorkerAddress() {
-        String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
-        int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
+        String hostname = this.getWorkerHostname();
+        int port = this.getWorkerPort();
         return String.format("%s:%d", hostname, port);
     }
 
     public static ActorSystem getActorSystem() {
         return actorSystem;
+    }
+
+    private String getWorkerHostname() {
+        return OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
+    }
+
+    private Integer getWorkerPort() {
+        return OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
     }
 }

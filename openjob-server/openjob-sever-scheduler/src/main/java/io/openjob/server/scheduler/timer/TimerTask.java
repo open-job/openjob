@@ -1,7 +1,6 @@
 package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
-import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
@@ -9,8 +8,6 @@ import io.openjob.server.common.util.ServerUtil;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,7 +74,7 @@ public class TimerTask implements Runnable {
      */
     public void setTimerTaskEntry(TimerTaskEntry entry) {
         synchronized (this) {
-            if (Objects.nonNull(timerTaskEntry) && Objects.nonNull(timerTaskEntry)) {
+            if (Objects.nonNull(timerTaskEntry) && timerTaskEntry != entry) {
                 timerTaskEntry.remove();
             }
 
@@ -104,6 +101,18 @@ public class TimerTask implements Runnable {
 
         try {
             ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
+            submitReq.setJobId(this.jobId);
+            submitReq.setJobInstanceId(this.taskId);
+            submitReq.setJobParams(this.jobParams);
+            submitReq.setWorkflowId(this.workflowId);
+            submitReq.setProcessorType(this.processorType);
+            submitReq.setProcessorInfo(this.processorInfo);
+            submitReq.setExecuteType(this.executeType);
+            submitReq.setFailRetryTimes(this.failRetryTimes);
+            submitReq.setFailRetryInterval(this.getFailRetryInterval());
+            submitReq.setConcurrency(this.concurrency);
+            submitReq.setTimeExpressionType(this.timeExpressionType);
+            submitReq.setTimeExpression(this.timeExpression);
             WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
             FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 3L);
             log.info("Task dispatch success! taskId={}", this.taskId);
