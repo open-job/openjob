@@ -12,4 +12,7 @@ public class WorkerAkkaConstant {
 
     // Routing
     public static final String ACTOR_CONTAINER = "task-container";
+
+    // Path
+    public static final String PATH_TASK_CONTAINER = "/user/" + ACTOR_CONTAINER;
 }

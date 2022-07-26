@@ -1,7 +1,6 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
-import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
 
@@ -23,7 +22,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().getDefaultAddress().hostPort();
-        this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.ACTOR_CONTAINER;
+        this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
     }
 
     protected Long acquireTaskId() {

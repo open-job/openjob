@@ -169,7 +169,7 @@ public class OpenjobWorker implements InitializingBean {
         Props containerProps = Props.create(TaskContainerActor.class)
                 .withRouter(new RoundRobinPool(3))
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
-        actorSystem.actorOf(containerProps);
+        actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
     }
 
     public String getWorkerAddress() {

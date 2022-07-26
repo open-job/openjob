@@ -29,6 +29,19 @@ public class TaskMasterActor extends BaseActor {
         }
 
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
+        jobInstanceDTO.setJobId(submitReq.getJobId());
+        jobInstanceDTO.setJobInstanceId(submitReq.getJobInstanceId());
+        jobInstanceDTO.setJobParams(submitReq.getJobParams());
+        jobInstanceDTO.setWorkflowId(submitReq.getWorkflowId());
+        jobInstanceDTO.setExecuteType(submitReq.getExecuteType());
+        jobInstanceDTO.setProcessorType(submitReq.getProcessorType());
+        jobInstanceDTO.setProcessorInfo(submitReq.getProcessorInfo());
+        jobInstanceDTO.setFailRetryInterval(submitReq.getFailRetryInterval());
+        jobInstanceDTO.setFailRetryTimes(submitReq.getFailRetryTimes());
+        jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
+        jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
+        jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
+
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
     }
