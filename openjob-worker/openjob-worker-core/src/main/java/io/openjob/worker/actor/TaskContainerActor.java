@@ -49,5 +49,6 @@ public class TaskContainerActor extends BaseActor {
                 jobContext.getConcurrency(),
                 taskContainer
         );
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 }

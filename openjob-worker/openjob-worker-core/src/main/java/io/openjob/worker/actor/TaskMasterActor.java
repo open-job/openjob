@@ -4,6 +4,7 @@ import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.master.TaskMaster;
 import io.openjob.worker.master.TaskMasterFactory;
@@ -44,6 +45,7 @@ public class TaskMasterActor extends BaseActor {
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
+        getSender().tell(new WorkerResponse(), getSelf());
     }
 
     public void stopJobInstance(ServerStopJobInstanceRequest stopReq) {

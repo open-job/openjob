@@ -114,7 +114,7 @@ public class TimerTask implements Runnable {
             submitReq.setTimeExpressionType(this.timeExpressionType);
             submitReq.setTimeExpression(this.timeExpression);
             WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
-            FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 3L);
+            FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 10L);
             log.info("Task dispatch success! taskId={}", this.taskId);
         } catch (Throwable ex) {
             log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());
