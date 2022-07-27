@@ -25,6 +25,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-persistence_${scala.binary.version}</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.openjob</groupId>
             <artifactId>openjob-common</artifactId>
         </dependency>

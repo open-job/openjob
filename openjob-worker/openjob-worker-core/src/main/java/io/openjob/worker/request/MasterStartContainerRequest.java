@@ -1,4 +1,4 @@
-package io.openjob.common.request;
+package io.openjob.worker.request;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-public class WorkerStartContainerRequest implements Serializable {
+public class MasterStartContainerRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
     private Long taskId;
@@ -24,5 +24,6 @@ public class WorkerStartContainerRequest implements Serializable {
     private Integer concurrency;
     private String timeExpressionType;
     private String timeExpression;
+    private String masterAkkaPath;
     private List<String> workerAddresses;
 }

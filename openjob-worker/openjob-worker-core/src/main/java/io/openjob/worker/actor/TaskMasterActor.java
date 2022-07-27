@@ -4,23 +4,31 @@ import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
+import io.openjob.common.response.Result;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.master.TaskMaster;
 import io.openjob.worker.master.TaskMasterFactory;
 import io.openjob.worker.master.TaskMasterPool;
+import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
+import io.openjob.worker.request.ContainerTaskStatusRequest;
+import io.openjob.worker.request.ProcessorMapTaskRequest;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 public class TaskMasterActor extends BaseActor {
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(ServerSubmitJobInstanceRequest.class, this::submitJobInstance)
                 .match(ServerStopJobInstanceRequest.class, this::stopJobInstance)
                 .match(ServerCheckTaskMasterRequest.class, this::checkJobInstance)
+                .match(ContainerTaskStatusRequest.class, this::handleContainerTaskStatus)
+                .match(ContainerBatchTaskStatusRequest.class, this::handleContainerTaskStatus)
+                .match(ProcessorMapTaskRequest.class, this::handleProcessorMapTask)
                 .build();
     }
 
@@ -28,6 +36,8 @@ public class TaskMasterActor extends BaseActor {
         if (TaskMasterPool.contains(submitReq.getJobInstanceId())) {
             throw new RuntimeException(String.format("Task master is running! jobInstanceId=%s", submitReq.getJobInstanceId()));
         }
+
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
 
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         jobInstanceDTO.setJobId(submitReq.getJobId());
@@ -45,7 +55,6 @@ public class TaskMasterActor extends BaseActor {
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
-        getSender().tell(new WorkerResponse(), getSelf());
     }
 
     public void stopJobInstance(ServerStopJobInstanceRequest stopReq) {
@@ -59,6 +68,18 @@ public class TaskMasterActor extends BaseActor {
     }
 
     public void checkJobInstance(ServerCheckTaskMasterRequest checkTaskMasterRequest) {
+
+    }
+
+    public void handleContainerTaskStatus(ContainerTaskStatusRequest taskStatusReq) {
+
+    }
+
+    public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
+
+    }
+
+    public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {
 
     }
 }
