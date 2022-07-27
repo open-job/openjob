@@ -1,5 +1,6 @@
 package io.openjob.worker;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
@@ -17,6 +18,7 @@ import io.openjob.common.util.ResultUtil;
 import io.openjob.worker.actor.TaskContainerActor;
 import io.openjob.worker.actor.TaskMasterActor;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
+import io.openjob.worker.actor.WorkerPersistentRoutingActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
@@ -48,6 +50,11 @@ public class OpenjobWorker implements InitializingBean {
      * Actor system.
      */
     private static ActorSystem actorSystem;
+
+    /**
+     * Persistent routing ref.
+     */
+    private static ActorRef persistentRoutingRef;
 
     static {
         heartbeatService = new ScheduledThreadPoolExecutor(
@@ -159,15 +166,23 @@ public class OpenjobWorker implements InitializingBean {
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_HEARTBEAT);
         actorSystem.actorOf(props, AkkaConstant.WORKER_ACTOR_HEARTBEAT);
 
+        // At least once persistent actor.
+        int persistentNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_PERSISTENT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_PERSISTENT_ACTOR_NUM);
+        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, persistentNum)
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_PERSISTENT_ROUTING);
+        persistentRoutingRef = actorSystem.actorOf(persistentProps, WorkerAkkaConstant.ACTOR_PERSISTENT_ROUTING);
+
         // Master actor.
+        int taskMasterNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_MASTER_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM);
         Props masterProps = Props.create(TaskMasterActor.class)
-                .withRouter(new RoundRobinPool(4))
+                .withRouter(new RoundRobinPool(taskMasterNum))
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_MASTER);
         actorSystem.actorOf(masterProps, AkkaConstant.WORKER_ACTOR_MASTER);
 
         // Container actor.
+        int taskContainerNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_CONTAINER_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM);
         Props containerProps = Props.create(TaskContainerActor.class)
-                .withRouter(new RoundRobinPool(3))
+                .withRouter(new RoundRobinPool(taskContainerNum))
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
         actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
     }
@@ -180,6 +195,10 @@ public class OpenjobWorker implements InitializingBean {
 
     public static ActorSystem getActorSystem() {
         return actorSystem;
+    }
+
+    public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
+        persistentRoutingRef.tell(msg, sender);
     }
 
     private String getWorkerHostname() {
