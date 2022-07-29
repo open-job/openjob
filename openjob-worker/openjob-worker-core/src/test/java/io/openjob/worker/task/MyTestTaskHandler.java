@@ -23,7 +23,7 @@ public class MyTestTaskHandler<T> extends BaseTaskHandler<T> {
     @Override
     public void handle(Long id, List<T> tasks) {
         this.handlerExecutor.submit(() -> {
-            for (T t : tasks) {
+            for (T ignored : tasks) {
                 counter.incrementAndGet();
             }
         });
