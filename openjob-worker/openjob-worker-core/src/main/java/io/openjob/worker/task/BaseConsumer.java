@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public abstract class BaseTaskHandler<T> {
+public abstract class BaseConsumer<T> {
     protected final Long id;
     protected final Integer handlerCoreThreadNum;
     protected final Integer handlerMaxThreadNum;
@@ -24,13 +24,13 @@ public abstract class BaseTaskHandler<T> {
     protected TaskQueue<T> queues;
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 
-    public BaseTaskHandler(Long id,
-                           Integer handlerCoreThreadNum,
-                           Integer handlerMaxThreadNum,
-                           String handlerThreadName,
-                           Integer pollSize,
-                           String pollThreadName,
-                           TaskQueue<T> queues) {
+    public BaseConsumer(Long id,
+                        Integer handlerCoreThreadNum,
+                        Integer handlerMaxThreadNum,
+                        String handlerThreadName,
+                        Integer pollSize,
+                        String pollThreadName,
+                        TaskQueue<T> queues) {
         this.id = id;
         this.handlerCoreThreadNum = handlerCoreThreadNum;
         this.handlerMaxThreadNum = handlerMaxThreadNum;

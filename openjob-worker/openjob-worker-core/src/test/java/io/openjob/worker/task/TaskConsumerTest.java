@@ -11,14 +11,14 @@ import java.util.Random;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class TaskHandlerTest {
-    private MyTestTaskHandler<MyTestTask> handler;
+public class TaskConsumerTest {
+    private MyTestTaskConsumer<MyTestTask> handler;
     private TaskQueue<MyTestTask> queues;
 
     @BeforeEach
     public void before() {
         queues = new TaskQueue<>(1L, 256);
-        handler = new MyTestTaskHandler<>(
+        handler = new MyTestTaskConsumer<>(
                 1L,
                 2,
                 2,
