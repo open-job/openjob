@@ -10,7 +10,7 @@ import io.openjob.worker.task.TaskQueue;
  */
 public class TaskContainerStatusHandler {
     private static final TaskQueue<ContainerTaskStatusRequest> QUEUES = new TaskQueue<>(0L, 1024);
-    private static ContainerTaskStatusConsumer<ContainerTaskStatusRequest> HANDLER = null;
+    private static ContainerTaskStatusConsumer<ContainerTaskStatusRequest> HANDLER;
 
     static {
         HANDLER = new ContainerTaskStatusConsumer<ContainerTaskStatusRequest>(

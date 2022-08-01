@@ -24,7 +24,7 @@ public abstract class TaskContainerPool {
         TASK_CONTAINER_POOL.remove(containerId);
     }
 
-    abstract public void submit(Long jobId, Long jonInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
+    abstract public void submit(Long jobId, Long jobInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
 
     abstract public void destroy(Long jonInstanceId);
 }

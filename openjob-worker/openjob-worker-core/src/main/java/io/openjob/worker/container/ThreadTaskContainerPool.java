@@ -17,14 +17,14 @@ public class ThreadTaskContainerPool extends TaskContainerPool {
     private Map<Long, ExecutorService> threadPoolMap = Maps.newConcurrentMap();
 
     private ThreadTaskContainerPool() {
-        
+
     }
 
     @Override
-    public void submit(Long jobId, Long jonInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer) {
-        if (!threadPoolMap.containsKey(jonInstanceId)) {
+    public void submit(Long jobId, Long jobInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer) {
+        if (!threadPoolMap.containsKey(jobInstanceId)) {
             synchronized (this) {
-                if (!threadPoolMap.containsKey(jonInstanceId)) {
+                if (!threadPoolMap.containsKey(jobInstanceId)) {
                     ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                             consumerNum,
                             consumerNum,
@@ -35,12 +35,12 @@ public class ThreadTaskContainerPool extends TaskContainerPool {
                     );
 
                     threadPool.allowCoreThreadTimeOut(true);
-                    threadPoolMap.put(jonInstanceId, threadPool);
+                    threadPoolMap.put(jobInstanceId, threadPool);
                 }
             }
         }
 
-        threadPoolMap.get(jonInstanceId).execute((Runnable) taskContainer);
+        threadPoolMap.get(jobInstanceId).execute((Runnable) taskContainer);
     }
 
     @Override

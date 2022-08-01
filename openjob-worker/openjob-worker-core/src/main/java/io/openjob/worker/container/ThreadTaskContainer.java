@@ -5,6 +5,7 @@ import io.openjob.worker.context.JobContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.JobProcessor;
 import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.util.ProcessorUtil;
 
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
 
         }
 
-        ProcessResult result = new ProcessResult(true);
+        ProcessResult result = new ProcessResult(false);
 
         try {
             // Java
@@ -55,10 +56,22 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
                 }
             }
         } catch (Throwable ex) {
-            System.out.println(ex);
+            result.setResult(ex.getMessage());
+        } finally {
+            this.reportTaskStatus(result);
         }
+    }
 
-        System.out.println(result);
+    private void reportTaskStatus(ProcessResult result) {
+        String workerAddress = "";
+        ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
+        request.setJobId(this.jobContext.getJobId());
+        request.setJobInstanceId(this.jobContext.getJobInstanceId());
+        request.setTaskId(this.jobContext.getTaskId());
+        request.setWorkerAddress(workerAddress);
+        request.setMasterActorPath(this.jobContext.getMasterActorPath());
+        request.setStatus(result.getStatus().getStatus());
+        request.setResult(result.getResult());
     }
 
     @Override

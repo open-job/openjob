@@ -21,7 +21,7 @@ public class JobContext {
     private String executeType;
     private String processorType;
     private String processorInfo;
-    private String instanceMasterActorPath;
+    private String masterActorPath;
 
     private Integer failRetryTimes;
 
