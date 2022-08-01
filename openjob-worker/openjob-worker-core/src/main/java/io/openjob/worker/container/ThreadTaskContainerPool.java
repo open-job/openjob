@@ -1,6 +1,7 @@
 package io.openjob.worker.container;
 
 import com.google.common.collect.Maps;
+import io.openjob.worker.context.JobContext;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class ThreadTaskContainerPool extends TaskContainerPool {
     public static final ThreadTaskContainerPool INSTANCE = new ThreadTaskContainerPool();
     private Map<Long, ExecutorService> threadPoolMap = Maps.newConcurrentMap();
+    private ThreadLocal<JobContext> contextLocal = new ThreadLocal<>();
+
 
     private ThreadTaskContainerPool() {
 
@@ -49,5 +52,20 @@ public class ThreadTaskContainerPool extends TaskContainerPool {
             threadPoolMap.get(jonInstanceId).shutdownNow();
             threadPoolMap.remove(jonInstanceId);
         }
+    }
+
+    @Override
+    public void setJobContext(JobContext jobContext) {
+        this.contextLocal.set(jobContext);
+    }
+
+    @Override
+    public void removeJobContext() {
+        this.contextLocal.remove();
+    }
+
+    @Override
+    public JobContext getJobContext() {
+        return this.contextLocal.get();
     }
 }

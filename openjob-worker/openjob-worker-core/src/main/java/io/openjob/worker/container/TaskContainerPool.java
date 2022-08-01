@@ -1,8 +1,11 @@
 package io.openjob.worker.container;
 
 import com.google.common.collect.Maps;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+import io.openjob.worker.context.JobContext;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
@@ -24,7 +27,13 @@ public abstract class TaskContainerPool {
         TASK_CONTAINER_POOL.remove(containerId);
     }
 
-    abstract public void submit(Long jobId, Long jobInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
+    public abstract void submit(Long jobId, Long jobInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
 
-    abstract public void destroy(Long jonInstanceId);
+    public abstract void destroy(Long jonInstanceId);
+
+    public abstract void setJobContext(JobContext jobContext);
+
+    public abstract void removeJobContext();
+
+    public abstract JobContext getJobContext();
 }

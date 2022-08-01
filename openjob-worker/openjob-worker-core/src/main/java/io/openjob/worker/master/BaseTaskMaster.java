@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import akka.actor.ActorContext;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.request.MasterStartContainerRequest;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,5 +28,24 @@ public abstract class BaseTaskMaster implements TaskMaster {
 
     protected Long acquireTaskId() {
         return taskIdGenerator.getAndIncrement();
+    }
+
+    protected MasterStartContainerRequest wrapMasterStartContainerRequest() {
+        MasterStartContainerRequest startReq = new MasterStartContainerRequest();
+        startReq.setJobId(this.jobInstanceDTO.getJobId());
+        startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        startReq.setTaskId(this.acquireTaskId());
+        startReq.setJobParams(this.jobInstanceDTO.getJobParams());
+        startReq.setExecuteType(this.jobInstanceDTO.getExecuteType());
+        startReq.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
+        startReq.setProcessorType(this.jobInstanceDTO.getProcessorType());
+        startReq.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+        startReq.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+        startReq.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+        startReq.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+        startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+        startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
+        startReq.setMasterAkkaPath(this.localContainerPath);
+        return startReq;
     }
 }

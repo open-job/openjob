@@ -1,21 +1,40 @@
 package io.openjob.worker.actor;
 
 import io.openjob.common.actor.BaseActor;
-import io.openjob.worker.request.MasterBatchStartContainerRequest;
-import io.openjob.worker.request.MasterDestroyContainerRequest;
-import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.container.TaskContainer;
 import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.request.MasterBatchStartContainerRequest;
+import io.openjob.worker.request.MasterDestroyContainerRequest;
+import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 public class TaskContainerActor extends BaseActor {
+    private static final ThreadPoolExecutor containerExecutor;
+
+    static {
+        containerExecutor = new ThreadPoolExecutor(
+                2,
+                2,
+                30,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(),
+                r -> new Thread(r, "Openjob-container-executor"),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+        containerExecutor.allowCoreThreadTimeOut(true);
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -32,7 +51,8 @@ public class TaskContainerActor extends BaseActor {
     }
 
     public void handleBatchStartContainer(MasterBatchStartContainerRequest batchStartReq) {
-
+        containerExecutor.submit(new ContainerRunnable(batchStartReq));
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
     public void handleStopContainer(MasterStopContainerRequest stopReq) {
@@ -67,6 +87,20 @@ public class TaskContainerActor extends BaseActor {
                 jobContext.getConcurrency(),
                 taskContainer
         );
-        getSender().tell(Result.success(new WorkerResponse()), getSelf());
+    }
+
+    private class ContainerRunnable implements Runnable {
+        private MasterBatchStartContainerRequest containerRequest;
+
+        public ContainerRunnable(MasterBatchStartContainerRequest containerRequest) {
+            this.containerRequest = containerRequest;
+        }
+
+        @Override
+        public void run() {
+            for (MasterStartContainerRequest req : this.containerRequest.getStartContainerRequests()) {
+                startContainer(req);
+            }
+        }
     }
 }

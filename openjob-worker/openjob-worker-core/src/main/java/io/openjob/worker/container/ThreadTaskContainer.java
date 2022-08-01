@@ -29,6 +29,7 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
 
     @Override
     public void start() {
+        TaskContainerFactory.getPool().setJobContext(jobContext);
         String uniqueId = "";
 
         // Running
