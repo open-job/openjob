@@ -10,10 +10,13 @@ import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.task.MapReduceTaskConsumer;
+import io.openjob.worker.task.TaskQueue;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,8 +24,37 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 public class MapReduceTaskMaster extends BaseTaskMaster {
+
+    /**
+     * Child tasks.
+     */
+    protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
+    protected MapReduceTaskConsumer<MasterStartContainerRequest> childTaskConsumer;
+
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
+
+        childTaskQueue = new TaskQueue<>(this.jobInstanceDTO.getJobInstanceId(), 10240);
+        childTaskConsumer = new MapReduceTaskConsumer<>(
+                this.jobInstanceDTO.getJobInstanceId(),
+                1,
+                1,
+                "Openjob-mapreduce-consumer",
+                100,
+                "Openjob-mapreduce-consumer-poll",
+                childTaskQueue
+        );
+
+        childTaskConsumer.start();
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
+    public void map(List<Object> tasks, String taskName) {
+
     }
 
     @Override

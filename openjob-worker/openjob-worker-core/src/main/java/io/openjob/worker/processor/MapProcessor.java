@@ -25,7 +25,7 @@ public interface MapProcessor extends BaseProcessor {
         }
 
         JobContext jobContext = TaskContainerFactory.getPool().getJobContext();
-        ActorSelection actorSelection = OpenjobWorker.getActorSystem().actorSelection(jobContext.getMasterActorPath());
+        ActorSelection masterSelection = OpenjobWorker.getActorSystem().actorSelection(jobContext.getMasterActorPath());
 
         int batchSize = 100;
         List<List<Object>> splitTasks = Lists.partition(tasks, batchSize);
@@ -38,7 +38,7 @@ public interface MapProcessor extends BaseProcessor {
             mapTaskRequest.setTasks(batchTasks);
 
             try {
-                WorkerResponse workerResponse = FutureUtil.mustAsk(actorSelection, mapTaskRequest, WorkerResponse.class, 10L);
+                WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);
                 System.out.println(workerResponse);
             } catch (Exception e) {
                 e.printStackTrace();

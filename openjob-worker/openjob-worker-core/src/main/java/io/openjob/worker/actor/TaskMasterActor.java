@@ -7,6 +7,7 @@ import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.master.MapReduceTaskMaster;
 import io.openjob.worker.master.TaskMaster;
 import io.openjob.worker.master.TaskMasterFactory;
 import io.openjob.worker.master.TaskMasterPool;
@@ -80,6 +81,9 @@ public class TaskMasterActor extends BaseActor {
     }
 
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {
-
+        TaskMaster taskMaster = TaskMasterPool.get(mapTaskReq.getJobInstanceId());
+        if (taskMaster instanceof MapReduceTaskMaster) {
+            ((MapReduceTaskMaster) taskMaster).map(mapTaskReq.getTasks(), mapTaskReq.getTaskName());
+        }
     }
 }

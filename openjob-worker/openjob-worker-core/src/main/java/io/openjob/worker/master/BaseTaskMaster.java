@@ -26,6 +26,10 @@ public abstract class BaseTaskMaster implements TaskMaster {
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
     }
 
+    protected void init() {
+
+    }
+
     protected Long acquireTaskId() {
         return taskIdGenerator.getAndIncrement();
     }
