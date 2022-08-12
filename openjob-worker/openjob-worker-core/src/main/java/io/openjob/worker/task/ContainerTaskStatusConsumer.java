@@ -19,7 +19,7 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
     }
 
     @Override
-    public void handle(Long id, List<T> tasks) {
+    public void consume(Long id, List<T> tasks) {
 
     }
 }

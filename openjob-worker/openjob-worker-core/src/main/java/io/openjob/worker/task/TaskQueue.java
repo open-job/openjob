@@ -12,9 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @since 1.0.0
  */
 public class TaskQueue<T> {
-    private Long id;
-    private Integer capacity;
-    private BlockingQueue<T> queues;
+    private final Long id;
+    private final Integer capacity;
+    private final BlockingQueue<T> queues;
 
     public TaskQueue(Long id, Integer capacity) {
         this.id = id;

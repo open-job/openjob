@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class BaseConsumer<T> {
     protected final Long id;
-    protected final Integer handlerCoreThreadNum;
-    protected final Integer handlerMaxThreadNum;
-    protected final String handlerThreadName;
-    protected ThreadPoolExecutor handlerExecutor;
+    protected final Integer consumerCoreThreadNum;
+    protected final Integer consumerMaxThreadNum;
+    protected final String consumerThreadName;
+    protected ThreadPoolExecutor consumerExecutor;
     protected Integer pollSize;
     protected String pollThreadName;
     protected Thread pollThread;
@@ -32,9 +32,9 @@ public abstract class BaseConsumer<T> {
                         String pollThreadName,
                         TaskQueue<T> queues) {
         this.id = id;
-        this.handlerCoreThreadNum = handlerCoreThreadNum;
-        this.handlerMaxThreadNum = handlerMaxThreadNum;
-        this.handlerThreadName = handlerThreadName;
+        this.consumerCoreThreadNum = handlerCoreThreadNum;
+        this.consumerMaxThreadNum = handlerMaxThreadNum;
+        this.consumerThreadName = handlerThreadName;
         this.pollSize = pollSize;
         this.pollThreadName = pollThreadName;
         this.queues = queues;
@@ -42,9 +42,9 @@ public abstract class BaseConsumer<T> {
 
     public void start() {
         // Handler thread executor.
-        handlerExecutor = new ThreadPoolExecutor(
-                this.handlerCoreThreadNum,
-                this.handlerMaxThreadNum,
+        consumerExecutor = new ThreadPoolExecutor(
+                this.consumerCoreThreadNum,
+                this.consumerMaxThreadNum,
                 30,
                 TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(10240),
@@ -53,7 +53,7 @@ public abstract class BaseConsumer<T> {
 
                     @Override
                     public Thread newThread(Runnable r) {
-                        return new Thread(r, String.format("%s-%d-%d", handlerThreadName, id, index.getAndIncrement()));
+                        return new Thread(r, String.format("%s-%d-%d", consumerThreadName, id, index.getAndIncrement()));
                     }
                 },
                 new ThreadPoolExecutor.CallerRunsPolicy()
@@ -78,7 +78,7 @@ public abstract class BaseConsumer<T> {
         pollThread.start();
     }
 
-    public abstract void handle(Long id, List<T> tasks);
+    public abstract void consume(Long id, List<T> tasks);
 
     public void stop() {
         // Poll thread
@@ -87,8 +87,8 @@ public abstract class BaseConsumer<T> {
         }
 
         // Handle thread pool
-        if (Objects.nonNull(handlerExecutor)) {
-            handlerExecutor.shutdownNow();
+        if (Objects.nonNull(consumerExecutor)) {
+            consumerExecutor.shutdownNow();
         }
 
         if (Objects.nonNull(this.queues)) {
@@ -100,7 +100,7 @@ public abstract class BaseConsumer<T> {
         List<T> tasks = queues.poll(this.pollSize);
         if (!tasks.isEmpty()) {
             this.activePollNum.incrementAndGet();
-            this.handle(id, tasks);
+            this.consume(id, tasks);
         }
         return tasks;
     }

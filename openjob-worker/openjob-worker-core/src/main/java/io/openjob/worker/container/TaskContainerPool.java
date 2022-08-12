@@ -1,11 +1,9 @@
 package io.openjob.worker.container;
 
 import com.google.common.collect.Maps;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import io.openjob.worker.context.JobContext;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**

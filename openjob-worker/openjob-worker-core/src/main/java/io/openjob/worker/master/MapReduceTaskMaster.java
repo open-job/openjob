@@ -54,15 +54,30 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     }
 
     public void map(List<Object> tasks, String taskName) {
-
+        try {
+            for (Object task : tasks) {
+                MasterStartContainerRequest startReq = this.wrapMasterStartContainerRequest();
+                startReq.setTask(task);
+                childTaskQueue.submit(startReq);
+            }
+        } catch (Throwable throwable) {
+            System.out.println(throwable);
+        }
     }
 
     @Override
     public void submit() {
-        String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
-        ActorSelection workerSelection = OpenjobWorker.getActorSystem().actorSelection(workerAddress);
         MasterStartContainerRequest masterStartContainerRequest = this.wrapMasterStartContainerRequest();
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
+
+
+        this.dispatchTasks(startRequests);
+    }
+
+    public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
+        String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
+        ActorSelection workerSelection = OpenjobWorker.getActorSystem().actorSelection(workerAddress);
+
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
         batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());

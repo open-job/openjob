@@ -21,8 +21,8 @@ public class MyTestTaskConsumer<T> extends BaseConsumer<T> {
     }
 
     @Override
-    public void handle(Long id, List<T> tasks) {
-        this.handlerExecutor.submit(() -> {
+    public void consume(Long id, List<T> tasks) {
+        this.consumerExecutor.submit(() -> {
             for (T ignored : tasks) {
                 counter.incrementAndGet();
             }
