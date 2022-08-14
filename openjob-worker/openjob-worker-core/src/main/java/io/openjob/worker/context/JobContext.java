@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -17,11 +18,12 @@ public class JobContext {
     private Long jobInstanceId;
     private Long taskId;
     private String jobParams;
-    private String jobName;
+    private String taskName;
     private String executeType;
     private String processorType;
     private String processorInfo;
     private String masterActorPath;
+    private Object task;
 
     private Integer failRetryTimes;
 
@@ -67,7 +69,6 @@ public class JobContext {
     private Integer shardingNum;
 
     private Integer concurrency;
-
     private List<String> workerAddresses;
     private String timeExpressionType;
     private String timeExpression;
@@ -76,5 +77,13 @@ public class JobContext {
         this.serialNum = 0L;
         this.shardingNum = 0;
         this.failAttemptTimes = 0;
+    }
+
+    public Boolean isRoot() {
+        return "MR_ROOT_TASK".equals(this.taskName);
+    }
+
+    public Boolean isTask(String taskName) {
+        return this.taskName.equals(taskName);
     }
 }

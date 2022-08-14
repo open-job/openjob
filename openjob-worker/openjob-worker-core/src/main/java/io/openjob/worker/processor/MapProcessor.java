@@ -17,7 +17,7 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface MapProcessor extends BaseProcessor {
-    default ProcessResult map(List<Object> tasks, String taskName) {
+    default ProcessResult map(List<? extends Object> tasks, String taskName) {
         ProcessResult result = new ProcessResult(false);
 
         if (CollectionUtils.isEmpty(tasks)) {
@@ -28,7 +28,7 @@ public interface MapProcessor extends BaseProcessor {
         ActorSelection masterSelection = OpenjobWorker.getActorSystem().actorSelection(jobContext.getMasterActorPath());
 
         int batchSize = 100;
-        List<List<Object>> splitTasks = Lists.partition(tasks, batchSize);
+        List<List<Object>> splitTasks = Lists.partition((List<Object>) tasks, batchSize);
         splitTasks.forEach((batchTasks) -> {
             ProcessorMapTaskRequest mapTaskRequest = new ProcessorMapTaskRequest();
             mapTaskRequest.setJobId(jobContext.getJobId());
