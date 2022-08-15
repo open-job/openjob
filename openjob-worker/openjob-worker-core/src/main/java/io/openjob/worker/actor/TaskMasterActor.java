@@ -86,5 +86,7 @@ public class TaskMasterActor extends BaseActor {
         if (taskMaster instanceof MapReduceTaskMaster) {
             ((MapReduceTaskMaster) taskMaster).map(mapTaskReq.getTasks(), mapTaskReq.getTaskName());
         }
+
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 }

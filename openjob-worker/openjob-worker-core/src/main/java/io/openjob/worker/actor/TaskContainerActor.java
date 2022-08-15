@@ -105,8 +105,12 @@ public class TaskContainerActor extends BaseActor {
 
         @Override
         public void run() {
-            for (MasterStartContainerRequest req : this.containerRequest.getStartContainerRequests()) {
-                startContainer(req);
+            try {
+                for (MasterStartContainerRequest req : this.containerRequest.getStartContainerRequests()) {
+                    startContainer(req);
+                }
+            } catch (Throwable ex) {
+                System.out.println(ex);
             }
         }
     }
