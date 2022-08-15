@@ -2,6 +2,7 @@ package io.openjob.worker.context;
 
 import io.openjob.common.dto.JobInstanceDTO;
 import io.openjob.worker.constant.TaskStatusEnum;
+import io.openjob.worker.constant.WorkerConstant;
 import lombok.Data;
 
 import java.util.List;
@@ -80,7 +81,7 @@ public class JobContext {
     }
 
     public Boolean isRoot() {
-        return "MR_ROOT_TASK".equals(this.taskName);
+        return WorkerConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
     }
 
     public Boolean isTask(String taskName) {

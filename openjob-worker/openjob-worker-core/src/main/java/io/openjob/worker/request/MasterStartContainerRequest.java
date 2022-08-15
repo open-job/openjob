@@ -25,7 +25,8 @@ public class MasterStartContainerRequest implements Serializable {
     private String timeExpressionType;
     private String timeExpression;
     private String masterAkkaPath;
+    private String taskName;
 
-    private Object task;
+    private byte[] task;
     private List<String> workerAddresses;
 }

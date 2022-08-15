@@ -1,9 +1,11 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
+import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.util.WorkerUtil;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,7 +24,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
     public BaseTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;
-        this.localWorkerAddress = actorContext.provider().getDefaultAddress().hostPort();
+        this.localWorkerAddress = actorContext.provider().addressString();
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
     }
 
@@ -50,6 +52,8 @@ public abstract class BaseTaskMaster implements TaskMaster {
         startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
         startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
         startReq.setMasterAkkaPath(this.localContainerPath);
+        startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
+        startReq.setMasterAkkaPath(this.localWorkerAddress+ AkkaConstant.WORKER_PATH_TASK_MASTER);
         return startReq;
     }
 }

@@ -6,13 +6,11 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class kryoUtilTest {
+public class KryoUtilTest {
     @Test
     public void testKryo() {
         MyChildKryo cname = new MyChildKryo("cname", 2);

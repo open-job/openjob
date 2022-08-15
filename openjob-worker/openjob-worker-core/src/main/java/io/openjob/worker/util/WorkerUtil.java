@@ -4,6 +4,7 @@ import akka.actor.ActorSelection;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 
 /**
@@ -33,5 +34,17 @@ public class WorkerUtil {
 
     public static String getServerAddress() {
         return String.format("%s:%d", OpenjobConfig.getString(WorkerConstant.SERVER_HOST), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
+    }
+
+    public static String getWorkerMasterActorPath(String address){
+        return getWorkerActorPath(address, AkkaConstant.WORKER_PATH_TASK_MASTER);
+    }
+
+    public static String getWorkerContainerActorPath(String address) {
+        return getWorkerActorPath(address, WorkerAkkaConstant.PATH_TASK_CONTAINER);
+    }
+
+    public static String getWorkerActorPath(String address, String path) {
+        return String.format("akka://%s@%s%s", AkkaConstant.WORKER_SYSTEM_NAME, address, path);
     }
 }

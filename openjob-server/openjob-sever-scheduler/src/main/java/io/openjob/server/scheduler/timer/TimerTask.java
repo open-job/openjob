@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -114,6 +115,12 @@ public class TimerTask implements Runnable {
             submitReq.setTimeExpressionType(this.timeExpressionType);
             submitReq.setTimeExpression(this.timeExpression);
             WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
+
+            List<String> workerAddresses = appWorkers.get(this.appid).stream()
+                    .map(WorkerDTO::getAddress)
+                    .collect(Collectors.toList());
+            submitReq.setWorkerAddresses(workerAddresses);
+
             FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 10L);
             log.info("Task dispatch success! taskId={}", this.taskId);
         } catch (Throwable ex) {

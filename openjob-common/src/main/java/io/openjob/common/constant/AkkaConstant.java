@@ -19,4 +19,7 @@ public class AkkaConstant {
     public static final String WORKER_SYSTEM_NAME = "openjob-worker";
     public static final String WORKER_ACTOR_HEARTBEAT = "heartbeat";
     public static final String WORKER_ACTOR_MASTER = "task-master";
+
+    // Worker Path
+    public static final String WORKER_PATH_TASK_MASTER = "/user/" + WORKER_ACTOR_MASTER;
 }

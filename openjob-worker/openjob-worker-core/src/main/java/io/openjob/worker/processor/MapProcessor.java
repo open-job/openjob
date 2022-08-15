@@ -4,12 +4,14 @@ import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +37,10 @@ public interface MapProcessor extends BaseProcessor {
             mapTaskRequest.setJobInstanceId(jobContext.getJobInstanceId());
             mapTaskRequest.setTaskId(jobContext.getTaskId());
             mapTaskRequest.setTaskName(taskName);
-            mapTaskRequest.setTasks(batchTasks);
+
+            List<byte[]> byteList = new ArrayList<>();
+            batchTasks.forEach(t -> byteList.add(KryoUtil.serialize(t)));
+            mapTaskRequest.setTasks(byteList);
 
             try {
                 WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);

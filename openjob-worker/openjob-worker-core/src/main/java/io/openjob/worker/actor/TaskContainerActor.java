@@ -3,6 +3,7 @@ package io.openjob.worker.actor;
 import io.openjob.common.actor.BaseActor;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.container.TaskContainer;
 import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.context.JobContext;
@@ -11,6 +12,7 @@ import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
 
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -78,6 +80,11 @@ public class TaskContainerActor extends BaseActor {
         jobContext.setTimeExpression(startReq.getTimeExpression());
         jobContext.setTimeExpressionType(startReq.getTimeExpressionType());
         jobContext.setWorkerAddresses(startReq.getWorkerAddresses());
+        jobContext.setTaskName(startReq.getTaskName());
+        jobContext.setMasterActorPath(startReq.getMasterAkkaPath());
+        if (Objects.nonNull(startReq.getTask())) {
+            jobContext.setTask(KryoUtil.deserialize(startReq.getTask()));
+        }
 
         TaskContainer taskContainer = TaskContainerFactory.create(jobContext);
         TaskContainerFactory.getPool().submit(

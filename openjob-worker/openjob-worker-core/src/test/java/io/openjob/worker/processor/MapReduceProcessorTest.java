@@ -16,6 +16,7 @@ public class MapReduceProcessorTest implements MapReduceProcessor {
         if (context.isRoot()) {
             List<MrTaskTest> tasks = new ArrayList<>();
             for (int i = 1; i < 201; i++) {
+                System.out.println("root"+i);
                 tasks.add(new MrTaskTest(i));
             }
 
@@ -24,6 +25,7 @@ public class MapReduceProcessorTest implements MapReduceProcessor {
 
         if (context.isTask("TASK_TWO")) {
             MrTaskTest task = (MrTaskTest) context.getTask();
+            System.out.println("two"+task.getId());
             return new ProcessResult(true, String.valueOf(task.getId() * 2));
         }
         return new ProcessResult(false);

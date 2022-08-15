@@ -34,4 +34,7 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ROUTING_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
+
+    // Task
+    public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
 }

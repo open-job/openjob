@@ -3,6 +3,7 @@ package io.openjob.common.request;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -22,4 +23,5 @@ public class ServerSubmitJobInstanceRequest implements Serializable {
     private Integer concurrency;
     private String timeExpressionType;
     private String timeExpression;
+    private List<String> workerAddresses;
 }

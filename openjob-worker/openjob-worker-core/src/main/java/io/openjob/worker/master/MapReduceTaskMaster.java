@@ -2,22 +2,18 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
-import akka.dispatch.OnComplete;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import com.google.common.collect.Lists;
-import io.openjob.worker.OpenjobWorker;
+import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
+import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -53,11 +49,12 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     }
 
-    public void map(List<Object> tasks, String taskName) {
+    public void map(List<byte[]> tasks, String taskName) {
         try {
-            for (Object task : tasks) {
+            for (byte[] task : tasks) {
                 MasterStartContainerRequest startReq = this.wrapMasterStartContainerRequest();
                 startReq.setTask(task);
+                startReq.setTaskName(taskName);
                 childTaskQueue.submit(startReq);
             }
         } catch (Throwable throwable) {
@@ -68,6 +65,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     @Override
     public void submit() {
         MasterStartContainerRequest masterStartContainerRequest = this.wrapMasterStartContainerRequest();
+        masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 
 
@@ -76,25 +74,19 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
         String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
-        ActorSelection workerSelection = OpenjobWorker.getActorSystem().actorSelection(workerAddress);
+        String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
+        ActorSelection workerSelection = actorContext.actorSelection(workerPath);
 
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
         batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         batchRequest.setStartContainerRequests(startRequests);
 
-        Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS));
-        Future<Object> future = Patterns.ask(workerSelection, batchRequest, timeout);
-        future.onComplete(new OnComplete<Object>() {
-            @Override
-            public void onComplete(Throwable throwable, Object msg) {
-                if (throwable != null) {
-                    System.out.println("some thing wrong.{}" + throwable);
-                } else {
-                    System.out.println("success:" + msg);
-                }
-            }
-        }, this.actorContext.dispatcher());
+        try {
+            FutureUtil.ask(workerSelection, batchRequest, 10L);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

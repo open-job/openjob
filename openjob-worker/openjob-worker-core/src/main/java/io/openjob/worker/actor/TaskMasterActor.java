@@ -53,6 +53,7 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
+        jobInstanceDTO.setWorkerAddresses(submitReq.getWorkerAddresses());
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
