@@ -22,29 +22,18 @@
     <properties>
 
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.openjob.worker</groupId>
+                <artifactId>openjob-worker-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-persistence_${scala.binary.version}</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-            <version>0.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.fusesource.leveldbjni</groupId>
-            <artifactId>leveldbjni-all</artifactId>
-            <version>1.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-common</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

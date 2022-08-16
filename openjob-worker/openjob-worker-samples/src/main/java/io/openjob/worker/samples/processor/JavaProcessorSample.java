@@ -1,6 +1,8 @@
-package io.openjob.worker.processor;
+package io.openjob.worker.samples.processor;
 
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.processor.JavaProcessor;
+import io.openjob.worker.processor.ProcessResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +11,7 @@ import java.util.Date;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class JavaProcessorTest extends JavaProcessor {
+public class JavaProcessorSample implements JavaProcessor {
     @Override
     public ProcessResult process(JobContext context) {
         Date date = new Date();

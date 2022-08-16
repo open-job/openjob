@@ -1,8 +1,12 @@
-package io.openjob.worker.processor;
+package io.openjob.worker.samples.processor;
 
 import com.google.common.collect.Lists;
 import io.openjob.worker.context.JobContext;
-import io.openjob.worker.task.MrTaskTest;
+import io.openjob.worker.processor.MapReduceProcessor;
+import io.openjob.worker.processor.ProcessResult;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +15,9 @@ import java.util.List;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class MapReduceProcessorTest implements MapReduceProcessor {
+public class MapReduceProcessorSample implements MapReduceProcessor {
     @Override
-    public ProcessResult process(JobContext context) throws Exception {
+    public ProcessResult process(JobContext context) {
         if (context.isRoot()) {
             List<MrTaskTest> tasks = new ArrayList<>();
             for (int i = 1; i < 201; i++) {
@@ -45,5 +49,19 @@ public class MapReduceProcessorTest implements MapReduceProcessor {
     @Override
     public ProcessResult reduce(JobContext jobContext) {
         return null;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MrTaskTest {
+        private Integer id;
+        private List<String> names;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class MyTestTask {
+        private String name;
     }
 }

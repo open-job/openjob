@@ -3,6 +3,7 @@ package io.openjob.worker.config;
 
 import io.openjob.worker.util.ConfigUtil;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 public class ConfigLoader {
 
     /**

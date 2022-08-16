@@ -13,5 +13,11 @@
 
     <properties>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>io.openjob.worker</groupId>
+            <artifactId>openjob-worker-core</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

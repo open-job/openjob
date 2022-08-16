@@ -1,5 +1,7 @@
 package io.openjob.worker.task;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,5 +48,11 @@ public class TaskConsumerTest {
 
         Thread.sleep(3000L);
         Assertions.assertEquals(handler.getCounter().get(), max);
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class MyTestTask {
+        private String name;
     }
 }

@@ -24,6 +24,7 @@ import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 public class OpenjobWorker implements InitializingBean {
 
     /**
