@@ -44,13 +44,13 @@ public class Job {
     private String name;
 
     @Column(name = "processor_type")
-    private Integer processorType;
+    private String processorType;
 
     @Column(name = "processor_info")
     private String processorInfo;
 
     @Column(name = "execute_type")
-    private Integer executeType;
+    private String executeType;
 
     @Column(name = "params")
     private String params;
@@ -65,7 +65,7 @@ public class Job {
     private Integer concurrency;
 
     @Column(name = "time_expression_type")
-    private Integer timeExpressionType;
+    private String timeExpressionType;
 
     @Column(name = "time_expression")
     private String timeExpression;

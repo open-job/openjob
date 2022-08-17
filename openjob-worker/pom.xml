@@ -22,12 +22,18 @@
     <properties>
 
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.openjob.worker</groupId>
+                <artifactId>openjob-worker-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>io.openjob</groupId>
-            <artifactId>openjob-common</artifactId>
-        </dependency>
+
     </dependencies>
 
 </project>

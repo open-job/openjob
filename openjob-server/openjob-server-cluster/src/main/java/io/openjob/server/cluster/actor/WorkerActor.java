@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.actor;
 
-import akka.actor.AbstractActor;
+import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerActor extends AbstractActor {
+public class WorkerActor extends BaseActor {
 
     private final WorkerService workerService;
 
@@ -37,13 +37,9 @@ public class WorkerActor extends AbstractActor {
     }
 
     public void workerStart(WorkerStartRequest workerStartRequest) {
-        try {
-            this.workerService.workerStart(workerStartRequest);
-            log.info("Worker register success! address={}", workerStartRequest.getAddress());
-        } catch (Throwable e) {
-            getSender().tell(Result.fail(e.getMessage()), getSelf());
-            return;
-        }
+        this.workerService.workerStart(workerStartRequest);
+
+        log.info("Worker register success! address={}", workerStartRequest.getAddress());
         getSender().tell(Result.success(new ServerResponse()), getSelf());
     }
 }

@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import io.openjob.common.response.Result;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -29,5 +30,22 @@ public class FutureUtil {
         Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
         Future<Object> future = Patterns.ask(selection, msg, timeout);
         return Await.result(future, timeout.duration());
+    }
+
+    public static <T> T mustAsk(ActorSelection selection, Object request, Class<T> ignoredType, Long seconds) {
+        Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
+        Future<Object> future = Patterns.ask(selection, request, timeout);
+        try {
+            @SuppressWarnings("unchecked")
+            Result<T> result = (Result<T>) Await.result(future, timeout.duration());
+
+            if (!ResultUtil.isSuccess(result)) {
+                throw new RuntimeException("Must ask fail! message=" + result.getMessage());
+            }
+
+            return result.getData();
+        } catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

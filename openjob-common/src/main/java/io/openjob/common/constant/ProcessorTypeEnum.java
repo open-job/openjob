@@ -13,19 +13,18 @@ public enum ProcessorTypeEnum {
     /**
      * Java.
      */
-    JAVA(1, "java"),
+    JAVA("java"),
 
     /**
      * Shell.
      */
-    SHELL(3, "shell"),
+    SHELL("shell"),
 
     /**
      * Http.
      */
-    HTTP(5, "http"),
+    HTTP("http"),
     ;
 
-    private final Integer type;
-    private final String message;
+    private final String type;
 }

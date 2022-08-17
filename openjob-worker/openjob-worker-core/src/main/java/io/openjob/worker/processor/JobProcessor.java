@@ -17,15 +17,6 @@ public interface JobProcessor extends BaseProcessor {
     void preProcess(JobContext context) throws Exception;
 
     /**
-     * Process
-     *
-     * @param context job context.
-     * @return ProcessResult
-     * @throws Exception exception.
-     */
-    ProcessResult process(JobContext context) throws Exception;
-
-    /**
      * Post.
      *
      * @param context context
@@ -33,11 +24,4 @@ public interface JobProcessor extends BaseProcessor {
      * @throws Exception exception.
      */
     ProcessResult postProcess(JobContext context) throws Exception;
-
-    /**
-     * Kill.
-     *
-     * @param context context
-     */
-    void kill(JobContext context);
 }

@@ -1,5 +1,6 @@
 package io.openjob.worker;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
@@ -14,12 +15,16 @@ import io.openjob.common.response.Result;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
 import io.openjob.common.util.ResultUtil;
+import io.openjob.worker.actor.TaskContainerActor;
+import io.openjob.worker.actor.TaskMasterActor;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
+import io.openjob.worker.actor.WorkerPersistentRoutingActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
@@ -34,18 +39,23 @@ import java.util.concurrent.TimeUnit;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 public class OpenjobWorker implements InitializingBean {
 
     /**
      * Worker heartbeat
      */
-    private static ScheduledExecutorService heartbeatService;
+    private static final ScheduledExecutorService heartbeatService;
 
     /**
      * Actor system.
      */
     private static ActorSystem actorSystem;
+
+    /**
+     * Persistent routing ref.
+     */
+    private static ActorRef persistentRoutingRef;
 
     static {
         heartbeatService = new ScheduledThreadPoolExecutor(
@@ -141,6 +151,9 @@ public class OpenjobWorker implements InitializingBean {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
+        newConfig.put("akka.remote.artery.canonical.hostname", this.getWorkerHostname());
+        newConfig.put("akka.remote.artery.canonical.port", String.valueOf(this.getWorkerPort()));
+
 
         Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
         actorSystem = ActorSystem.create(AkkaConstant.WORKER_SYSTEM_NAME, config);
@@ -154,22 +167,46 @@ public class OpenjobWorker implements InitializingBean {
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_HEARTBEAT);
         actorSystem.actorOf(props, AkkaConstant.WORKER_ACTOR_HEARTBEAT);
 
+        // At least once persistent actor.
+        int persistentNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_PERSISTENT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_PERSISTENT_ACTOR_NUM);
+        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, persistentNum)
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_PERSISTENT_ROUTING);
+        persistentRoutingRef = actorSystem.actorOf(persistentProps, WorkerAkkaConstant.ACTOR_PERSISTENT_ROUTING);
+
         // Master actor.
+        int taskMasterNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_MASTER_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM);
+        Props masterProps = Props.create(TaskMasterActor.class)
+                .withRouter(new RoundRobinPool(taskMasterNum))
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_MASTER);
+        actorSystem.actorOf(masterProps, AkkaConstant.WORKER_ACTOR_MASTER);
 
-        // Manager actor.
-
-        // Task actor.
-
-        // Persistence actor.
+        // Container actor.
+        int taskContainerNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_CONTAINER_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM);
+        Props containerProps = Props.create(TaskContainerActor.class)
+                .withRouter(new RoundRobinPool(taskContainerNum))
+                .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
+        actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
     }
 
     public String getWorkerAddress() {
-        String hostname = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
-        int port = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
+        String hostname = this.getWorkerHostname();
+        int port = this.getWorkerPort();
         return String.format("%s:%d", hostname, port);
     }
 
     public static ActorSystem getActorSystem() {
         return actorSystem;
+    }
+
+    public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
+        persistentRoutingRef.tell(msg, sender);
+    }
+
+    private String getWorkerHostname() {
+        return OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
+    }
+
+    private Integer getWorkerPort() {
+        return OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
     }
 }

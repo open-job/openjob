@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
+import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerHeartbeatActor extends AbstractActor {
+public class WorkerHeartbeatActor extends BaseActor {
 
     private final WorkerHeartbeatService workerHeartbeatService;
 
@@ -35,13 +36,8 @@ public class WorkerHeartbeatActor extends AbstractActor {
     }
 
     public void workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatRequest) {
-        try {
-            workerHeartbeatService.workerHeartbeat(workerHeartbeatRequest);
-            log.info("Worker({}) heartbeat success!", workerHeartbeatRequest.getAddress());
-        } catch (Throwable e) {
-            getSender().tell(Result.fail(e.getMessage()), getSelf());
-            return;
-        }
+        workerHeartbeatService.workerHeartbeat(workerHeartbeatRequest);
+        log.info("Worker({}) heartbeat success!", workerHeartbeatRequest.getAddress());
 
         getSender().tell(Result.success(new ServerResponse()), getSelf());
     }

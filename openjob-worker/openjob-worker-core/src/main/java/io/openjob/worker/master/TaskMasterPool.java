@@ -11,13 +11,17 @@ import java.util.function.Function;
  */
 public class TaskMasterPool {
 
-    private static final Map<Long, BaseTaskMaster> TASK_MASTER_POOL = Maps.newConcurrentMap();
+    private static final Map<Long, TaskMaster> TASK_MASTER_POOL = Maps.newConcurrentMap();
 
-    public static BaseTaskMaster get(Long jobInstanceId) {
+    public static Boolean contains(Long jobInstanceId) {
+        return TASK_MASTER_POOL.containsKey(jobInstanceId);
+    }
+
+    public static TaskMaster get(Long jobInstanceId) {
         return TASK_MASTER_POOL.get(jobInstanceId);
     }
 
-    public static BaseTaskMaster get(Long jobInstanceId, Function<Long, BaseTaskMaster> creator) {
+    public static TaskMaster get(Long jobInstanceId, Function<Long, TaskMaster> creator) {
         return TASK_MASTER_POOL.computeIfAbsent(jobInstanceId, creator);
     }
 
