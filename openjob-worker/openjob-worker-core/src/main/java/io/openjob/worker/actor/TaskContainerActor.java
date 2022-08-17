@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 public class TaskContainerActor extends BaseActor {
-    private static final ThreadPoolExecutor containerExecutor;
+    private static final ThreadPoolExecutor CONTAINER_EXECUTOR;
 
     static {
-        containerExecutor = new ThreadPoolExecutor(
+        CONTAINER_EXECUTOR = new ThreadPoolExecutor(
                 2,
                 2,
                 30,
@@ -34,7 +34,7 @@ public class TaskContainerActor extends BaseActor {
                 r -> new Thread(r, "Openjob-container-executor"),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
-        containerExecutor.allowCoreThreadTimeOut(true);
+        CONTAINER_EXECUTOR.allowCoreThreadTimeOut(true);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TaskContainerActor extends BaseActor {
     }
 
     public void handleBatchStartContainer(MasterBatchStartContainerRequest batchStartReq) {
-        containerExecutor.submit(new ContainerRunnable(batchStartReq));
+        CONTAINER_EXECUTOR.submit(new ContainerRunnable(batchStartReq));
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 

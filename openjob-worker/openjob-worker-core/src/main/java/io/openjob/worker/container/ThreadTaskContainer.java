@@ -31,11 +31,11 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
     public void start() {
         TaskContainerFactory.getPool().setJobContext(jobContext);
         String uniqueId = "";
-
-        // Running
-        if (this.jobContext.getFailAttemptTimes() == 0) {
-
-        }
+//
+//        // Running
+//        if (this.jobContext.getFailAttemptTimes() == 0) {
+//
+//        }
 
         ProcessResult result = new ProcessResult(false);
 
@@ -63,6 +63,10 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         }
     }
 
+    /**
+     *
+     * @param result
+     */
     private void reportTaskStatus(ProcessResult result) {
         String workerAddress = "";
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();

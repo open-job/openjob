@@ -7,6 +7,12 @@ import io.openjob.worker.processor.BaseProcessor;
  * @since 1.0.0
  */
 public class ProcessorUtil {
+    /**
+     * Get processor.
+     *
+     * @param className class name.
+     * @return BaseProcessor
+     */
     public static BaseProcessor getProcess(String className) {
         try {
             return (BaseProcessor) Class.forName(className).getDeclaredConstructor().newInstance();

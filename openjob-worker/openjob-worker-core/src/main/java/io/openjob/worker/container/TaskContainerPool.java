@@ -21,17 +21,44 @@ public abstract class TaskContainerPool {
         return TASK_CONTAINER_POOL.computeIfAbsent(containerId, creator);
     }
 
+    /**
+     *
+     * @param containerId
+     */
     public static void remove(String containerId) {
         TASK_CONTAINER_POOL.remove(containerId);
     }
 
+    /**
+     *
+     * @param jobId
+     * @param jobInstanceId
+     * @param taskId
+     * @param consumerNum
+     * @param taskContainer
+     */
     public abstract void submit(Long jobId, Long jobInstanceId, Long taskId, Integer consumerNum, TaskContainer taskContainer);
 
+    /**
+     *
+     * @param jonInstanceId
+     */
     public abstract void destroy(Long jonInstanceId);
 
+    /**
+     *
+     * @param jobContext
+     */
     public abstract void setJobContext(JobContext jobContext);
 
+    /**
+     *
+     */
     public abstract void removeJobContext();
 
+    /**
+     *
+     * @return
+     */
     public abstract JobContext getJobContext();
 }

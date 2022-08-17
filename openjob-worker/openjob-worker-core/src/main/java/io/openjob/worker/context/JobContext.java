@@ -74,16 +74,26 @@ public class JobContext {
     private String timeExpressionType;
     private String timeExpression;
 
+    /**
+     * Default
+     */
     public JobContext() {
         this.serialNum = 0L;
         this.shardingNum = 0;
         this.failAttemptTimes = 0;
     }
 
+    /**
+     * @return Boolean
+     */
     public Boolean isRoot() {
         return WorkerConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
     }
 
+    /**
+     * @param taskName task name.
+     * @return Boolean
+     */
     public Boolean isTask(String taskName) {
         return this.taskName.equals(taskName);
     }

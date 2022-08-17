@@ -19,6 +19,14 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface MapProcessor extends BaseProcessor {
+
+    /**
+     * Map
+     *
+     * @param tasks    sub tasks.
+     * @param taskName task name.
+     * @return ProcessResult
+     */
     default ProcessResult map(List<? extends Object> tasks, String taskName) {
         ProcessResult result = new ProcessResult(false);
 
@@ -52,6 +60,10 @@ public interface MapProcessor extends BaseProcessor {
         return result;
     }
 
+    /**
+     *
+     * @param context context
+     */
     @Override
     default void stop(JobContext context) {
 

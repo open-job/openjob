@@ -5,7 +5,13 @@ package io.openjob.worker.container;
  * @since 1.0.0
  */
 public interface TaskContainer {
+    /**
+     *
+     */
     void start();
 
+    /**
+     *
+     */
     void stop();
 }

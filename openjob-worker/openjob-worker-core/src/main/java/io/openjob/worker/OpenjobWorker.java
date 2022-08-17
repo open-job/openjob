@@ -23,7 +23,6 @@ import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.util.WorkerUtil;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -70,6 +69,9 @@ public class OpenjobWorker implements InitializingBean {
         this.init();
     }
 
+    /**
+     * @throws Exception
+     */
     public synchronized void init() throws Exception {
         this.checkConfig();
 
@@ -83,6 +85,9 @@ public class OpenjobWorker implements InitializingBean {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
+    /**
+     * @throws Exception
+     */
     public void start() throws Exception {
         String workerAddress = this.getWorkerAddress();
         String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
@@ -188,24 +193,40 @@ public class OpenjobWorker implements InitializingBean {
         actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
     }
 
+    /**
+     * @return
+     */
     public String getWorkerAddress() {
         String hostname = this.getWorkerHostname();
         int port = this.getWorkerPort();
         return String.format("%s:%d", hostname, port);
     }
 
+    /**
+     * @return
+     */
     public static ActorSystem getActorSystem() {
         return actorSystem;
     }
 
+    /**
+     * @param msg
+     * @param sender
+     */
     public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
         persistentRoutingRef.tell(msg, sender);
     }
 
+    /**
+     * @return
+     */
     private String getWorkerHostname() {
         return OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
     }
 
+    /**
+     * @return
+     */
     private Integer getWorkerPort() {
         return OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
     }

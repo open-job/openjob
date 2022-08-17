@@ -21,6 +21,10 @@ public abstract class BaseTaskMaster implements TaskMaster {
     protected String localWorkerAddress;
     protected String localContainerPath;
 
+    /**
+     * @param jobInstanceDTO
+     * @param actorContext
+     */
     public BaseTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;
@@ -53,7 +57,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
         startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
         startReq.setMasterAkkaPath(this.localContainerPath);
         startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
-        startReq.setMasterAkkaPath(this.localWorkerAddress+ AkkaConstant.WORKER_PATH_TASK_MASTER);
+        startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
     }
 }

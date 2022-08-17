@@ -6,20 +6,28 @@ package io.openjob.common.constant;
  */
 public class AkkaConstant {
 
-    // Path
+    /**
+     * Path
+     */
     public static final String AKKA_PATH_FORMAT = "akka://%s@%s/user/%s";
 
-    // Server
+    /**
+     * Server
+     */
     public static final String SERVER_SYSTEM_NAME = "openjob-server";
     public static final String SERVER_ACTOR_WORKER = "worker";
     public static final String SERVER_ACTOR_WORKER_HEARTBEAT = "worker-heartbeat";
     public static final String SERVER_ACTOR_WORKER_TASK_MASTER = "worker-task-master";
 
-    // Worker
+    /**
+     * Worker
+     */
     public static final String WORKER_SYSTEM_NAME = "openjob-worker";
     public static final String WORKER_ACTOR_HEARTBEAT = "heartbeat";
     public static final String WORKER_ACTOR_MASTER = "task-master";
 
-    // Worker Path
+    /**
+     * Worker Path
+     */
     public static final String WORKER_PATH_TASK_MASTER = "/user/" + WORKER_ACTOR_MASTER;
 }

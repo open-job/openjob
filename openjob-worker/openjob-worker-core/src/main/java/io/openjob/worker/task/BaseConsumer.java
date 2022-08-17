@@ -24,6 +24,16 @@ public abstract class BaseConsumer<T> {
     protected TaskQueue<T> queues;
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 
+    /**
+     *
+     * @param id
+     * @param handlerCoreThreadNum
+     * @param handlerMaxThreadNum
+     * @param handlerThreadName
+     * @param pollSize
+     * @param pollThreadName
+     * @param queues
+     */
     public BaseConsumer(Long id,
                         Integer handlerCoreThreadNum,
                         Integer handlerMaxThreadNum,
@@ -40,6 +50,9 @@ public abstract class BaseConsumer<T> {
         this.queues = queues;
     }
 
+    /**
+     *
+     */
     public void start() {
         // Handler thread executor.
         consumerExecutor = new ThreadPoolExecutor(
@@ -78,8 +91,17 @@ public abstract class BaseConsumer<T> {
         pollThread.start();
     }
 
+    /**
+     * consume
+     *
+     * @param id
+     * @param tasks
+     */
     public abstract void consume(Long id, List<T> tasks);
 
+    /**
+     *
+     */
     public void stop() {
         // Poll thread
         if (Objects.nonNull(pollThread)) {
@@ -96,6 +118,10 @@ public abstract class BaseConsumer<T> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     private synchronized List<T> pollTasks() {
         List<T> tasks = queues.poll(this.pollSize);
         if (!tasks.isEmpty()) {
