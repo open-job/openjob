@@ -31,12 +31,8 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
-
-        <!-- HikariCP -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
+            <optional>true</optional>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
