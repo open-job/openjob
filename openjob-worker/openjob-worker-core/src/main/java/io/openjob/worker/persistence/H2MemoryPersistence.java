@@ -72,8 +72,8 @@ public class H2MemoryPersistence implements TaskPersistence {
                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = this.connectionPool.getConnection()) {
-            connection.setAutoCommit(false);
             PreparedStatement ps = connection.prepareStatement(sql);
+            connection.setAutoCommit(false);
             for (Task task : tasks) {
                 ps.setLong(1, task.getJobId());
                 ps.setLong(2, task.getInstanceId());
@@ -86,6 +86,7 @@ public class H2MemoryPersistence implements TaskPersistence {
                 ps.setBytes(9, task.getTaskBody());
                 ps.setInt(10, task.getCreateTime());
                 ps.setInt(11, task.getUpdateTime());
+                ps.addBatch();
             }
             int[] result = ps.executeBatch();
             connection.commit();
