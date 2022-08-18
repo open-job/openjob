@@ -25,13 +25,9 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
      * Child tasks.
      */
     protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
+
     protected MapReduceTaskConsumer<MasterStartContainerRequest> childTaskConsumer;
 
-    /**
-     *
-     * @param jobInstanceDTO
-     * @param actorContext
-     */
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
 
@@ -54,11 +50,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     }
 
-    /**
-     *
-     * @param tasks
-     * @param taskName
-     */
     public void map(List<byte[]> tasks, String taskName) {
         try {
             for (byte[] task : tasks) {
@@ -68,7 +59,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
                 childTaskQueue.submit(startReq);
             }
         } catch (Throwable throwable) {
-            System.out.println(throwable);
+            throwable.printStackTrace();
         }
     }
 
@@ -82,9 +73,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         this.dispatchTasks(startRequests);
     }
 
-    /**
-     * @param startRequests
-     */
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
         String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);

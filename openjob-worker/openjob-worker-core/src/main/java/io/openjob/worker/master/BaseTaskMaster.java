@@ -21,10 +21,6 @@ public abstract class BaseTaskMaster implements TaskMaster {
     protected String localWorkerAddress;
     protected String localContainerPath;
 
-    /**
-     * @param jobInstanceDTO
-     * @param actorContext
-     */
     public BaseTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;

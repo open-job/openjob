@@ -24,18 +24,22 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
 
     @Override
     public void run() {
-        this.start();
+        try {
+            this.start();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     @Override
-    public void start() {
+    public void start() throws InterruptedException {
         TaskContainerFactory.getPool().setJobContext(jobContext);
         String uniqueId = "";
-//
-//        // Running
-//        if (this.jobContext.getFailAttemptTimes() == 0) {
-//
-//        }
+
+        // Running
+        if (this.jobContext.getFailAttemptTimes() == 0) {
+
+        }
 
         ProcessResult result = new ProcessResult(false);
 
@@ -63,11 +67,7 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         }
     }
 
-    /**
-     *
-     * @param result
-     */
-    private void reportTaskStatus(ProcessResult result) {
+    private void reportTaskStatus(ProcessResult result) throws InterruptedException {
         String workerAddress = "";
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
@@ -77,6 +77,8 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         request.setMasterActorPath(this.jobContext.getMasterActorPath());
         request.setStatus(result.getStatus().getStatus());
         request.setResult(result.getResult());
+
+        ContainerTaskStatusManager.submit(request);
     }
 
     @Override

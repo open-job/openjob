@@ -8,7 +8,7 @@ public interface TaskContainer {
     /**
      *
      */
-    void start();
+    void start() throws InterruptedException;
 
     /**
      *
