@@ -8,12 +8,16 @@ import lombok.Data;
  */
 @Data
 public class Task {
+    private Long id;
     private Long jobId;
-    private Long jobInstanceId;
-    private Long taskId;
+    private Long instanceId;
+    private Long circleId;
+    private String taskId;
     private String taskName;
+    private String taskParentId;
     private Integer status;
     private String workerAddress;
+    private byte[] task_body;
     private Integer createTime;
     private Integer updateTime;
 }
