@@ -14,17 +14,17 @@ public enum InstanceStatusEnum {
     /**
      * Waiting for dispatch.
      */
-    waiting(1, "waiting"),
+    WAITING(1, "waiting"),
 
     /**
      * Has dispatch to worker.
      */
-    dispatched(3, "dispatched"),
+    DISPATCHED(3, "dispatched"),
 
     /**
      * Worker received.
      */
-    received(5, "received"),
+    RECEIVED(5, "received"),
 
     /**
      * Running.
