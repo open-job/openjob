@@ -26,9 +26,9 @@ public class TaskDAOTest {
         task.setWorkerAddress("");
 
         Boolean result = TaskDAO.INSTANCE.add(task);
-//        Assertions.assertTrue(result);
+        Assertions.assertTrue(result);
 
         Task queryTask = TaskDAO.INSTANCE.getByTaskId(taskId);
-        System.out.println(queryTask);
+        Assertions.assertEquals(taskId, queryTask.getTaskId());
     }
 }

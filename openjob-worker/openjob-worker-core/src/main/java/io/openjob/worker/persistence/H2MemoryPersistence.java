@@ -3,7 +3,6 @@ package io.openjob.worker.persistence;
 import io.openjob.worker.entity.Task;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,8 +16,15 @@ import java.util.Objects;
  */
 @Slf4j
 public class H2MemoryPersistence implements TaskPersistence {
+
+    /**
+     * Connection pool.
+     */
     private final H2ConnectionPool connectionPool;
 
+    /**
+     * constructor.
+     */
     public H2MemoryPersistence() {
         this.connectionPool = new H2ConnectionPool();
 
@@ -117,6 +123,12 @@ public class H2MemoryPersistence implements TaskPersistence {
         }
     }
 
+    /**
+     * Convert result set to Task object.
+     *
+     * @param rs result set.
+     * @return Task
+     */
     private Task convert(ResultSet rs) throws SQLException {
         Task task = new Task();
         task.setJobId(rs.getLong("job_id"));

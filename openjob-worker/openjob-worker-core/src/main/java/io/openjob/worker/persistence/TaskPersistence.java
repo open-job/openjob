@@ -10,9 +10,25 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface TaskPersistence {
+
+    /**
+     * Init table schema.
+     */
     void initTable() throws Exception;
 
+    /**
+     * Batch save.
+     *
+     * @param tasks task list.
+     * @return Integer
+     */
     Integer batchSave(List<Task> tasks) throws SQLException;
 
+    /**
+     * Find by task id.
+     *
+     * @param taskId task id.
+     * @return Task
+     */
     Task findByTaskId(String taskId) throws SQLException;
 }

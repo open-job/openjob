@@ -10,8 +10,15 @@ import java.sql.SQLException;
  * @since 1.0.0
  */
 public class H2ConnectionPool {
-    private HikariDataSource dataSource = new HikariDataSource();
 
+    /**
+     * Data source.
+     */
+    private final HikariDataSource dataSource = new HikariDataSource();
+
+    /**
+     * constructor.
+     */
     public H2ConnectionPool() {
         dataSource.setJdbcUrl("jdbc:h2:mem:openjob;AUTO_RECONNECT=TRUE;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
         dataSource.setUsername("root");
@@ -21,6 +28,11 @@ public class H2ConnectionPool {
         dataSource.setDriverClassName("org.h2.Driver");
     }
 
+    /**
+     * Get connection from data source.
+     *
+     * @return Connection
+     */
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
