@@ -8,7 +8,7 @@ import io.openjob.worker.task.TaskQueue;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ContainerTaskStatusManager {
+public class TaskStatusManager {
     private static final TaskQueue<ContainerTaskStatusRequest> taskQueue;
     private static final ContainerTaskStatusConsumer<ContainerTaskStatusRequest> taskConsumer;
 

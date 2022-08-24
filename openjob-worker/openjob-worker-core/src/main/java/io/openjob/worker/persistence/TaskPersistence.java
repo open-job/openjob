@@ -31,4 +31,21 @@ public interface TaskPersistence {
      * @return Task
      */
     Task findByTaskId(String taskId) throws SQLException;
+
+    /**
+     * Count task by status list.
+     *
+     * @param instanceId instanceId
+     * @param statusList statusList
+     * @return count
+     */
+    Integer countTask(Long instanceId, List<Integer> statusList) throws SQLException;
+
+    /**
+     * Batch update by task id.
+     *
+     * @param tasks tasks
+     * @return Integer
+     */
+    Integer batchUpdateStatusByTaskId(List<Task> tasks) throws SQLException;
 }

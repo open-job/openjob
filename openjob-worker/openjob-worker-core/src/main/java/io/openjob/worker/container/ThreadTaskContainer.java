@@ -78,7 +78,7 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         request.setStatus(result.getStatus().getStatus());
         request.setResult(result.getResult());
 
-        ContainerTaskStatusManager.submit(request);
+        TaskStatusManager.submit(request);
     }
 
     @Override

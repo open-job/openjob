@@ -5,9 +5,15 @@ import io.openjob.worker.entity.Task;
 import io.openjob.worker.persistence.H2MemoryPersistence;
 import io.openjob.worker.persistence.TaskPersistence;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -41,6 +47,15 @@ public class TaskDAO {
         } catch (SQLException e) {
             log.error("Task getByTaskId failed!", e);
             return null;
+        }
+    }
+
+    public Integer countTask(Long instanceId, List<Integer> statusList) {
+        try {
+            return taskPersistence.countTask(instanceId, statusList);
+        } catch (SQLException e) {
+            log.error("Task countTask failed!", e);
+            return 0;
         }
     }
 }

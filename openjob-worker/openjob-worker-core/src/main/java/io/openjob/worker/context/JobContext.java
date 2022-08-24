@@ -1,7 +1,7 @@
 package io.openjob.worker.context;
 
 import io.openjob.common.dto.JobInstanceDTO;
-import io.openjob.worker.constant.TaskStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Data;
 

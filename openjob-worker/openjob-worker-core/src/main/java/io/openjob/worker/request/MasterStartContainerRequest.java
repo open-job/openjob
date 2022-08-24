@@ -12,8 +12,12 @@ import java.util.List;
 @Data
 public class MasterStartContainerRequest implements Serializable {
     private Long jobId;
+
     private Long jobInstanceId;
+
     private Long taskId;
+
+    private Long circleId;
     private String jobParams;
     private String executeType;
     private Long workflowId;
@@ -29,4 +33,15 @@ public class MasterStartContainerRequest implements Serializable {
 
     private byte[] task;
     private List<String> workerAddresses;
+
+    public MasterStartContainerRequest() {
+        this.jobId = 0L;
+        this.jobInstanceId = 0L;
+        this.taskId = 0L;
+        this.circleId = 0L;
+    }
+
+    public String getTaskUniqueId() {
+        return String.format("%d_%d_%d_%d", this.jobId, this.jobInstanceId, this.taskId, this.circleId);
+    }
 }

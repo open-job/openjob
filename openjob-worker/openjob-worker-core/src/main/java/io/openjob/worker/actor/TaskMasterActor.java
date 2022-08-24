@@ -27,7 +27,6 @@ public class TaskMasterActor extends BaseActor {
                 .match(ServerSubmitJobInstanceRequest.class, this::submitJobInstance)
                 .match(ServerStopJobInstanceRequest.class, this::stopJobInstance)
                 .match(ServerCheckTaskMasterRequest.class, this::checkJobInstance)
-                .match(ContainerTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ContainerBatchTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ProcessorMapTaskRequest.class, this::handleProcessorMapTask)
                 .build();
@@ -78,7 +77,7 @@ public class TaskMasterActor extends BaseActor {
     }
 
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
-
+        TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
     }
 
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {

@@ -3,26 +3,57 @@ package io.openjob.common.constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum TaskStatusEnum {
-    INIT(1, "初始化"),
-    RUNNING(5, "运行"),
-    SUCCESS(10, "成功"),
-    FAILED(15, "失败");
 
     /**
-     * Finish status.
+     * Unknown.
      */
-    public static final List<Integer> FINISH_STATUS = Arrays.asList(SUCCESS.getStatus(), FAILED.getStatus());
+    UNKNOWN(1, "unknown", false),
 
+    /**
+     * Init.
+     */
+    INIT(3, "init", false),
+
+    /**
+     * Pulled.
+     */
+    PULLED(5, "pulled", false),
+
+    /**
+     * running.
+     */
+    RUNNING(7, "running", false),
+
+    /**
+     * Success.
+     */
+    SUCCESS(9, "success", true),
+
+    /**
+     * Fail.
+     */
+    FAILED(11, "fail", true),
+    ;
+
+    /**
+     * Status.
+     */
     private final Integer status;
+
+    /**
+     * Message.
+     */
     private final String message;
+
+    /**
+     * Finish.
+     */
+    private final Boolean finish;
 }

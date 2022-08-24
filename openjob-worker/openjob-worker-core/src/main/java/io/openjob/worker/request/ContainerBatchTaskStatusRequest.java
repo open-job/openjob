@@ -16,5 +16,5 @@ public class ContainerBatchTaskStatusRequest implements Serializable {
     private String workerAddress;
     private String masterActorPath;
     private Long deliveryId;
-    private List<ContainerTaskStatusRequest> tasks;
+    private List<ContainerTaskStatusRequest> taskStatusList;
 }

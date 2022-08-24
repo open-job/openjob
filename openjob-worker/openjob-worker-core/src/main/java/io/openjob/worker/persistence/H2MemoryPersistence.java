@@ -2,6 +2,7 @@ package io.openjob.worker.persistence;
 
 import io.openjob.worker.entity.Task;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -77,8 +78,9 @@ public class H2MemoryPersistence implements TaskPersistence {
                 "update_time" +
                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+            ps = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
             for (Task task : tasks) {
                 ps.setLong(1, task.getJobId());
@@ -99,6 +101,10 @@ public class H2MemoryPersistence implements TaskPersistence {
             connection.setAutoCommit(true);
             ps.clearBatch();
             return result.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
         }
     }
 
@@ -116,6 +122,52 @@ public class H2MemoryPersistence implements TaskPersistence {
             }
 
             return null;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
+    }
+
+    @Override
+    public Integer batchUpdateStatusByTaskId(List<Task> tasks) throws SQLException {
+        String sql = "UPDATE task SET status=? WHERE task_id=?";
+
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
+            ps = connection.prepareStatement(sql);
+            for (Task task : tasks) {
+                ps.setInt(1, task.getStatus());
+                ps.setString(2, task.getTaskId());
+                ps.addBatch();
+            }
+
+            int[] result = ps.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return result.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
+    public Integer countTask(Long instanceId, List<Integer> statusList) throws SQLException {
+        String statusStr = StringUtils.join(statusList, ",");
+        String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND status IN (%s)", statusStr);
+
+        ResultSet rs = null;
+        try (Connection connection = this.connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, instanceId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
         } finally {
             if (Objects.nonNull(rs)) {
                 rs.close();

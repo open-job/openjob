@@ -1,12 +1,15 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
+import com.google.common.collect.Maps;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerAkkaConstant;
+import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
-import io.openjob.worker.util.WorkerUtil;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -20,6 +23,11 @@ public abstract class BaseTaskMaster implements TaskMaster {
     protected ActorContext actorContext;
     protected String localWorkerAddress;
     protected String localContainerPath;
+
+    /**
+     * Task dao.
+     */
+    protected TaskDAO taskDAO = TaskDAO.INSTANCE;
 
     public BaseTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
