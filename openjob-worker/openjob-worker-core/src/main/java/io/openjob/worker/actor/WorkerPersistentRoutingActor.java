@@ -29,7 +29,6 @@ public class WorkerPersistentRoutingActor extends UntypedAbstractActor {
     public void onReceive(Object message) {
         try {
             int index = ThreadLocalRandom.current().nextInt(this.size);
-            actors.get(index).tell(message, getSelf());
             actors.get(index).forward(message, getContext());
         }catch (Exception exception){
             exception.printStackTrace();

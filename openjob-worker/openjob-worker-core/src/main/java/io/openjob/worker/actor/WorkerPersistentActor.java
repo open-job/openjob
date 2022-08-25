@@ -68,6 +68,6 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
 
     @Override
     public String persistenceId() {
-        return String.format("persistence-id-%d", id);
+        return String.format("persistence-new-id-%d", id);
     }
 }
