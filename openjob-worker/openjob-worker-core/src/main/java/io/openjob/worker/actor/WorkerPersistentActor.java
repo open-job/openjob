@@ -25,14 +25,15 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
     @Override
     public Receive createReceiveRecover() {
         return receiveBuilder()
-                .match(ContainerBatchTaskStatusRequest.class, this::handleBatchTaskStatus)
-                .match(Result.class, this::handleResult)
+                .matchAny(System.out::println)
                 .build();
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
+                .match(ContainerBatchTaskStatusRequest.class, this::handleBatchTaskStatus)
+                .match(Result.class, this::handleResult)
                 .build();
     }
 

@@ -7,8 +7,13 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.entity.Task;
+import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
+import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -38,6 +43,24 @@ public abstract class BaseTaskMaster implements TaskMaster {
 
     protected void init() {
 
+    }
+
+    @Override
+    public void batchUpdateStatus(ContainerBatchTaskStatusRequest batchRequest) {
+        for (ContainerTaskStatusRequest statusRequest : batchRequest.getTaskStatusList()) {
+            String taskUniqueId = statusRequest.getTaskUniqueId();
+            List<Task> updateList = new ArrayList<>();
+            updateList.add(new Task(taskUniqueId, statusRequest.getStatus()));
+            taskDAO.batchUpdateStatusByTaskId(updateList);
+        }
+
+        // Task status.
+        int nonCount = taskDAO.countTask(batchRequest.getJobInstanceId(), TaskStatusEnum.NON_FINISH_LIST);
+
+        // Task complete.
+        if (nonCount == 0) {
+            System.out.println("task complete id=" + batchRequest.getJobInstanceId());
+        }
     }
 
     protected Long acquireTaskId() {

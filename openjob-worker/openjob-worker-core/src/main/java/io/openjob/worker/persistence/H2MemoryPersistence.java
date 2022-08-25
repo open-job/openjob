@@ -44,10 +44,10 @@ public class H2MemoryPersistence implements TaskPersistence {
                 "  `instance_id` bigint(20) NOT NULL," +
                 "  `circle_id` bigint(20) NOT NULL DEFAULT '0'," +
                 "  `task_id` varchar(64) NOT NULL DEFAULT ''," +
-                "  `task_name` varchar(128) NOT NULL," +
+                "  `task_name` varchar(128) NOT NULL DEFAULT ''," +
                 "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0'," +
                 "  `status` tinyint(2) NOT NULL DEFAULT '1'," +
-                "  `worker_address` varchar(32) NOT NULL DEFAULT ''," +
+                "  `worker_address` varchar(64) NOT NULL DEFAULT ''," +
                 "  `task_body` blob," +
                 "  `create_time` int(11) NOT NULL," +
                 "  `update_time` int(11) NOT NULL," +

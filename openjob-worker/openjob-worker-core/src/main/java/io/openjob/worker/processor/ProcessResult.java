@@ -12,6 +12,10 @@ public class ProcessResult {
     private TaskStatusEnum status;
     private String result;
 
+    public ProcessResult(TaskStatusEnum status) {
+        this.status = status;
+    }
+
     public ProcessResult(Boolean result) {
         this.status = result ? TaskStatusEnum.SUCCESS : TaskStatusEnum.FAILED;
     }

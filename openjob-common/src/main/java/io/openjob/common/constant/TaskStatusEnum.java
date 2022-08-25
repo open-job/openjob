@@ -3,6 +3,9 @@ package io.openjob.common.constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -14,33 +17,43 @@ public enum TaskStatusEnum {
     /**
      * Unknown.
      */
-    UNKNOWN(1, "unknown", false),
+    UNKNOWN(1, "unknown"),
 
     /**
      * Init.
      */
-    INIT(3, "init", false),
+    INIT(3, "init"),
 
     /**
      * Pulled.
      */
-    PULLED(5, "pulled", false),
+    PULLED(5, "pulled"),
 
     /**
      * running.
      */
-    RUNNING(7, "running", false),
+    RUNNING(7, "running"),
 
     /**
      * Success.
      */
-    SUCCESS(9, "success", true),
+    SUCCESS(9, "success"),
 
     /**
      * Fail.
      */
-    FAILED(11, "fail", true),
+    FAILED(11, "fail"),
     ;
+
+    /**
+     * Non finish status list.
+     */
+    public final static List<Integer> NON_FINISH_LIST = Arrays.asList(
+            UNKNOWN.status,
+            INIT.status,
+            PULLED.status,
+            RUNNING.status
+    );
 
     /**
      * Status.
@@ -51,9 +64,4 @@ public enum TaskStatusEnum {
      * Message.
      */
     private final String message;
-
-    /**
-     * Finish.
-     */
-    private final Boolean finish;
 }

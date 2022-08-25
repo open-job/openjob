@@ -11,4 +11,11 @@ import java.io.Serializable;
 @Data
 public class WorkerResponse implements Serializable {
     private Long deliveryId;
+
+    public WorkerResponse() {
+    }
+
+    public WorkerResponse(Long deliveryId) {
+        this.deliveryId = deliveryId;
+    }
 }

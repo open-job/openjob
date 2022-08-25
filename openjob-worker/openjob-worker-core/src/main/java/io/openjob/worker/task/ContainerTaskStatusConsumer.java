@@ -4,6 +4,7 @@ import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,12 +45,13 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
 
             for (Map.Entry<Long, List<ContainerTaskStatusRequest>> entry : groupTaskList.entrySet()) {
                 ContainerTaskStatusRequest firstTask = entry.getValue().get(0);
-
                 ContainerBatchTaskStatusRequest batchRequest = new ContainerBatchTaskStatusRequest();
                 batchRequest.setJobId(firstTask.getJobId());
                 batchRequest.setJobInstanceId(firstTask.getJobInstanceId());
                 batchRequest.setWorkerAddress(firstTask.getWorkerAddress());
                 batchRequest.setMasterActorPath(firstTask.getMasterActorPath());
+                batchRequest.setTaskStatusList(entry.getValue());
+
                 OpenjobWorker.atLeastOnceDelivery(batchRequest, null);
             }
         }

@@ -72,12 +72,12 @@ public class TaskMasterActor extends BaseActor {
 
     }
 
-    public void handleContainerTaskStatus(ContainerTaskStatusRequest taskStatusReq) {
-
-    }
-
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
         TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
+        taskMaster.batchUpdateStatus(batchTaskStatusReq);
+
+        WorkerResponse workerResponse = new WorkerResponse(batchTaskStatusReq.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
     }
 
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {

@@ -1,6 +1,8 @@
 package io.openjob.worker.container;
 
 import io.openjob.common.constant.ProcessorTypeEnum;
+import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.JobProcessor;
@@ -34,11 +36,12 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
     @Override
     public void start() throws InterruptedException {
         TaskContainerFactory.getPool().setJobContext(jobContext);
-        String uniqueId = "";
+
+        String workerAddress = "";
 
         // Running
         if (this.jobContext.getFailAttemptTimes() == 0) {
-
+            this.reportTaskStatus(new ProcessResult(TaskStatusEnum.RUNNING), workerAddress);
         }
 
         ProcessResult result = new ProcessResult(false);
@@ -63,12 +66,11 @@ public class ThreadTaskContainer extends BaseTaskContainer implements Runnable {
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
         } finally {
-            this.reportTaskStatus(result);
+            this.reportTaskStatus(result, workerAddress);
         }
     }
 
-    private void reportTaskStatus(ProcessResult result) throws InterruptedException {
-        String workerAddress = "";
+    private void reportTaskStatus(ProcessResult result, String workerAddress) throws InterruptedException {
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
         request.setJobInstanceId(this.jobContext.getJobInstanceId());

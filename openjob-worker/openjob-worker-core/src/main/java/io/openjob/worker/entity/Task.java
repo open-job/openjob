@@ -20,4 +20,12 @@ public class Task {
     private byte[] taskBody;
     private Integer createTime;
     private Integer updateTime;
+
+    public Task() {
+    }
+
+    public Task(String taskId, Integer status) {
+        this.taskId = taskId;
+        this.status = status;
+    }
 }
