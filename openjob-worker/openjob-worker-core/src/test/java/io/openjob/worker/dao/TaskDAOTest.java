@@ -29,14 +29,15 @@ public class TaskDAOTest {
         task.setStatus(1);
         task.setWorkerAddress("");
 
+        // Add
         boolean result = TaskDAO.INSTANCE.add(task);
         Assertions.assertTrue(result);
 
-
+        // Get by task id.
         Task queryTask = TaskDAO.INSTANCE.getByTaskId(taskId);
         Assertions.assertEquals(taskId, queryTask.getTaskId());
 
-
+        // Task tow.
         String taskId2 = String.valueOf(UUID.randomUUID());
         Task task2 = new Task();
         task2.setJobId(1L);
@@ -49,6 +50,7 @@ public class TaskDAOTest {
         task2.setWorkerAddress("");
         TaskDAO.INSTANCE.add(task2);
 
+        // Task three.
         String taskId3 = String.valueOf(UUID.randomUUID());
         Task task3 = new Task();
         task3.setJobId(1L);
@@ -61,12 +63,14 @@ public class TaskDAOTest {
         task3.setWorkerAddress("");
         TaskDAO.INSTANCE.add(task3);
 
+        // Count task.
         int count = TaskDAO.INSTANCE.countTask(1L, Arrays.asList(1, 3));
         Assertions.assertEquals(count, 2);
 
         int count2 = TaskDAO.INSTANCE.countTask(1L, Arrays.asList(1, 2, 3));
         Assertions.assertEquals(count2, 3);
 
+        // Update list.
         List<Task> updateList = new ArrayList<>();
         Task ut = new Task();
         ut.setTaskId(taskId);
@@ -83,12 +87,14 @@ public class TaskDAOTest {
         ut3.setStatus(6);
         updateList.add(ut3);
 
+        // Update by status.
         int updateRows = TaskDAO.INSTANCE.batchUpdateStatusByTaskId(updateList);
         Assertions.assertEquals(updateRows, 3);
 
         int count3 = TaskDAO.INSTANCE.countTask(1L, Collections.singletonList(6));
         Assertions.assertEquals(count3, 3);
 
+        // Update by task ids.
         int deleteRows = TaskDAO.INSTANCE.batchDeleteByTaskIds(Arrays.asList(taskId, taskId2, taskId3));
         Assertions.assertEquals(deleteRows, 3);
         int deleteResult = TaskDAO.INSTANCE.countTask(1L, Collections.singletonList(6));
