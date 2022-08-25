@@ -6,6 +6,7 @@ import io.openjob.worker.persistence.H2MemoryPersistence;
 import io.openjob.worker.persistence.TaskPersistence;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import scala.Int;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,6 +48,25 @@ public class TaskDAO {
         } catch (SQLException e) {
             log.error("Task getByTaskId failed!", e);
             return null;
+        }
+    }
+
+    public Integer batchDeleteByTaskIds(List<String> taskIds) {
+        try {
+            return taskPersistence.batchDeleteByTaskIds(taskIds);
+        } catch (SQLException e) {
+            log.error("Task batchDeleteByTaskIds failed!", e);
+            return 0;
+        }
+    }
+
+
+    public Integer batchUpdateStatusByTaskId(List<Task> tasks) {
+        try {
+            return taskPersistence.batchUpdateStatusByTaskId(tasks);
+        } catch (SQLException e) {
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
+            return 0;
         }
     }
 

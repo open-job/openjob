@@ -32,6 +32,8 @@ public interface TaskPersistence {
      */
     Task findByTaskId(String taskId) throws SQLException;
 
+    Integer batchDeleteByTaskIds(List<String> taskIds) throws SQLException;
+
     /**
      * Count task by status list.
      *

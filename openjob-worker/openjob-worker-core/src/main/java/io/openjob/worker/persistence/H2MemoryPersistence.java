@@ -130,6 +130,30 @@ public class H2MemoryPersistence implements TaskPersistence {
     }
 
     @Override
+    public Integer batchDeleteByTaskIds(List<String> taskIds) throws SQLException {
+        String sql = "DELETE FROM task WHERE task_id = ?";
+
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
+            ps = connection.prepareStatement(sql);
+            for (String taskId : taskIds) {
+                ps.setString(1, taskId);
+                ps.addBatch();
+            }
+
+            int[] counts = ps.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return counts.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
     public Integer batchUpdateStatusByTaskId(List<Task> tasks) throws SQLException {
         String sql = "UPDATE task SET status=? WHERE task_id=?";
 
