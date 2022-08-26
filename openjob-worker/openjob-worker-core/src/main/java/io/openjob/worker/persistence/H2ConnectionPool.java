@@ -24,7 +24,7 @@ public class H2ConnectionPool {
         dataSource.setUsername("root");
         dataSource.setPassword("123456");
         dataSource.setMinimumIdle(8);
-        dataSource.setMaximumPoolSize(32);
+        dataSource.setMaximumPoolSize(128);
         dataSource.setDriverClassName("org.h2.Driver");
     }
 

@@ -52,7 +52,6 @@ public interface MapProcessor extends BaseProcessor {
 
             try {
                 WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);
-                System.out.println(workerResponse);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -61,7 +60,6 @@ public interface MapProcessor extends BaseProcessor {
     }
 
     /**
-     *
      * @param context context
      */
     @Override

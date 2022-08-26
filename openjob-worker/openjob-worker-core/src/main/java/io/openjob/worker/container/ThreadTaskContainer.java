@@ -2,7 +2,6 @@ package io.openjob.worker.container;
 
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
-import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.JobProcessor;

@@ -20,7 +20,7 @@ public class MapReduceProcessorSample implements MapReduceProcessor {
     public ProcessResult process(JobContext context) {
         if (context.isRoot()) {
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 201; i++) {
+            for (int i = 1; i < 21; i++) {
                 System.out.println("root" + i);
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(1))));
             }
@@ -29,9 +29,12 @@ public class MapReduceProcessorSample implements MapReduceProcessor {
         }
 
         if (context.isTask("TASK_TWO")) {
+            MrTaskTest task = (MrTaskTest) context.getTask();
+
+            System.out.println("two paramsId=" + task.getId());
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 201; i++) {
-                tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(i * 2))));
+            for (int i = 1; i < 6; i++) {
+                tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(task.getId() * i))));
             }
 
             return this.map(tasks, "TASK_THREE");
