@@ -179,14 +179,15 @@ public class H2MemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public Integer countTask(Long instanceId, List<Integer> statusList) throws SQLException {
+    public Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) throws SQLException {
         String statusStr = StringUtils.join(statusList, ",");
-        String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND status IN (%s)", statusStr);
+        String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND circle_id=? AND status IN (%s)", statusStr);
 
         ResultSet rs = null;
         try (Connection connection = this.connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
+            ps.setLong(2, circleId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);

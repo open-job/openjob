@@ -5,16 +5,10 @@ import io.openjob.worker.entity.Task;
 import io.openjob.worker.persistence.H2MemoryPersistence;
 import io.openjob.worker.persistence.TaskPersistence;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import scala.Int;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -39,6 +33,21 @@ public class TaskDAO {
         } catch (SQLException e) {
             log.error("Task add failed!", e);
             return false;
+        }
+    }
+
+    public Integer batchAdd(List<Task> taskList) {
+        try {
+            int now = DateUtil.now();
+            taskList.forEach(t -> {
+                t.setUpdateTime(now);
+                t.setCreateTime(now);
+            });
+
+            return taskPersistence.batchSave(taskList);
+        } catch (SQLException e) {
+            log.error("Task add failed!", e);
+            return 0;
         }
     }
 
@@ -70,9 +79,9 @@ public class TaskDAO {
         }
     }
 
-    public Integer countTask(Long instanceId, List<Integer> statusList) {
+    public Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) {
         try {
-            return taskPersistence.countTask(instanceId, statusList);
+            return taskPersistence.countTask(instanceId, circleId, statusList);
         } catch (SQLException e) {
             log.error("Task countTask failed!", e);
             return 0;

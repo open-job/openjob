@@ -13,6 +13,7 @@ import java.util.List;
 public class ContainerBatchTaskStatusRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
+    private Long circleId;
     private String workerAddress;
     private String masterActorPath;
     private Long deliveryId;

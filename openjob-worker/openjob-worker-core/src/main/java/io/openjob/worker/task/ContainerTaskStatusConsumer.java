@@ -4,7 +4,6 @@ import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,6 +49,7 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
                 batchRequest.setJobInstanceId(firstTask.getJobInstanceId());
                 batchRequest.setWorkerAddress(firstTask.getWorkerAddress());
                 batchRequest.setMasterActorPath(firstTask.getMasterActorPath());
+                batchRequest.setCircleId(firstTask.getCircleId());
                 batchRequest.setTaskStatusList(entry.getValue());
 
                 OpenjobWorker.atLeastOnceDelivery(batchRequest, null);

@@ -9,7 +9,9 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 public interface TaskMaster {
     void submit();
 
-    void batchUpdateStatus(ContainerBatchTaskStatusRequest batchRequest);
+    Boolean isTaskComplete(Long instanceId, Long circleId);
+
+    void updateStatus(ContainerBatchTaskStatusRequest batchRequest);
 
     void stop();
 }

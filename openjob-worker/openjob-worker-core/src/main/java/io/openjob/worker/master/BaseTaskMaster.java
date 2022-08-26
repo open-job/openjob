@@ -1,7 +1,6 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
-import com.google.common.collect.Maps;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -14,7 +13,6 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,6 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class BaseTaskMaster implements TaskMaster {
 
     protected AtomicLong taskIdGenerator = new AtomicLong(0);
+
+    protected AtomicLong circleIdGenerator = new AtomicLong(0);
+
     protected JobInstanceDTO jobInstanceDTO;
     protected ActorContext actorContext;
     protected String localWorkerAddress;
@@ -46,7 +47,12 @@ public abstract class BaseTaskMaster implements TaskMaster {
     }
 
     @Override
-    public void batchUpdateStatus(ContainerBatchTaskStatusRequest batchRequest) {
+    public Boolean isTaskComplete(Long instanceId, Long circleId) {
+        return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
+    }
+
+    @Override
+    public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
         for (ContainerTaskStatusRequest statusRequest : batchRequest.getTaskStatusList()) {
             String taskUniqueId = statusRequest.getTaskUniqueId();
             List<Task> updateList = new ArrayList<>();
@@ -54,12 +60,9 @@ public abstract class BaseTaskMaster implements TaskMaster {
             taskDAO.batchUpdateStatusByTaskId(updateList);
         }
 
-        // Task status.
-        int nonCount = taskDAO.countTask(batchRequest.getJobInstanceId(), TaskStatusEnum.NON_FINISH_LIST);
-
         // Task complete.
-        if (nonCount == 0) {
-            System.out.println("task complete id=" + batchRequest.getJobInstanceId());
+        if (this.isTaskComplete(batchRequest.getJobInstanceId(), batchRequest.getCircleId())) {
+            System.out.printf("task complete jobId=%s instanceId=%s%n", batchRequest.getJobId(), batchRequest.getJobInstanceId());
         }
     }
 
@@ -67,7 +70,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
         return taskIdGenerator.getAndIncrement();
     }
 
-    protected MasterStartContainerRequest wrapMasterStartContainerRequest() {
+    protected MasterStartContainerRequest getMasterStartContainerRequest() {
         MasterStartContainerRequest startReq = new MasterStartContainerRequest();
         startReq.setJobId(this.jobInstanceDTO.getJobId());
         startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
@@ -86,5 +89,18 @@ public abstract class BaseTaskMaster implements TaskMaster {
         startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
+    }
+
+    protected Task convertToTask(MasterStartContainerRequest startRequest) {
+        Task task = new Task();
+        task.setJobId(startRequest.getJobId());
+        task.setInstanceId(startRequest.getJobInstanceId());
+        task.setCircleId(startRequest.getCircleId());
+        task.setTaskId(startRequest.getTaskUniqueId());
+        task.setTaskParentId(startRequest.getParentTaskUniqueId());
+        task.setTaskName(startRequest.getTaskName());
+        task.setStatus(TaskStatusEnum.INIT.getStatus());
+        task.setWorkerAddress(this.localWorkerAddress);
+        return task;
     }
 }

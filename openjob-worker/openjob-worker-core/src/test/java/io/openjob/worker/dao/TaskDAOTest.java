@@ -64,10 +64,10 @@ public class TaskDAOTest {
         TaskDAO.INSTANCE.add(task3);
 
         // Count task.
-        int count = TaskDAO.INSTANCE.countTask(1L, Arrays.asList(1, 3));
+        int count = TaskDAO.INSTANCE.countTask(1L, 0L, Arrays.asList(1, 3));
         Assertions.assertEquals(count, 2);
 
-        int count2 = TaskDAO.INSTANCE.countTask(1L, Arrays.asList(1, 2, 3));
+        int count2 = TaskDAO.INSTANCE.countTask(1L, 0L, Arrays.asList(1, 2, 3));
         Assertions.assertEquals(count2, 3);
 
         // Update list.
@@ -91,13 +91,13 @@ public class TaskDAOTest {
         int updateRows = TaskDAO.INSTANCE.batchUpdateStatusByTaskId(updateList);
         Assertions.assertEquals(updateRows, 3);
 
-        int count3 = TaskDAO.INSTANCE.countTask(1L, Collections.singletonList(6));
+        int count3 = TaskDAO.INSTANCE.countTask(1L, 0L, Collections.singletonList(6));
         Assertions.assertEquals(count3, 3);
 
         // Update by task ids.
         int deleteRows = TaskDAO.INSTANCE.batchDeleteByTaskIds(Arrays.asList(taskId, taskId2, taskId3));
         Assertions.assertEquals(deleteRows, 3);
-        int deleteResult = TaskDAO.INSTANCE.countTask(1L, Collections.singletonList(6));
+        int deleteResult = TaskDAO.INSTANCE.countTask(1L, 0L, Collections.singletonList(6));
         Assertions.assertEquals(deleteResult, 0);
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
@@ -53,7 +54,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     public void map(List<byte[]> tasks, String taskName) {
         try {
             for (byte[] task : tasks) {
-                MasterStartContainerRequest startReq = this.wrapMasterStartContainerRequest();
+                MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
                 startReq.setTask(task);
                 startReq.setTaskName(taskName);
                 childTaskQueue.submit(startReq);
@@ -64,11 +65,15 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     }
 
     @Override
+    public Boolean isTaskComplete(Long instanceId, Long circleId) {
+        return super.isTaskComplete(instanceId, circleId) && !this.childTaskConsumer.isActive();
+    }
+
+    @Override
     public void submit() {
-        MasterStartContainerRequest masterStartContainerRequest = this.wrapMasterStartContainerRequest();
+        MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
         masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
-
 
         this.dispatchTasks(startRequests);
     }
@@ -77,6 +82,9 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
         ActorSelection workerSelection = actorContext.actorSelection(workerPath);
+
+        // Persist tasks.
+        this.persistTasks(startRequests);
 
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
@@ -93,5 +101,12 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     @Override
     public void stop() {
 
+    }
+
+    private void persistTasks(List<MasterStartContainerRequest> startRequests) {
+        List<Task> taskList = new ArrayList<>();
+        startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
+
+        taskDAO.batchAdd(taskList);
     }
 }
