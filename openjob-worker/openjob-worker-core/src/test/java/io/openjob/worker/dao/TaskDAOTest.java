@@ -1,9 +1,11 @@
 package io.openjob.worker.dao;
 
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.entity.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,7 +90,7 @@ public class TaskDAOTest {
         updateList.add(ut3);
 
         // Update by status.
-        int updateRows = TaskDAO.INSTANCE.batchUpdateStatusByTaskId(updateList);
+        int updateRows = TaskDAO.INSTANCE.batchUpdateStatusByTaskId(updateList, TaskStatusEnum.UNKNOWN.getStatus());
         Assertions.assertEquals(updateRows, 3);
 
         int count3 = TaskDAO.INSTANCE.countTask(1L, 0L, Collections.singletonList(6));

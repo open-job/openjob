@@ -1,5 +1,6 @@
 package io.openjob.worker.persistence;
 
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.entity.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -154,8 +155,17 @@ public class H2MemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public Integer batchUpdateStatusByTaskId(List<Task> tasks) throws SQLException {
-        String sql = "UPDATE task SET status=? WHERE task_id=?";
+    public Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException {
+        // IsRunning
+        boolean isRunning = TaskStatusEnum.RUNNING.getStatus().equals(currentStatus);
+
+        // Running
+        String sql = "UPDATE task SET status=? WHERE task_id=? AND status=?";
+
+        // Not running.
+        if (!isRunning) {
+            sql = "UPDATE task SET status=? WHERE task_id=?";
+        }
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -164,6 +174,11 @@ public class H2MemoryPersistence implements TaskPersistence {
             for (Task task : tasks) {
                 ps.setInt(1, task.getStatus());
                 ps.setString(2, task.getTaskId());
+
+                // Update to running must be init status.
+                if (isRunning) {
+                    ps.setInt(3, TaskStatusEnum.INIT.getStatus());
+                }
                 ps.addBatch();
             }
 

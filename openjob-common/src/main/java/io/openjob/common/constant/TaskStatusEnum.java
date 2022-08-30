@@ -25,11 +25,6 @@ public enum TaskStatusEnum {
     INIT(3, "init"),
 
     /**
-     * Pulled.
-     */
-    PULLED(5, "pulled"),
-
-    /**
      * running.
      */
     RUNNING(7, "running"),
@@ -51,7 +46,6 @@ public enum TaskStatusEnum {
     public final static List<Integer> NON_FINISH_LIST = Arrays.asList(
             UNKNOWN.status,
             INIT.status,
-            PULLED.status,
             RUNNING.status
     );
 

@@ -70,12 +70,12 @@ public class TaskDAO {
     }
 
 
-    public Integer batchUpdateStatusByTaskId(List<Task> tasks) {
+    public Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) {
         try {
-            return taskPersistence.batchUpdateStatusByTaskId(tasks);
+            return taskPersistence.batchUpdateStatusByTaskId(tasks, currentStatus);
         } catch (SQLException e) {
             log.error("Task batchUpdateStatusByTaskId failed!", e);
-            return 0;
+            throw new RuntimeException(e);
         }
     }
 

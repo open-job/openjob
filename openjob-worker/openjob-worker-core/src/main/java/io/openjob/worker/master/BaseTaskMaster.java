@@ -13,7 +13,9 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -53,11 +55,19 @@ public abstract class BaseTaskMaster implements TaskMaster {
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
+        // Update list
+        List<Task> updateList = new ArrayList<>();
         for (ContainerTaskStatusRequest statusRequest : batchRequest.getTaskStatusList()) {
             String taskUniqueId = statusRequest.getTaskUniqueId();
-            List<Task> updateList = new ArrayList<>();
             updateList.add(new Task(taskUniqueId, statusRequest.getStatus()));
-            taskDAO.batchUpdateStatusByTaskId(updateList);
+        }
+
+        // Group by status
+        Map<Integer, List<Task>> groupList = updateList.stream().collect(Collectors.groupingBy(Task::getStatus));
+
+        // Update by group
+        for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
+            taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
 
         // Task complete.

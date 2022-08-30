@@ -46,8 +46,9 @@ public interface TaskPersistence {
     /**
      * Batch update by task id.
      *
-     * @param tasks tasks
+     * @param tasks         tasks
+     * @param currentStatus currentStatus
      * @return Integer
      */
-    Integer batchUpdateStatusByTaskId(List<Task> tasks) throws SQLException;
+    Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
 }
