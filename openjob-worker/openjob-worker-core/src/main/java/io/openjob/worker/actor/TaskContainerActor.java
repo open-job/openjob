@@ -6,6 +6,7 @@ import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.container.TaskContainer;
 import io.openjob.worker.container.TaskContainerFactory;
+import io.openjob.worker.container.TaskContainerPool;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
@@ -86,18 +87,12 @@ public class TaskContainerActor extends BaseActor {
             jobContext.setTask(KryoUtil.deserialize(startReq.getTask()));
         }
 
-        TaskContainer taskContainer = TaskContainerFactory.create(jobContext);
-        TaskContainerFactory.getPool().submit(
-                jobContext.getJobId(),
-                jobContext.getJobInstanceId(),
-                jobContext.getTaskId(),
-                jobContext.getConcurrency(),
-                taskContainer
-        );
+        TaskContainer taskContainer = TaskContainerPool.get(startReq.getJobInstanceId(), id -> TaskContainerFactory.create(startReq));
+        taskContainer.execute(jobContext);
     }
 
     private class ContainerRunnable implements Runnable {
-        private MasterBatchStartContainerRequest containerRequest;
+        private final MasterBatchStartContainerRequest containerRequest;
 
         public ContainerRunnable(MasterBatchStartContainerRequest containerRequest) {
             this.containerRequest = containerRequest;
@@ -110,7 +105,7 @@ public class TaskContainerActor extends BaseActor {
                     startContainer(req);
                 }
             } catch (Throwable ex) {
-                System.out.println(ex);
+                ex.printStackTrace();
             }
         }
     }

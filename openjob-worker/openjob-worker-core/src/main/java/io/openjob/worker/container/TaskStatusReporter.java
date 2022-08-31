@@ -8,7 +8,7 @@ import io.openjob.worker.task.TaskQueue;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class TaskStatusManager {
+public class TaskStatusReporter {
     private static final TaskQueue<ContainerTaskStatusRequest> taskQueue;
     private static final ContainerTaskStatusConsumer<ContainerTaskStatusRequest> taskConsumer;
 
@@ -27,7 +27,7 @@ public class TaskStatusManager {
         taskConsumer.start();
     }
 
-    public static void submit(ContainerTaskStatusRequest statusRequest) throws InterruptedException {
+    public static void report(ContainerTaskStatusRequest statusRequest) throws InterruptedException {
         taskQueue.submit(statusRequest);
     }
 }
