@@ -9,7 +9,7 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 public interface TaskMaster {
     void submit();
 
-    void completeTask();
+    void completeTask() throws InterruptedException;
 
     void updateStatus(ContainerBatchTaskStatusRequest batchRequest);
 

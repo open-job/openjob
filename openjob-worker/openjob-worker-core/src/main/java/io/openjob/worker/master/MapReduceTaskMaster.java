@@ -4,8 +4,12 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskRequest;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
@@ -16,10 +20,12 @@ import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -114,19 +120,14 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
      * Use checker thread to complete task for MR
      */
     @Override
-    public void completeTask() {
-
-    }
-
-    @Override
     public void stop() {
+        // Stop task container.
+
         // Stop child task consumer
         this.childTaskConsumer.stop();
 
         // Stop scheduled thread poll
         this.scheduledService.shutdownNow();
-
-        // Stop task container.
 
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
@@ -156,7 +157,11 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
             boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
 
             if (isComplete && !this.taskMaster.childTaskConsumer.isActive()) {
-                this.taskMaster.completeTask();
+                try {
+                    this.taskMaster.completeTask();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

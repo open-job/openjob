@@ -140,6 +140,8 @@ public class TaskDAOTest {
         } while (!queryList.isEmpty());
 
         Assertions.assertEquals(getList.size(), testSize);
+
+        //Test unique task(exclude repeat task)
         Set<Long> collect = getList.stream().map(Task::getJobId).collect(Collectors.toSet());
         Assertions.assertEquals(collect.size(), testSize);
     }

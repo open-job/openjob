@@ -65,7 +65,7 @@ public class TaskDAO {
             return taskPersistence.batchDeleteByTaskIds(taskIds);
         } catch (SQLException e) {
             log.error("Task batchDeleteByTaskIds failed!", e);
-            return 0;
+            throw new RuntimeException(e);
         }
     }
 
