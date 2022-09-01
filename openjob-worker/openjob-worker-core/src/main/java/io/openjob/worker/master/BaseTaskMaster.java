@@ -49,8 +49,13 @@ public abstract class BaseTaskMaster implements TaskMaster {
     }
 
     @Override
-    public Boolean isTaskComplete(Long instanceId, Long circleId) {
-        return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
+    public void completeTask() {
+        Long jobId = this.jobInstanceDTO.getJobId();
+        Long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        // Task complete.
+        if (this.isTaskComplete(jobId, this.circleIdGenerator.get())) {
+            System.out.printf("task complete jobId=%s instanceId=%s%n", jobId, instanceId);
+        }
     }
 
     @Override
@@ -70,10 +75,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
             taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
 
-        // Task complete.
-        if (this.isTaskComplete(batchRequest.getJobInstanceId(), batchRequest.getCircleId())) {
-            System.out.printf("task complete jobId=%s instanceId=%s%n", batchRequest.getJobId(), batchRequest.getJobInstanceId());
-        }
+        this.completeTask();
     }
 
     protected Long acquireTaskId() {
@@ -112,5 +114,9 @@ public abstract class BaseTaskMaster implements TaskMaster {
         task.setStatus(TaskStatusEnum.INIT.getStatus());
         task.setWorkerAddress(this.localWorkerAddress);
         return task;
+    }
+
+    protected Boolean isTaskComplete(Long instanceId, Long circleId) {
+        return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
     }
 }

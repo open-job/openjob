@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dto.JobInstanceDTO;
@@ -15,6 +16,11 @@ import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -28,6 +34,8 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
 
     protected MapReduceTaskConsumer<MasterStartContainerRequest> childTaskConsumer;
+
+    protected ScheduledExecutorService scheduledService;
 
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -44,6 +52,18 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         );
 
         childTaskConsumer.start();
+
+        this.scheduledService = new ScheduledThreadPoolExecutor(
+                1,
+                new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+
+        // Check task status.
+        this.scheduledService.scheduleWithFixedDelay(new TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
+
+        // Check task container alive
+        this.scheduledService.scheduleWithFixedDelay(new TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
     }
 
     @Override
@@ -62,11 +82,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-    }
-
-    @Override
-    public Boolean isTaskComplete(Long instanceId, Long circleId) {
-        return super.isTaskComplete(instanceId, circleId) && !this.childTaskConsumer.isActive();
     }
 
     @Override
@@ -103,10 +118,47 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     }
 
-    private void persistTasks(List<MasterStartContainerRequest> startRequests) {
+    /**
+     * Use checker thread to complete task for MR
+     */
+    @Override
+    public void completeTask() {
+    }
+
+    protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
         List<Task> taskList = new ArrayList<>();
         startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
 
         taskDAO.batchAdd(taskList);
+    }
+
+    protected static class TaskStatusChecker implements Runnable {
+        private final MapReduceTaskMaster taskMaster;
+
+        public TaskStatusChecker(MapReduceTaskMaster taskMaster) {
+            this.taskMaster = taskMaster;
+        }
+
+        @Override
+        public void run() {
+            long jobId = this.taskMaster.jobInstanceDTO.getJobId();
+            long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
+
+            // Dispatch fail task.
+
+            boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
+
+            if (isComplete && !this.taskMaster.childTaskConsumer.isActive()) {
+                System.out.printf("MR task complete jobId=%s instanceId=%s%n", jobId, instanceId);
+            }
+        }
+    }
+
+
+    protected static class TaskContainerChecker implements Runnable {
+        @Override
+        public void run() {
+
+        }
     }
 }
