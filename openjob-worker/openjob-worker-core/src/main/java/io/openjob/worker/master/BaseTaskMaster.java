@@ -2,6 +2,7 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
@@ -77,7 +78,10 @@ public abstract class BaseTaskMaster implements TaskMaster {
             taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
 
-        this.completeTask();
+        // Not MR to complete task.
+        if (!ExecuteTypeEnum.MAP_REDUCE.getType().equals(this.jobInstanceDTO.getExecuteType())) {
+            this.completeTask();
+        }
     }
 
     protected Long acquireTaskId() {

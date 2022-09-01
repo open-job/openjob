@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,7 +41,7 @@ public class H2MemoryPersistence implements TaskPersistence {
     @Override
     public void initTable() throws Exception {
         String createSql = "CREATE TABLE IF NOT EXISTS `task` (" +
-                "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT," +
+                "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY," +
                 "  `job_id` bigint(20) NOT NULL," +
                 "  `instance_id` bigint(20) NOT NULL," +
                 "  `circle_id` bigint(20) NOT NULL DEFAULT '0'," +
@@ -208,6 +209,31 @@ public class H2MemoryPersistence implements TaskPersistence {
                 return rs.getInt(1);
             }
             return 0;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Task> findListByPageSize(Long instanceId, Long circleId, Long page, Long size) throws SQLException {
+        ResultSet rs = null;
+        long offset = (page - 1) * size;
+        String sql = "SELECT * FROM task WHERE instance_id=? AND circle_id=? ORDER BY task_id LIMIT ?,?";
+        try (Connection connection = this.connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, instanceId);
+            ps.setLong(2, circleId);
+            ps.setLong(3, offset);
+            ps.setLong(4, size);
+            rs = ps.executeQuery();
+
+            List<Task> taskList = new ArrayList<>();
+            while (rs.next()) {
+                taskList.add(convert(rs));
+            }
+            return taskList;
         } finally {
             if (Objects.nonNull(rs)) {
                 rs.close();

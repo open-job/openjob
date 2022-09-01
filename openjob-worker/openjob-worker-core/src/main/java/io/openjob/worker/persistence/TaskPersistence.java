@@ -32,6 +32,12 @@ public interface TaskPersistence {
      */
     Task findByTaskId(String taskId) throws SQLException;
 
+    /**
+     * Batch delete by task ids.
+     *
+     * @param taskIds taskIds
+     * @return Integer
+     */
     Integer batchDeleteByTaskIds(List<String> taskIds) throws SQLException;
 
     /**
@@ -51,4 +57,15 @@ public interface TaskPersistence {
      * @return Integer
      */
     Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
+
+    /**
+     * Find list by page size
+     *
+     * @param instanceId instance id
+     * @param circleId   circle id
+     * @param page       page from 1.
+     * @param size       size
+     * @return List
+     */
+    List<Task> findListByPageSize(Long instanceId, Long circleId, Long page, Long size) throws SQLException;
 }

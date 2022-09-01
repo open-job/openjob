@@ -16,7 +16,6 @@ import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -111,16 +110,26 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         }
     }
 
-    @Override
-    public void stop() {
-
-    }
-
     /**
      * Use checker thread to complete task for MR
      */
     @Override
     public void completeTask() {
+
+    }
+
+    @Override
+    public void stop() {
+        // Stop child task consumer
+        this.childTaskConsumer.stop();
+
+        // Stop scheduled thread poll
+        this.scheduledService.shutdownNow();
+
+        // Stop task container.
+
+        // Remove from task master pool.
+        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
     }
 
     protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
@@ -147,7 +156,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
             boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
 
             if (isComplete && !this.taskMaster.childTaskConsumer.isActive()) {
-                System.out.printf("MR task complete jobId=%s instanceId=%s%n", jobId, instanceId);
+                this.taskMaster.completeTask();
             }
         }
     }
