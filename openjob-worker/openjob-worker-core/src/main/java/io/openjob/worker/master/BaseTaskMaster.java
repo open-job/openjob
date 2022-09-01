@@ -59,35 +59,8 @@ public abstract class BaseTaskMaster implements TaskMaster {
 
     @Override
     public void completeTask() throws InterruptedException {
-        long circleId = this.circleIdGenerator.get();
-        long instanceId = this.jobInstanceDTO.getJobInstanceId();
-
-        long size = 100;
-        while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, size);
-
-            // Query complete.
-            if (queryTask.size() < size) {
-                break;
-            }
-
-            // Convert to `WorkerJobInstanceTaskRequest`
-            List<WorkerJobInstanceTaskRequest> taskRequestList = queryTask.stream()
-                    .map(this::convertToTaskRequest)
-                    .collect(Collectors.toList());
-
-            WorkerJobInstanceStatusRequest instanceStatusRequest = new WorkerJobInstanceStatusRequest();
-            instanceStatusRequest.setCircleId(circleId);
-            instanceStatusRequest.setJobInstanceId(instanceId);
-            instanceStatusRequest.setJobId(this.jobInstanceDTO.getJobId());
-            instanceStatusRequest.setTaskRequestList(taskRequestList);
-
-            OpenjobWorker.atLeastOnceDelivery(instanceStatusRequest, null);
-
-            // Delete tasks.
-            List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());
-            taskDAO.batchDeleteByTaskIds(deleteTaskIds);
-        }
+        // Do complete task.
+        this.doCompleteTask();
 
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
@@ -95,15 +68,8 @@ public abstract class BaseTaskMaster implements TaskMaster {
             return;
         }
 
-        // Second delay task.
-        long delayTime = Long.parseLong(this.jobInstanceDTO.getTimeExpression());
-        Thread.sleep(delayTime * 1000L);
-
-        // Next circle id.
-        long nextCircleId = this.circleIdGenerator.incrementAndGet();
-        log.info("Second delay task begin jobId={} instanceId={} circleId={}");
-
-        this.submit();
+        // Circle second delay task.
+        this.circleSecondDelayTask();
     }
 
     @Override
@@ -179,5 +145,52 @@ public abstract class BaseTaskMaster implements TaskMaster {
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
         return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
+    }
+
+    protected void doCompleteTask() {
+        long circleId = this.circleIdGenerator.get();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+
+        long size = 100;
+        while (true) {
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, size);
+
+            // Query complete.
+            if (queryTask.size() < size) {
+                break;
+            }
+
+            // Convert to `WorkerJobInstanceTaskRequest`
+            List<WorkerJobInstanceTaskRequest> taskRequestList = queryTask.stream()
+                    .map(this::convertToTaskRequest)
+                    .collect(Collectors.toList());
+
+            WorkerJobInstanceStatusRequest instanceStatusRequest = new WorkerJobInstanceStatusRequest();
+            instanceStatusRequest.setCircleId(circleId);
+            instanceStatusRequest.setJobInstanceId(instanceId);
+            instanceStatusRequest.setJobId(this.jobInstanceDTO.getJobId());
+            instanceStatusRequest.setTaskRequestList(taskRequestList);
+
+            OpenjobWorker.atLeastOnceDelivery(instanceStatusRequest, null);
+
+            // Delete tasks.
+            List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());
+            taskDAO.batchDeleteByTaskIds(deleteTaskIds);
+        }
+    }
+
+    protected void circleSecondDelayTask() throws InterruptedException {
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+
+        // Second delay task.
+        long delayTime = Long.parseLong(this.jobInstanceDTO.getTimeExpression());
+        Thread.sleep(delayTime * 1000L);
+
+        // Next circle id.
+        long jobId = this.jobInstanceDTO.getJobId();
+        long nextCircleId = this.circleIdGenerator.incrementAndGet();
+        log.info("Second delay task begin jobId={} instanceId={} circleId={}", jobId, instanceId, nextCircleId);
+
+        this.submit();
     }
 }

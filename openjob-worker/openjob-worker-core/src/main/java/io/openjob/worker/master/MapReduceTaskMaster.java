@@ -4,28 +4,27 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.openjob.common.request.WorkerJobInstanceStatusRequest;
-import io.openjob.common.request.WorkerJobInstanceTaskRequest;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.dao.TaskDAO;
+import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.processor.BaseProcessor;
+import io.openjob.worker.processor.MapReduceProcessor;
+import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
+import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -72,6 +71,15 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
         // Check task container alive
         this.scheduledService.scheduleWithFixedDelay(new TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void completeTask() throws InterruptedException {
+        // Reduce task.
+        this.reduce();
+
+        // Complete task.
+        super.completeTask();
     }
 
     public void map(List<byte[]> tasks, String taskName) {
@@ -138,6 +146,15 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
 
         taskDAO.batchAdd(taskList);
+    }
+
+    protected void reduce() {
+        BaseProcessor processor = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());
+        if (processor instanceof MapReduceProcessor) {
+            MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processor;
+            JobContext jobContext = new JobContext();
+            ProcessResult result = mapReduceProcessor.reduce(jobContext);
+        }
     }
 
     protected static class TaskStatusChecker implements Runnable {
