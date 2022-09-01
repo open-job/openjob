@@ -39,7 +39,10 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
+    }
 
+    @Override
+    protected void init() {
         childTaskQueue = new TaskQueue<>(this.jobInstanceDTO.getJobInstanceId(), 10240);
         childTaskConsumer = new MapReduceTaskConsumer<>(
                 this.jobInstanceDTO.getJobInstanceId(),
@@ -64,11 +67,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
         // Check task container alive
         this.scheduledService.scheduleWithFixedDelay(new TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
-    }
-
-    @Override
-    protected void init() {
-
     }
 
     public void map(List<byte[]> tasks, String taskName) {
