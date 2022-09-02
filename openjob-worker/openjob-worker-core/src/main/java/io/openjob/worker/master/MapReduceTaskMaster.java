@@ -5,8 +5,10 @@ import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.processor.BaseProcessor;
@@ -21,7 +23,9 @@ import io.openjob.worker.util.ThreadLocalUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -155,12 +159,35 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         if (processor instanceof MapReduceProcessor) {
             MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processor;
             JobContext jobContext = new JobContext();
+            jobContext.setJobId(this.jobInstanceDTO.getJobId());
+            jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+            jobContext.setTaskId(this.acquireTaskId());
+            jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
+            jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
+            jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+            jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+            jobContext.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+            jobContext.setExecuteType(this.jobInstanceDTO.getExecuteType());
+            jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
+            jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+            jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+            jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
+            jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
+
+            ProcessResult processResult = new ProcessResult(false);
             try {
                 ThreadLocalUtil.setJobContext(jobContext);
-                ProcessResult result = mapReduceProcessor.reduce(jobContext);
+                processResult = mapReduceProcessor.reduce(jobContext);
+            } catch (Throwable ex) {
+                processResult.setResult(ex.toString());
             } finally {
                 ThreadLocalUtil.removeJobContext();
             }
+
+            Task task = new Task();
+            task.setStatus(processResult.getStatus().getStatus());
+            task.setResult(processResult.getResult());
+            TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
         }
     }
 

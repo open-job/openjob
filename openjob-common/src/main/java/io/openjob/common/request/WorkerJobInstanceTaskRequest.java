@@ -50,6 +50,11 @@ public class WorkerJobInstanceTaskRequest implements Serializable {
     private Integer status;
 
     /**
+     * Task result.
+     */
+    private String result;
+
+    /**
      * Task worker address
      */
     private String workerAddress;

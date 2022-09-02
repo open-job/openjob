@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import akka.actor.ActorContext;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
@@ -18,6 +19,7 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -140,6 +142,16 @@ public abstract class BaseTaskMaster implements TaskMaster {
     protected WorkerJobInstanceTaskRequest convertToTaskRequest(Task task) {
         WorkerJobInstanceTaskRequest taskRequest = new WorkerJobInstanceTaskRequest();
         taskRequest.setJobId(task.getJobId());
+        taskRequest.setJobInstanceId(task.getInstanceId());
+        taskRequest.setCircleId(task.getCircleId());
+        taskRequest.setTaskId(task.getTaskId());
+        taskRequest.setTaskName(task.getTaskName());
+        taskRequest.setParentTaskId(task.getTaskParentId());
+        taskRequest.setStatus(task.getStatus());
+        taskRequest.setResult(task.getResult());
+        taskRequest.setWorkerAddress(task.getWorkerAddress());
+        taskRequest.setCreateTime(task.getCreateTime());
+        taskRequest.setUpdateTime(task.getUpdateTime());
         return taskRequest;
     }
 
@@ -150,6 +162,10 @@ public abstract class BaseTaskMaster implements TaskMaster {
     protected void doCompleteTask() {
         long circleId = this.circleIdGenerator.get();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
+
+        // Failed task count.
+        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
+        int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
         long size = 100;
         while (true) {
@@ -165,13 +181,14 @@ public abstract class BaseTaskMaster implements TaskMaster {
                     .map(this::convertToTaskRequest)
                     .collect(Collectors.toList());
 
-            WorkerJobInstanceStatusRequest instanceStatusRequest = new WorkerJobInstanceStatusRequest();
-            instanceStatusRequest.setCircleId(circleId);
-            instanceStatusRequest.setJobInstanceId(instanceId);
-            instanceStatusRequest.setJobId(this.jobInstanceDTO.getJobId());
-            instanceStatusRequest.setTaskRequestList(taskRequestList);
+            WorkerJobInstanceStatusRequest instanceRequest = new WorkerJobInstanceStatusRequest();
+            instanceRequest.setCircleId(circleId);
+            instanceRequest.setJobInstanceId(instanceId);
+            instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
+            instanceRequest.setStatus(instanceStatus);
+            instanceRequest.setTaskRequestList(taskRequestList);
 
-            OpenjobWorker.atLeastOnceDelivery(instanceStatusRequest, null);
+            OpenjobWorker.atLeastOnceDelivery(instanceRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());

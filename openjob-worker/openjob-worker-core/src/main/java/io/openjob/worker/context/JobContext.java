@@ -3,6 +3,7 @@ package io.openjob.worker.context;
 import io.openjob.common.dto.JobInstanceDTO;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.processor.TaskResult;
 import lombok.Data;
 
 import java.util.List;
@@ -38,15 +39,7 @@ public class JobContext {
      */
     private List<JobInstanceDTO> upstreamData;
 
-    /**
-     * Child task result.
-     */
-    private Map<Long, String> taskResults;
-
-    /**
-     * Child task status.
-     */
-    private Map<Long, TaskStatusEnum> taskStatuses;
+    private List<TaskResult> taskResultList;
 
     /**
      * Execute times for second job.

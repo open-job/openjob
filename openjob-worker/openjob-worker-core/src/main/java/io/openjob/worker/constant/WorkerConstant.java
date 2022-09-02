@@ -45,4 +45,5 @@ public class WorkerConstant {
      * Task
      */
     public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
+    public static final String MAP_TASK_REDUCE_NAME = "MR_TASK_REDUCE";
 }
