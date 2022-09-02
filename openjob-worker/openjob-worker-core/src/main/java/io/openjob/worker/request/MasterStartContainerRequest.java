@@ -41,9 +41,9 @@ public class MasterStartContainerRequest implements Serializable {
         this.jobInstanceId = 0L;
         this.taskId = 0L;
         this.circleId = 0L;
+        this.parentTaskId = 0L;
         this.taskName = "";
     }
-
 
     public String getTaskUniqueId() {
         return String.format("%d_%d_%d_%d", this.jobId, this.jobInstanceId, this.taskId, this.circleId);

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class TaskDAOTest {
     @Test
     public void testCommon() {
+        String taskResult = "exception result";
         String taskId = String.valueOf(UUID.randomUUID());
 
         Task task = new Task();
@@ -30,6 +31,7 @@ public class TaskDAOTest {
         task.setTaskName("ROOT");
         task.setTaskParentId(String.valueOf(0));
         task.setStatus(1);
+        task.setResult(taskResult);
         task.setWorkerAddress("");
 
         // Add
@@ -39,6 +41,7 @@ public class TaskDAOTest {
         // Get by task id.
         Task queryTask = TaskDAO.INSTANCE.getByTaskId(taskId);
         Assertions.assertEquals(taskId, queryTask.getTaskId());
+        Assertions.assertEquals(taskResult, queryTask.getResult());
 
         // Task tow.
         String taskId2 = String.valueOf(UUID.randomUUID());

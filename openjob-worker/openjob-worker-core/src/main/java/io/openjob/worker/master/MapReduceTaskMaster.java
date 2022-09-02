@@ -17,10 +17,12 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
+import io.openjob.worker.util.ThreadLocalUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -153,7 +155,12 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         if (processor instanceof MapReduceProcessor) {
             MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processor;
             JobContext jobContext = new JobContext();
-            ProcessResult result = mapReduceProcessor.reduce(jobContext);
+            try {
+                ThreadLocalUtil.setJobContext(jobContext);
+                ProcessResult result = mapReduceProcessor.reduce(jobContext);
+            } finally {
+                ThreadLocalUtil.removeJobContext();
+            }
         }
     }
 
@@ -172,7 +179,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
             // Dispatch fail task.
 
             boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
-
             if (isComplete && !this.taskMaster.childTaskConsumer.isActive()) {
                 try {
                     this.taskMaster.completeTask();

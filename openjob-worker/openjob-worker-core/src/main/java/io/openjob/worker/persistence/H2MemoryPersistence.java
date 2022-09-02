@@ -50,6 +50,7 @@ public class H2MemoryPersistence implements TaskPersistence {
                 "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0'," +
                 "  `status` tinyint(2) NOT NULL DEFAULT '1'," +
                 "  `worker_address` varchar(64) NOT NULL DEFAULT ''," +
+                "  `result` longtext," +
                 "  `task_body` blob," +
                 "  `create_time` int(11) NOT NULL," +
                 "  `update_time` int(11) NOT NULL," +
@@ -75,10 +76,11 @@ public class H2MemoryPersistence implements TaskPersistence {
                 "task_parent_id," +
                 "status," +
                 "worker_address," +
+                "result," +
                 "task_body," +
                 "create_time," +
                 "update_time" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -93,9 +95,10 @@ public class H2MemoryPersistence implements TaskPersistence {
                 ps.setString(6, task.getTaskParentId());
                 ps.setInt(7, task.getStatus());
                 ps.setString(8, task.getWorkerAddress());
-                ps.setBytes(9, task.getTaskBody());
-                ps.setInt(10, task.getCreateTime());
-                ps.setInt(11, task.getUpdateTime());
+                ps.setString(9, task.getResult());
+                ps.setBytes(10, task.getTaskBody());
+                ps.setInt(11, task.getCreateTime());
+                ps.setInt(12, task.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -256,6 +259,7 @@ public class H2MemoryPersistence implements TaskPersistence {
         task.setTaskName(rs.getString("task_name"));
         task.setTaskParentId(rs.getString("task_parent_id"));
         task.setStatus(rs.getInt("status"));
+        task.setResult(rs.getString("result"));
         task.setWorkerAddress(rs.getString("worker_address"));
         task.setTaskBody(rs.getBytes("task_body"));
         task.setCreateTime(rs.getInt("create_time"));

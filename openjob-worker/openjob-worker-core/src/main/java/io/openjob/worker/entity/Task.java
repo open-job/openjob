@@ -17,6 +17,7 @@ public class Task {
     private String taskParentId;
     private Integer status;
     private String workerAddress;
+    private String result;
     private byte[] taskBody;
     private Integer createTime;
     private Integer updateTime;
