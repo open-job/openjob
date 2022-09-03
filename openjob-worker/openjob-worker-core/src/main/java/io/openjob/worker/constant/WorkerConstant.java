@@ -6,14 +6,18 @@ package io.openjob.worker.constant;
  */
 public class WorkerConstant {
 
-    // Server config key.
+    /**
+     * Server config key.
+     */
     public static final String SERVER_HOST = "server.host";
     public static final String SERVER_PORT = "server.port";
 
     // Routing
     public static final String ROUTING_HEARTBEAT = "heartbeat";
 
-    // Worker config key.
+    /**
+     * Worker config key.
+     */
     public static final String WORKER_HOSTNAME = "worker.hostname";
     public static final String WORKER_PORT = "worker.port";
     public static final String WORKER_APPID = "worker.appid";
@@ -25,7 +29,9 @@ public class WorkerConstant {
     public static final String WORKER_TASK_PERSISTENT_ROUTING_ACTOR_NUM = "worker.persistent.routing.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "worker.heartbeat.interval";
 
-    // Default worker config.
+    /**
+     * Default worker config.
+     */
     public static final String DEFAULT_WORKER_AKKA_CONFIG_FILENAME = "akka-worker.conf";
     public static final Integer DEFAULT_WORKER_PORT = 25521;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
@@ -35,6 +41,9 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_PERSISTENT_ROUTING_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
 
-    // Task
+    /**
+     * Task
+     */
     public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
+    public static final String MAP_TASK_REDUCE_NAME = "MR_TASK_REDUCE";
 }

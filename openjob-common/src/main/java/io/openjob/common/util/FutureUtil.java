@@ -20,18 +20,43 @@ public class FutureUtil {
 
     }
 
+    /**
+     *
+     * @param ref
+     * @param msg
+     * @param seconds
+     * @return
+     * @throws Exception
+     */
     public static Object ask(ActorRef ref, Object msg, Long seconds) throws Exception {
         Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
         Future<Object> future = Patterns.ask(ref, msg, timeout);
         return Await.result(future, timeout.duration());
     }
 
+    /**
+     *
+     * @param selection
+     * @param msg
+     * @param seconds
+     * @return
+     * @throws Exception
+     */
     public static Object ask(ActorSelection selection, Object msg, Long seconds) throws Exception {
         Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
         Future<Object> future = Patterns.ask(selection, msg, timeout);
         return Await.result(future, timeout.duration());
     }
 
+    /**
+     *
+     * @param selection
+     * @param request
+     * @param ignoredType
+     * @param seconds
+     * @param <T>
+     * @return
+     */
     public static <T> T mustAsk(ActorSelection selection, Object request, Class<T> ignoredType, Long seconds) {
         Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
         Future<Object> future = Patterns.ask(selection, request, timeout);

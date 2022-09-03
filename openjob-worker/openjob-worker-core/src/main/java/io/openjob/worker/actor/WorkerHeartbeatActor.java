@@ -12,11 +12,11 @@ public class WorkerHeartbeatActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(ServerWorkerHeartbeatRequest.class, this::WorkerHeartbeatCheckRequest)
+                .match(ServerWorkerHeartbeatRequest.class, this::workerHeartbeatCheckRequest)
                 .build();
     }
 
-    public void WorkerHeartbeatCheckRequest(ServerWorkerHeartbeatRequest workerHeartbeatCheckRequest) {
+    public void workerHeartbeatCheckRequest(ServerWorkerHeartbeatRequest workerHeartbeatCheckRequest) {
         getSender().tell(Result.success(new Object()), getSelf());
     }
 }

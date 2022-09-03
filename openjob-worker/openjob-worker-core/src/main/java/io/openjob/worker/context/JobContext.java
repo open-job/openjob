@@ -1,13 +1,13 @@
 package io.openjob.worker.context;
 
 import io.openjob.common.dto.JobInstanceDTO;
-import io.openjob.worker.constant.TaskStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.processor.TaskResult;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -39,15 +39,7 @@ public class JobContext {
      */
     private List<JobInstanceDTO> upstreamData;
 
-    /**
-     * Child task result.
-     */
-    private Map<Long, String> taskResults;
-
-    /**
-     * Child task status.
-     */
-    private Map<Long, TaskStatusEnum> taskStatuses;
+    private List<TaskResult> taskResultList;
 
     /**
      * Execute times for second job.
@@ -74,16 +66,26 @@ public class JobContext {
     private String timeExpressionType;
     private String timeExpression;
 
+    /**
+     * Default
+     */
     public JobContext() {
         this.serialNum = 0L;
         this.shardingNum = 0;
         this.failAttemptTimes = 0;
     }
 
+    /**
+     * @return Boolean
+     */
     public Boolean isRoot() {
         return WorkerConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
     }
 
+    /**
+     * @param taskName task name.
+     * @return Boolean
+     */
     public Boolean isTask(String taskName) {
         return this.taskName.equals(taskName);
     }

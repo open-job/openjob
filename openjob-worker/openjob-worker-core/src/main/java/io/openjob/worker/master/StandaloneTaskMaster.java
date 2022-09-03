@@ -2,10 +2,10 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
-import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.request.MasterStartContainerRequest;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -18,8 +18,12 @@ public class StandaloneTaskMaster extends BaseTaskMaster {
 
     @Override
     public void submit() {
+        // Create container
+        MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
+        taskDAO.add(this.convertToTask(startRequest));
+
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
-        FutureUtil.mustAsk(actorSelection, this.wrapMasterStartContainerRequest(), WorkerResponse.class, 3L);
+        FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3L);
     }
 
     @Override

@@ -23,7 +23,6 @@ import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.util.WorkerUtil;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -169,7 +168,7 @@ public class OpenjobWorker implements InitializingBean {
 
         // At least once persistent actor.
         int persistentNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_PERSISTENT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_PERSISTENT_ACTOR_NUM);
-        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, persistentNum)
+        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, 1)
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_PERSISTENT_ROUTING);
         persistentRoutingRef = actorSystem.actorOf(persistentProps, WorkerAkkaConstant.ACTOR_PERSISTENT_ROUTING);
 

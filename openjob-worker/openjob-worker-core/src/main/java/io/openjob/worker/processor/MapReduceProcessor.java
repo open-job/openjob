@@ -7,5 +7,10 @@ import io.openjob.worker.context.JobContext;
  * @since 1.0.0
  */
 public interface MapReduceProcessor extends MapProcessor {
+    /**
+     *
+     * @param jobContext
+     * @return
+     */
     ProcessResult reduce(JobContext jobContext);
 }

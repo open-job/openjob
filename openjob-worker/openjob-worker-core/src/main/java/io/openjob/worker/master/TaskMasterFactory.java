@@ -13,6 +13,11 @@ import java.lang.reflect.Constructor;
  * @since 1.0.0
  */
 public class TaskMasterFactory {
+    /**
+     * @param jobInstanceDTO
+     * @param actorContext
+     * @return
+     */
     public static TaskMaster create(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         try {
             String className = String.format("io.openjob.worker.master.%sTaskMaster", StringUtils.capitalize(jobInstanceDTO.getExecuteType()));

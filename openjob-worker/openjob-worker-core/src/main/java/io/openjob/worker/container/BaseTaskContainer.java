@@ -1,15 +1,15 @@
 package io.openjob.worker.container;
 
-import io.openjob.worker.context.JobContext;
+import io.openjob.worker.request.MasterStartContainerRequest;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 public abstract class BaseTaskContainer implements TaskContainer {
-    protected JobContext jobContext;
+    protected MasterStartContainerRequest startRequest;
 
-    public BaseTaskContainer(JobContext jobContext) {
-        this.jobContext = jobContext;
+    public BaseTaskContainer(MasterStartContainerRequest startRequest) {
+        this.startRequest = startRequest;
     }
 }

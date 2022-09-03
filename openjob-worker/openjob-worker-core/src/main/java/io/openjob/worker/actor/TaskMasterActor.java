@@ -12,7 +12,6 @@ import io.openjob.worker.master.TaskMaster;
 import io.openjob.worker.master.TaskMasterFactory;
 import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
-import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 
 /**
@@ -27,7 +26,6 @@ public class TaskMasterActor extends BaseActor {
                 .match(ServerSubmitJobInstanceRequest.class, this::submitJobInstance)
                 .match(ServerStopJobInstanceRequest.class, this::stopJobInstance)
                 .match(ServerCheckTaskMasterRequest.class, this::checkJobInstance)
-                .match(ContainerTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ContainerBatchTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ProcessorMapTaskRequest.class, this::handleProcessorMapTask)
                 .build();
@@ -73,12 +71,12 @@ public class TaskMasterActor extends BaseActor {
 
     }
 
-    public void handleContainerTaskStatus(ContainerTaskStatusRequest taskStatusReq) {
-
-    }
-
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
+        TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
+        taskMaster.updateStatus(batchTaskStatusReq);
 
+        WorkerResponse workerResponse = new WorkerResponse(batchTaskStatusReq.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
     }
 
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {

@@ -21,6 +21,11 @@ public class KryoUtil {
         return kryo;
     });
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public static byte[] serialize(Object object) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Output output = new Output(byteArrayOutputStream);
@@ -32,6 +37,11 @@ public class KryoUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
+    /**
+     *
+     * @param byteArray
+     * @return
+     */
     public static Object deserialize(byte[] byteArray) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         Input input = new Input(byteArrayInputStream);

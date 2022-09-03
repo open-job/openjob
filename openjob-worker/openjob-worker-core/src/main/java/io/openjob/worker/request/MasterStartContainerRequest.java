@@ -1,5 +1,6 @@
 package io.openjob.worker.request;
 
+import io.openjob.worker.util.TaskUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,8 +13,14 @@ import java.util.List;
 @Data
 public class MasterStartContainerRequest implements Serializable {
     private Long jobId;
+
     private Long jobInstanceId;
+
     private Long taskId;
+
+    private Long parentTaskId;
+
+    private Long circleId;
     private String jobParams;
     private String executeType;
     private Long workflowId;
@@ -29,4 +36,21 @@ public class MasterStartContainerRequest implements Serializable {
 
     private byte[] task;
     private List<String> workerAddresses;
+
+    public MasterStartContainerRequest() {
+        this.jobId = 0L;
+        this.jobInstanceId = 0L;
+        this.taskId = 0L;
+        this.circleId = 0L;
+        this.parentTaskId = 0L;
+        this.taskName = "";
+    }
+
+    public String getTaskUniqueId() {
+        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
+    }
+
+    public String getParentTaskUniqueId() {
+        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.parentTaskId);
+    }
 }

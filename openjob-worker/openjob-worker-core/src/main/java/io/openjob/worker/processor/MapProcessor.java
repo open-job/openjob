@@ -6,9 +6,9 @@ import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.OpenjobWorker;
-import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
+import io.openjob.worker.util.ThreadLocalUtil;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -19,6 +19,14 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface MapProcessor extends BaseProcessor {
+
+    /**
+     * Map
+     *
+     * @param tasks    sub tasks.
+     * @param taskName task name.
+     * @return ProcessResult
+     */
     default ProcessResult map(List<? extends Object> tasks, String taskName) {
         ProcessResult result = new ProcessResult(false);
 
@@ -26,7 +34,7 @@ public interface MapProcessor extends BaseProcessor {
             return result;
         }
 
-        JobContext jobContext = TaskContainerFactory.getPool().getJobContext();
+        JobContext jobContext = ThreadLocalUtil.getJobContext();
         ActorSelection masterSelection = OpenjobWorker.getActorSystem().actorSelection(jobContext.getMasterActorPath());
 
         int batchSize = 100;
@@ -44,7 +52,6 @@ public interface MapProcessor extends BaseProcessor {
 
             try {
                 WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);
-                System.out.println(workerResponse);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -52,6 +59,9 @@ public interface MapProcessor extends BaseProcessor {
         return result;
     }
 
+    /**
+     * @param context context
+     */
     @Override
     default void stop(JobContext context) {
 

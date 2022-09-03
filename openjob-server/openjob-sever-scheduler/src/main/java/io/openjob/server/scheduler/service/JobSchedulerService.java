@@ -106,7 +106,7 @@ public class JobSchedulerService {
             jobInstance.setExecuteTime(j.getNextExecuteTime());
             jobInstance.setCreateTime(now);
             jobInstance.setUpdateTime(now);
-            jobInstance.setStatus(InstanceStatusEnum.waiting.getStatus());
+            jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
             jobInstance.setCompleteTime(0);
             jobInstance.setLastReportTime(0);
 

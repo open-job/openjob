@@ -25,16 +25,16 @@ public abstract class BaseConsumer<T> {
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 
     public BaseConsumer(Long id,
-                        Integer handlerCoreThreadNum,
-                        Integer handlerMaxThreadNum,
-                        String handlerThreadName,
+                        Integer consumerCoreThreadNum,
+                        Integer consumerMaxThreadNum,
+                        String consumerThreadName,
                         Integer pollSize,
                         String pollThreadName,
                         TaskQueue<T> queues) {
         this.id = id;
-        this.consumerCoreThreadNum = handlerCoreThreadNum;
-        this.consumerMaxThreadNum = handlerMaxThreadNum;
-        this.consumerThreadName = handlerThreadName;
+        this.consumerCoreThreadNum = consumerCoreThreadNum;
+        this.consumerMaxThreadNum = consumerMaxThreadNum;
+        this.consumerThreadName = consumerThreadName;
         this.pollSize = pollSize;
         this.pollThreadName = pollThreadName;
         this.queues = queues;
@@ -101,7 +101,13 @@ public abstract class BaseConsumer<T> {
         if (!tasks.isEmpty()) {
             this.activePollNum.incrementAndGet();
             this.consume(id, tasks);
+            this.activePollNum.decrementAndGet();
+
         }
         return tasks;
+    }
+
+    public synchronized boolean isActive() {
+        return queues.size() > 0 || activePollNum.get() > 0;
     }
 }
