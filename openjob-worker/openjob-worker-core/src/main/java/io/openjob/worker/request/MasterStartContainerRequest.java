@@ -1,5 +1,6 @@
 package io.openjob.worker.request;
 
+import io.openjob.worker.util.TaskUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -46,10 +47,10 @@ public class MasterStartContainerRequest implements Serializable {
     }
 
     public String getTaskUniqueId() {
-        return String.format("%d_%d_%d_%d", this.jobId, this.jobInstanceId, this.taskId, this.circleId);
+        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
     }
 
     public String getParentTaskUniqueId() {
-        return String.format("%d_%d_%d_%d", this.jobId, this.jobInstanceId, this.parentTaskId, this.circleId);
+        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.parentTaskId);
     }
 }

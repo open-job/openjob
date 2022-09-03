@@ -4,8 +4,8 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
@@ -14,19 +14,19 @@ import io.openjob.worker.entity.Task;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.MapReduceProcessor;
 import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
+import io.openjob.worker.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -158,22 +158,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         BaseProcessor processor = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());
         if (processor instanceof MapReduceProcessor) {
             MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processor;
-            JobContext jobContext = new JobContext();
-            jobContext.setJobId(this.jobInstanceDTO.getJobId());
-            jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
-            jobContext.setTaskId(this.acquireTaskId());
-            jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
-            jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
-            jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
-            jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
-            jobContext.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
-            jobContext.setExecuteType(this.jobInstanceDTO.getExecuteType());
-            jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
-            jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
-            jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-            jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
-            jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
-
+            JobContext jobContext = getReduceJobContext();
             ProcessResult processResult = new ProcessResult(false);
             try {
                 ThreadLocalUtil.setJobContext(jobContext);
@@ -184,11 +169,47 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
                 ThreadLocalUtil.removeJobContext();
             }
 
-            Task task = new Task();
-            task.setStatus(processResult.getStatus().getStatus());
-            task.setResult(processResult.getResult());
-            TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
+            this.persistReduceTask(processResult);
         }
+    }
+
+    protected JobContext getReduceJobContext() {
+        JobContext jobContext = new JobContext();
+        jobContext.setJobId(this.jobInstanceDTO.getJobId());
+        jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        jobContext.setTaskId(this.acquireTaskId());
+        jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
+        jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
+        jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+        jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+        jobContext.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+        jobContext.setExecuteType(this.jobInstanceDTO.getExecuteType());
+        jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
+        jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+        jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+        jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
+        jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
+        jobContext.setTaskResultList(this.getReduceTaskResultList());
+        return jobContext;
+    }
+
+    protected List<TaskResult> getReduceTaskResultList() {
+        return null;
+    }
+
+    protected void persistReduceTask(ProcessResult processResult) {
+        Task task = new Task();
+        task.setJobId(this.jobInstanceDTO.getJobId());
+        task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        task.setCircleId(this.circleIdGenerator.get());
+        String uniqueId = TaskUtil.getUniqueId(this.jobInstanceDTO.getJobId(), this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), this.acquireTaskId());
+        task.setTaskId(uniqueId);
+        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setWorkerAddress(this.localWorkerAddress);
+        task.setTaskParentId(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setStatus(processResult.getStatus().getStatus());
+        task.setResult(processResult.getResult());
+        TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
     }
 
     protected static class TaskStatusChecker implements Runnable {
@@ -200,7 +221,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
         @Override
         public void run() {
-            long jobId = this.taskMaster.jobInstanceDTO.getJobId();
             long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
 
             // Dispatch fail task.
