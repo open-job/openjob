@@ -101,6 +101,12 @@ public abstract class BaseTaskMaster implements TaskMaster {
         }
     }
 
+    @Override
+    public void stop() {
+        // Remove from task master pool.
+        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+    }
+
     protected Long acquireTaskId() {
         return taskIdGenerator.getAndIncrement();
     }
@@ -121,6 +127,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
         startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
         startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
         startReq.setMasterAkkaPath(this.localContainerPath);
+        startReq.setCircleId(circleIdGenerator.get());
         startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;

@@ -25,9 +25,4 @@ public class StandaloneTaskMaster extends BaseTaskMaster {
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
         FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3L);
     }
-
-    @Override
-    public void stop() {
-
-    }
 }

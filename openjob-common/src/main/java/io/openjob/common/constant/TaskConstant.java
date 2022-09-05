@@ -5,6 +5,5 @@ package io.openjob.common.constant;
  * @since 1.0.0
  */
 public class TaskConstant {
-    public static final String REDUCE_PARENT_TASK_ID = "reduce";
     public static final String REDUCE_PARENT_TASK_NAME = "reduce";
 }

@@ -143,8 +143,8 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         // Stop scheduled thread poll
         this.scheduledService.shutdownNow();
 
-        // Remove from task master pool.
-        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+        // Stop master
+        super.stop();
     }
 
     protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
@@ -198,15 +198,19 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     }
 
     protected void persistReduceTask(ProcessResult processResult) {
+        long jobId = this.jobInstanceDTO.getJobId();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long circleId = this.circleIdGenerator.get();
+
         Task task = new Task();
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
         task.setCircleId(this.circleIdGenerator.get());
-        String uniqueId = TaskUtil.getUniqueId(this.jobInstanceDTO.getJobId(), this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), this.acquireTaskId());
+        String uniqueId = TaskUtil.getUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
-        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
         task.setWorkerAddress(this.localWorkerAddress);
-        task.setTaskParentId(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, circleId));
         task.setStatus(processResult.getStatus().getStatus());
         task.setResult(processResult.getResult());
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
