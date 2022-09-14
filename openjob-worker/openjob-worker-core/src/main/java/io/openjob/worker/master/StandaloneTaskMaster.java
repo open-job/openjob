@@ -11,7 +11,7 @@ import io.openjob.worker.request.MasterStartContainerRequest;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class StandaloneTaskMaster extends BaseTaskMaster {
+public class StandaloneTaskMaster extends AbstractTaskMaster {
     public StandaloneTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }
