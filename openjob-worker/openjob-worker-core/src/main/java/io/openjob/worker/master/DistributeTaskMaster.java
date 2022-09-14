@@ -4,6 +4,8 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
@@ -71,6 +73,24 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
         startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
 
         taskDAO.batchAdd(taskList);
+    }
+
+    protected JobContext getBaseJobContext() {
+        JobContext jobContext = new JobContext();
+        jobContext.setJobId(this.jobInstanceDTO.getJobId());
+        jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        jobContext.setTaskId(this.acquireTaskId());
+        jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
+        jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
+        jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+        jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+        jobContext.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+        jobContext.setExecuteType(this.jobInstanceDTO.getExecuteType());
+        jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
+        jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+        jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+        jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
+        return jobContext;
     }
 
     protected static class TaskStatusChecker implements Runnable {
