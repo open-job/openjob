@@ -4,7 +4,6 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;

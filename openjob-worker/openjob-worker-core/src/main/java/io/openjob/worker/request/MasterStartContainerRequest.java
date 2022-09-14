@@ -20,6 +20,21 @@ public class MasterStartContainerRequest implements Serializable {
 
     private Long parentTaskId;
 
+    /**
+     * Sharding id.
+     */
+    private Long shardingId;
+
+    /**
+     * Sharding param.
+     */
+    private String shardingParam;
+
+    /**
+     * Sharding num.
+     */
+    private Integer shardingNum;
+
     private Long circleId;
     private String jobParams;
     private String executeType;
