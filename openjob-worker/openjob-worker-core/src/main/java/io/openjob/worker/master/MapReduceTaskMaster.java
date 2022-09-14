@@ -1,11 +1,8 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
-import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskConstant;
-import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
@@ -15,28 +12,22 @@ import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.MapReduceProcessor;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.processor.TaskResult;
-import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
-import io.openjob.worker.util.WorkerUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class MapReduceTaskMaster extends BaseTaskMaster {
+public class MapReduceTaskMaster extends DistributeTaskMaster {
 
     /**
      * Child tasks.
@@ -45,7 +36,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
 
     protected MapReduceTaskConsumer<MasterStartContainerRequest> childTaskConsumer;
 
-    protected ScheduledExecutorService scheduledService;
 
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -65,18 +55,6 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         );
 
         childTaskConsumer.start();
-
-        this.scheduledService = new ScheduledThreadPoolExecutor(
-                1,
-                new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
-                new ThreadPoolExecutor.AbortPolicy()
-        );
-
-        // Check task status.
-        this.scheduledService.scheduleWithFixedDelay(new TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
-
-        // Check task container alive
-        this.scheduledService.scheduleWithFixedDelay(new TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
     }
 
     @Override
@@ -110,29 +88,11 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         this.dispatchTasks(startRequests);
     }
 
-    public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
-        String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
-        String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
-        ActorSelection workerSelection = actorContext.actorSelection(workerPath);
-
-        // Persist tasks.
-        this.persistTasks(startRequests);
-
-        MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
-        batchRequest.setJobId(this.jobInstanceDTO.getJobId());
-        batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
-        batchRequest.setStartContainerRequests(startRequests);
-
-        try {
-            FutureUtil.ask(workerSelection, batchRequest, 10L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected Boolean isTaskComplete(Long instanceId, Long circleId) {
+        return super.isTaskComplete(instanceId, circleId) && !this.childTaskConsumer.isActive();
     }
 
-    /**
-     * Use checker thread to complete task for MR
-     */
     @Override
     public void stop() {
         // Stop task container.
@@ -143,16 +103,10 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
         // Stop scheduled thread poll
         this.scheduledService.shutdownNow();
 
-        // Remove from task master pool.
-        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+        // Stop master
+        super.stop();
     }
 
-    protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
-        List<Task> taskList = new ArrayList<>();
-        startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
-
-        taskDAO.batchAdd(taskList);
-    }
 
     protected void reduce() {
         BaseProcessor processor = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());
@@ -174,20 +128,7 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     }
 
     protected JobContext getReduceJobContext() {
-        JobContext jobContext = new JobContext();
-        jobContext.setJobId(this.jobInstanceDTO.getJobId());
-        jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
-        jobContext.setTaskId(this.acquireTaskId());
-        jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
-        jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
-        jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
-        jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
-        jobContext.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
-        jobContext.setExecuteType(this.jobInstanceDTO.getExecuteType());
-        jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
-        jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
-        jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-        jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
+        JobContext jobContext = this.getBaseJobContext();
         jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
         jobContext.setTaskResultList(this.getReduceTaskResultList());
         return jobContext;
@@ -198,49 +139,21 @@ public class MapReduceTaskMaster extends BaseTaskMaster {
     }
 
     protected void persistReduceTask(ProcessResult processResult) {
+        long jobId = this.jobInstanceDTO.getJobId();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long circleId = this.circleIdGenerator.get();
+
         Task task = new Task();
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
         task.setCircleId(this.circleIdGenerator.get());
-        String uniqueId = TaskUtil.getUniqueId(this.jobInstanceDTO.getJobId(), this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), this.acquireTaskId());
+        String uniqueId = TaskUtil.getUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
-        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
         task.setWorkerAddress(this.localWorkerAddress);
-        task.setTaskParentId(TaskConstant.REDUCE_PARENT_TASK_ID);
+        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, circleId));
         task.setStatus(processResult.getStatus().getStatus());
         task.setResult(processResult.getResult());
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
-    }
-
-    protected static class TaskStatusChecker implements Runnable {
-        private final MapReduceTaskMaster taskMaster;
-
-        public TaskStatusChecker(MapReduceTaskMaster taskMaster) {
-            this.taskMaster = taskMaster;
-        }
-
-        @Override
-        public void run() {
-            long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
-
-            // Dispatch fail task.
-
-            boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
-            if (isComplete && !this.taskMaster.childTaskConsumer.isActive()) {
-                try {
-                    this.taskMaster.completeTask();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
-    protected static class TaskContainerChecker implements Runnable {
-        @Override
-        public void run() {
-
-        }
     }
 }

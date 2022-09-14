@@ -1,13 +1,11 @@
 package io.openjob.worker.context;
 
 import io.openjob.common.dto.JobInstanceDTO;
-import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.processor.TaskResult;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -44,7 +42,7 @@ public class JobContext {
     /**
      * Execute times for second job.
      */
-    private Long serialNum;
+    private Long circleId;
 
     /**
      * Sharding id.
@@ -70,7 +68,7 @@ public class JobContext {
      * Default
      */
     public JobContext() {
-        this.serialNum = 0L;
+        this.circleId = 0L;
         this.shardingNum = 0;
         this.failAttemptTimes = 0;
     }

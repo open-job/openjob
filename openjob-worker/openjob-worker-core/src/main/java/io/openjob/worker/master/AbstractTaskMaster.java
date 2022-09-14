@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Slf4j
-public abstract class BaseTaskMaster implements TaskMaster {
+public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected AtomicLong taskIdGenerator = new AtomicLong(0);
 
@@ -46,7 +46,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
      */
     protected TaskDAO taskDAO = TaskDAO.INSTANCE;
 
-    public BaseTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
+    public AbstractTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().addressString();
@@ -90,15 +90,20 @@ public abstract class BaseTaskMaster implements TaskMaster {
         for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
             taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
-
-        // Not MR to complete task.
-        if (!ExecuteTypeEnum.MAP_REDUCE.getType().equals(this.jobInstanceDTO.getExecuteType())) {
+        boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
+        if (isStandalone && this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
             try {
                 this.completeTask();
             } catch (InterruptedException exception) {
                 exception.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void stop() {
+        // Remove from task master pool.
+        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
     }
 
     protected Long acquireTaskId() {
@@ -121,6 +126,7 @@ public abstract class BaseTaskMaster implements TaskMaster {
         startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
         startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
         startReq.setMasterAkkaPath(this.localContainerPath);
+        startReq.setCircleId(circleIdGenerator.get());
         startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
