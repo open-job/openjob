@@ -2,10 +2,12 @@ package io.openjob.worker.actor;
 
 import akka.actor.ActorSelection;
 import akka.persistence.AbstractPersistentActorWithAtLeastOnceDelivery;
+import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
+import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -33,6 +35,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
     public Receive createReceive() {
         return receiveBuilder()
                 .match(ContainerBatchTaskStatusRequest.class, this::handleBatchTaskStatus)
+                .match(WorkerJobInstanceStatusRequest.class, this::handleJobInstanceStatus)
                 .match(Result.class, this::handleResult)
                 .build();
     }
@@ -42,6 +45,14 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         deliver(masterSelection, deliveryId -> {
             batchRequest.setDeliveryId(deliveryId);
             return batchRequest;
+        });
+    }
+
+    public void handleJobInstanceStatus(WorkerJobInstanceStatusRequest jobInstanceStatusReq) {
+        ActorSelection serverWorkerActor = WorkerUtil.getServerWorkerActor();
+        deliver(serverWorkerActor, deliveryId -> {
+            jobInstanceStatusReq.setDeliveryId(deliveryId);
+            return jobInstanceStatusReq;
         });
     }
 
