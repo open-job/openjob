@@ -10,7 +10,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-public class WorkerTaskLogRequest implements Serializable {
+public class WorkerJobInstanceLogRequest implements Serializable {
     private String workerAddress;
-    private List<WorkerTaskLogContentRequest> logContentList;
+    private List<WorkerJobInstanceLogMessageRequest> messageList;
 }
