@@ -15,12 +15,12 @@ public class ServerActorConstant {
     public static final String BEAN_ACTOR_WORKER = "workerActor";
     public static final String BEAN_ACTOR_WORKER_HEARTBEAT = "workerHeartbeatActor";
     public static final String BEAN_ACTOR_WORKER_INSTANCE_STATUS = "workerJobInstanceActor";
-    public static final String BEAN_ACTOR_WORKER_INSTANCE_LOG = "workerJobInstanceLogActor";
+    public static final String BEAN_ACTOR_WORKER_INSTANCE_TASK_LOG = "workerJobInstanceTaskLogActor";
 
     // Dispatcher name.
     public static final String DISPATCHER_CLUSTER = "akka.actor.cluster-dispatcher";
     public static final String DISPATCHER_WORKER = "akka.actor.worker-dispatcher";
     public static final String DISPATCHER_WORKER_HEARTBEAT = "akka.actor.worker-heartbeat-dispatcher";
     public static final String DISPATCHER_WORKER_INSTANCE_STATUS = "akka.actor.worker-instance-status-dispatcher";
-    public static final String DISPATCHER_WORKER_INSTANCE_LOG = "akka.actor.worker-instance-log-dispatcher";
+    public static final String DISPATCHER_WORKER_INSTANCE_LOG = "akka.actor.worker-instance-task-log-dispatcher";
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerJobInstanceLogActor extends BaseActor {
+public class WorkerJobInstanceTaskLogActor extends BaseActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()

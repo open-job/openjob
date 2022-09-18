@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-public class JobInstanceTaskService {
+public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
 
     @Autowired
-    public JobInstanceTaskService(JobInstanceTaskDAO jobInstanceTaskDAO) {
+    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
     }
 }

@@ -83,9 +83,9 @@ public class ClusterServer {
         // Worker job instance log actor.
         Props instanceLogProps = PropsFactoryManager.getFactory()
                 .get(actorSystem)
-                .create(ServerActorConstant.BEAN_ACTOR_WORKER_INSTANCE_LOG)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_INSTANCE_TASK_LOG)
                 .withRouter(new RoundRobinPool(2))
                 .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_INSTANCE_LOG);
-        actorSystem.actorOf(instanceLogProps, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_LOG);
+        actorSystem.actorOf(instanceLogProps, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG);
     }
 }
