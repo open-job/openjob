@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.actor;
 
 import io.openjob.common.actor.BaseActor;
-import io.openjob.common.request.WorkerJobInstanceLogRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskLogRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -18,11 +18,11 @@ public class WorkerJobInstanceTaskLogActor extends BaseActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(WorkerJobInstanceLogRequest.class, this::handleLog)
+                .match(WorkerJobInstanceTaskLogRequest.class, this::handleLog)
                 .build();
     }
 
-    public void handleLog(WorkerJobInstanceLogRequest logRequest) {
+    public void handleLog(WorkerJobInstanceTaskLogRequest logRequest) {
 
     }
 }

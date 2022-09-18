@@ -3,7 +3,6 @@ package io.openjob.common.request;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -11,6 +10,10 @@ import java.util.List;
  */
 @Data
 public class WorkerJobInstanceLogRequest implements Serializable {
-    private String workerAddress;
-    private List<WorkerJobInstanceLogMessageRequest> messageList;
+    private Long jobId;
+    private Long jobInstanceId;
+    private Long deliveryId;
+    private Integer status;
+    private String message;
+    private Integer time;
 }

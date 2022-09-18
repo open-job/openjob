@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class WorkerJobInstanceLogMessageRequest implements Serializable {
+public class WorkerJobInstanceTaskLogMessageRequest implements Serializable {
     private Long jobInstanceId;
     private String message;
 }
