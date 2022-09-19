@@ -126,6 +126,9 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
                     e.printStackTrace();
                 }
             }
+
+            // When task complete reset status.
+            this.taskMaster.running.set(false);
         }
     }
 
