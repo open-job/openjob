@@ -49,7 +49,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
     }
 
     public void handleJobInstanceStatus(WorkerJobInstanceStatusRequest jobInstanceStatusReq) {
-        ActorSelection serverWorkerActor = WorkerUtil.getServerWorkerActor();
+        ActorSelection serverWorkerActor = WorkerUtil.getServerWorkerJobInstanceActor();
         deliver(serverWorkerActor, deliveryId -> {
             jobInstanceStatusReq.setDeliveryId(deliveryId);
             return jobInstanceStatusReq;

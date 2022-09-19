@@ -17,7 +17,7 @@ public class AkkaConstant {
     public static final String SERVER_SYSTEM_NAME = "openjob-server";
     public static final String SERVER_ACTOR_WORKER = "worker";
     public static final String SERVER_ACTOR_WORKER_HEARTBEAT = "worker-heartbeat";
-    public static final String SERVER_ACTOR_WORKER_INSTANCE_STATUS = "worker-instance-status";
+    public static final String SERVER_ACTOR_WORKER_INSTANCE = "worker-instance-status";
     public static final String SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG = "worker-instance-task-log";
 
     /**

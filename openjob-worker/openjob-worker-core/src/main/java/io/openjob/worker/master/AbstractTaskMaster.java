@@ -19,6 +19,8 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.agrona.collections.CollectionUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -180,8 +182,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         while (true) {
             List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, page, size);
 
-            // Query complete.
-            if (queryTask.size() < size) {
+            // Empty query.
+            if (CollectionUtils.isEmpty(queryTask)) {
                 break;
             }
 
@@ -206,6 +208,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
             // Next page.
             page++;
+
+            // Query complete.
+            if (queryTask.size() < size) {
+                break;
+            }
         }
     }
 
