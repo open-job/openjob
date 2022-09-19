@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class DistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
+
+    protected AtomicBoolean running = new AtomicBoolean(false);
 
     public DistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -54,6 +57,11 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
 
         // Persist tasks.
         this.persistTasks(startRequests);
+
+        // Switch running status.
+        if (!this.running.get()) {
+            this.running.set(true);
+        }
 
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
@@ -101,6 +109,11 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            // When task is running to check status.
+            if (!this.taskMaster.running.get()) {
+                return;
+            }
+
             long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
 
             // Dispatch fail task.

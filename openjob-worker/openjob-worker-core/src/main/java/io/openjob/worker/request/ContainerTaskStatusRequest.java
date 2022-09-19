@@ -1,5 +1,6 @@
 package io.openjob.worker.request;
 
+import io.openjob.worker.util.TaskUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,6 +28,6 @@ public class ContainerTaskStatusRequest implements Serializable {
     }
 
     public String getTaskUniqueId() {
-        return String.format("%d_%d_%d_%d", this.jobId, this.jobInstanceId, this.taskId, this.circleId);
+        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
     }
 }

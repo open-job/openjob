@@ -43,6 +43,8 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
 
     @Override
     protected void init() {
+        super.init();
+
         childTaskQueue = new TaskQueue<>(this.jobInstanceDTO.getJobInstanceId(), 10240);
         childTaskConsumer = new MapReduceTaskConsumer<>(
                 this.jobInstanceDTO.getJobInstanceId(),

@@ -70,7 +70,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            this.stop();
+//            this.stop();
             return;
         }
 
@@ -92,6 +92,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Update by group
         for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
+            System.out.println("update=" + entry.getValue());
             taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
         boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
@@ -166,7 +167,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
-        return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
+        Integer integer = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
+        System.out.println("count=" + integer);
+        System.out.println(TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, 50L));
+        return integer == 0;
     }
 
     protected void doCompleteTask() {
