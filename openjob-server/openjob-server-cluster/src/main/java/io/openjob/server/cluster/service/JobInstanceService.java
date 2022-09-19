@@ -1,7 +1,9 @@
 package io.openjob.server.cluster.service;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.JobInstanceLog;
@@ -20,17 +22,24 @@ import java.util.List;
 @Service
 public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
+
     private final JobInstanceLogDAO jobInstanceLogDAO;
 
+    private final JobInstanceDAO jobInstanceDAO;
+
     @Autowired
-    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO, JobInstanceLogDAO jobInstanceLogDAO) {
+    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceDAO jobInstanceDAO) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
+        this.jobInstanceDAO = jobInstanceDAO;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
-        // Update job instance status.
+        // First page to update job instance status.
+        if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
+            this.jobInstanceDAO.updateStatusAndCompleteTimeById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
+        }
 
         // Save job instance task
         List<JobInstanceTask> taskList = new ArrayList<>();
@@ -55,6 +64,7 @@ public class JobInstanceService {
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Update job instance status.
+        this.jobInstanceDAO.updateStatusAndCompleteTimeById(logRequest.getJobInstanceId(), logRequest.getStatus());
 
         JobInstanceLog jobInstanceLog = new JobInstanceLog();
         jobInstanceLog.setJobId(logRequest.getJobId());

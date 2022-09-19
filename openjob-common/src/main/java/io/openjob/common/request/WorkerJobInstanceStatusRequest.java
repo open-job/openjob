@@ -43,6 +43,11 @@ public class WorkerJobInstanceStatusRequest implements Serializable {
     private Long deliveryId;
 
     /**
+     * Current page.
+     */
+    private Long page;
+
+    /**
      * Job instance task list.
      * Aggregation many circle task, if second delay task.
      */

@@ -2,12 +2,14 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
+import io.openjob.common.util.DateUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
@@ -174,8 +176,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
         long size = 100;
+        long page = CommonConstant.FIRST_PAGE;
         while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, size);
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, page, size);
 
             // Query complete.
             if (queryTask.size() < size) {
@@ -193,12 +196,16 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
             instanceRequest.setStatus(instanceStatus);
             instanceRequest.setTaskRequestList(taskRequestList);
+            instanceRequest.setPage(page);
 
             OpenjobWorker.atLeastOnceDelivery(instanceRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());
             taskDAO.batchDeleteByTaskIds(deleteTaskIds);
+
+            // Next page.
+            page++;
         }
     }
 
