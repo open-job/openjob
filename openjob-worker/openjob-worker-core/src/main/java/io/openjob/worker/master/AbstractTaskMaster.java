@@ -165,7 +165,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
         Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
-        System.out.println("count=" + nonFinishCount);
         return nonFinishCount <= 0;
     }
 
