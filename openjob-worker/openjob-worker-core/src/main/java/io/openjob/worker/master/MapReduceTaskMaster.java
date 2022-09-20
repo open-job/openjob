@@ -104,7 +104,7 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
         this.childTaskConsumer.stop();
 
         // Stop scheduled thread poll
-        this.scheduledService.shutdownNow();
+        this.scheduledService.shutdown();
 
         // Stop master
         super.stop();

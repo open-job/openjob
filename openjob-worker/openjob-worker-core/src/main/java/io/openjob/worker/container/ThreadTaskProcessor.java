@@ -72,7 +72,6 @@ public class ThreadTaskProcessor implements Runnable {
     }
 
     private void reportTaskStatus(ProcessResult result, String workerAddress) throws InterruptedException {
-        System.out.println("report=" + this.jobContext.getTaskId() + "status=" + result.getStatus().getStatus());
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
         request.setJobInstanceId(this.jobContext.getJobInstanceId());

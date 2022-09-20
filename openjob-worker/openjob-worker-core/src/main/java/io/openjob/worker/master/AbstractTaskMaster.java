@@ -90,7 +90,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Update by group
         for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
-            System.out.println("update=" + entry.getValue());
             taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
         }
         boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
@@ -166,6 +165,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
         Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
+        System.out.println("count=" + nonFinishCount);
         return nonFinishCount <= 0;
     }
 

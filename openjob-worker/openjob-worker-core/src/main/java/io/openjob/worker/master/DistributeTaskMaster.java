@@ -126,10 +126,10 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
 
-            // When task complete reset status.
-            this.taskMaster.running.set(false);
+                // When task complete reset status.
+                this.taskMaster.running.set(false);
+            }
         }
     }
 
