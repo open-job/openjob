@@ -220,16 +220,14 @@ public class H2MemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public List<Task> findListByPageSize(Long instanceId, Long circleId, Long page, Long size) throws SQLException {
+    public List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException {
         ResultSet rs = null;
-        long offset = (page - 1) * size;
-        String sql = "SELECT * FROM task WHERE instance_id=? AND circle_id=? ORDER BY task_id LIMIT ?,?";
+        String sql = "SELECT * FROM task WHERE instance_id=? AND circle_id=? LIMIT ?";
         try (Connection connection = this.connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
             ps.setLong(2, circleId);
-            ps.setLong(3, offset);
-            ps.setLong(4, size);
+            ps.setLong(3, size);
             rs = ps.executeQuery();
 
             List<Task> taskList = new ArrayList<>();

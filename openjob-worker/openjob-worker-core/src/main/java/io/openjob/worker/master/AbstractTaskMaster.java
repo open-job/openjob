@@ -176,10 +176,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
         int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
-        long size = 100;
+        long size = 50;
         long page = CommonConstant.FIRST_PAGE;
         while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, page, size);
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
 
             // Empty query.
             if (CollectionUtils.isEmpty(queryTask)) {

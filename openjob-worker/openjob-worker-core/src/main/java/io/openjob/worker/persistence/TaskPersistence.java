@@ -63,9 +63,8 @@ public interface TaskPersistence {
      *
      * @param instanceId instance id
      * @param circleId   circle id
-     * @param page       page from 1.
      * @param size       size
      * @return List
      */
-    List<Task> findListByPageSize(Long instanceId, Long circleId, Long page, Long size) throws SQLException;
+    List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException;
 }
