@@ -56,6 +56,7 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
         ActorSelection workerSelection = actorContext.actorSelection(workerPath);
 
         // Persist tasks.
+        // Notice h2 write delay.
         this.persistTasks(startRequests);
 
         // Switch running status.

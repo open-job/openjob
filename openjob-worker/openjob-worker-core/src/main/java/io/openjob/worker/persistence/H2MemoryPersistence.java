@@ -202,6 +202,7 @@ public class H2MemoryPersistence implements TaskPersistence {
         String statusStr = StringUtils.join(statusList, ",");
         String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND circle_id=? AND status IN (%s)", statusStr);
 
+        System.out.println(sql + " id=" + instanceId + " cid=" + circleId);
         ResultSet rs = null;
         try (Connection connection = this.connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {

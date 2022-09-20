@@ -50,6 +50,17 @@ public enum TaskStatusEnum {
             RUNNING.status
     );
 
+    /**
+     * All status.
+     */
+    public final static List<Integer> ALL = Arrays.asList(
+            UNKNOWN.status,
+            INIT.status,
+            RUNNING.status,
+            SUCCESS.status,
+            FAILED.status
+    );
+
     public static TaskStatusEnum parse(Integer status) {
         return EnumSet.allOf(TaskStatusEnum.class).stream()
                 .filter(s -> s.getStatus().equals(status))

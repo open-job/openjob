@@ -9,7 +9,6 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
-import io.openjob.common.util.DateUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
@@ -19,7 +18,6 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.agrona.collections.CollectionUtil;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -70,7 +68,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-//            this.stop();
+            this.stop();
             return;
         }
 
@@ -167,10 +165,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
-        Integer integer = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
-        System.out.println("count=" + integer);
-        System.out.println(TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, 50L));
-        return integer == 0;
+        Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
+        return nonFinishCount <= 0;
     }
 
     protected void doCompleteTask() {

@@ -25,7 +25,7 @@ public class MapReduceTaskConsumer<T> extends BaseConsumer<T> {
 
     @Override
     public void consume(Long jobInstanceId, List<T> tasks) {
-        this.consumerExecutor.submit(new MapReduceTaskRunnable(jobInstanceId, tasks));
+        this.consumerExecutor.submit(new MapReduceTaskRunnable(this, jobInstanceId, tasks));
     }
 
     @Data
@@ -33,15 +33,19 @@ public class MapReduceTaskConsumer<T> extends BaseConsumer<T> {
         private Long jobInstanceId;
         private List<T> taskList;
 
-        public MapReduceTaskRunnable(Long jobInstanceId, List<T> taskList) {
+        private MapReduceTaskConsumer<T> consumer;
+
+        public MapReduceTaskRunnable(MapReduceTaskConsumer<T> consumer, Long jobInstanceId, List<T> taskList) {
             this.jobInstanceId = jobInstanceId;
             this.taskList = taskList;
+            this.consumer = consumer;
         }
 
         @Override
         public void run() {
             MapReduceTaskMaster taskMaster = (MapReduceTaskMaster) TaskMasterPool.get(this.jobInstanceId);
             taskMaster.dispatchTasks((List<MasterStartContainerRequest>) this.taskList);
+            this.consumer.activePollNum.decrementAndGet();
         }
     }
 }
