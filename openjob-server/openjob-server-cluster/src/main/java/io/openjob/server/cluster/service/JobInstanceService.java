@@ -8,18 +8,22 @@ import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.JobInstanceLog;
 import io.openjob.server.repository.entity.JobInstanceTask;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Service
+@Log4j2
 public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
 
@@ -58,7 +62,12 @@ public class JobInstanceService {
             jobInstanceTask.setUpdateTime(t.getUpdateTime());
             taskList.add(jobInstanceTask);
         });
-        this.jobInstanceTaskDAO.batchSave(taskList);
+
+        try {
+            this.jobInstanceTaskDAO.batchSave(taskList);
+        } catch (DataIntegrityViolationException exception) {
+            log.warn("Data has been saved! {}", taskList.stream().map(JobInstanceTask::getTaskId).collect(Collectors.toList()));
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
