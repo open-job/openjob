@@ -92,6 +92,7 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
 
     @Override
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
+        // Must first to check consumer active.
         return !this.childTaskConsumer.isActive() && super.isTaskComplete(instanceId, circleId);
     }
 
