@@ -11,4 +11,6 @@ public interface TaskContainer {
     void execute(JobContext jobContext);
 
     void stop();
+
+    void destroy();
 }

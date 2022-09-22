@@ -39,9 +39,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected AtomicLong circleIdGenerator = new AtomicLong(0);
 
     protected JobInstanceDTO jobInstanceDTO;
+
     protected ActorContext actorContext;
+
     protected String localWorkerAddress;
+
     protected String localContainerPath;
+
+    protected List<String> workerAddresses;
 
     /**
      * Task dao.
@@ -53,6 +58,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().addressString();
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
+        this.workerAddresses = jobInstanceDTO.getWorkerAddresses();
 
         this.init();
     }
@@ -176,7 +182,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
         int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
-        long size = 50;
+        long size = 100;
         long page = CommonConstant.FIRST_PAGE;
         while (true) {
             List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
@@ -207,6 +213,12 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
             // Next page.
             page++;
+
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException e) {
+                log.error("DoCompleteTask sleep error!", e);
+            }
 
             // Query complete.
             if (queryTask.size() < size) {

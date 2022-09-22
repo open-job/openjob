@@ -51,7 +51,7 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
     }
 
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
-        String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
+        String workerAddress = this.workerAddresses.get(0);
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
         ActorSelection workerSelection = actorContext.actorSelection(workerPath);
 
