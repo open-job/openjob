@@ -47,8 +47,7 @@ public class BroadcastTaskMaster extends DistributeTaskMaster {
             e.printStackTrace();
         }
 
-        List<String> workerAddresses = this.jobInstanceDTO.getWorkerAddresses();
-        workerAddresses.forEach(workerAddress -> {
+        this.workerAddresses.forEach(workerAddress -> {
             String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
             ActorSelection workerSelection = actorContext.actorSelection(workerPath);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();

@@ -79,9 +79,9 @@ public class TaskDAO {
         }
     }
 
-    public List<Task> getList(Long instanceId, Long circleId, Long page, Long size) {
+    public List<Task> getList(Long instanceId, Long circleId, Long size) {
         try {
-            return taskPersistence.findListByPageSize(instanceId, circleId, page, size);
+            return taskPersistence.findListByPageSize(instanceId, circleId, size);
         } catch (SQLException e) {
             log.error("Task getList failed!", e);
             throw new RuntimeException(e);

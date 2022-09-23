@@ -14,4 +14,22 @@ public interface JobInstanceDAO {
      * @return Insert id.
      */
     Long save(JobInstance jobInstance);
+
+    /**
+     * Update
+     *
+     * @param id           id
+     * @param status       status
+     * @return Integer
+     */
+    Integer updateStatusAndCompleteTimeById(Long id, Integer status);
+
+    /**
+     * Update
+     *
+     * @param id             id
+     * @param lastReportTime lastReportTime
+     * @return Integer
+     */
+    Integer updateLastReportTimeById(Long id, Integer lastReportTime);
 }

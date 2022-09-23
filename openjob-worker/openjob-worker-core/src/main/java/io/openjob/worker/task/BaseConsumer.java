@@ -101,8 +101,6 @@ public abstract class BaseConsumer<T> {
         if (!tasks.isEmpty()) {
             this.activePollNum.incrementAndGet();
             this.consume(id, tasks);
-            this.activePollNum.decrementAndGet();
-
         }
         return tasks;
     }

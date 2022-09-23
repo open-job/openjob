@@ -18,6 +18,11 @@ public class WorkerUtil {
         return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER));
     }
 
+    public static ActorSelection getServerWorkerJobInstanceActor() {
+        String address = getServerAddress();
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE));
+    }
+
     public static ActorSelection getServerHeartbeatActor() {
         String address = getServerAddress();
         return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));
@@ -36,7 +41,7 @@ public class WorkerUtil {
         return String.format("%s:%d", OpenjobConfig.getString(WorkerConstant.SERVER_HOST), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 
-    public static String getWorkerMasterActorPath(String address){
+    public static String getWorkerMasterActorPath(String address) {
         return getWorkerActorPath(address, AkkaConstant.WORKER_PATH_TASK_MASTER);
     }
 

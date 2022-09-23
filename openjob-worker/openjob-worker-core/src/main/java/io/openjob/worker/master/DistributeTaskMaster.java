@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class DistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
+
+    protected AtomicBoolean running = new AtomicBoolean(false);
 
     public DistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -48,12 +51,18 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
     }
 
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
-        String workerAddress = this.jobInstanceDTO.getWorkerAddresses().get(0);
+        String workerAddress = this.workerAddresses.get(0);
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
         ActorSelection workerSelection = actorContext.actorSelection(workerPath);
 
         // Persist tasks.
+        // Notice h2 write delay.
         this.persistTasks(startRequests);
+
+        // Switch running status.
+        if (!this.running.get()) {
+            this.running.set(true);
+        }
 
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
@@ -101,6 +110,11 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            // When task is running to check status.
+            if (!this.taskMaster.running.get()) {
+                return;
+            }
+
             long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
 
             // Dispatch fail task.
@@ -112,6 +126,9 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                // When task complete reset status.
+                this.taskMaster.running.set(false);
             }
         }
     }

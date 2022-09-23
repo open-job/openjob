@@ -27,14 +27,10 @@ public class ThreadTaskProcessor implements Runnable {
 
     @Override
     public void run() {
-        try {
-            this.start();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        this.start();
     }
 
-    public void start() throws InterruptedException {
+    public void start() {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);
 
@@ -71,7 +67,7 @@ public class ThreadTaskProcessor implements Runnable {
         }
     }
 
-    private void reportTaskStatus(ProcessResult result, String workerAddress) throws InterruptedException {
+    private void reportTaskStatus(ProcessResult result, String workerAddress) {
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
         request.setJobInstanceId(this.jobContext.getJobInstanceId());

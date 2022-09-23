@@ -15,6 +15,14 @@ public enum StatusEnum {
      */
     SUCCESS(200, "ok"),
     ;
-    private Integer status;
-    private String message;
+
+    /**
+     * Status
+     */
+    private final Integer status;
+
+    /**
+     * Message
+     */
+    private final String message;
 }

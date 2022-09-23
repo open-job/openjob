@@ -20,7 +20,7 @@ public class H2ConnectionPool {
      * constructor.
      */
     public H2ConnectionPool() {
-        dataSource.setJdbcUrl("jdbc:h2:mem:openjob;AUTO_RECONNECT=TRUE;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
+        dataSource.setJdbcUrl("jdbc:h2:mem:openjob;AUTO_RECONNECT=TRUE;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;WRITE_DELAY=0;");
         dataSource.setUsername("root");
         dataSource.setPassword("123456");
         dataSource.setMinimumIdle(8);

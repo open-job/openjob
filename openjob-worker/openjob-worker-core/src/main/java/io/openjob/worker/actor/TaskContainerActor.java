@@ -59,11 +59,21 @@ public class TaskContainerActor extends BaseActor {
     }
 
     public void handleStopContainer(MasterStopContainerRequest stopReq) {
+        TaskContainer taskContainer = TaskContainerPool.get(stopReq.getJobInstanceId());
+        taskContainer.stop();
 
+        WorkerResponse workerResponse = new WorkerResponse();
+        workerResponse.setDeliveryId(stopReq.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
     }
 
     public void handleDestroyContainer(MasterDestroyContainerRequest destroyReq) {
+        TaskContainer taskContainer = TaskContainerPool.get(destroyReq.getJobInstanceId());
+        taskContainer.destroy();
 
+        WorkerResponse workerResponse = new WorkerResponse();
+        workerResponse.setDeliveryId(destroyReq.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
     }
 
     private void startContainer(MasterStartContainerRequest startReq) {

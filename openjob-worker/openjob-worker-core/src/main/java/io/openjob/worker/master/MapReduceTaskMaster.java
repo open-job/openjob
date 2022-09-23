@@ -43,6 +43,8 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
 
     @Override
     protected void init() {
+        super.init();
+
         childTaskQueue = new TaskQueue<>(this.jobInstanceDTO.getJobInstanceId(), 10240);
         childTaskConsumer = new MapReduceTaskConsumer<>(
                 this.jobInstanceDTO.getJobInstanceId(),
@@ -90,7 +92,8 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
 
     @Override
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
-        return super.isTaskComplete(instanceId, circleId) && !this.childTaskConsumer.isActive();
+        // Must first to check consumer active.
+        return !this.childTaskConsumer.isActive() && super.isTaskComplete(instanceId, circleId);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
         this.childTaskConsumer.stop();
 
         // Stop scheduled thread poll
-        this.scheduledService.shutdownNow();
+        this.scheduledService.shutdown();
 
         // Stop master
         super.stop();

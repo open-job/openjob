@@ -2,6 +2,7 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
@@ -17,6 +18,7 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,9 +39,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected AtomicLong circleIdGenerator = new AtomicLong(0);
 
     protected JobInstanceDTO jobInstanceDTO;
+
     protected ActorContext actorContext;
+
     protected String localWorkerAddress;
+
     protected String localContainerPath;
+
+    protected List<String> workerAddresses;
 
     /**
      * Task dao.
@@ -51,6 +58,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().addressString();
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
+        this.workerAddresses = jobInstanceDTO.getWorkerAddresses();
 
         this.init();
     }
@@ -162,7 +170,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
-        return taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST) == 0;
+        Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
+        return nonFinishCount <= 0;
     }
 
     protected void doCompleteTask() {
@@ -174,11 +183,12 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
         long size = 100;
+        long page = CommonConstant.FIRST_PAGE;
         while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, 1L, size);
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
 
-            // Query complete.
-            if (queryTask.size() < size) {
+            // Empty query.
+            if (CollectionUtils.isEmpty(queryTask)) {
                 break;
             }
 
@@ -193,12 +203,27 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
             instanceRequest.setStatus(instanceStatus);
             instanceRequest.setTaskRequestList(taskRequestList);
+            instanceRequest.setPage(page);
 
             OpenjobWorker.atLeastOnceDelivery(instanceRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());
             taskDAO.batchDeleteByTaskIds(deleteTaskIds);
+
+            // Next page.
+            page++;
+
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException e) {
+                log.error("DoCompleteTask sleep error!", e);
+            }
+
+            // Query complete.
+            if (queryTask.size() < size) {
+                break;
+            }
         }
     }
 

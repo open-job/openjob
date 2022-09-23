@@ -133,13 +133,12 @@ public class TaskDAOTest {
         List<Task> getList = new ArrayList<>();
 
         long pageSize = 23;
-        long page = 1;
-
         List<Task> queryList;
         do {
-            queryList = TaskDAO.INSTANCE.getList(instanceId, circleId, page, pageSize);
+            queryList = TaskDAO.INSTANCE.getList(instanceId, circleId, pageSize);
             getList.addAll(queryList);
-            page++;
+
+            TaskDAO.INSTANCE.batchDeleteByTaskIds(queryList.stream().map(Task::getTaskId).collect(Collectors.toList()));
         } while (!queryList.isEmpty());
 
         Assertions.assertEquals(getList.size(), testSize);

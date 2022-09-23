@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.JobInstanceRepository;
@@ -22,5 +23,16 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public Long save(JobInstance jobInstance) {
         return this.jobInstanceRepository.save(jobInstance).getId();
+    }
+
+    @Override
+    public Integer updateStatusAndCompleteTimeById(Long id, Integer status) {
+        int now = DateUtil.now();
+        return this.jobInstanceRepository.update(id, status, now, now);
+    }
+
+    @Override
+    public Integer updateLastReportTimeById(Long id, Integer lastReportTime) {
+        return this.jobInstanceRepository.update(id, lastReportTime, DateUtil.now());
     }
 }

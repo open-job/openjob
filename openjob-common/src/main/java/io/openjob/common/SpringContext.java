@@ -1,5 +1,6 @@
 package io.openjob.common;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,7 +13,7 @@ public class SpringContext implements ApplicationContextAware {
     private static ApplicationContext applicationContext = null;
 
     @Override
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
         SpringContext.applicationContext = context;
     }
 

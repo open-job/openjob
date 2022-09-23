@@ -2,6 +2,7 @@ package io.openjob.worker.processor;
 
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.KryoUtil;
@@ -52,6 +53,7 @@ public interface MapProcessor extends BaseProcessor {
 
             try {
                 WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);
+                result.setStatus(TaskStatusEnum.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
