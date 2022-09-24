@@ -22,7 +22,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 @Configuration
-@EnableConfigurationProperties(ServerProperties.class)
+@EnableConfigurationProperties(value = {AkkaProperties.class})
 public class ServerAutoConfiguration {
 
     /**

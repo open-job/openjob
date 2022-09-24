@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>openjob-server-common</module>
+        <module>openjob-server-log</module>
         <module>openjob-server-repository</module>
         <module>openjob-server-cluster</module>
         <module>openjob-server-admin</module>
