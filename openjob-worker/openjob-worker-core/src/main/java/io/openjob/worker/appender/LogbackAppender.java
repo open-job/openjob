@@ -7,21 +7,29 @@ import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
-import io.openjob.worker.context.JobContext;
+import io.openjob.worker.constant.LogConstant;
 import io.openjob.worker.dto.LogContentDTO;
-import io.openjob.worker.util.ThreadLocalUtil;
-
-import java.util.Map;
+import io.openjob.worker.util.LogUtil;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
+    protected String timeZone = LogConstant.DEFAULT_TIME_ZONE;
+    protected String timeFormat = LogConstant.DEFAULT_TIME_FORMAT;
+
     protected Encoder<E> encoder;
+
+    protected DateTimeFormatter formatter;
 
     @Override
     public void start() {
+        this.formatter = DateTimeFormat.forPattern(this.timeFormat).withZone(DateTimeZone.forID(this.timeZone));
         super.start();
     }
 
@@ -35,17 +43,11 @@ public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
         ((LoggingEvent) eventObject).prepareForDeferredProcessing();
 
         LoggingEvent event = (LoggingEvent) eventObject;
-        JobContext context = ThreadLocalUtil.getJobContext();
-
-        LogContentDTO logContent = new LogContentDTO();
-
-        logContent.setUniqueId(String.format("%d_%d_%d", context.getJobInstanceId(), context.getCircleId(), context.getTaskId()));
-        logContent.setJobInstanceId(context.getJobInstanceId());
-        logContent.setTaskId(context.getTaskId());
-        logContent.setCircleId(context.getCircleId());
+        LogContentDTO logContent = LogUtil.getLogContent();
 
         // Timezone
-        logContent.addTimeField(String.valueOf(event.getTimeStamp()));
+        DateTime dateTime = new DateTime(event.getTimeStamp());
+        logContent.addTimeField(dateTime.toString(formatter));
         logContent.addLevelField(event.getLevel().levelStr);
         logContent.addThreadField(event.getThreadName());
         logContent.addMessageField(event.getFormattedMessage());
@@ -69,12 +71,27 @@ public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
         }
 
         // Merge property map
-        Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
-        mdcPropertyMap.putAll(event.getLoggerContextVO().getPropertyMap());
-
-        mdcPropertyMap.forEach(logContent::addField);
+        event.getMDCPropertyMap().forEach(logContent::addField);
 
         LogAppender.INSTANCE.append(logContent);
+    }
+
+    /**
+     * Inject timezone
+     *
+     * @param timeZone timeZone
+     */
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    /**
+     * Inject timeFormat
+     *
+     * @param timeFormat timeFormat
+     */
+    public void setTimeFormat(String timeFormat) {
+        this.timeFormat = timeFormat;
     }
 
     private String formatThrowable(StackTraceElementProxy[] stackTraceElementProxyArray) {
