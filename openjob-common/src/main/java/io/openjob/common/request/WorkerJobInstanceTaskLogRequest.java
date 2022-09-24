@@ -11,6 +11,9 @@ import java.util.List;
  */
 @Data
 public class WorkerJobInstanceTaskLogRequest implements Serializable {
+    private Long jobInstanceId;
+    private Long circleId;
+    private Long taskId;
     private String workerAddress;
-    private List<WorkerJobInstanceTaskLogMessageRequest> messageList;
+    private List<WorkerJobInstanceTaskLogFieldRequest> fieldList;
 }

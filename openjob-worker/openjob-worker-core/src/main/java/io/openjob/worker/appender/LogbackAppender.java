@@ -7,8 +7,8 @@ import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
-import io.openjob.common.request.WorkerJobInstanceTaskLogMessageRequest;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dto.LogContentDTO;
 import io.openjob.worker.util.ThreadLocalUtil;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class OpenjobLogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
+public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
     protected Encoder<E> encoder;
 
     @Override
@@ -37,42 +37,44 @@ public class OpenjobLogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
         LoggingEvent event = (LoggingEvent) eventObject;
         JobContext context = ThreadLocalUtil.getJobContext();
 
-        WorkerJobInstanceTaskLogMessageRequest messageRequest = new WorkerJobInstanceTaskLogMessageRequest();
-        messageRequest.setUniqueId(String.format("%d_%d_%d", context.getJobInstanceId(), context.getCircleId(), context.getTaskId()));
-        messageRequest.setJobInstanceId(context.getJobInstanceId());
-        messageRequest.setTaskId(context.getTaskId());
-        messageRequest.setCircleId(context.getCircleId());
+        LogContentDTO logContent = new LogContentDTO();
+
+        logContent.setUniqueId(String.format("%d_%d_%d", context.getJobInstanceId(), context.getCircleId(), context.getTaskId()));
+        logContent.setJobInstanceId(context.getJobInstanceId());
+        logContent.setTaskId(context.getTaskId());
+        logContent.setCircleId(context.getCircleId());
 
         // Timezone
-        messageRequest.setTime(String.valueOf(event.getTimeStamp()));
-        messageRequest.setLevel(event.getLevel().levelStr);
-        messageRequest.setThread(event.getThreadName());
-        messageRequest.setMessage(event.getFormattedMessage());
+        logContent.addTimeField(String.valueOf(event.getTimeStamp()));
+        logContent.addLevelField(event.getLevel().levelStr);
+        logContent.addThreadField(event.getThreadName());
+        logContent.addMessageField(event.getFormattedMessage());
 
         StackTraceElement[] caller = event.getCallerData();
         if (caller != null && caller.length > 0) {
-            messageRequest.setLocation(caller[0].toString());
+            logContent.addLocationField(caller[0].toString());
         }
 
         IThrowableProxy iThrowableProxy = event.getThrowableProxy();
         if (iThrowableProxy != null) {
             String throwable = getExceptionInfo(iThrowableProxy);
             throwable += formatThrowable(event.getThrowableProxy().getStackTraceElementProxyArray());
-            messageRequest.setThrowable(throwable);
+            logContent.addThrowableField(throwable);
         }
 
         if (this.encoder != null) {
-            messageRequest.setLog(new String(this.encoder.encode(eventObject)));
+            logContent.addLogField(new String(this.encoder.encode(eventObject)));
         } else {
-            messageRequest.setLog(event.getMessage());
+            logContent.addLogField(event.getMessage());
         }
 
         // Merge property map
         Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
         mdcPropertyMap.putAll(event.getLoggerContextVO().getPropertyMap());
-        messageRequest.setPropertyMap(mdcPropertyMap);
 
-        System.out.println(messageRequest);
+        mdcPropertyMap.forEach(logContent::addField);
+
+        LogAppender.INSTANCE.append(logContent);
     }
 
     private String formatThrowable(StackTraceElementProxy[] stackTraceElementProxyArray) {
