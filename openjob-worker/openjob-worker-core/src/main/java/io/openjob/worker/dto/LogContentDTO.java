@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class LogContentDTO {
     private String uniqueId;
+    private Long jobId;
     private Long jobInstanceId;
     private Long circleId;
     private Long taskId;
@@ -50,5 +51,30 @@ public class LogContentDTO {
 
     public void addLogField(String log) {
         this.addField(LogFieldConstant.LOG, log);
+    }
+
+    public void addJobIdField(Long jobId) {
+        this.jobId = jobId;
+        this.addField(LogFieldConstant.JOB_ID, String.valueOf(jobId));
+    }
+
+    public void addJobInstanceIdField(Long jobInstanceId) {
+        this.jobInstanceId = jobInstanceId;
+        this.addField(LogFieldConstant.JOB_INSTANCE_ID, String.valueOf(jobInstanceId));
+    }
+
+    public void addTaskIdField(Long taskId) {
+        this.taskId = taskId;
+        this.addField(LogFieldConstant.TASK_ID, String.valueOf(taskId));
+    }
+
+    public void addCircleIdField(Long circleId) {
+        this.circleId = circleId;
+        this.addField(LogFieldConstant.CIRCLE_ID, String.valueOf(circleId));
+    }
+
+    public void addWorkerAddressField(String workerAddress) {
+        this.workerAddress = workerAddress;
+        this.addField(LogFieldConstant.WORKER_ADDRESS, workerAddress);
     }
 }

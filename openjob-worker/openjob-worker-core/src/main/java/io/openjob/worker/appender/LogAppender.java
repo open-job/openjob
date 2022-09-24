@@ -28,6 +28,8 @@ public class LogAppender {
                 "Openjob-log-consumer-poll",
                 logQueue
         );
+
+        logTaskConsumer.start();
     }
 
     public void append(LogContentDTO logContentDTO) {

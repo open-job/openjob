@@ -12,4 +12,14 @@ public class LogFieldConstant {
     public static final String LOCATION = "location";
     public static final String THROWABLE = "throwable";
     public static final String LOG = "log";
+
+    public static final String JOB_ID = "jobId";
+
+    public static final String JOB_INSTANCE_ID = "jobInstanceId";
+
+    public static final String TASK_ID = "taskId";
+
+    public static final String CIRCLE_ID = "circleId";
+
+    public static final String WORKER_ADDRESS = "workerAddress";
 }
