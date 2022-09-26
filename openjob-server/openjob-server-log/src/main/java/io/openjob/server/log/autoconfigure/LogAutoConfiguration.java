@@ -1,6 +1,7 @@
 package io.openjob.server.log.autoconfigure;
 
 import io.openjob.server.log.client.H2Client;
+import io.openjob.server.log.client.MysqlClient;
 import io.openjob.server.log.constant.LogStorageConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,5 +27,11 @@ public class LogAutoConfiguration {
     @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.H2)
     public H2Client h2Client() {
         return new H2Client(this.logProperties.getStorage().getH2());
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.MYSQL)
+    public MysqlClient mysqlClient() {
+        return new MysqlClient(this.logProperties.getStorage().getMysql());
     }
 }

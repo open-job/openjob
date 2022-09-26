@@ -12,6 +12,7 @@ public class H2Client extends JdbcHikariClient {
     public H2Client(LogProperties.H2Properties h2Properties) {
         this.h2Properties = h2Properties;
 
+        // Init jdbc client
         this.init(h2Properties.getProperties());
     }
 }
