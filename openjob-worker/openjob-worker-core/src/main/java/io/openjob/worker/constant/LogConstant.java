@@ -7,5 +7,5 @@ package io.openjob.worker.constant;
 public class LogConstant {
     public static final String DEFAULT_TIME_ZONE = "UTC";
 
-    public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 }
