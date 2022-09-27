@@ -1,15 +1,13 @@
 package io.openjob.server.log.dao.impl;
 
-import io.openjob.server.log.client.JdbcHikariClient;
-import org.springframework.stereotype.Component;
+import io.openjob.server.log.client.MysqlClient;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Component
 public class MysqlLogDAOImpl extends JdbcDAOImpl {
-    public MysqlLogDAOImpl(JdbcHikariClient jdbcHikariClient) {
-        super(jdbcHikariClient);
+    public MysqlLogDAOImpl(MysqlClient mysqlClient) {
+        super(mysqlClient);
     }
 }

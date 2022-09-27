@@ -1,15 +1,14 @@
 package io.openjob.server.log.dao.impl;
 
-import io.openjob.server.log.client.JdbcHikariClient;
-import org.springframework.stereotype.Component;
+import io.openjob.server.log.client.H2Client;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Component
 public class H2LogDAOImpl extends JdbcDAOImpl {
-    public H2LogDAOImpl(JdbcHikariClient jdbcHikariClient) {
-        super(jdbcHikariClient);
+
+    public H2LogDAOImpl(H2Client h2Client) {
+        super(h2Client);
     }
 }

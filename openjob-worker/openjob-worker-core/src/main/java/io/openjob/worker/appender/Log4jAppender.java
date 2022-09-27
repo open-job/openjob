@@ -38,6 +38,7 @@ public class Log4jAppender extends AppenderSkeleton {
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeStamp());
         logContent.addTimeField(dateTime.toString(formatter));
+        logContent.addTimeStamp(event.getTimeStamp());
         logContent.addLevelField(event.getLevel().toString());
         logContent.addThreadField(event.getThreadName());
         String message = Objects.nonNull(event.getMessage()) ? event.getMessage().toString() : "";

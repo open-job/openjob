@@ -43,6 +43,7 @@ public class Log4j2Appender extends AbstractAppender {
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeMillis());
         logContent.addTimeField(dateTime.toString(formatter));
+        logContent.addTimeStamp(event.getTimeMillis());
         logContent.addLevelField(event.getLevel().name());
         logContent.addThreadField(event.getThreadName());
 

@@ -6,6 +6,8 @@ package io.openjob.common.constant;
  */
 public class LogFieldConstant {
     public static final String TIME = "time";
+
+    public static final String TIME_STAMP = "timeStamp";
     public static final String THREAD = "thread";
     public static final String MESSAGE = "message";
     public static final String LEVEL = "level";

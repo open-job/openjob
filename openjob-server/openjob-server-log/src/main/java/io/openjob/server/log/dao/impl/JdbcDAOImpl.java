@@ -1,5 +1,6 @@
 package io.openjob.server.log.dao.impl;
 
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.server.log.client.JdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.entity.JobInstanceTaskLog;
@@ -47,7 +48,7 @@ public class JdbcDAOImpl implements LogDAO {
                 ps.setLong(4, instanceTaskLog.getTaskId());
                 ps.setString(5, instanceTaskLog.getTaskUniqueId());
                 ps.setString(6, instanceTaskLog.getWorkerAddress());
-                ps.setString(7, instanceTaskLog.getContent());
+                ps.setString(7, this.getContent(instanceTaskLog.getFields()));
                 ps.setLong(8, instanceTaskLog.getTime());
                 ps.addBatch();
             }
@@ -83,6 +84,28 @@ public class JdbcDAOImpl implements LogDAO {
                 rs.close();
             }
         }
+    }
+
+    private String getContent(List<WorkerJobInstanceTaskLogFieldRequest> fields) {
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+        for (WorkerJobInstanceTaskLogFieldRequest f : fields) {
+            if (Objects.isNull(f.getValue())) {
+                continue;
+            }
+
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                sb.append(System.getProperty("line.separator"));
+            }
+
+            sb.append(f.getName());
+            sb.append(":");
+            sb.append(f.getValue());
+        }
+
+        return sb.toString();
     }
 
     private JobInstanceTaskLog convert(ResultSet rs) throws SQLException {

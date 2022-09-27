@@ -3,6 +3,9 @@ package io.openjob.server.log.autoconfigure;
 import io.openjob.server.log.client.H2Client;
 import io.openjob.server.log.client.MysqlClient;
 import io.openjob.server.log.constant.LogStorageConstant;
+import io.openjob.server.log.dao.LogDAO;
+import io.openjob.server.log.dao.impl.H2LogDAOImpl;
+import io.openjob.server.log.dao.impl.MysqlLogDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -23,15 +26,28 @@ public class LogAutoConfiguration {
         this.logProperties = logProperties;
     }
 
-    @Bean
     @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.H2)
-    public H2Client h2Client() {
-        return new H2Client(this.logProperties.getStorage().getH2());
+    public class H2AutoConfiguration {
+        @Bean
+        public H2Client h2Client() {
+            return new H2Client(logProperties.getStorage().getH2());
+        }
+
+        @Bean
+        public LogDAO h2LogDAO(H2Client h2Client) {
+            return new H2LogDAOImpl(h2Client);
+        }
     }
 
-    @Bean
     @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.MYSQL)
-    public MysqlClient mysqlClient() {
-        return new MysqlClient(this.logProperties.getStorage().getMysql());
+    public class MysqlAutoConfiguration {
+        public MysqlClient mysqlClient() {
+            return new MysqlClient(logProperties.getStorage().getMysql());
+        }
+
+        @Bean
+        public LogDAO h2LogDAO(MysqlClient mysqlClient) {
+            return new MysqlLogDAOImpl(mysqlClient);
+        }
     }
 }

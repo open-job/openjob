@@ -48,6 +48,7 @@ public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeStamp());
         logContent.addTimeField(dateTime.toString(formatter));
+        logContent.addTimeStamp(event.getTimeStamp());
         logContent.addLevelField(event.getLevel().levelStr);
         logContent.addThreadField(event.getThreadName());
         logContent.addMessageField(event.getFormattedMessage());

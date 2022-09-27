@@ -29,6 +29,10 @@ public class LogContentDTO {
         this.addField(LogFieldConstant.TIME, time);
     }
 
+    public void addTimeStamp(Long timeStamp) {
+        this.addField(LogFieldConstant.TIME_STAMP, String.valueOf(timeStamp));
+    }
+
     public void addLevelField(String level) {
         this.addField(LogFieldConstant.LEVEL, level);
     }

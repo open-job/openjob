@@ -1,6 +1,10 @@
 package io.openjob.server.log.entity;
 
+import io.openjob.common.constant.LogFieldConstant;
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -15,5 +19,6 @@ public class JobInstanceTaskLog {
     private String taskUniqueId;
     private String workerAddress;
     private String content;
+    private List<WorkerJobInstanceTaskLogFieldRequest> fields;
     private Long time;
 }
