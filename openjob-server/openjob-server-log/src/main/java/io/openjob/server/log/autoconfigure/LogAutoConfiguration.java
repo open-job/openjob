@@ -26,7 +26,7 @@ public class LogAutoConfiguration {
         this.logProperties = logProperties;
     }
 
-    @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.H2)
+    @ConditionalOnProperty(prefix = "log.storage", name = "selector", havingValue = LogStorageConstant.H2)
     public class H2AutoConfiguration {
         @Bean
         public H2Client h2Client() {
@@ -39,8 +39,9 @@ public class LogAutoConfiguration {
         }
     }
 
-    @ConditionalOnProperty(prefix = "log.storage.selector", value = LogStorageConstant.MYSQL)
+    @ConditionalOnProperty(prefix = "log.storage", name = "selector", havingValue = LogStorageConstant.MYSQL)
     public class MysqlAutoConfiguration {
+        @Bean
         public MysqlClient mysqlClient() {
             return new MysqlClient(logProperties.getStorage().getMysql());
         }

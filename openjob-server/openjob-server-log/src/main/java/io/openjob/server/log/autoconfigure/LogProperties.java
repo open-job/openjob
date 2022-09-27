@@ -1,5 +1,7 @@
 package io.openjob.server.log.autoconfigure;
 
+import io.openjob.server.log.constant.LogStorageConstant;
+import jdk.nashorn.internal.scripts.JD;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -11,33 +13,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "log")
 public class LogProperties {
 
-    private Storage storage;
+    private Storage storage = new Storage();
 
     @Data
     public static class Storage {
-        private String selector;
+        private String selector = LogStorageConstant.H2;
         private Integer queryMaxSize;
-        private H2Properties h2;
-        private MysqlProperties mysql;
-        private TidbProperties tidb;
-        private ElasticsearchProperties elasticsearch;
-        private Elasticsearch7Properties elasticsearch7;
-        private SlsProperties sls;
+        private H2Properties h2 = new H2Properties();
+        private MysqlProperties mysql = new MysqlProperties();
+        private TidbProperties tidb = new TidbProperties();
+        private ElasticsearchProperties elasticsearch = new ElasticsearchProperties();
+        private Elasticsearch7Properties elasticsearch7 = new Elasticsearch7Properties();
+        private SlsProperties sls = new SlsProperties();
+        private ClsProperties cls = new ClsProperties();
     }
 
     @Data
     public static class H2Properties {
-        private JdbcProperties properties;
+        private JdbcProperties properties = new JdbcProperties();
     }
 
     @Data
     public static class MysqlProperties {
-        private JdbcProperties properties;
+        private JdbcProperties properties = new JdbcProperties();
     }
 
     @Data
     public static class TidbProperties {
-        private JdbcProperties properties;
+        private JdbcProperties properties = new JdbcProperties();
     }
 
     @Data
