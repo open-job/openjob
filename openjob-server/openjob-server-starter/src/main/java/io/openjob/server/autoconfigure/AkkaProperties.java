@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties(prefix = "akka")
-public class ServerProperties {
+public class AkkaProperties {
     private Remote remote = new Remote();
 
     @Data

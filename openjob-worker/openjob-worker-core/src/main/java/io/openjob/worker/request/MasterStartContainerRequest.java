@@ -1,6 +1,6 @@
 package io.openjob.worker.request;
 
-import io.openjob.worker.util.TaskUtil;
+import io.openjob.common.util.TaskUtil;
 import lombok.Data;
 
 import java.io.Serializable;

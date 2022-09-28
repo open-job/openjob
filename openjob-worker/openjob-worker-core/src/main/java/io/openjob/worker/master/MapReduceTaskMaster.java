@@ -16,7 +16,7 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
-import io.openjob.worker.util.TaskUtil;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 
 import java.util.ArrayList;

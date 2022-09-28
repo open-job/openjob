@@ -1,4 +1,4 @@
-package io.openjob.worker.util;
+package io.openjob.common.util;
 
 /**
  * @author stelin <swoft@qq.com>

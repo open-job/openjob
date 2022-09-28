@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" debug="false">
+    <appender name="OpenjobAppender" class="io.openjob.worker.appender.LogbackAppender">
+        <timeFormat>yyyy-MM-dd'T'HH:mmZ</timeFormat>
+        <timeZone>UTC</timeZone>
+    </appender>
+    <logger name="openjob" level="INFO">
+        <appender-ref ref="OpenjobAppender"/>
+    </logger>
+
+    <!--日志输出到控制台规则 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+        <pattern>
+            %d[%level]%c{100}.%M:%L%m%n
+        </pattern>
+    </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="console"/>
+    </root>
+</configuration>

@@ -23,6 +23,11 @@ public class WorkerUtil {
         return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE));
     }
 
+    public static ActorSelection getServerWorkerJobInstanceTaskLogActor() {
+        String address = getServerAddress();
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG));
+    }
+
     public static ActorSelection getServerHeartbeatActor() {
         String address = getServerAddress();
         return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));

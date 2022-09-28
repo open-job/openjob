@@ -7,6 +7,9 @@ import io.openjob.worker.processor.ProcessResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +18,21 @@ import java.util.List;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class MapReduceProcessorSample implements MapReduceProcessor {
+    private static final Logger logger = LoggerFactory.getLogger("openjob");
+
     @Override
     public ProcessResult process(JobContext context) {
         if (context.isRoot()) {
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 101; i++) {
+            for (int i = 1; i < 11; i++) {
                 System.out.println("root" + i);
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(1))));
             }
 
+            logger.info("root task", new RuntimeException("test"));
+            log.info("root task", new RuntimeException("test"));
             return this.map(tasks, "TASK_TWO");
         }
 
@@ -33,7 +41,7 @@ public class MapReduceProcessorSample implements MapReduceProcessor {
 
             System.out.println("two paramsId=" + task.getId());
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 201; i++) {
+            for (int i = 1; i < 21; i++) {
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(task.getId() * i))));
             }
 
