@@ -1,0 +1,3 @@
+[submodule "openjob-ui"]
+	path = openjob-ui
+	url = git@github.com:open-job/openjob-ui.git
