@@ -1,10 +1,12 @@
 package io.openjob.server.log.client;
 
 import io.openjob.server.log.autoconfigure.LogProperties;
+import io.openjob.server.log.constant.LogJdbcDriverConstant;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -16,8 +18,14 @@ public class H2Client extends JdbcHikariClient {
     public H2Client(LogProperties.H2Properties h2Properties) {
         this.h2Properties = h2Properties;
 
+        // Driver
+        LogProperties.JdbcProperties properties = h2Properties.getProperties();
+        if (Objects.isNull(properties.getDriver())) {
+            properties.setDriver(LogJdbcDriverConstant.H2);
+        }
+
         // Init jdbc client
-        this.init(h2Properties.getProperties());
+        this.init(properties);
     }
 
     @Override

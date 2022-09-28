@@ -1,6 +1,9 @@
 package io.openjob.server.log.client;
 
 import io.openjob.server.log.autoconfigure.LogProperties;
+import io.openjob.server.log.constant.LogJdbcDriverConstant;
+
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -11,6 +14,13 @@ public class MysqlClient extends JdbcHikariClient {
 
     public MysqlClient(LogProperties.MysqlProperties mysqlProperties) {
         this.mysqlProperties = mysqlProperties;
-        this.init(mysqlProperties.getProperties());
+
+        // Driver
+        LogProperties.JdbcProperties properties = mysqlProperties.getProperties();
+        if (Objects.isNull(properties.getDriver())) {
+            properties.setDriver(LogJdbcDriverConstant.MYSQL);
+        }
+
+        this.init(properties);
     }
 }
