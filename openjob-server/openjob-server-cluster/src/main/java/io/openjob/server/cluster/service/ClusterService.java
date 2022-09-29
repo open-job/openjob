@@ -1,12 +1,12 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -14,7 +14,7 @@ import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
-import io.openjob.server.scheduler.Scheduler;
+import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,11 +34,14 @@ public class ClusterService {
     private final JobSlotsDAO jobSlotsDAO;
     private final WorkerDAO workerDAO;
 
+    private final WheelManager wheelManager;
+
     @Autowired
-    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO) {
+    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO, WheelManager wheelManager) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.workerDAO = workerDAO;
+        this.wheelManager = wheelManager;
     }
 
     /**
@@ -56,7 +59,7 @@ public class ClusterService {
         Set<Long> removeSlots = this.refreshJobSlots(true);
 
         // Remove job instance from timing wheel.
-        Scheduler.removeBySlotsId(removeSlots);
+        this.wheelManager.removeBySlotsId(removeSlots);
 
         log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
     }

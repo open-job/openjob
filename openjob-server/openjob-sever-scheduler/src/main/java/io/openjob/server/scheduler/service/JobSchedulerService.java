@@ -9,9 +9,9 @@ import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
-import io.openjob.server.scheduler.Scheduler;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.wheel.SchedulerWheel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,10 +33,13 @@ public class JobSchedulerService {
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
 
+    private final SchedulerWheel schedulerWheel;
+
     @Autowired
-    public JobSchedulerService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO) {
+    public JobSchedulerService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.schedulerWheel = schedulerWheel;
     }
 
     /**
@@ -127,7 +130,7 @@ public class JobSchedulerService {
             timerTasks.add(timerTask);
         });
 
-        Scheduler.addTimerTask(timerTasks);
+        this.schedulerWheel.addTimerTask(timerTasks);
     }
 
     private Integer calculateNextExecuteTime(Job job, Integer now) throws ParseException {
