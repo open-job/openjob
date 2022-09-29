@@ -19,28 +19,23 @@ import java.util.stream.Collectors;
  */
 @Data
 @Log4j2
-public class TimerTask implements Runnable {
-    private TimerTaskEntry timerTaskEntry;
-    private Long jobId;
-
-    private String jobParams;
+public abstract class TimerTask implements Runnable {
+    protected TimerTaskEntry timerTaskEntry;
 
     /**
      * Job instance id.
      */
-    private Long taskId;
-    private Long appid;
-    private Long slotsId;
-    private Long expiration;
-    private Long workflowId;
-    private String processorType;
-    private String processorInfo;
-    private String executeType;
-    private Integer failRetryTimes;
-    private Integer failRetryInterval;
-    private Integer concurrency;
-    private String timeExpressionType;
-    private String timeExpression;
+    protected Long taskId;
+
+    /**
+     * Slots id.
+     */
+    protected Long slotsId;
+
+    /**
+     * Expiration.
+     */
+    protected Long expiration;
 
     /**
      * Timer task.
@@ -92,39 +87,5 @@ public class TimerTask implements Runnable {
         return taskId;
     }
 
-    @Override
-    public void run() {
-        Map<Long, List<WorkerDTO>> appWorkers = ClusterContext.getAppWorkers();
-        if (!appWorkers.containsKey(this.appid)) {
-            log.error("Worker do not exist! appid={}", this.appid);
-            return;
-        }
 
-        try {
-            ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
-            submitReq.setJobId(this.jobId);
-            submitReq.setJobInstanceId(this.taskId);
-            submitReq.setJobParams(this.jobParams);
-            submitReq.setWorkflowId(this.workflowId);
-            submitReq.setProcessorType(this.processorType);
-            submitReq.setProcessorInfo(this.processorInfo);
-            submitReq.setExecuteType(this.executeType);
-            submitReq.setFailRetryTimes(this.failRetryTimes);
-            submitReq.setFailRetryInterval(this.getFailRetryInterval());
-            submitReq.setConcurrency(this.concurrency);
-            submitReq.setTimeExpressionType(this.timeExpressionType);
-            submitReq.setTimeExpression(this.timeExpression);
-            WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
-
-            List<String> workerAddresses = appWorkers.get(this.appid).stream()
-                    .map(WorkerDTO::getAddress)
-                    .collect(Collectors.toList());
-            submitReq.setWorkerAddresses(workerAddresses);
-
-            FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 10L);
-            log.info("Task dispatch success! taskId={}", this.taskId);
-        } catch (Throwable ex) {
-            log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());
-        }
-    }
 }
