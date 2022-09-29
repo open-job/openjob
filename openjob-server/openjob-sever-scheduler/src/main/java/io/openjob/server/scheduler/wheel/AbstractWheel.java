@@ -1,6 +1,5 @@
 package io.openjob.server.scheduler.wheel;
 
-import io.openjob.common.util.RuntimeUtil;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.constant.TimerConstant;
 import io.openjob.server.scheduler.timer.SystemTimer;
@@ -13,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -29,17 +29,6 @@ public abstract class AbstractWheel implements Wheel {
      * Timer thread pool.
      */
     private ThreadPoolExecutor taskExecutor;
-
-    @Override
-    public void stop() {
-        // Shutdown task thread pool.
-        this.systemTimers.forEach(SystemTimer::shuntDown);
-        log.info("Scheduler system timer shutdown!");
-
-        // Shutdown scheduler thread pool.
-        taskExecutor.shutdown();
-        log.info("system timer thread pool shutdown!");
-    }
 
     @Override
     public void addTimerTask(List<TimerTask> timerTasks) {
@@ -65,12 +54,14 @@ public abstract class AbstractWheel implements Wheel {
     @SuppressWarnings("InfiniteLoopStatement")
     protected void createWheel(int wheelSize, String wheelName) {
         LinkedBlockingDeque<Runnable> queue = new LinkedBlockingDeque<>(Integer.MAX_VALUE);
-        this.taskExecutor = new ThreadPoolExecutor(wheelSize, wheelSize, 0L, TimeUnit.MILLISECONDS, queue, r -> new Thread(r, wheelName));
+        AtomicLong atomicLong = new AtomicLong(1);
+        this.taskExecutor = new ThreadPoolExecutor(wheelSize, wheelSize, 0L, TimeUnit.MILLISECONDS, queue,
+                r -> new Thread(r, wheelName + "-" + atomicLong.getAndIncrement()));
 
         for (int i = 0; i < wheelSize; i++) {
             int index = i;
             this.taskExecutor.submit(() -> {
-                String name = String.format("%s-%d", TimerConstant.TIMER_THREAD_NAME_PREFIX, index);
+                String name = String.format("%s-%s-%d", wheelName, TimerConstant.TIMER_THREAD_NAME_PREFIX, index);
                 SystemTimer systemTimer = new SystemTimer(name);
                 this.systemTimers.add(systemTimer);
 
@@ -82,5 +73,15 @@ public abstract class AbstractWheel implements Wheel {
                 }
             });
         }
+    }
+
+    protected void shutdownWheel(String name) {
+        // Shutdown task thread pool.
+        this.systemTimers.forEach(SystemTimer::shuntDown);
+        log.info("Scheduler {} system timer shutdown!", name);
+
+        // Shutdown scheduler thread pool.
+        taskExecutor.shutdown();
+        log.info("system {} timer thread pool shutdown!", name);
     }
 }

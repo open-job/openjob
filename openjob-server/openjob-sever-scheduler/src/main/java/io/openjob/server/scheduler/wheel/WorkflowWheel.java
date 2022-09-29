@@ -12,6 +12,11 @@ public class WorkflowWheel extends AbstractWheel {
     @Override
     public void start() {
         int coreCpu = RuntimeUtil.processors();
-        this.createWheel(coreCpu, "delay-wheel");
+        this.createWheel(coreCpu, "workflow");
+    }
+
+    @Override
+    public void stop() {
+        this.shutdownWheel("workflow");
     }
 }

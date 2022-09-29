@@ -12,6 +12,11 @@ public class SchedulerWheel extends AbstractWheel {
     @Override
     public void start() {
         int coreCpu = RuntimeUtil.processors();
-        this.createWheel(coreCpu, "scheduler-wheel");
+        this.createWheel(coreCpu, "scheduler");
+    }
+
+    @Override
+    public void stop() {
+        this.shutdownWheel("scheduler");
     }
 }
