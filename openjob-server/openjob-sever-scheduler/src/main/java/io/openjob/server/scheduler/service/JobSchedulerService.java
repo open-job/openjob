@@ -59,7 +59,7 @@ public class JobSchedulerService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void scheduleCronJob(List<Long> currentSlots) {
-        Integer maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
+        int maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
         List<Job> jobs = jobDAO.listScheduledJobs(currentSlots, maxExecuteTime);
 
         // Create job instance.
@@ -71,7 +71,7 @@ public class JobSchedulerService {
                 Integer now = DateUtil.now();
 
                 // Calculate next execute time.
-                Integer nextExecuteTime = this.calculateNextExecuteTime(j, now);
+                int nextExecuteTime = this.calculateNextExecuteTime(j, now);
 
                 // Update next execute time.
                 j.setNextExecuteTime(nextExecuteTime);

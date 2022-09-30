@@ -13,6 +13,24 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class DelayTimerTask extends TimerTask {
 
+    private String delayId;
+
+    private String delayParams;
+
+    private String delayExtra;
+
+    private String topic;
+
+    private String processorInfo;
+
+    private Integer failRetryTimes;
+
+    private Integer failRetryInterval;
+
+    private Integer executeTimeout;
+
+    private Integer concurrency;
+
     /**
      * Timer task.
      *

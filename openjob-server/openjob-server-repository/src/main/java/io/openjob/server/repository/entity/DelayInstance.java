@@ -32,19 +32,22 @@ public class DelayInstance {
     private String topic;
 
     @Column(name = "delay_id")
-    private String delayIdd;
+    private String delayId;
 
     @Column(name = "delay_params")
-    private String delay_params;
+    private String delayParams;
 
     @Column(name = "delay_extra")
-    private String delay_extra;
+    private String delayExtra;
 
     @Column(name = "status")
     private Integer status;
 
     @Column(name = "slots_id")
-    private Long slots_id;
+    private Long slotsId;
+
+    @Column(name = "execute_time")
+    private Integer executeTime;
 
     @Column(name = "create_time")
     private Integer createTime;

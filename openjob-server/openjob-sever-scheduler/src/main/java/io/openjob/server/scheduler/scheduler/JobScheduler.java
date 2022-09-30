@@ -28,16 +28,25 @@ public class JobScheduler {
         this.workflowService = workflowService;
     }
 
+    /**
+     * Schedule job.
+     */
     @Scheduled(initialDelay = SchedulerConstant.JOB_INITIAL_DELAY, fixedDelay = SchedulerConstant.JOB_FIXED_DELAY)
     public void scheduleJob() {
         this.jobSchedulerService.scheduleJob();
     }
 
+    /**
+     * Delay job.
+     */
     @Scheduled(initialDelay = SchedulerConstant.JOB_INITIAL_DELAY, fixedDelay = SchedulerConstant.JOB_FIXED_DELAY)
     public void delayJob() {
         this.delayService.delayJob();
     }
 
+    /**
+     * Workflow job.
+     */
     @Scheduled(initialDelay = SchedulerConstant.JOB_INITIAL_DELAY, fixedDelay = SchedulerConstant.JOB_FIXED_DELAY)
     public void workflowJob() {
         this.workflowService.workflowJob();
