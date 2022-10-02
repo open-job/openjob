@@ -2,7 +2,7 @@ package io.openjob.worker.dao;
 
 import io.openjob.common.util.DateUtil;
 import io.openjob.worker.entity.Task;
-import io.openjob.worker.persistence.H2MemoryPersistence;
+import io.openjob.worker.persistence.H2TaskMemoryPersistence;
 import io.openjob.worker.persistence.TaskPersistence;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ public class TaskDAO {
     private final TaskPersistence taskPersistence;
 
     private TaskDAO() {
-        this.taskPersistence = new H2MemoryPersistence();
+        this.taskPersistence = new H2TaskMemoryPersistence();
     }
 
     public Boolean add(Task task) {
