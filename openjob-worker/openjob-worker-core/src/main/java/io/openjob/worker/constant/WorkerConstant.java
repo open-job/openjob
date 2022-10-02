@@ -21,6 +21,7 @@ public class WorkerConstant {
     public static final String WORKER_HOSTNAME = "worker.hostname";
     public static final String WORKER_PORT = "worker.port";
     public static final String WORKER_APPID = "worker.appid";
+    public static final String WORKER_DELAY_ENABLE = "worker.delay.enable";
     public static final String WORKER_AKKA_CONFIG_FILE = "worker.akka.file";
     public static final String WORKER_HEARTBEAT_ACTOR_NUM = "worker.heartbeat.actor.num";
     public static final String WORKER_TASK_MASTER_ACTOR_NUM = "worker.task.master.actor.num";
