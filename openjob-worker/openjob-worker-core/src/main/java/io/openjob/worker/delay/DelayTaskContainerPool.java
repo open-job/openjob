@@ -49,6 +49,15 @@ public class DelayTaskContainerPool {
     }
 
     /**
+     * Get all delay task container.
+     *
+     * @return Map
+     */
+    public static Map<String, DelayTaskContainer> getAllDelayTaskContainer() {
+        return DELAY_TASK_POOL;
+    }
+
+    /**
      * Remove task container.
      *
      * @param topic topic

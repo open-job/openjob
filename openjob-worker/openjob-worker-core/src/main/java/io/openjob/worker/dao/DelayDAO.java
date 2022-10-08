@@ -16,10 +16,9 @@ import java.util.List;
  */
 @Slf4j
 public class DelayDAO {
-    public final static DelayDAO INSTANCE = new DelayDAO();
     private final DelayPersistence delayPersistence;
 
-    private DelayDAO() {
+    public DelayDAO() {
         this.delayPersistence = new H2DelayMemoryPersistence();
     }
 

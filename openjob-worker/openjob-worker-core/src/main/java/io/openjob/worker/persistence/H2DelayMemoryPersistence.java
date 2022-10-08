@@ -36,7 +36,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     @Override
     public void initTable() throws Exception {
         String createSql = "CREATE TABLE IF NOT EXISTS `delay_worker` (" +
-                "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+                "  `id` bigint(20) unsigned NOT NULL PRIMARY KEY," +
                 "  `pull_time` int(11) NOT NULL DEFAULT '0'," +
                 "  `create_time` int(11) NOT NULL," +
                 "  `update_time` int(11) NOT NULL," +

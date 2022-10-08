@@ -19,6 +19,12 @@ public class DelayStarter {
     }
 
     public void stop() {
+        // Stop  delay master.
         this.delayTaskMaster.stop();
+
+        // Stop task container.
+        DelayTaskContainerPool.getAllDelayTaskContainer().forEach((t, c) -> {
+            c.stop();
+        });
     }
 }
