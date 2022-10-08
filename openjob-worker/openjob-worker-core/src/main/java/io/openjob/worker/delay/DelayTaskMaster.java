@@ -13,8 +13,6 @@ import java.util.concurrent.TimeUnit;
 public class DelayTaskMaster {
     private ExecutorService executorService;
 
-    private BlockingQueue<Runnable> blockingQueue;
-
     public void init() {
         executorService = new ThreadPoolExecutor(
                 1,

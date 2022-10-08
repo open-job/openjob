@@ -16,23 +16,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DelayTaskContainer {
 
-    private final DelayInstanceDTO delayInstanceDTO;
-
     private final ExecutorService executorService;
 
     private final BlockingQueue<Runnable> blockingQueue;
 
     private final Integer blockingSize = 10;
 
-    public DelayTaskContainer(DelayInstanceDTO delayInstanceDTO) {
-        this.delayInstanceDTO = delayInstanceDTO;
+    private final Long id;
 
+    private final String topic;
+
+    public DelayTaskContainer(Long id, String topic, Integer concurrency) {
+        this.id = id;
+        this.topic = topic;
 
         this.blockingQueue = new LinkedBlockingDeque<>(this.blockingSize);
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
-                2,
-                2,
+                concurrency,
+                concurrency,
                 30,
                 TimeUnit.SECONDS,
                 this.blockingQueue,
@@ -44,16 +46,16 @@ public class DelayTaskContainer {
         return this.blockingSize - this.blockingQueue.size();
     }
 
-    public void execute() {
+    public void execute(DelayInstanceDTO delayInstance) {
         this.executorService.submit(new DelayThreadTaskProcessor(new JobContext()));
     }
 
     public Long getId() {
-        return this.delayInstanceDTO.getDelayId();
+        return this.id;
     }
 
     public String getTopic() {
-        return this.delayInstanceDTO.getTopic();
+        return this.topic;
     }
 
     public void stop() {
