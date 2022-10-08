@@ -1,9 +1,10 @@
 package io.openjob.worker.delay;
 
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,10 +19,6 @@ public class DelayTaskContainer {
 
     private final ExecutorService executorService;
 
-    private final BlockingQueue<Runnable> blockingQueue;
-
-    private final Integer blockingSize = 10;
-
     private final Long id;
 
     private final String topic;
@@ -30,32 +27,27 @@ public class DelayTaskContainer {
         this.id = id;
         this.topic = topic;
 
-        this.blockingQueue = new LinkedBlockingDeque<>(this.blockingSize);
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
                 concurrency,
                 concurrency,
                 30,
                 TimeUnit.SECONDS,
-                this.blockingQueue,
+                new LinkedBlockingDeque<>(10),
                 r -> new Thread(r, String.format("openjob-delay-container-%s", threadId.getAndIncrement()))
         );
     }
 
-    public Integer pullSize() {
-        return this.blockingSize - this.blockingQueue.size();
-    }
+    public void execute(List<DelayInstanceDTO> instanceList) {
+        DelayDAO.INSTANCE.updatePullSizeById(this.id, -instanceList.size());
 
-    public void execute(DelayInstanceDTO delayInstance) {
-        this.executorService.submit(new DelayThreadTaskProcessor(new JobContext()));
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public String getTopic() {
-        return this.topic;
+        instanceList.forEach(i -> {
+            JobContext jobContext = new JobContext();
+            jobContext.setDelayId(i.getDelayId());
+            jobContext.setDelayParams(i.getDelayParams());
+            jobContext.setDelayExtra(i.getDelayExtra());
+            this.executorService.submit(new DelayThreadTaskProcessor(jobContext));
+        });
     }
 
     public void stop() {

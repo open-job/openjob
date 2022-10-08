@@ -16,9 +16,11 @@ import java.util.List;
  */
 @Slf4j
 public class DelayDAO {
+    public static final DelayDAO INSTANCE = new DelayDAO();
+
     private final DelayPersistence delayPersistence;
 
-    public DelayDAO() {
+    private DelayDAO() {
         this.delayPersistence = new H2DelayMemoryPersistence();
     }
 
@@ -37,20 +39,18 @@ public class DelayDAO {
         }
     }
 
-    public Integer batchUpdatePullTimeById(List<Delay> delays) {
+    public Integer updatePullSizeById(Long id, Integer size) {
         try {
-            int now = DateUtil.now();
-            delays.forEach(d -> d.setUpdateTime(now));
-            return this.delayPersistence.batchUpdatePullTimeById(delays);
+            return this.delayPersistence.updatePullSizeById(id, size, DateUtil.now());
         } catch (SQLException e) {
             log.error("Delay batch update failed!", e);
             return 0;
         }
     }
 
-    public List<Delay> findNotPullList() {
+    public List<Delay> findPullList() {
         try {
-            return this.delayPersistence.findNotPullList();
+            return this.delayPersistence.findPullList();
         } catch (SQLException e) {
             log.error("Delay find not pull list failed!", e);
             return Collections.emptyList();

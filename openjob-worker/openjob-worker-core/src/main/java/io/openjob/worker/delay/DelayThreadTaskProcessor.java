@@ -1,6 +1,7 @@
 package io.openjob.worker.delay;
 
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.util.ProcessorUtil;
@@ -39,6 +40,7 @@ public class DelayThreadTaskProcessor implements Runnable {
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
         } finally {
+            DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
             this.reportTaskStatus(result, workerAddress);
         }
     }

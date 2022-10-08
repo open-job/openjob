@@ -25,19 +25,21 @@ public interface DelayPersistence {
     Integer batchSave(List<Delay> delays) throws SQLException;
 
     /**
-     * Batch update.
+     * Update
      *
-     * @param delays delays
-     * @return effect rows
+     * @param id id
+     * @param size size
+     * @param updateTime updateTime
+     * @return Integer
      */
-    Integer batchUpdatePullTimeById(List<Delay> delays) throws SQLException;
+    Integer updatePullSizeById(Long id, Integer size, Integer updateTime) throws SQLException;
 
     /**
      * Find list.
      *
      * @return effect rows
      */
-    List<Delay> findNotPullList() throws SQLException;
+    List<Delay> findPullList() throws SQLException;
 
     /**
      * Delete by ids.

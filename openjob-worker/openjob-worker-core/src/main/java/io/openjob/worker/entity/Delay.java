@@ -9,7 +9,8 @@ import lombok.Data;
 @Data
 public class Delay {
     private Long id;
-    private Integer pullTime;
+    private String topic;
+    private Integer pullSize;
     private Integer createTime;
     private Integer updateTime;
 }
