@@ -10,5 +10,5 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Long> {
-    List<DelayInstance> findBySlotsIdAndStatusAndAndExecuteTimeLessThanEqual(List<Long> slotIds, Integer status, Integer maxExecuteTime);
+    List<DelayInstance> findBySlotsIdInAndStatusAndAndExecuteTimeLessThanEqual(List<Long> slotIds, Integer status, Integer maxExecuteTime);
 }
