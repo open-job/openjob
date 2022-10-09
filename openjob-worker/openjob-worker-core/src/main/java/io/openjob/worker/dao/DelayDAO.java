@@ -43,7 +43,16 @@ public class DelayDAO {
         try {
             return this.delayPersistence.updatePullSizeById(id, size, DateUtil.now());
         } catch (SQLException e) {
-            log.error("Delay batch update failed!", e);
+            log.error("Delay update pull size failed!", e);
+            return 0;
+        }
+    }
+
+    public Integer batchUpdatePullTime(List<Delay> delays) {
+        try {
+            return this.delayPersistence.batchUpdatePullTime(delays);
+        } catch (SQLException e) {
+            log.error("Delay batch update pull time failed!", e);
             return 0;
         }
     }

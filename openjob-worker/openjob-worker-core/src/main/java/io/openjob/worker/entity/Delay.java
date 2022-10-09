@@ -11,6 +11,7 @@ public class Delay {
     private Long id;
     private String topic;
     private Integer pullSize;
+    private Integer pullTime;
     private Integer createTime;
     private Integer updateTime;
 }

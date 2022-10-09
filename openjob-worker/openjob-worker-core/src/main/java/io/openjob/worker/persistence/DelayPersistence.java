@@ -20,24 +20,32 @@ public interface DelayPersistence {
      * Batch save.
      *
      * @param delays delay task list.
-     * @return Integer
+     * @return Effect rows
      */
     Integer batchSave(List<Delay> delays) throws SQLException;
 
     /**
      * Update
      *
-     * @param id id
-     * @param size size
+     * @param id         id
+     * @param size       size
      * @param updateTime updateTime
-     * @return Integer
+     * @return Effect rows
      */
     Integer updatePullSizeById(Long id, Integer size, Integer updateTime) throws SQLException;
 
     /**
+     * Batch upadte.
+     *
+     * @param delays delays
+     * @return Effect rows
+     */
+    Integer batchUpdatePullTime(List<Delay> delays) throws SQLException;
+
+    /**
      * Find list.
      *
-     * @return effect rows
+     * @return Effect rows
      */
     List<Delay> findPullList() throws SQLException;
 
@@ -45,7 +53,8 @@ public interface DelayPersistence {
      * Delete by ids.
      *
      * @param ids ids
-     * @return effect rows
+     * @return Effect rows
      */
     Integer deleteByIds(List<Long> ids) throws SQLException;
+
 }

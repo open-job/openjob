@@ -1,5 +1,6 @@
 package io.openjob.worker.persistence;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.worker.entity.Delay;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,9 +56,10 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
                 "id," +
                 "topic," +
                 "pull_size," +
+                "pull_time," +
                 "create_time," +
                 "update_time" +
-                ") VALUES (?, ?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -108,11 +110,37 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     }
 
     @Override
+    public Integer batchUpdatePullTime(List<Delay> delays) throws SQLException {
+        String sql = "UPDATE delay_worker SET pull_time=?,update_time=? WHERE id=?";
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
+            ps = connection.prepareStatement(sql);
+            for (Delay delay : delays) {
+                ps.setInt(1, delay.getPullTime());
+                ps.setInt(1, delay.getUpdateTime());
+                ps.setLong(1, delay.getId());
+                ps.addBatch();
+            }
+
+            int[] result = ps.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return result.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
     public List<Delay> findPullList() throws SQLException {
         ResultSet rs = null;
-        String sql = "SELECT id,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0";
+        String sql = "SELECT id,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0 AND pull_time <?";
         try (Connection connection = this.connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, DateUtil.now());
             rs = ps.executeQuery();
 
             List<Delay> delayList = new ArrayList<>();

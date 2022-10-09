@@ -8,18 +8,19 @@ import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.config.OpenjobConfig;
-import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
 import io.openjob.worker.entity.Delay;
+import io.openjob.worker.util.OpenjobConfigUtil;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,58 +41,88 @@ public class DelayTaskMasterExecutor implements Runnable {
         }
     }
 
-    private void start() {
-        try {
-            // Pull topic items.
-            List<WorkerDelayPullItemRequest> pullTopicItems = Lists.newArrayList();
-            DelayDAO.INSTANCE.findPullList()
-                    .forEach(d -> {
-                        int size = OpenjobConfig.getInteger(WorkerConstant.WORKER_DELAY_PULL_SIZE, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_SIZE);
-                        int pullSize = d.getPullSize() > size ? size : d.getPullSize();
-                        pullTopicItems.add(new WorkerDelayPullItemRequest(d.getTopic(), pullSize));
-                    });
+    private void start() throws InterruptedException {
+        // Pull topic items.
+        List<WorkerDelayPullItemRequest> pullTopicItems = Lists.newArrayList();
+        Set<Long> pullTopicIds = new HashSet<>();
 
-            if (CollectionUtils.isEmpty(pullTopicItems)) {
-                Thread.sleep(1000L);
-                return;
+        // Find pull topic.
+        DelayDAO.INSTANCE.findPullList()
+                .forEach(d -> {
+                    int size = OpenjobConfigUtil.getDelayPullSize();
+                    int pullSize = d.getPullSize() > size ? size : d.getPullSize();
+                    pullTopicItems.add(new WorkerDelayPullItemRequest(d.getTopic(), pullSize));
+                    pullTopicIds.add(d.getId());
+                });
+
+        // Empty pull.
+        if (CollectionUtils.isEmpty(pullTopicItems)) {
+            Thread.sleep(1000L);
+            return;
+        }
+
+        // Pull request.
+        WorkerDelayPullRequest delayPullRequest = new WorkerDelayPullRequest();
+        delayPullRequest.setPullItems(pullTopicItems);
+
+        // Pull delay instance by akka.
+        ActorSelection instanceActor = WorkerUtil.getServerDelayInstanceActor();
+        ServerDelayPullResponse delayPullResponse = FutureUtil.mustAsk(instanceActor, delayPullRequest, ServerDelayPullResponse.class, 3L);
+
+        //  All topic empty.
+        if (CollectionUtils.isEmpty(delayPullResponse.getDelayInstanceResponses())) {
+            Thread.sleep(1000L);
+            return;
+        }
+
+        // Group by topic.
+        Map<Long, List<ServerDelayInstanceResponse>> topicIdsMap = delayPullResponse.getDelayInstanceResponses().stream()
+                .collect(Collectors.groupingBy(ServerDelayInstanceResponse::getDelayId));
+
+        // Update pull time.
+        this.updatePullTime(pullTopicIds, topicIdsMap.keySet());
+
+        // Execute delay task.
+        this.execute(topicIdsMap);
+    }
+
+    private void updatePullTime(Set<Long> pullTopicIds, Set<Long> responseTopicIds) {
+        int now = DateUtil.now();
+        List<Delay> updateDelays = Lists.newArrayList();
+        pullTopicIds.forEach(id -> {
+            Delay delay = new Delay();
+            delay.setId(id);
+            delay.setUpdateTime(now);
+
+            // Next pull time.
+            if (!responseTopicIds.contains(id)) {
+                delay.setPullTime(now + 2);
+            } else {
+                // Reset pull time.
+                delay.setPullTime(0);
             }
+        });
 
-            WorkerDelayPullRequest delayPullRequest = new WorkerDelayPullRequest();
-            delayPullRequest.setPullItems(pullTopicItems);
-
-            ActorSelection instanceActor = WorkerUtil.getServerDelayInstanceActor();
-            ServerDelayPullResponse delayPullResponse = FutureUtil.mustAsk(instanceActor, delayPullRequest, ServerDelayPullResponse.class, 3L);
-
-            //  All topic empty.
-            if (CollectionUtils.isEmpty(delayPullResponse.getDelayInstanceResponses())) {
-                Thread.sleep(1000L);
-                return;
-            }
-
-            Map<String, List<ServerDelayInstanceResponse>> topicMap = delayPullResponse.getDelayInstanceResponses().stream()
-                    .collect(Collectors.groupingBy(ServerDelayInstanceResponse::getTopic));
-
-            // Execute delay task.
-            this.execute(topicMap);
-
-        } catch (Throwable e) {
-            log.error("DelayTaskMasterExecutor must ask failed!", e);
+        // Batch update pull time.
+        if (!CollectionUtils.isEmpty(updateDelays)) {
+            DelayDAO.INSTANCE.batchUpdatePullTime(updateDelays);
         }
     }
 
-    private void execute(Map<String, List<ServerDelayInstanceResponse>> topicMap) {
-        topicMap.forEach((t, instanceResponses) -> {
+    private void execute(Map<Long, List<ServerDelayInstanceResponse>> topicIdMap) {
+        topicIdMap.forEach((t, instanceResponses) -> {
             ServerDelayInstanceResponse firstDelay = instanceResponses.get(0);
-            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(firstDelay.getTopic(), topic -> {
+            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(firstDelay.getDelayId(), id -> {
                 int now = DateUtil.now();
                 Delay delay = new Delay();
-                delay.setId(firstDelay.getDelayId());
+                delay.setId(id);
                 delay.setPullSize(10);
-                delay.setTopic(topic);
+                delay.setPullTime(0);
+                delay.setTopic(firstDelay.getTopic());
                 delay.setUpdateTime(now);
                 delay.setCreateTime(now);
                 DelayDAO.INSTANCE.batchSave(Collections.singletonList(delay));
-                return new DelayTaskContainer(firstDelay.getDelayId(), topic, firstDelay.getConcurrency());
+                return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getTopic(), firstDelay.getConcurrency());
             });
 
             List<DelayInstanceDTO> instanceList = Lists.newArrayList();

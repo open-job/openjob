@@ -15,37 +15,37 @@ public class DelayTaskContainerPool {
      * Delay task pool.
      * topic => DelayTaskContainer.
      */
-    private static final Map<String, DelayTaskContainer> DELAY_TASK_POOL = Maps.newConcurrentMap();
+    private static final Map<Long, DelayTaskContainer> DELAY_TASK_POOL = Maps.newConcurrentMap();
 
     /**
      * Whether topic is existed.
      *
-     * @param topic topic
+     * @param delayId delayId
      * @return Boolean
      */
-    public static Boolean contains(String topic) {
-        return DELAY_TASK_POOL.containsKey(topic);
+    public static Boolean contains(Long delayId) {
+        return DELAY_TASK_POOL.containsKey(delayId);
     }
 
     /**
      * Get delay task container.
      *
-     * @param topic topic
+     * @param delayId delayId
      * @return DelayTaskContainer
      */
-    public static DelayTaskContainer get(String topic) {
-        return DELAY_TASK_POOL.get(topic);
+    public static DelayTaskContainer get(Long delayId) {
+        return DELAY_TASK_POOL.get(delayId);
     }
 
     /**
      * Get delay task container.
      *
-     * @param topic   topic
+     * @param delayId delayId
      * @param creator creator
      * @return DelayTaskContainer
      */
-    public static DelayTaskContainer get(String topic, Function<String, DelayTaskContainer> creator) {
-        return DELAY_TASK_POOL.computeIfAbsent(topic, creator);
+    public static DelayTaskContainer get(Long delayId, Function<Long, DelayTaskContainer> creator) {
+        return DELAY_TASK_POOL.computeIfAbsent(delayId, creator);
     }
 
     /**
@@ -53,7 +53,7 @@ public class DelayTaskContainerPool {
      *
      * @return Map
      */
-    public static Map<String, DelayTaskContainer> getAllDelayTaskContainer() {
+    public static Map<Long, DelayTaskContainer> getAllDelayTaskContainer() {
         return DELAY_TASK_POOL;
     }
 
@@ -62,7 +62,7 @@ public class DelayTaskContainerPool {
      *
      * @param topic topic
      */
-    public static void remove(String topic) {
+    public static void remove(Long topic) {
         DELAY_TASK_POOL.remove(topic);
     }
 }
