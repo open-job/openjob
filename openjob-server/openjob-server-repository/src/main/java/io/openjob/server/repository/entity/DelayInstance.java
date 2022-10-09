@@ -32,7 +32,7 @@ public class DelayInstance {
     private String topic;
 
     @Column(name = "delay_id")
-    private String delayId;
+    private Long delayId;
 
     @Column(name = "delay_params")
     private String delayParams;

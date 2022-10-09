@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.0
  */
 @Data
-@ConfigurationProperties(prefix = "log")
+@ConfigurationProperties(prefix = "openjob.log")
 public class LogProperties {
 
     private Storage storage = new Storage();

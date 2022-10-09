@@ -1,5 +1,8 @@
 package io.openjob.server.scheduler.timer;
 
+import io.openjob.server.scheduler.dto.DelayDTO;
+import io.openjob.server.scheduler.util.CacheUtil;
+import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class DelayTimerTask extends TimerTask {
 
-    private String delayId;
+    private Long delayId;
 
     private String delayParams;
 
@@ -28,6 +31,8 @@ public class DelayTimerTask extends TimerTask {
     private Integer failRetryInterval;
 
     private Integer executeTimeout;
+
+    private Integer blockingSize;
 
     private Integer concurrency;
 
@@ -44,6 +49,17 @@ public class DelayTimerTask extends TimerTask {
 
     @Override
     public void run() {
-
+        DelayDTO delayDTO = new DelayDTO();
+        delayDTO.setDelayId(this.delayId);
+        delayDTO.setDelayParams(this.delayParams);
+        delayDTO.setDelayExtra(this.delayExtra);
+        delayDTO.setTopic(this.topic);
+        delayDTO.setProcessorInfo(this.processorInfo);
+        delayDTO.setFailRetryTimes(this.failRetryTimes);
+        delayDTO.setFailRetryInterval(this.failRetryInterval);
+        delayDTO.setExecuteTimeout(this.executeTimeout);
+        delayDTO.setBlockingSize(this.blockingSize);
+        delayDTO.setConcurrency(this.concurrency);
+        RedisUtil.getTemplate().opsForList().rightPush(CacheUtil.getTopicKey(this.topic), delayDTO);
     }
 }
