@@ -39,6 +39,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
                 "  `id` bigint(20) unsigned NOT NULL PRIMARY KEY," +
                 "  `topic` varchar(128) NOT NULL DEFAULT ''," +
                 "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0'," +
+                "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0'," +
                 "  `create_time` int(11) NOT NULL," +
                 "  `update_time` int(11) NOT NULL," +
                 "  PRIMARY KEY (`id`)" +
@@ -117,7 +118,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
             connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
             for (Delay delay : delays) {
-                ps.setInt(1, delay.getPullTime());
+                ps.setLong(1, delay.getPullTime());
                 ps.setInt(1, delay.getUpdateTime());
                 ps.setLong(1, delay.getId());
                 ps.addBatch();
@@ -186,8 +187,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     private Delay convert(ResultSet rs) throws SQLException {
         Delay delay = new Delay();
         delay.setId(rs.getLong("id"));
-        delay.setTopic(rs.getString("topic"));
-        delay.setPullSize(rs.getInt("pull_time"));
+        delay.setPullSize(rs.getInt("pull_size"));
         return delay;
     }
 }

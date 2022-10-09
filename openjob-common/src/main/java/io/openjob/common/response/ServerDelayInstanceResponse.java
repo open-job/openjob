@@ -18,5 +18,6 @@ public class ServerDelayInstanceResponse implements Serializable {
     private Integer failRetryTimes;
     private Integer failRetryInterval;
     private Integer executeTimeout;
+    private Integer blockingSize;
     private Integer concurrency;
 }

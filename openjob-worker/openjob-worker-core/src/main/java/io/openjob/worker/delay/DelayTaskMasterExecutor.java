@@ -29,6 +29,14 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class DelayTaskMasterExecutor implements Runnable {
+    private final Long pullSleep;
+    private final Long pullStep;
+
+    public DelayTaskMasterExecutor() {
+        this.pullStep = OpenjobConfigUtil.getDelayPullStep();
+        this.pullSleep = OpenjobConfigUtil.getDelayPullSleep();
+    }
+
     @Override
     @SuppressWarnings("InfiniteLoopStatement")
     public void run() {
@@ -57,7 +65,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
         // Empty pull.
         if (CollectionUtils.isEmpty(pullTopicItems)) {
-            Thread.sleep(1000L);
+            Thread.sleep(this.pullSleep);
             return;
         }
 
@@ -71,7 +79,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
         //  All topic empty.
         if (CollectionUtils.isEmpty(delayPullResponse.getDelayInstanceResponses())) {
-            Thread.sleep(1000L);
+            Thread.sleep(this.pullSleep);
             return;
         }
 
@@ -88,6 +96,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
     private void updatePullTime(Set<Long> pullTopicIds, Set<Long> responseTopicIds) {
         int now = DateUtil.now();
+        long nowMill = DateUtil.milliLongTime();
         List<Delay> updateDelays = Lists.newArrayList();
         pullTopicIds.forEach(id -> {
             Delay delay = new Delay();
@@ -96,10 +105,10 @@ public class DelayTaskMasterExecutor implements Runnable {
 
             // Next pull time.
             if (!responseTopicIds.contains(id)) {
-                delay.setPullTime(now + 2);
+                delay.setPullTime(nowMill + this.pullStep);
             } else {
                 // Reset pull time.
-                delay.setPullTime(0);
+                delay.setPullTime(0L);
             }
         });
 
@@ -117,12 +126,12 @@ public class DelayTaskMasterExecutor implements Runnable {
                 Delay delay = new Delay();
                 delay.setId(id);
                 delay.setPullSize(10);
-                delay.setPullTime(0);
+                delay.setPullTime(0L);
                 delay.setTopic(firstDelay.getTopic());
                 delay.setUpdateTime(now);
                 delay.setCreateTime(now);
                 DelayDAO.INSTANCE.batchSave(Collections.singletonList(delay));
-                return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getTopic(), firstDelay.getConcurrency());
+                return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency());
             });
 
             List<DelayInstanceDTO> instanceList = Lists.newArrayList();

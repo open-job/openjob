@@ -3,6 +3,7 @@ package io.openjob.worker.delay;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
+import org.graalvm.compiler.core.common.alloc.Trace;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -17,25 +18,26 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DelayTaskContainer {
 
-    private final ExecutorService executorService;
+    private final ThreadPoolExecutor executorService;
 
     private final Long id;
+    private LinkedBlockingDeque<Runnable> blockingDeque;
 
-    private final String topic;
-
-    public DelayTaskContainer(Long id, String topic, Integer concurrency) {
+    public DelayTaskContainer(Long id, Integer blockingSize, Integer concurrency) {
         this.id = id;
-        this.topic = topic;
+        this.blockingDeque = new LinkedBlockingDeque<>(blockingSize);
 
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
-                concurrency,
+                1,
                 concurrency,
                 30,
                 TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(10),
+                this.blockingDeque,
                 r -> new Thread(r, String.format("openjob-delay-container-%s", threadId.getAndIncrement()))
         );
+
+        executorService.allowCoreThreadTimeOut(true);
     }
 
     public void execute(List<DelayInstanceDTO> instanceList) {
@@ -48,6 +50,10 @@ public class DelayTaskContainer {
             jobContext.setDelayExtra(i.getDelayExtra());
             this.executorService.submit(new DelayThreadTaskProcessor(jobContext));
         });
+    }
+
+    public void updateConcurrency(Integer concurrency) {
+        this.executorService.setMaximumPoolSize(concurrency);
     }
 
     public void stop() {

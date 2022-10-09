@@ -11,4 +11,13 @@ public class OpenjobConfigUtil {
     public static Integer getDelayPullSize() {
         return OpenjobConfig.getInteger(WorkerConstant.WORKER_DELAY_PULL_SIZE, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_SIZE);
     }
+
+    public static Long getDelayPullSleep() {
+        return OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_SLEEP, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_SLEEP);
+
+    }
+
+    public static Long getDelayPullStep() {
+        return OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_STEP, WorkerConstant.default_WORKER_DELAY_PULL_STEP);
+    }
 }
