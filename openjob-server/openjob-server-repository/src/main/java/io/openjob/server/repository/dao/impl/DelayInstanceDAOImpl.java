@@ -1,10 +1,13 @@
 package io.openjob.server.repository.dao.impl;
 
-import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,7 +32,13 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time) {
-        return this.delayInstanceRepository.findBySlotsIdInAndStatusAndAndExecuteTimeLessThanEqual(slotIds, InstanceStatusEnum.WAITING.getStatus(), time);
+    public List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size) {
+        DelayInstance delayInstance = new DelayInstance();
+        return this.delayInstanceRepository.findAll(Example.of(delayInstance), PageRequest.of(0, size, Sort.by("id"))).toList();
+    }
+
+    @Override
+    public Integer batchUpdateStatus(List<Long> ids, Integer status) {
+        return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.now());
     }
 }

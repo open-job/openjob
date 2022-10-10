@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class JobSchedulerService {
                 j.setUpdateTime(now);
 
                 if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / 1000)) {
-                    this.createJobInstance(Arrays.asList(j));
+                    this.createJobInstance(Collections.singletonList(j));
 
                     // Update next execute time.
                     j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));

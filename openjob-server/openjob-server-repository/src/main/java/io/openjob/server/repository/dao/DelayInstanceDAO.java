@@ -15,9 +15,10 @@ public interface DelayInstanceDAO {
      *
      * @param slotIds slotIds
      * @param time    time
+     * @param size    size
      * @return List
      */
-    List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time);
+    List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size);
 
     /**
      * Save delay instance.
@@ -26,4 +27,6 @@ public interface DelayInstanceDAO {
      * @return Long
      */
     Long save(DelayInstance delayInstance);
+
+    Integer batchUpdateStatus(List<Long> ids, Integer status);
 }
