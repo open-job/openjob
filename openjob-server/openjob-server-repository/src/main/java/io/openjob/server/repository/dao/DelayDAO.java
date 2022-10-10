@@ -1,7 +1,6 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.Delay;
-import scala.Long;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -10,5 +9,5 @@ import scala.Long;
 public interface DelayDAO {
     Long save(Delay delay);
 
-    Delay findByTopic(String topic);
+    Delay findByNamespaceIdAndTopic(Long namespaceId, String topic);
 }

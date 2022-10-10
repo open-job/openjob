@@ -1,9 +1,9 @@
 package io.openjob.server.cluster.actor;
 
 import io.openjob.common.actor.BaseActor;
-import io.openjob.common.request.WorkerDelayAddRequest;
+import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.Result;
-import io.openjob.common.response.ServerDelayAddResponse;
+import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.server.scheduler.service.DelayInstanceService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +18,24 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkerDelayInstanceActor extends BaseActor {
+public class WorkerDelayInstancePullActor extends BaseActor {
 
     private final DelayInstanceService delayInstanceService;
 
     @Autowired
-    public WorkerDelayInstanceActor(DelayInstanceService delayInstanceService) {
+    public WorkerDelayInstancePullActor(DelayInstanceService delayInstanceService) {
         this.delayInstanceService = delayInstanceService;
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(WorkerDelayAddRequest.class, this::handleAdd)
+                .match(WorkerDelayPullRequest.class, this::handlePull)
                 .build();
     }
 
-    public void handleAdd(WorkerDelayAddRequest addRequest) {
-        ServerDelayAddResponse serverDelayAddResponse = this.delayInstanceService.addDelayInstance(addRequest);
-        getSender().tell(Result.success(serverDelayAddResponse), getSelf());
+    public void handlePull(WorkerDelayPullRequest pullRequest) {
+        ServerDelayPullResponse pullResponse = this.delayInstanceService.pullInstance(pullRequest);
+        getSender().tell(Result.success(pullResponse), getSelf());
     }
 }

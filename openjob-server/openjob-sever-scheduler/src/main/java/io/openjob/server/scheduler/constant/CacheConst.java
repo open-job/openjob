@@ -6,4 +6,5 @@ package io.openjob.server.scheduler.constant;
  */
 public class CacheConst {
     public static final String TOPIC_PREFIX = "topic";
+    public static final String DELAY_PREFIX = "delay:";
 }

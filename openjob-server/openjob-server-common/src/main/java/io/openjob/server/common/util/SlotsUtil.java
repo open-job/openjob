@@ -16,7 +16,7 @@ public class SlotsUtil {
      * @param key key
      * @return Integer
      */
-    public static Integer getSlotsId(String key) {
-        return CrcUtil.crc16(key.getBytes()) % MAX_SLOTS;
+    public static Long getSlotsId(String key) {
+        return (long) (CrcUtil.crc16(key.getBytes()) % MAX_SLOTS);
     }
 }

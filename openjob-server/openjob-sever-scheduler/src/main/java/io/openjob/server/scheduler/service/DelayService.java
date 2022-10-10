@@ -1,13 +1,12 @@
 package io.openjob.server.scheduler.service;
 
-import com.google.common.collect.Maps;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
-import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
+import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.timer.DelayTimerTask;
 import io.openjob.server.scheduler.timer.TimerTask;
 import io.openjob.server.scheduler.wheel.DelayWheel;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -24,18 +21,16 @@ import java.util.Objects;
  */
 @Service
 public class DelayService {
-    private final DelayDAO delayDAO;
-
     private final DelayInstanceDAO delayInstanceDAO;
 
     private final DelayWheel delayWheel;
 
-    private final Map<String, Delay> delayMaps = Maps.newConcurrentMap();
+    private final DelayData delayData;
 
-    public DelayService(DelayDAO delayDAO, DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel) {
-        this.delayDAO = delayDAO;
+    public DelayService(DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel, DelayData delayData) {
         this.delayInstanceDAO = delayInstanceDAO;
         this.delayWheel = delayWheel;
+        this.delayData = delayData;
     }
 
     public void delayJob() {
@@ -46,7 +41,7 @@ public class DelayService {
 
         List<TimerTask> tasks = new ArrayList<>();
         delayInstances.forEach(d -> {
-            Delay delay = this.getDelayByTopic(d.getTopic());
+            Delay delay = this.delayData.getDelay(d.getNamespaceId(), d.getTopic());
             DelayTimerTask delayTimerTask = new DelayTimerTask(d.getId(), d.getSlotsId(), (long) d.getExecuteTime());
             delayTimerTask.setDelayId(d.getDelayId());
             delayTimerTask.setDelayParams(d.getDelayParams());
@@ -60,14 +55,5 @@ public class DelayService {
         });
 
         this.delayWheel.addTimerTask(tasks);
-    }
-
-    private Delay getDelayByTopic(String topic) {
-        Delay delay = delayMaps.get(topic);
-        if (Objects.isNull(delay)) {
-            delay = this.delayDAO.findByTopic(topic);
-            this.delayMaps.put(topic, delay);
-        }
-        return delay;
     }
 }

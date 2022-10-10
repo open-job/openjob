@@ -24,6 +24,11 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public Long save(DelayInstance delayInstance) {
+        return this.delayInstanceRepository.save(delayInstance).getId();
+    }
+
+    @Override
     public List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time) {
         return this.delayInstanceRepository.findBySlotsIdInAndStatusAndAndExecuteTimeLessThanEqual(slotIds, InstanceStatusEnum.WAITING.getStatus(), time);
     }

@@ -62,10 +62,10 @@ public class MasterStartContainerRequest implements Serializable {
     }
 
     public String getTaskUniqueId() {
-        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
     }
 
     public String getParentTaskUniqueId() {
-        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.parentTaskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.parentTaskId);
     }
 }

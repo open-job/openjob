@@ -28,6 +28,9 @@ public class DelayInstance {
     @Column(name = "app_id")
     private Long appId;
 
+    @Column(name = "task_id")
+    private String taskId;
+
     @Column(name = "topic")
     private String topic;
 

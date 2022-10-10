@@ -9,5 +9,21 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface DelayInstanceDAO {
+
+    /**
+     * List delay instance.
+     *
+     * @param slotIds slotIds
+     * @param time    time
+     * @return List
+     */
     List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time);
+
+    /**
+     * Save delay instance.
+     *
+     * @param delayInstance delayInstance
+     * @return Long
+     */
+    Long save(DelayInstance delayInstance);
 }
