@@ -13,12 +13,6 @@ import javax.validation.constraints.NotNull;
 public class DelayInstanceAddRequest {
 
     /**
-     * Namespace id.
-     */
-    @NotNull
-    private Long namespaceId;
-
-    /**
      * Delay task unique id.
      * If is null or blank, will to auto generate.
      */
