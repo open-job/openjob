@@ -16,7 +16,7 @@ public class DelayDAOImpl implements DelayDAO {
     }
 
     @Override
-    public Delay findByNamespaceIdAndTopic(Long namespaceId, String topic) {
+    public Delay findByNamespaceIdAndTopic(String topic) {
         return null;
     }
 }

@@ -23,10 +23,10 @@ public class DelayData {
         this.delayDAO = delayDAO;
     }
 
-    public Delay getDelay(Long namespaceId, String topic) {
-        String delayKey = CacheUtil.getDelayKey(namespaceId, topic);
+    public Delay getDelay(String topic) {
+        String delayKey = CacheUtil.getDelayKey(topic);
         return RedisUtil.orElseGet(delayKey, () -> {
-            Delay delay = this.delayDAO.findByNamespaceIdAndTopic(namespaceId, topic);
+            Delay delay = this.delayDAO.findByNamespaceIdAndTopic(topic);
             if (Objects.isNull(delay)) {
                 return new Delay();
             }

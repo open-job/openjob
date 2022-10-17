@@ -11,7 +11,7 @@ public class CacheUtil {
         return String.format("%s:%s", CacheConst.TOPIC_PREFIX, topic);
     }
 
-    public static String getDelayKey(Long namespaceId, String topic) {
-        return String.format("%s:%d:%s", CacheConst.DELAY_PREFIX, namespaceId, topic);
+    public static String getDelayKey(String topic) {
+        return String.format("%s:%s", CacheConst.DELAY_PREFIX, topic);
     }
 }
