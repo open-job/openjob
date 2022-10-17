@@ -18,7 +18,7 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @Slf4j
-public class H2MemoryPersistence implements TaskPersistence {
+public class H2TaskMemoryPersistence implements TaskPersistence {
 
     /**
      * Connection pool.
@@ -28,7 +28,7 @@ public class H2MemoryPersistence implements TaskPersistence {
     /**
      * constructor.
      */
-    public H2MemoryPersistence() {
+    public H2TaskMemoryPersistence() {
         this.connectionPool = new H2ConnectionPool();
 
         try {

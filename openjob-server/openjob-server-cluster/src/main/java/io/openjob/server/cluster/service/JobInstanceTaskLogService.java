@@ -31,7 +31,7 @@ public class JobInstanceTaskLogService {
     public void handleInstanceTaskLog(WorkerJobInstanceTaskLogRequest logReq) {
         List<JobInstanceTaskLog> taskLogs = new ArrayList<>();
 
-        String taskUniqueId = TaskUtil.getUniqueId(logReq.getJobId(), logReq.getJobInstanceId(), logReq.getCircleId(), logReq.getTaskId());
+        String taskUniqueId = TaskUtil.getRandomUniqueId(logReq.getJobId(), logReq.getJobInstanceId(), logReq.getCircleId(), logReq.getTaskId());
         logReq.getFieldList().forEach(fields -> {
             JobInstanceTaskLog jobInstanceTaskLog = new JobInstanceTaskLog();
             jobInstanceTaskLog.setJobId(logReq.getJobId());

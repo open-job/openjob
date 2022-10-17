@@ -9,9 +9,10 @@ import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
-import io.openjob.server.scheduler.Scheduler;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
+import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.wheel.SchedulerWheel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,10 +35,13 @@ public class JobSchedulerService {
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
 
+    private final SchedulerWheel schedulerWheel;
+
     @Autowired
-    public JobSchedulerService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO) {
+    public JobSchedulerService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.schedulerWheel = schedulerWheel;
     }
 
     /**
@@ -55,7 +60,7 @@ public class JobSchedulerService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void scheduleCronJob(List<Long> currentSlots) {
-        Integer maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
+        int maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
         List<Job> jobs = jobDAO.listScheduledJobs(currentSlots, maxExecuteTime);
 
         // Create job instance.
@@ -67,14 +72,14 @@ public class JobSchedulerService {
                 Integer now = DateUtil.now();
 
                 // Calculate next execute time.
-                Integer nextExecuteTime = this.calculateNextExecuteTime(j, now);
+                int nextExecuteTime = this.calculateNextExecuteTime(j, now);
 
                 // Update next execute time.
                 j.setNextExecuteTime(nextExecuteTime);
                 j.setUpdateTime(now);
 
                 if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / 1000)) {
-                    this.createJobInstance(Arrays.asList(j));
+                    this.createJobInstance(Collections.singletonList(j));
 
                     // Update next execute time.
                     j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
@@ -111,23 +116,23 @@ public class JobSchedulerService {
             jobInstance.setLastReportTime(0);
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
-            TimerTask timerTask = new TimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime());
-            timerTask.setJobId(j.getId());
-            timerTask.setJobParams(j.getParams());
-            timerTask.setAppid(j.getAppId());
-            timerTask.setWorkflowId(j.getWorkflowId());
-            timerTask.setProcessorInfo(j.getProcessorInfo());
-            timerTask.setProcessorType(j.getProcessorType());
-            timerTask.setExecuteType(j.getExecuteType());
-            timerTask.setFailRetryTimes(j.getFailRetryTimes());
-            timerTask.setFailRetryInterval(j.getFailRetryInterval());
-            timerTask.setConcurrency(j.getConcurrency());
-            timerTask.setTimeExpressionType(j.getTimeExpressionType());
-            timerTask.setTimeExpression(j.getTimeExpression());
-            timerTasks.add(timerTask);
+            SchedulerTimerTask schedulerTask = new SchedulerTimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime());
+            schedulerTask.setJobId(j.getId());
+            schedulerTask.setJobParams(j.getParams());
+            schedulerTask.setAppid(j.getAppId());
+            schedulerTask.setWorkflowId(j.getWorkflowId());
+            schedulerTask.setProcessorInfo(j.getProcessorInfo());
+            schedulerTask.setProcessorType(j.getProcessorType());
+            schedulerTask.setExecuteType(j.getExecuteType());
+            schedulerTask.setFailRetryTimes(j.getFailRetryTimes());
+            schedulerTask.setFailRetryInterval(j.getFailRetryInterval());
+            schedulerTask.setConcurrency(j.getConcurrency());
+            schedulerTask.setTimeExpressionType(j.getTimeExpressionType());
+            schedulerTask.setTimeExpression(j.getTimeExpression());
+            timerTasks.add(schedulerTask);
         });
 
-        Scheduler.addTimerTask(timerTasks);
+        this.schedulerWheel.addTimerTask(timerTasks);
     }
 
     private Integer calculateNextExecuteTime(Job job, Integer now) throws ParseException {

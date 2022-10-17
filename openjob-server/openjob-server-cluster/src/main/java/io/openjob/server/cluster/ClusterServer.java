@@ -11,6 +11,7 @@ import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ServerActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
+import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +23,13 @@ import org.springframework.stereotype.Component;
 public class ClusterServer {
     private final ActorSystem actorSystem;
     private final StartService serverService;
+    private final SchedulerProperties schedulerProperties;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, StartService serverService) {
+    public ClusterServer(ActorSystem actorSystem, StartService serverService, SchedulerProperties schedulerProperties) {
         this.actorSystem = actorSystem;
         this.serverService = serverService;
+        this.schedulerProperties = schedulerProperties;
     }
 
     /**
@@ -87,5 +90,13 @@ public class ClusterServer {
                 .withRouter(new RoundRobinPool(2))
                 .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_INSTANCE_LOG);
         actorSystem.actorOf(instanceLogProps, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG);
+
+        if (this.schedulerProperties.getDelay().getEnable()) {
+            this.createDelayActor();
+        }
+    }
+
+    public void createDelayActor() {
+
     }
 }

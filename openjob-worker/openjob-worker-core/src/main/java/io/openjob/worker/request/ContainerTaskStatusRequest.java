@@ -28,6 +28,6 @@ public class ContainerTaskStatusRequest implements Serializable {
     }
 
     public String getTaskUniqueId() {
-        return TaskUtil.getUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
     }
 }

@@ -150,7 +150,7 @@ public class MapReduceTaskMaster extends DistributeTaskMaster {
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
         task.setCircleId(this.circleIdGenerator.get());
-        String uniqueId = TaskUtil.getUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
+        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
         task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
         task.setWorkerAddress(this.localWorkerAddress);

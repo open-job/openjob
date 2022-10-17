@@ -22,12 +22,12 @@ import io.openjob.worker.actor.WorkerPersistentRoutingActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.delay.DelayStarter;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
@@ -79,6 +79,8 @@ public class OpenjobWorker implements InitializingBean {
 
         this.doHeartbeat();
 
+        this.startDelayJob();
+
         // Shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
@@ -107,7 +109,23 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     public void shutdown() {
+        // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
+
+        // Stop delay job.
+        DelayStarter.INSTANCE.stop();
+    }
+
+    private void startDelayJob() {
+        Boolean delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
+
+        // Delay job is disable.
+        if (!delayEnable) {
+            return;
+        }
+
+        // Start delay job.
+        DelayStarter.INSTANCE.init();
     }
 
     private void doHeartbeat() {

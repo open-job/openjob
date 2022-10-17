@@ -21,6 +21,7 @@ public class WorkerConstant {
     public static final String WORKER_HOSTNAME = "worker.hostname";
     public static final String WORKER_PORT = "worker.port";
     public static final String WORKER_APPID = "worker.appid";
+    public static final String WORKER_DELAY_ENABLE = "worker.delay.enable";
     public static final String WORKER_AKKA_CONFIG_FILE = "worker.akka.file";
     public static final String WORKER_HEARTBEAT_ACTOR_NUM = "worker.heartbeat.actor.num";
     public static final String WORKER_TASK_MASTER_ACTOR_NUM = "worker.task.master.actor.num";
@@ -28,6 +29,9 @@ public class WorkerConstant {
     public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "worker.persistent.actor.num";
     public static final String WORKER_TASK_PERSISTENT_ROUTING_ACTOR_NUM = "worker.persistent.routing.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "worker.heartbeat.interval";
+    public static final String WORKER_DELAY_PULL_SIZE = "worker.delay.pull.size";
+    public static final String WORKER_DELAY_PULL_SLEEP = "worker.delay.pull.sleep";
+    public static final String WORKER_DELAY_PULL_STEP = "worker.delay.pull.step";
 
     /**
      * Default worker config.
@@ -40,6 +44,10 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ROUTING_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
+
+    public static final Integer DEFAULT_WORKER_DELAY_PULL_SIZE = 10;
+    public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
+    public static final Long default_WORKER_DELAY_PULL_STEP = 500L;
 
     /**
      * Task
