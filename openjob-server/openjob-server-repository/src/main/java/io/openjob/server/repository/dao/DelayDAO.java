@@ -9,5 +9,5 @@ import io.openjob.server.repository.entity.Delay;
 public interface DelayDAO {
     Long save(Delay delay);
 
-    Delay findByNamespaceIdAndTopic(Long namespaceId, String topic);
+    Delay findByNamespaceIdAndTopic(String topic);
 }

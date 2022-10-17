@@ -1,20 +1,17 @@
 package io.openjob.server.scheduler.service;
 
-import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.request.WorkerDelayPullItemRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
-import io.openjob.common.util.DateUtil;
-import io.openjob.common.util.TaskUtil;
-import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
-import io.openjob.server.repository.entity.Delay;
-import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.manager.DelayInstanceManager;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +31,13 @@ import java.util.Objects;
 public class DelayInstanceService {
     private final DelayInstanceDAO delayInstanceDAO;
     private final DelayData delayData;
+    private final DelayInstanceManager instanceManager;
 
     @Autowired
-    public DelayInstanceService(DelayInstanceDAO delayInstanceDAO, DelayData delayData) {
+    public DelayInstanceService(DelayInstanceDAO delayInstanceDAO, DelayData delayData, DelayInstanceManager instanceManager) {
         this.delayInstanceDAO = delayInstanceDAO;
         this.delayData = delayData;
+        this.instanceManager = instanceManager;
     }
 
     public ServerDelayPullResponse pullInstance(WorkerDelayPullRequest pullRequest) {
@@ -53,35 +52,15 @@ public class DelayInstanceService {
     }
 
     public ServerDelayAddResponse addDelayInstance(WorkerDelayAddRequest addRequest) {
-        String taskId = addRequest.getTaskId();
-        if (Objects.isNull(taskId)) {
-            taskId = TaskUtil.getRandomUniqueId();
-        }
-
         ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse(addRequest.getDeliveryId());
-        Delay delay = this.delayData.getDelay(addRequest.getNamespaceId(), addRequest.getTopic());
-        if (Objects.isNull(delay.getId())) {
-            log.warn("Topic({}) is not exist!", addRequest.getTopic());
-            return serverDelayAddResponse;
-        }
-
-        int now = DateUtil.now();
-        DelayInstance delayInstance = new DelayInstance();
-        delayInstance.setNamespaceId(addRequest.getNamespaceId());
-        delayInstance.setAppId(delay.getAppId());
-        delayInstance.setTaskId(taskId);
-        delayInstance.setTopic(addRequest.getTopic());
-        delayInstance.setDelayId(delay.getId());
-        delayInstance.setDelayParams(addRequest.getParams());
-        delayInstance.setDelayExtra(addRequest.getExtra());
-        delayInstance.setExecuteTime(addRequest.getExecuteTime());
-        delayInstance.setCreateTime(now);
-        delayInstance.setUpdateTime(now);
-        delayInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
-        delayInstance.setSlotsId(SlotsUtil.getSlotsId(taskId));
-        this.delayInstanceDAO.save(delayInstance);
-
-        serverDelayAddResponse.setTaskId(taskId);
+        DelayInstanceAddRequestDTO addRequestDTO = new DelayInstanceAddRequestDTO();
+        addRequestDTO.setTaskId(addRequest.getTaskId());
+        addRequestDTO.setTopic(addRequest.getTopic());
+        addRequestDTO.setParams(addRequest.getParams());
+        addRequestDTO.setExtra(addRequest.getExtra());
+        addRequestDTO.setExecuteTime(addRequest.getExecuteTime());
+        DelayInstanceAddResponseDTO addResponseDTO = this.instanceManager.add(addRequestDTO);
+        serverDelayAddResponse.setTaskId(addResponseDTO.getTaskId());
         return serverDelayAddResponse;
     }
 
