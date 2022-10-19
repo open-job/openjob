@@ -1,5 +1,6 @@
 package io.openjob.common.response;
 
+import io.openjob.common.constant.StatusEnum;
 import io.openjob.common.util.DateUtil;
 import lombok.Data;
 
@@ -11,8 +12,6 @@ import java.io.Serializable;
  */
 @Data
 public class Result<T> implements Serializable {
-    public static final Integer SUCCESS = 0;
-    public static final Integer FAIL = 1;
 
     /**
      * data
@@ -22,7 +21,7 @@ public class Result<T> implements Serializable {
     /**
      * status
      */
-    private Integer status = SUCCESS;
+    private Integer status = StatusEnum.SUCCESS.getStatus();
 
     /**
      * code
@@ -87,7 +86,7 @@ public class Result<T> implements Serializable {
     }
 
     public static <T> Result<T> fail(String message) {
-        return new Result<>(null, FAIL, 0, message);
+        return new Result<>(null, StatusEnum.FAIL.getStatus(), 0, message);
     }
 
     /**

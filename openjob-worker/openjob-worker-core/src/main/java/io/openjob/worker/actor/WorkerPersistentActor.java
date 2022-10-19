@@ -2,6 +2,7 @@ package io.openjob.worker.actor;
 
 import akka.actor.ActorSelection;
 import akka.persistence.AbstractPersistentActorWithAtLeastOnceDelivery;
+import io.openjob.common.constant.StatusEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
@@ -57,7 +58,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
     }
 
     public void handleResult(Result<?> result) {
-        if (Result.FAIL.equals(result.getStatus()) || Objects.isNull(result.getData())) {
+        if (StatusEnum.FAIL.getStatus().equals(result.getStatus()) || Objects.isNull(result.getData())) {
             log.error("Handle result fail! message={}", result.getMessage());
             return;
         }

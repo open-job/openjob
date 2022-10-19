@@ -7,6 +7,7 @@ import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
+import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
@@ -27,13 +28,20 @@ public class DelayInstanceManager {
 
     private final DelayInstanceDAO delayInstanceDAO;
 
+    private final SchedulerProperties schedulerProperties;
+
     @Autowired
-    public DelayInstanceManager(DelayData delayData, DelayInstanceDAO delayInstanceDAO) {
+    public DelayInstanceManager(DelayData delayData, DelayInstanceDAO delayInstanceDAO, SchedulerProperties schedulerProperties) {
         this.delayData = delayData;
         this.delayInstanceDAO = delayInstanceDAO;
+        this.schedulerProperties = schedulerProperties;
     }
 
     public DelayInstanceAddResponseDTO add(DelayInstanceAddRequestDTO addRequest) {
+        if (!this.schedulerProperties.getDelay().getEnable()) {
+            throw new RuntimeException("Delay task is disable!");
+        }
+
         String taskId = addRequest.getTaskId();
         if (Objects.isNull(taskId)) {
             taskId = TaskUtil.getRandomUniqueId();

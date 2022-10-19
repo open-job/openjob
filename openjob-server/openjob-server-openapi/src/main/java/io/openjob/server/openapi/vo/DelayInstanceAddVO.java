@@ -1,5 +1,6 @@
 package io.openjob.server.openapi.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -9,9 +10,6 @@ import lombok.Data;
 @Data
 public class DelayInstanceAddVO {
 
-    /**
-     * Delay task unique id.
-     * If is null or blank, will to auto generate.
-     */
+    @ApiModelProperty("Delay task unique id. If is null or blank, will to auto generate.")
     private String taskId;
 }
