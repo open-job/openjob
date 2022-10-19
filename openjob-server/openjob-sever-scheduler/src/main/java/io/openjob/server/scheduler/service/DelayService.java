@@ -49,7 +49,7 @@ public class DelayService {
             List<Long> ids = Lists.newArrayList();
             List<TimerTask> tasks = new ArrayList<>();
             delayInstances.forEach(d -> {
-                Delay delay = this.delayData.getDelay(d.getNamespaceId(), d.getTopic());
+                Delay delay = this.delayData.getDelay(d.getTopic());
                 DelayTimerTask delayTimerTask = new DelayTimerTask(d.getId(), d.getSlotsId(), (long) d.getExecuteTime());
                 delayTimerTask.setDelayId(d.getDelayId());
                 delayTimerTask.setDelayParams(d.getDelayParams());

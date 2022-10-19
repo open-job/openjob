@@ -6,8 +6,6 @@ import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
-import io.openjob.server.repository.dao.DelayInstanceDAO;
-import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
@@ -16,9 +14,15 @@ import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,14 +33,10 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class DelayInstanceService {
-    private final DelayInstanceDAO delayInstanceDAO;
-    private final DelayData delayData;
     private final DelayInstanceManager instanceManager;
 
     @Autowired
-    public DelayInstanceService(DelayInstanceDAO delayInstanceDAO, DelayData delayData, DelayInstanceManager instanceManager) {
-        this.delayInstanceDAO = delayInstanceDAO;
-        this.delayData = delayData;
+    public DelayInstanceService(DelayInstanceManager instanceManager) {
         this.instanceManager = instanceManager;
     }
 
@@ -69,7 +69,7 @@ public class DelayInstanceService {
 
         // Pull from redis.
         String topicKey = CacheUtil.getTopicKey(item.getTopic());
-        List<Object> delayList = RedisUtil.getTemplate().opsForList().leftPop(topicKey, item.getSize());
+        List<Object> delayList = this.getDelayInstanceList(topicKey, item.getSize());
 
         // Not empty
         if (Objects.nonNull(delayList)) {
@@ -92,5 +92,27 @@ public class DelayInstanceService {
             });
         }
         return responses;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Object> getDelayInstanceList(String key, Integer count) {
+        final List<Object> txResults = RedisUtil.getTemplate().execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForList().range(key, 0, count - 1);
+                operations.opsForList().trim(key, count, -1);
+                return operations.exec();
+            }
+        });
+
+        if (CollectionUtils.isEmpty(txResults)) {
+            return Collections.emptyList();
+        }
+        Object result = txResults.get(0);
+        if (result instanceof ArrayList) {
+            return (List<Object>) result;
+        }
+        return Collections.emptyList();
     }
 }
