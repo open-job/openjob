@@ -216,7 +216,7 @@ CREATE TABLE `job_instance_task_log` (
                                          `task_unique_id` varchar(64) NOT NULL DEFAULT '',
                                          `worker_address` varchar(128) NOT NULL DEFAULT '',
                                          `content` longtext NOT NULL,
-                                         `time` bigint(13) NOT NULL,
+                                         `time` bigint(16) NOT NULL,
                                          PRIMARY KEY (`id`),
                                          KEY `idx_task_unique_id_time` (`task_unique_id`,`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -16642,8 +16642,15 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `namespace`;
 
 CREATE TABLE `namespace` (
-                             `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                             PRIMARY KEY (`id`)
+                             `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                             `name` varchar(64) NOT NULL DEFAULT '',
+                             `desc` varchar(64) NOT NULL DEFAULT '',
+                             `secret` varchar(64) NOT NULL DEFAULT '',
+                             `status` tinyint(2) NOT NULL DEFAULT '1',
+                             `create_time` bigint(12) NOT NULL,
+                             `update_time` bigint(12) NOT NULL,
+                             PRIMARY KEY (`id`),
+                             UNIQUE KEY `udx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

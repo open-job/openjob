@@ -13,3 +13,10 @@ git submodule update --remote  //更新到最新版本
 
 cd openjob-ui & git pull
 ```
+
+# repository
+- save
+- get
+- list
+- update
+- delete
