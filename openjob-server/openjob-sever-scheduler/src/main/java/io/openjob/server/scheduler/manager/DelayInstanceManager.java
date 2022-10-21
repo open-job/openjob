@@ -11,6 +11,8 @@ import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStopResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -72,5 +74,9 @@ public class DelayInstanceManager {
         DelayInstanceAddResponseDTO responseDTO = new DelayInstanceAddResponseDTO();
         responseDTO.setTaskId(taskId);
         return responseDTO;
+    }
+
+    public DelayInstanceStopResponseDTO stop(DelayInstanceStopRequestDTO stopRequest) {
+        return new DelayInstanceStopResponseDTO();
     }
 }
