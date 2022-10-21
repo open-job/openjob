@@ -1,5 +1,6 @@
 package io.openjob.common.util;
 
+import io.openjob.common.constant.StatusEnum;
 import io.openjob.common.response.Result;
 
 /**
@@ -8,6 +9,6 @@ import io.openjob.common.response.Result;
  */
 public class ResultUtil {
     public static Boolean isSuccess(Result<?> result) {
-        return Result.SUCCESS.equals(result.getStatus());
+        return StatusEnum.SUCCESS.getStatus().equals(result.getStatus());
     }
 }

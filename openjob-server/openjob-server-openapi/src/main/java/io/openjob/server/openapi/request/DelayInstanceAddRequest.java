@@ -1,5 +1,6 @@
 package io.openjob.server.openapi.request;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -12,32 +13,21 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DelayInstanceAddRequest {
 
-    /**
-     * Delay task unique id.
-     * If is null or blank, will to auto generate.
-     */
+    @ApiModelProperty("Delay task unique id. If is null or blank, will to auto generate.")
     private String taskId;
 
-    /**
-     * Topic
-     */
     @NotBlank
+    @ApiModelProperty("topic")
     private String topic;
 
-    /**
-     * Delay task params.
-     */
     @NotBlank
+    @ApiModelProperty("Delay task params.")
     private String params;
 
-    /**
-     * Delay task extra params.
-     */
+    @ApiModelProperty("Delay task extra params.")
     private String extra;
 
-    /**
-     * Delay task execute time.
-     */
     @NotNull
+    @ApiModelProperty("Delay task execute timestamp.")
     private Integer executeTime;
 }

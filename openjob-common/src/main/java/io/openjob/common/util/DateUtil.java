@@ -25,6 +25,10 @@ public class DateUtil {
         return (int) instant().getEpochSecond();
     }
 
+    public static Long timestamp() {
+        return instant().getEpochSecond();
+    }
+
     /**
      * 当前毫秒时间(Long)
      */
