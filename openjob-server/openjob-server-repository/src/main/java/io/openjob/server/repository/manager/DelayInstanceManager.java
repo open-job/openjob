@@ -1,4 +1,4 @@
-package io.openjob.server.scheduler.manager;
+package io.openjob.server.repository.manager;
 
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.util.DateUtil;
@@ -7,12 +7,9 @@ import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
-import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
-import io.openjob.server.scheduler.data.DelayData;
-import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
-import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
-import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
-import io.openjob.server.scheduler.dto.DelayInstanceStopResponseDTO;
+import io.openjob.server.repository.data.DelayData;
+import io.openjob.server.repository.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.repository.dto.DelayInstanceAddResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,19 +27,14 @@ public class DelayInstanceManager {
 
     private final DelayInstanceDAO delayInstanceDAO;
 
-    private final SchedulerProperties schedulerProperties;
 
     @Autowired
-    public DelayInstanceManager(DelayData delayData, DelayInstanceDAO delayInstanceDAO, SchedulerProperties schedulerProperties) {
+    public DelayInstanceManager(DelayData delayData, DelayInstanceDAO delayInstanceDAO) {
         this.delayData = delayData;
         this.delayInstanceDAO = delayInstanceDAO;
-        this.schedulerProperties = schedulerProperties;
     }
 
     public DelayInstanceAddResponseDTO add(DelayInstanceAddRequestDTO addRequest) {
-        if (!this.schedulerProperties.getDelay().getEnable()) {
-            throw new RuntimeException("Delay task is disable!");
-        }
 
         String taskId = addRequest.getTaskId();
         if (Objects.isNull(taskId)) {
@@ -74,9 +66,5 @@ public class DelayInstanceManager {
         DelayInstanceAddResponseDTO responseDTO = new DelayInstanceAddResponseDTO();
         responseDTO.setTaskId(taskId);
         return responseDTO;
-    }
-
-    public DelayInstanceStopResponseDTO stop(DelayInstanceStopRequestDTO stopRequest) {
-        return new DelayInstanceStopResponseDTO();
     }
 }

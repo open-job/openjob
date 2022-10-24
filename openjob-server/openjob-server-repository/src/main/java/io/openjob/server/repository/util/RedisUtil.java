@@ -1,4 +1,4 @@
-package io.openjob.server.scheduler.util;
+package io.openjob.server.repository.util;
 
 import io.openjob.common.SpringContext;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +24,7 @@ public class RedisUtil {
      * @param key      key
      * @param supplier supplier
      * @param duration duration
-     * @param <R>
+     * @param <R> r
      * @return R
      */
     @SuppressWarnings("unchecked")

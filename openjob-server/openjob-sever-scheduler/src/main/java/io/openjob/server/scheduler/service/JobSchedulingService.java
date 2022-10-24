@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,14 +30,14 @@ import java.util.List;
  */
 @Service
 @Log4j2
-public class JobSchedulerService {
+public class JobSchedulingService {
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
 
     private final SchedulerWheel schedulerWheel;
 
     @Autowired
-    public JobSchedulerService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel) {
+    public JobSchedulingService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.schedulerWheel = schedulerWheel;

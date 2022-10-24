@@ -31,7 +31,7 @@ public class Namespace {
     @Column(name = "secret")
     private String secret;
 
-    @Column(name = "secret")
+    @Column(name = "status")
     private Integer status;
 
     @Column(name = "create_time")
