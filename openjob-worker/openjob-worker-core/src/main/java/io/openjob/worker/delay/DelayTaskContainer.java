@@ -3,10 +3,8 @@ package io.openjob.worker.delay;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
-import org.graalvm.compiler.core.common.alloc.Trace;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;

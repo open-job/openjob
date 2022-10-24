@@ -48,6 +48,7 @@ public interface TaskPersistence {
      * Count task by status list.
      *
      * @param instanceId instanceId
+     * @param circleId circleId
      * @param statusList statusList
      * @return count
      * @throws SQLException SQLException
@@ -60,6 +61,7 @@ public interface TaskPersistence {
      * @param tasks         tasks
      * @param currentStatus currentStatus
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
 

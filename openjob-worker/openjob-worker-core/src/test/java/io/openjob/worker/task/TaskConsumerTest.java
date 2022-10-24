@@ -2,9 +2,7 @@ package io.openjob.worker.task;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -17,7 +15,6 @@ public class TaskConsumerTest {
     private MyTestTaskConsumer<MyTestTask> handler;
     private TaskQueue<MyTestTask> queues;
 
-    @BeforeEach
     public void before() {
         queues = new TaskQueue<>(1L, 256);
         handler = new MyTestTaskConsumer<>(
@@ -33,7 +30,6 @@ public class TaskConsumerTest {
         handler.start();
     }
 
-    @AfterEach
     public void after() {
         handler.stop();
     }
@@ -41,6 +37,8 @@ public class TaskConsumerTest {
 
     @Test
     public void testHandle() throws InterruptedException {
+        this.before();
+
         int max = (new Random()).nextInt(1000) + 1000;
         for (int i = 0; i < max; i++) {
             queues.submit(new MyTestTask("task" + i));
@@ -48,6 +46,8 @@ public class TaskConsumerTest {
 
         Thread.sleep(3000L);
         Assertions.assertEquals(handler.getCounter().get(), max);
+
+        this.after();
     }
 
     @Data
