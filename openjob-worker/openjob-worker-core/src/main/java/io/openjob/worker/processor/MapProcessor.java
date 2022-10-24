@@ -62,6 +62,8 @@ public interface MapProcessor extends BaseProcessor {
     }
 
     /**
+     * Stop processor.
+     *
      * @param context context
      */
     @Override

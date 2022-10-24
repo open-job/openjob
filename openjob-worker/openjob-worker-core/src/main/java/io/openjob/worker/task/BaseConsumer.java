@@ -22,6 +22,8 @@ public abstract class BaseConsumer<T> {
     protected String pollThreadName;
     protected Thread pollThread;
     protected TaskQueue<T> queues;
+
+    protected ThreadPoolExecutor pullExecutor;
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 
     public BaseConsumer(Long id,
@@ -59,7 +61,14 @@ public abstract class BaseConsumer<T> {
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
 
-        pollThread = new Thread(() -> {
+        this.pullExecutor = new ThreadPoolExecutor(
+                1,
+                1,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingDeque<>(1), r -> new Thread(r, "pull"));
+
+        this.pullExecutor.submit(() -> {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     List<T> tasks = this.pollTasks();
@@ -74,10 +83,15 @@ public abstract class BaseConsumer<T> {
             } catch (Throwable ex) {
                 System.out.println(ex.getMessage());
             }
-        }, this.pollThreadName + id);
-        pollThread.start();
+        });
     }
 
+    /**
+     * Consume.
+     *
+     * @param id    id
+     * @param tasks tasks
+     */
     public abstract void consume(Long id, List<T> tasks);
 
     public void stop() {
@@ -93,6 +107,10 @@ public abstract class BaseConsumer<T> {
 
         if (Objects.nonNull(this.queues)) {
             this.queues.clear();
+        }
+
+        if (Objects.nonNull(this.pullExecutor)) {
+            this.pullExecutor.shutdownNow();
         }
     }
 

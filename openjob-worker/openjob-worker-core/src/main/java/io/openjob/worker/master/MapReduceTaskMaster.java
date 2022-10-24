@@ -27,7 +27,7 @@ import java.util.List;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class MapReduceTaskMaster extends DistributeTaskMaster {
+public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     /**
      * Child tasks.

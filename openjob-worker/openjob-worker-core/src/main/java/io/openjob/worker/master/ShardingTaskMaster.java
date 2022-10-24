@@ -15,7 +15,7 @@ import java.util.Map;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ShardingTaskMaster extends DistributeTaskMaster {
+public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
     public ShardingTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }

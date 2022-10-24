@@ -18,7 +18,7 @@ public class ThreadLocalUtil {
         return JOB_CONTEXT_LOCAL.get();
     }
 
-    public static JobContext removeJobContext() {
-        return JOB_CONTEXT_LOCAL.get();
+    public static void removeJobContext() {
+        JOB_CONTEXT_LOCAL.remove();
     }
 }
