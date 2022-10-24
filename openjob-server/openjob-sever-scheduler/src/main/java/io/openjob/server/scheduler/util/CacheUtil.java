@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.util;
 
+
 import io.openjob.server.scheduler.constant.CacheConst;
 
 /**
@@ -9,9 +10,5 @@ import io.openjob.server.scheduler.constant.CacheConst;
 public class CacheUtil {
     public static String getTopicKey(String topic) {
         return String.format("%s:%s", CacheConst.TOPIC_PREFIX, topic);
-    }
-
-    public static String getDelayKey(String topic) {
-        return String.format("%s:%s", CacheConst.DELAY_PREFIX, topic);
     }
 }

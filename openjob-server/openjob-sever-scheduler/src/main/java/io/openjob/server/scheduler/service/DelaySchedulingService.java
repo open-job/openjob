@@ -8,7 +8,7 @@ import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
-import io.openjob.server.scheduler.data.DelayData;
+import io.openjob.server.repository.data.DelayData;
 import io.openjob.server.scheduler.timer.DelayTimerTask;
 import io.openjob.server.scheduler.timer.TimerTask;
 import io.openjob.server.scheduler.wheel.DelayWheel;
@@ -23,14 +23,14 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @Service
-public class DelayService {
+public class DelaySchedulingService {
     private final DelayInstanceDAO delayInstanceDAO;
 
     private final DelayWheel delayWheel;
 
     private final DelayData delayData;
 
-    public DelayService(DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel, DelayData delayData) {
+    public DelaySchedulingService(DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel, DelayData delayData) {
         this.delayInstanceDAO = delayInstanceDAO;
         this.delayWheel = delayWheel;
         this.delayData = delayData;

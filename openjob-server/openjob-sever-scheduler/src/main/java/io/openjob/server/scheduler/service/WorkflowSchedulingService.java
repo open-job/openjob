@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-public class WorkflowService {
+public class WorkflowSchedulingService {
     public void workflowJob(){
 
     }

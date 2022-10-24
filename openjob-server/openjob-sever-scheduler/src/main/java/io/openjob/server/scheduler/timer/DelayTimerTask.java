@@ -2,7 +2,7 @@ package io.openjob.server.scheduler.timer;
 
 import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
-import io.openjob.server.scheduler.util.RedisUtil;
+import io.openjob.server.repository.util.RedisUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

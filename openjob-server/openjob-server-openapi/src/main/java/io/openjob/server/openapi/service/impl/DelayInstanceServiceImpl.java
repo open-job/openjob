@@ -3,9 +3,9 @@ package io.openjob.server.openapi.service.impl;
 import io.openjob.server.openapi.request.DelayInstanceAddRequest;
 import io.openjob.server.openapi.service.DelayInstanceService;
 import io.openjob.server.openapi.vo.DelayInstanceAddVO;
-import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
-import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
-import io.openjob.server.scheduler.manager.DelayInstanceManager;
+import io.openjob.server.repository.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.repository.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.repository.manager.DelayInstanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
