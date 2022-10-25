@@ -32,6 +32,11 @@ public class LogAppender {
         logTaskConsumer.start();
     }
 
+    /**
+     * Append content.
+     *
+     * @param logContentDTO logContentDTO
+     */
     public void append(LogContentDTO logContentDTO) {
         try {
             logQueue.submit(logContentDTO);

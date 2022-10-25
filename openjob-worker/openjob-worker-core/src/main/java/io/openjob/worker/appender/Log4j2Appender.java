@@ -30,6 +30,14 @@ import java.util.Optional;
 public class Log4j2Appender extends AbstractAppender {
     private DateTimeFormatter formatter;
 
+    /**
+     * Log4j2Appender
+     *
+     * @param name             name
+     * @param filter           filter
+     * @param layout           layout
+     * @param ignoreExceptions ignoreExceptions
+     */
     public Log4j2Appender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
         // Must use deprecated method.
         // Compatible with lower version.
@@ -77,6 +85,11 @@ public class Log4j2Appender extends AbstractAppender {
         LogAppender.INSTANCE.append(logContent);
     }
 
+    /**
+     * Set time formatter.
+     *
+     * @param formatter formatter
+     */
     public void setFormatter(DateTimeFormatter formatter) {
         this.formatter = formatter;
     }
