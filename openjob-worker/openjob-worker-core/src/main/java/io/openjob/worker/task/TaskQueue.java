@@ -16,17 +16,35 @@ public class TaskQueue<T> {
     private final Integer capacity;
     private final BlockingQueue<T> queues;
 
+    /**
+     * Task queue.
+     *
+     * @param id       id
+     * @param capacity capacity
+     */
     public TaskQueue(Long id, Integer capacity) {
         this.id = id;
         this.capacity = capacity;
         this.queues = new LinkedBlockingQueue<>(capacity);
     }
 
+    /**
+     * Submit
+     *
+     * @param task task
+     * @throws InterruptedException InterruptedException
+     */
     public void submit(T task) throws InterruptedException {
         assert task != null;
         queues.put(task);
     }
 
+    /**
+     * Poll
+     *
+     * @param size size
+     * @return List
+     */
     public List<T> poll(Integer size) {
         List<T> list = Lists.newLinkedList();
         for (int i = 0; i < size; i++) {
@@ -40,18 +58,36 @@ public class TaskQueue<T> {
         return list;
     }
 
+    /**
+     * Clear
+     */
     public void clear() {
         queues.clear();
     }
 
+    /**
+     * Size
+     *
+     * @return Integer
+     */
     public Integer size() {
         return queues.size();
     }
 
+    /**
+     * Get id.
+     *
+     * @return Long
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Get capacity.
+     *
+     * @return Integer
+     */
     public Integer getCapacity() {
         return capacity;
     }

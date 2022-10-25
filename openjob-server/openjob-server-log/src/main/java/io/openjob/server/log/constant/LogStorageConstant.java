@@ -5,11 +5,11 @@ package io.openjob.server.log.constant;
  * @since 1.0.0
  */
 public class LogStorageConstant {
-    public final static String H2 = "h2";
-    public final static String MYSQL = "mysql";
-    public final static String TIDB = "tidb";
-    public final static String ELASTICSEARCH = "elasticsearch";
-    public final static String ELASTICSEARCH7 = "elasticsearch7";
-    public final static String SLS = "sls";
-    public final static String CLS = "cls";
+    public static final String H2 = "h2";
+    public static final String MYSQL = "mysql";
+    public static final String TIDB = "tidb";
+    public static final String ELASTICSEARCH = "elasticsearch";
+    public static final String ELASTICSEARCH7 = "elasticsearch7";
+    public static final String SLS = "sls";
+    public static final String CLS = "cls";
 }

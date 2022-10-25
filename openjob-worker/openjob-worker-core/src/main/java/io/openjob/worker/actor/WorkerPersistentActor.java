@@ -41,6 +41,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
                 .build();
     }
 
+    /**
+     * Handle batch task status.
+     *
+     * @param batchRequest batch request.
+     */
     public void handleBatchTaskStatus(ContainerBatchTaskStatusRequest batchRequest) {
         ActorSelection masterSelection = getContext().actorSelection(batchRequest.getMasterActorPath());
         deliver(masterSelection, deliveryId -> {
@@ -49,6 +54,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         });
     }
 
+    /**
+     * Handle job instance status request.
+     *
+     * @param jobInstanceStatusReq status request.
+     */
     public void handleJobInstanceStatus(WorkerJobInstanceStatusRequest jobInstanceStatusReq) {
         ActorSelection serverWorkerActor = WorkerUtil.getServerWorkerJobInstanceActor();
         deliver(serverWorkerActor, deliveryId -> {
@@ -57,6 +67,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         });
     }
 
+    /**
+     * Handle result
+     *
+     * @param result result.
+     */
     public void handleResult(Result<?> result) {
         if (StatusEnum.FAIL.getStatus().equals(result.getStatus()) || Objects.isNull(result.getData())) {
             log.error("Handle result fail! message={}", result.getMessage());

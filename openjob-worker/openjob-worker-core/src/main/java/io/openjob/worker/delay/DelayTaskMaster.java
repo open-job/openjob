@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class DelayTaskMaster {
     private ExecutorService executorService;
 
+    /**
+     * Init
+     */
     public void init() {
         executorService = new ThreadPoolExecutor(
                 1,
@@ -25,6 +28,9 @@ public class DelayTaskMaster {
         this.executorService.submit(new DelayTaskMasterExecutor());
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
         this.executorService.shutdown();
     }

@@ -20,6 +20,11 @@ public class ThreadTaskContainer extends BaseTaskContainer {
 
     protected ExecutorService executorService;
 
+    /**
+     * New thread task container.
+     *
+     * @param startRequest start request.
+     */
     public ThreadTaskContainer(MasterStartContainerRequest startRequest) {
         super(startRequest);
 

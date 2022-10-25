@@ -52,6 +52,9 @@ public class MasterStartContainerRequest implements Serializable {
     private byte[] task;
     private List<String> workerAddresses;
 
+    /**
+     * New MasterStartContainerRequest
+     */
     public MasterStartContainerRequest() {
         this.jobId = 0L;
         this.jobInstanceId = 0L;

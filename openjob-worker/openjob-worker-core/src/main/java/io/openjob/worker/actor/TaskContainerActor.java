@@ -53,11 +53,21 @@ public class TaskContainerActor extends BaseActor {
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
+    /**
+     * Handle start container
+     *
+     * @param batchStartReq start request.
+     */
     public void handleBatchStartContainer(MasterBatchStartContainerRequest batchStartReq) {
         CONTAINER_EXECUTOR.submit(new ContainerRunnable(batchStartReq));
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
+    /**
+     * Handle stop container.
+     *
+     * @param stopReq stop request.
+     */
     public void handleStopContainer(MasterStopContainerRequest stopReq) {
         TaskContainer taskContainer = TaskContainerPool.get(stopReq.getJobInstanceId());
         taskContainer.stop();
@@ -67,6 +77,11 @@ public class TaskContainerActor extends BaseActor {
         getSender().tell(Result.success(workerResponse), getSelf());
     }
 
+    /**
+     * Handle destroy container.
+     *
+     * @param destroyReq destroy request
+     */
     public void handleDestroyContainer(MasterDestroyContainerRequest destroyReq) {
         TaskContainer taskContainer = TaskContainerPool.get(destroyReq.getJobInstanceId());
         taskContainer.destroy();
@@ -76,6 +91,11 @@ public class TaskContainerActor extends BaseActor {
         getSender().tell(Result.success(workerResponse), getSelf());
     }
 
+    /**
+     * Handle start container.
+     *
+     * @param startReq start container.
+     */
     private void startContainer(MasterStartContainerRequest startReq) {
         JobContext jobContext = new JobContext();
         jobContext.setJobId(startReq.getJobId());

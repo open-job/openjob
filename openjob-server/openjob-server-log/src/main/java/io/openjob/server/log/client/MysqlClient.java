@@ -12,6 +12,11 @@ import java.util.Objects;
 public class MysqlClient extends AbstractJdbcHikariClient {
     private final LogProperties.MysqlProperties mysqlProperties;
 
+    /**
+     * New mysql client.
+     *
+     * @param mysqlProperties mysql properties
+     */
     public MysqlClient(LogProperties.MysqlProperties mysqlProperties) {
         this.mysqlProperties = mysqlProperties;
 

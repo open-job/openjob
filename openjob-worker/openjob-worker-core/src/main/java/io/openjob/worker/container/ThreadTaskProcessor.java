@@ -30,6 +30,9 @@ public class ThreadTaskProcessor implements Runnable {
         this.start();
     }
 
+    /**
+     * Start
+     */
     public void start() {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);

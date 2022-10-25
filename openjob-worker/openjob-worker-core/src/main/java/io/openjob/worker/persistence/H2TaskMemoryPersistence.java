@@ -40,47 +40,46 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
 
     @Override
     public void initTable() throws Exception {
-        String createSql = "CREATE TABLE IF NOT EXISTS `task` (" +
-                "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                "  `job_id` bigint(20) NOT NULL," +
-                "  `instance_id` bigint(20) NOT NULL," +
-                "  `circle_id` bigint(20) NOT NULL DEFAULT '0'," +
-                "  `task_id` varchar(64) NOT NULL DEFAULT ''," +
-                "  `task_name` varchar(128) NOT NULL DEFAULT ''," +
-                "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0'," +
-                "  `status` tinyint(2) NOT NULL DEFAULT '1'," +
-                "  `worker_address` varchar(64) NOT NULL DEFAULT ''," +
-                "  `result` longtext," +
-                "  `task_body` blob," +
-                "  `create_time` int(11) NOT NULL," +
-                "  `update_time` int(11) NOT NULL," +
-                "  PRIMARY KEY (`id`)," +
-                "  UNIQUE KEY `udx_task_id` (`task_id`)," +
-                "  KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)" +
-                ")";
+        String createSql = "CREATE TABLE IF NOT EXISTS `task` ("
+                + "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                + "  `job_id` bigint(20) NOT NULL,"
+                + "  `instance_id` bigint(20) NOT NULL,"
+                + "  `circle_id` bigint(20) NOT NULL DEFAULT '0',"
+                + "  `task_id` varchar(64) NOT NULL DEFAULT '',"
+                + "  `task_name` varchar(128) NOT NULL DEFAULT '',"
+                + "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0',"
+                + "  `status` tinyint(2) NOT NULL DEFAULT '1',"
+                + "  `worker_address` varchar(64) NOT NULL DEFAULT '',"
+                + "  `result` longtext,"
+                + "  `task_body` blob,"
+                + "  `create_time` int(11) NOT NULL,"
+                + "  `update_time` int(11) NOT NULL,"
+                + "  PRIMARY KEY (`id`),"
+                + "  UNIQUE KEY `udx_task_id` (`task_id`),"
+                + "  KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)"
+                + ")";
 
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(createSql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(createSql)) {
             ps.executeUpdate();
         }
     }
 
     @Override
     public Integer batchSave(List<Task> tasks) throws SQLException {
-        String sql = "INSERT INTO task (" +
-                "job_id," +
-                "instance_id," +
-                "circle_id," +
-                "task_id," +
-                "task_name," +
-                "task_parent_id," +
-                "status," +
-                "worker_address," +
-                "result," +
-                "task_body," +
-                "create_time," +
-                "update_time" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO task ("
+                + "job_id,"
+                + "instance_id,"
+                + "circle_id,"
+                + "task_id,"
+                + "task_name,"
+                + "task_parent_id,"
+                + "status,"
+                + "worker_address,"
+                + "result,"
+                + "task_body,"
+                + "create_time,"
+                + "update_time"
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -117,8 +116,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     public Task findByTaskId(String taskId) throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT * FROM task WHERE task_id=?";
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, taskId);
             rs = ps.executeQuery();
 
@@ -203,8 +201,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND circle_id=? AND status IN (%s)", statusStr);
 
         ResultSet rs = null;
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
             ps.setLong(2, circleId);
             rs = ps.executeQuery();
@@ -223,8 +220,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     public List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT * FROM task WHERE instance_id=? AND circle_id=? LIMIT ?";
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
             ps.setLong(2, circleId);
             ps.setLong(3, size);

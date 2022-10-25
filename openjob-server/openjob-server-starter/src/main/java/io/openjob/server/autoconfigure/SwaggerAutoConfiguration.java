@@ -13,6 +13,12 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @Configuration
 public class SwaggerAutoConfiguration {
+
+    /**
+     * Openapi.
+     *
+     * @return Docket
+     */
     @Bean
     public Docket createOpenapi() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -23,8 +29,13 @@ public class SwaggerAutoConfiguration {
                 .build();
     }
 
+    /**
+     * Admin api
+     *
+     * @return Docket
+     */
     @Bean
-    public Docket createAdmin() {
+    public Docket createAdminApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("admin")
                 .apiInfo(ApiInfo.DEFAULT)

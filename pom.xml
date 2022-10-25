@@ -97,7 +97,7 @@
                     <consoleOutput>true</consoleOutput>
                     <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
-                    <skip>true</skip>
+                    <skip>false</skip>
                     <failsOnError>false</failsOnError>
                     <linkXRef>true</linkXRef>
                     <violationSeverity>warning</violationSeverity>

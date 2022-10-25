@@ -16,13 +16,19 @@ import java.util.List;
  */
 @Slf4j
 public class TaskDAO {
-    public final static TaskDAO INSTANCE = new TaskDAO();
+    public static final TaskDAO INSTANCE = new TaskDAO();
     private final TaskPersistence taskPersistence;
 
     private TaskDAO() {
         this.taskPersistence = new H2TaskMemoryPersistence();
     }
 
+    /**
+     * Add
+     *
+     * @param task task
+     * @return Boolean
+     */
     public Boolean add(Task task) {
         try {
             Integer now = DateUtil.now();
@@ -36,6 +42,12 @@ public class TaskDAO {
         }
     }
 
+    /**
+     * Batch add.
+     *
+     * @param taskList taskList
+     * @return Integer
+     */
     public Integer batchAdd(List<Task> taskList) {
         try {
             int now = DateUtil.now();
@@ -51,6 +63,12 @@ public class TaskDAO {
         }
     }
 
+    /**
+     * Get by task id.
+     *
+     * @param taskId taskId
+     * @return Task
+     */
     public Task getByTaskId(String taskId) {
         try {
             return taskPersistence.findByTaskId(taskId);
@@ -60,6 +78,12 @@ public class TaskDAO {
         }
     }
 
+    /**
+     * Delete by task ids.
+     *
+     * @param taskIds task ids.
+     * @return effect rows.
+     */
     public Integer batchDeleteByTaskIds(List<String> taskIds) {
         try {
             return taskPersistence.batchDeleteByTaskIds(taskIds);
@@ -69,7 +93,13 @@ public class TaskDAO {
         }
     }
 
-
+    /**
+     * Batch update status by task id.
+     *
+     * @param tasks         tasks
+     * @param currentStatus update status.
+     * @return effect rows.
+     */
     public Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) {
         try {
             return taskPersistence.batchUpdateStatusByTaskId(tasks, currentStatus);
@@ -79,6 +109,14 @@ public class TaskDAO {
         }
     }
 
+    /**
+     * Get list.
+     *
+     * @param instanceId instance id.
+     * @param circleId   circle id.
+     * @param size       size
+     * @return List
+     */
     public List<Task> getList(Long instanceId, Long circleId, Long size) {
         try {
             return taskPersistence.findListByPageSize(instanceId, circleId, size);
@@ -88,7 +126,14 @@ public class TaskDAO {
         }
     }
 
-
+    /**
+     * Count task.
+     *
+     * @param instanceId instance id.
+     * @param circleId   circle id.
+     * @param statusList status list.
+     * @return count numbers.
+     */
     public Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) {
         try {
             return taskPersistence.countTask(instanceId, circleId, statusList);

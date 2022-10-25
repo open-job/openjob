@@ -34,6 +34,12 @@ public class DelayInstanceManager {
         this.delayInstanceDAO = delayInstanceDAO;
     }
 
+    /**
+     * Add
+     *
+     * @param addRequest add request.
+     * @return DelayInstanceAddResponseDTO
+     */
     public DelayInstanceAddResponseDTO add(DelayInstanceAddRequestDTO addRequest) {
 
         String taskId = addRequest.getTaskId();

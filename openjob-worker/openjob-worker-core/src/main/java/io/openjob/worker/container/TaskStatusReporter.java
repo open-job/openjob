@@ -29,6 +29,11 @@ public class TaskStatusReporter {
         TASK_CONSUMER.start();
     }
 
+    /**
+     * Report status request.
+     *
+     * @param statusRequest status request.
+     */
     public static void report(ContainerTaskStatusRequest statusRequest) {
         try {
             TASK_QUEUE.submit(statusRequest);

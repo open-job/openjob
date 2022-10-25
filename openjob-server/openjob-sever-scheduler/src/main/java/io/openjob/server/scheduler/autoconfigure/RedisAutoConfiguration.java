@@ -20,6 +20,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration(proxyBeanMethods = false)
 public class RedisAutoConfiguration {
 
+    /**
+     * Redis template.
+     *
+     * @param redisConnectionFactory redis connection factory.
+     * @return RedisTemplate
+     */
     @Bean
     @ConditionalOnMissingBean(name = "redisTemplate")
     @ConditionalOnProperty(prefix = "openjob.scheduler.delay", name = "enable", havingValue = "true")

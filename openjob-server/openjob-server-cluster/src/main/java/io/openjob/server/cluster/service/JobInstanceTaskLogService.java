@@ -28,6 +28,10 @@ public class JobInstanceTaskLogService {
         this.logDAO = logDAO;
     }
 
+    /**
+     * Handle instance log.
+     * @param logReq log request.
+     */
     public void handleInstanceTaskLog(WorkerJobInstanceTaskLogRequest logReq) {
         List<JobInstanceTaskLog> taskLogs = new ArrayList<>();
 

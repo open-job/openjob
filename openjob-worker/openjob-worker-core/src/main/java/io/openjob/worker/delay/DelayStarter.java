@@ -9,15 +9,23 @@ public class DelayStarter {
 
     private final DelayTaskMaster delayTaskMaster;
 
+    /**
+     * Delay starter.
+     */
     private DelayStarter() {
         this.delayTaskMaster = new DelayTaskMaster();
     }
 
-
+    /**
+     * Init
+     */
     public void init() {
         this.delayTaskMaster.init();
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
         // Stop  delay master.
         this.delayTaskMaster.stop();

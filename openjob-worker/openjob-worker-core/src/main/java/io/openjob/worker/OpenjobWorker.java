@@ -70,6 +70,11 @@ public class OpenjobWorker implements InitializingBean {
         this.init();
     }
 
+    /**
+     * Init
+     *
+     * @throws Exception Exception
+     */
     public synchronized void init() throws Exception {
         this.checkConfig();
 
@@ -85,6 +90,11 @@ public class OpenjobWorker implements InitializingBean {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
+    /**
+     * Start
+     *
+     * @throws Exception Exception
+     */
     public void start() throws Exception {
         String workerAddress = this.getWorkerAddress();
         String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
@@ -108,6 +118,9 @@ public class OpenjobWorker implements InitializingBean {
         }
     }
 
+    /**
+     * Shutdown
+     */
     public void shutdown() {
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
@@ -206,16 +219,32 @@ public class OpenjobWorker implements InitializingBean {
         actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
     }
 
+    /**
+     * Get worker address.
+     *
+     * @return String
+     */
     public String getWorkerAddress() {
         String hostname = this.getWorkerHostname();
         int port = this.getWorkerPort();
         return String.format("%s:%d", hostname, port);
     }
 
+    /**
+     * Get actor system.
+     *
+     * @return ActorSystem
+     */
     public static ActorSystem getActorSystem() {
         return actorSystem;
     }
 
+    /**
+     * At least once delivery.
+     *
+     * @param msg    msg
+     * @param sender sender
+     */
     public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
         persistentRoutingRef.tell(msg, sender);
     }

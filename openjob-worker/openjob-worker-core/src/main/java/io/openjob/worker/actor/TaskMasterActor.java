@@ -31,6 +31,11 @@ public class TaskMasterActor extends BaseActor {
                 .build();
     }
 
+    /**
+     * Submit job instance.
+     *
+     * @param submitReq submit request.
+     */
     public void submitJobInstance(ServerSubmitJobInstanceRequest submitReq) {
         if (TaskMasterPool.contains(submitReq.getJobInstanceId())) {
             throw new RuntimeException(String.format("Task master is running! jobInstanceId=%s", submitReq.getJobInstanceId()));
@@ -57,6 +62,11 @@ public class TaskMasterActor extends BaseActor {
         taskMaster.submit();
     }
 
+    /**
+     * Stop job instance.
+     *
+     * @param stopReq stop request.
+     */
     public void stopJobInstance(ServerStopJobInstanceRequest stopReq) {
         if (!TaskMasterPool.contains(stopReq.getJobInstanceId())) {
             throw new RuntimeException(String.format("Task master is not running! jobInstanceId=%s", stopReq.getJobInstanceId()));
@@ -67,10 +77,20 @@ public class TaskMasterActor extends BaseActor {
         taskMaster.stop();
     }
 
+    /**
+     * Check job instance.
+     *
+     * @param checkTaskMasterRequest check request.
+     */
     public void checkJobInstance(ServerCheckTaskMasterRequest checkTaskMasterRequest) {
 
     }
 
+    /**
+     * Hande container task status.
+     *
+     * @param batchTaskStatusReq status request.
+     */
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
         TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
         taskMaster.updateStatus(batchTaskStatusReq);
@@ -79,6 +99,11 @@ public class TaskMasterActor extends BaseActor {
         getSender().tell(Result.success(workerResponse), getSelf());
     }
 
+    /**
+     * Handle map task.
+     *
+     * @param mapTaskReq map task request.
+     */
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {
         TaskMaster taskMaster = TaskMasterPool.get(mapTaskReq.getJobInstanceId());
         if (taskMaster instanceof MapReduceTaskMaster) {

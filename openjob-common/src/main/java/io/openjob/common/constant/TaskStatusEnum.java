@@ -44,7 +44,7 @@ public enum TaskStatusEnum {
     /**
      * Non finish status list.
      */
-    public final static List<Integer> NON_FINISH_LIST = Arrays.asList(
+    public static final List<Integer> NON_FINISH_LIST = Arrays.asList(
             UNKNOWN.status,
             INIT.status,
             RUNNING.status
@@ -53,7 +53,7 @@ public enum TaskStatusEnum {
     /**
      * All status.
      */
-    public final static List<Integer> ALL = Arrays.asList(
+    public static final List<Integer> ALL = Arrays.asList(
             UNKNOWN.status,
             INIT.status,
             RUNNING.status,
@@ -61,6 +61,12 @@ public enum TaskStatusEnum {
             FAILED.status
     );
 
+    /**
+     * Parse status.
+     *
+     * @param status status
+     * @return TaskStatusEnum
+     */
     public static TaskStatusEnum parse(Integer status) {
         return EnumSet.allOf(TaskStatusEnum.class).stream()
                 .filter(s -> s.getStatus().equals(status))

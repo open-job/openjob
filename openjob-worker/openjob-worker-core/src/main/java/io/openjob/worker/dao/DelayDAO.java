@@ -24,6 +24,12 @@ public class DelayDAO {
         this.delayPersistence = new H2DelayMemoryPersistence();
     }
 
+    /**
+     * Batch save.
+     *
+     * @param delays delays
+     * @return Integer
+     */
     public Integer batchSave(List<Delay> delays) {
         try {
             int now = DateUtil.now();
@@ -39,6 +45,13 @@ public class DelayDAO {
         }
     }
 
+    /**
+     * Pull by id.
+     *
+     * @param id   id
+     * @param size size
+     * @return Integer
+     */
     public Integer updatePullSizeById(Long id, Integer size) {
         try {
             return this.delayPersistence.updatePullSizeById(id, size, DateUtil.now());
@@ -48,6 +61,12 @@ public class DelayDAO {
         }
     }
 
+    /**
+     * Batch update pull time.
+     *
+     * @param delays delays
+     * @return Integer
+     */
     public Integer batchUpdatePullTime(List<Delay> delays) {
         try {
             return this.delayPersistence.batchUpdatePullTime(delays);
@@ -57,6 +76,11 @@ public class DelayDAO {
         }
     }
 
+    /**
+     * Find pull list.
+     *
+     * @return List
+     */
     public List<Delay> findPullList() {
         try {
             return this.delayPersistence.findPullList();
@@ -66,6 +90,12 @@ public class DelayDAO {
         }
     }
 
+    /**
+     * Delete by ids.
+     *
+     * @param ids ids
+     * @return Integer
+     */
     public Integer deleteByIds(List<Long> ids) {
         try {
             return this.delayPersistence.deleteByIds(ids);

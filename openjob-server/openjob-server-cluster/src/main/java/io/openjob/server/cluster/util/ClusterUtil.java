@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class ClusterUtil {
+
     /**
      * Refresh nodes.
      *
@@ -36,6 +37,11 @@ public class ClusterUtil {
         ClusterContext.refreshNodeList(nodes);
     }
 
+    /**
+     * Refresh app workers.
+     *
+     * @param workers refresh workers.
+     */
     public static void refreshAppWorkers(List<Worker> workers) {
         Map<Long, List<WorkerDTO>> appWorkers = workers.stream()
                 .map(w -> {
@@ -52,10 +58,21 @@ public class ClusterUtil {
         ClusterContext.refreshAppWorkers(appWorkers);
     }
 
+    /**
+     * Refresh slot map.
+     *
+     * @param jobSlots slots
+     */
     public static void refreshSlotsListMap(List<JobSlots> jobSlots) {
         ClusterContext.refreshSlotsListMap(jobSlots.stream().collect(Collectors.toMap(JobSlots::getId, JobSlots::getServerId)));
     }
 
+    /**
+     * Send message
+     *
+     * @param message message
+     * @param servers server list.
+     */
     public static void sendMessage(Object message, List<Server> servers) {
         servers.forEach(s -> {
             if (!Objects.equals(s.getId(), ClusterContext.getCurrentNode().getServerId())) {

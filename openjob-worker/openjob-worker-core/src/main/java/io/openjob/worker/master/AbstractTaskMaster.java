@@ -53,6 +53,12 @@ public abstract class AbstractTaskMaster implements TaskMaster {
      */
     protected TaskDAO taskDAO = TaskDAO.INSTANCE;
 
+    /**
+     * New AbstractTaskMaster
+     *
+     * @param jobInstanceDTO job instance context.
+     * @param actorContext   actor context.
+     */
     public AbstractTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         this.jobInstanceDTO = jobInstanceDTO;
         this.actorContext = actorContext;

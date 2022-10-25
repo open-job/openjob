@@ -8,6 +8,12 @@ import io.openjob.worker.dto.LogContentDTO;
  * @since 1.0.0
  */
 public class LogUtil {
+
+    /**
+     * Get log content.
+     *
+     * @return LogContentDTO
+     */
     public static LogContentDTO getLogContent() {
         JobContext context = ThreadLocalUtil.getJobContext();
 

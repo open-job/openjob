@@ -7,10 +7,17 @@ import java.lang.reflect.Constructor;
 
 /**
  * @author stelin <swoft@qq.com>
- * @since 1.0.0
  * @see ThreadTaskContainer
+ * @since 1.0.0
  */
 public class TaskContainerFactory {
+
+    /**
+     * Create task container.
+     *
+     * @param startRequest start request.
+     * @return TaskContainer
+     */
     public static TaskContainer create(MasterStartContainerRequest startRequest) {
         String containerType = "thread";
 

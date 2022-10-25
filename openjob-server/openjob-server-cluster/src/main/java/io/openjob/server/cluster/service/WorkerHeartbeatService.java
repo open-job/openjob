@@ -26,6 +26,11 @@ public class WorkerHeartbeatService {
         this.workerDAO = workerDAO;
     }
 
+    /**
+     * Worker heartbeat
+     *
+     * @param workerHeartbeatReq heartbeat request.
+     */
     public void workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatReq) {
         Worker worker = workerDAO.getByAddress(workerHeartbeatReq.getAddress());
         if (Objects.isNull(worker)) {

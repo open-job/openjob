@@ -23,6 +23,9 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
      */
     private final H2ConnectionPool connectionPool;
 
+    /**
+     * New H2DelayMemoryPersistence
+     */
     public H2DelayMemoryPersistence() {
         this.connectionPool = new H2ConnectionPool();
 
@@ -35,32 +38,31 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
 
     @Override
     public void initTable() throws Exception {
-        String createSql = "CREATE TABLE IF NOT EXISTS `delay_worker` (" +
-                "  `id` bigint(20) unsigned NOT NULL PRIMARY KEY," +
-                "  `topic` varchar(128) NOT NULL DEFAULT ''," +
-                "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0'," +
-                "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0'," +
-                "  `create_time` int(11) NOT NULL," +
-                "  `update_time` int(11) NOT NULL," +
-                "  PRIMARY KEY (`id`)" +
-                ")";
+        String createSql = "CREATE TABLE IF NOT EXISTS `delay_worker` ("
+                + "  `id` bigint(20) unsigned NOT NULL PRIMARY KEY,"
+                + "  `topic` varchar(128) NOT NULL DEFAULT '',"
+                + "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0',"
+                + "  `pull_time` int(11) unsigned NOT NULL DEFAULT '0',"
+                + "  `create_time` int(11) NOT NULL,"
+                + "  `update_time` int(11) NOT NULL,"
+                + "  PRIMARY KEY (`id`)"
+                + ")";
 
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(createSql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(createSql)) {
             ps.executeUpdate();
         }
     }
 
     @Override
     public Integer batchSave(List<Delay> delays) throws SQLException {
-        String sql = "INSERT INTO delay_worker (" +
-                "id," +
-                "topic," +
-                "pull_size," +
-                "pull_time," +
-                "create_time," +
-                "update_time" +
-                ") VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO delay_worker ("
+                + "id,"
+                + "topic,"
+                + "pull_size,"
+                + "pull_time,"
+                + "create_time,"
+                + "update_time"
+                + ") VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -139,8 +141,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     public List<Delay> findPullList() throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT id,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0 AND pull_time <?";
-        try (Connection connection = this.connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, DateUtil.now());
             rs = ps.executeQuery();
 

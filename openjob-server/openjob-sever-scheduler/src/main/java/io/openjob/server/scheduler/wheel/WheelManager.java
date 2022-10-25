@@ -22,6 +22,9 @@ public class WheelManager {
         this.workflowWheel = workflowWheel;
     }
 
+    /**
+     * Start
+     */
     public void start() {
         // Scheduler wheel
         this.schedulerWheel.start();
@@ -33,6 +36,11 @@ public class WheelManager {
         this.workflowWheel.start();
     }
 
+    /**
+     * Remove by slot id.
+     *
+     * @param slotsIds slot ids.
+     */
     public void removeBySlotsId(Set<Long> slotsIds) {
         // Scheduler wheel
         this.schedulerWheel.removeBySlotsId(slotsIds);
@@ -44,6 +52,9 @@ public class WheelManager {
         this.workflowWheel.removeBySlotsId(slotsIds);
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
         // Scheduler wheel
         this.schedulerWheel.stop();
