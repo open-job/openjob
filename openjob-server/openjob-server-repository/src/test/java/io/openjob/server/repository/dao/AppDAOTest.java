@@ -15,28 +15,29 @@ import org.springframework.test.context.jdbc.Sql;
  */
 @Sql(scripts = "classpath:db/schema/app.sql")
 public class AppDAOTest extends RepositoryTest {
-//    private final AppDAO appDAO;
-//
-//    @Autowired
-//    public AppDAOTest(AppDAO appDAO) {
-//        this.appDAO = appDAO;
-//    }
-//
-//    @BeforeEach
-//    public void beforeMethod() {
-//        App app = new App();
-//        app.setName("xxx-service");
-//        app.setDesc("xxx-desc");
-//        app.setUpdateTime(DateUtil.now());
-//        app.setCreateTime(DateUtil.now());
-//        appDAO.save(app);
-//    }
-//
-//    @Test
-//    public void testGetAppByName() {
-//        App app = appDAO.getAppByName("xxx-service");
-//        Assertions.assertNotNull(app);
-//
-//        Assertions.assertEquals(app.getName(), "xxx-service");
-//    }
+    private final AppDAO appDAO;
+
+    @Autowired
+    public AppDAOTest(AppDAO appDAO) {
+        this.appDAO = appDAO;
+    }
+
+    @BeforeEach
+    public void beforeMethod() {
+        App app = new App();
+        app.setNamespaceId(1L);
+        app.setName("xxx-service");
+        app.setDesc("xxx-desc");
+        app.setUpdateTime(DateUtil.now());
+        app.setCreateTime(DateUtil.now());
+        appDAO.save(app);
+    }
+
+    @Test
+    public void testGetAppByName() {
+        App app = appDAO.getAppByName("xxx-service");
+        Assertions.assertNotNull(app);
+
+        Assertions.assertEquals(app.getName(), "xxx-service");
+    }
 }

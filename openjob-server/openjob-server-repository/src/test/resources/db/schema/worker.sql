@@ -13,5 +13,7 @@ CREATE TABLE IF NOT EXISTS `worker`
     `metric`              varchar(1024)       NOT NULL DEFAULT '',
     `create_time`         int(11)             NOT NULL,
     `update_time`         int(11)             NOT NULL,
-    PRIMARY KEY (`id`)
-);
+    PRIMARY KEY (`id`),
+    KEY `udx_address` (`address`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

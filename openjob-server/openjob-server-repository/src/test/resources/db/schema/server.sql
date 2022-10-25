@@ -6,5 +6,8 @@ CREATE TABLE IF NOT EXISTS `server`
     `status`       tinyint(2)          NOT NULL DEFAULT '1' COMMENT 'Server status 1=ok 2=fail',
     `create_time`  int(11)             NOT NULL COMMENT 'Create time',
     `update_time`  int(11)             NOT NULL COMMENT 'Update time',
-    PRIMARY KEY (`id`)
-);
+    PRIMARY KEY (`id`),
+    KEY `udx_akka_address` (`akka_address`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 2
+  DEFAULT CHARSET = utf8mb4;

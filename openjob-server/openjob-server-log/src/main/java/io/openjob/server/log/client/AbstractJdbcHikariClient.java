@@ -3,7 +3,6 @@ package io.openjob.server.log.client;
 import com.zaxxer.hikari.HikariDataSource;
 import io.openjob.server.log.autoconfigure.LogProperties;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -71,12 +70,12 @@ public abstract class AbstractJdbcHikariClient implements Client {
     }
 
     @Override
-    public void connect() throws Exception {
+    public void connect() {
 
     }
 
     @Override
-    public void shutdown() throws IOException {
+    public void shutdown() {
 
     }
 }
