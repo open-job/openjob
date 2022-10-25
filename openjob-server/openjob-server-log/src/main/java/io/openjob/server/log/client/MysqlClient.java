@@ -9,7 +9,7 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class MysqlClient extends JdbcHikariClient {
+public class MysqlClient extends AbstractJdbcHikariClient {
     private final LogProperties.MysqlProperties mysqlProperties;
 
     public MysqlClient(LogProperties.MysqlProperties mysqlProperties) {

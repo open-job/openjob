@@ -8,5 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface AppRepository extends JpaRepository<App, Long> {
+
+    /**
+     * Find by name.
+     *
+     * @param name name
+     * @return App
+     */
     App findAppByName(String name);
 }

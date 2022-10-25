@@ -10,7 +10,23 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface LogDAO {
+
+    /**
+     * Batch add.
+     *
+     * @param jobInstanceTaskLogs jobInstanceTaskLogs
+     * @throws SQLException SQLException
+     */
     void batchAdd(List<JobInstanceTaskLog> jobInstanceTaskLogs) throws SQLException;
 
+    /**
+     * Query by page.
+     *
+     * @param taskUniqueId taskUniqueId
+     * @param time         time
+     * @param size         size
+     * @return List
+     * @throws SQLException SQLException
+     */
     List<JobInstanceTaskLog> queryByPage(String taskUniqueId, Long time, Long size) throws SQLException;
 }

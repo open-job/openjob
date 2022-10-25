@@ -7,6 +7,13 @@ import io.openjob.server.repository.entity.App;
  * @since 1.0.0
  */
 public interface AppDAO {
+
+    /**
+     * Save
+     *
+     * @param app app
+     * @return Long
+     */
     Long save(App app);
 
     /**

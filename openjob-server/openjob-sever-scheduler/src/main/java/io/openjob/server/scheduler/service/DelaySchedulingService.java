@@ -10,7 +10,7 @@ import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.repository.data.DelayData;
 import io.openjob.server.scheduler.timer.DelayTimerTask;
-import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.wheel.DelayWheel;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class DelaySchedulingService {
             }
 
             List<Long> ids = Lists.newArrayList();
-            List<TimerTask> tasks = new ArrayList<>();
+            List<AbstractTimerTask> tasks = new ArrayList<>();
             delayInstances.forEach(d -> {
                 Delay delay = this.delayData.getDelay(d.getTopic());
                 DelayTimerTask delayTimerTask = new DelayTimerTask(d.getId(), d.getSlotsId(), (long) d.getExecuteTime());

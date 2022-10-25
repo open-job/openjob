@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.wheel;
 
 import io.openjob.server.repository.entity.JobInstance;
-import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.timer.AbstractTimerTask;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +11,15 @@ import java.util.Set;
  * @since 1.0.0
  */
 public interface Wheel {
+
+    /**
+     * Start.
+     */
     void start();
 
+    /**
+     * Stop.
+     */
     void stop();
 
     /**
@@ -20,7 +27,7 @@ public interface Wheel {
      *
      * @param timerTasks timerTasks
      */
-    void addTimerTask(List<TimerTask> timerTasks);
+    void addTimerTask(List<AbstractTimerTask> timerTasks);
 
     /**
      * Remove task from timing wheel by task ids.

@@ -10,7 +10,20 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
+
+    /**
+     * Find by address.
+     *
+     * @param address address
+     * @return Worker
+     */
     Worker findByAddress(String address);
 
+    /**
+     * Find by status.
+     *
+     * @param status status
+     * @return List
+     */
     List<Worker> findByStatus(Integer status);
 }

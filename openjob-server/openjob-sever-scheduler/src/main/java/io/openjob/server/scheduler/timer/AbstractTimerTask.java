@@ -1,17 +1,9 @@
 package io.openjob.server.scheduler.timer;
 
-import io.openjob.common.request.ServerSubmitJobInstanceRequest;
-import io.openjob.common.util.FutureUtil;
-import io.openjob.server.common.ClusterContext;
-import io.openjob.server.common.dto.WorkerDTO;
-import io.openjob.server.common.util.ServerUtil;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -19,7 +11,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @Log4j2
-public abstract class TimerTask implements Runnable {
+public abstract class AbstractTimerTask implements Runnable {
     protected TimerTaskEntry timerTaskEntry;
 
     /**
@@ -44,7 +36,7 @@ public abstract class TimerTask implements Runnable {
      * @param slotsId    slotsId
      * @param expiration expiration
      */
-    public TimerTask(Long taskId, Long slotsId, Long expiration) {
+    public AbstractTimerTask(Long taskId, Long slotsId, Long expiration) {
         this.expiration = expiration;
         this.slotsId = slotsId;
         this.taskId = taskId;

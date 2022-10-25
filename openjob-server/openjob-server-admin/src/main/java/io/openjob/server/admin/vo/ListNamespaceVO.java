@@ -20,6 +20,7 @@ public class ListNamespaceVO {
     @ApiModelProperty("Namespace list.")
     private List<NamespaceVO> namespaceList;
 
+    @Data
     public static class NamespaceVO {
 
     }

@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public abstract class JdbcHikariClient implements Client {
+public abstract class AbstractJdbcHikariClient implements Client {
     /**
      * Data source.
      */

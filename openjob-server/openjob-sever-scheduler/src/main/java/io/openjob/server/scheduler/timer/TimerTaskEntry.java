@@ -13,7 +13,7 @@ public class TimerTaskEntry implements Comparable<TimerTaskEntry> {
     private volatile TimerTaskList timerTaskList;
     private TimerTaskEntry next;
     private TimerTaskEntry prev;
-    private final TimerTask timerTask;
+    private final AbstractTimerTask timerTask;
     private final Long expiration;
     private Integer currentBucket;
 
@@ -23,7 +23,7 @@ public class TimerTaskEntry implements Comparable<TimerTaskEntry> {
      * @param timerTask  timerTask
      * @param expiration expiration
      */
-    public TimerTaskEntry(TimerTask timerTask, Long expiration) {
+    public TimerTaskEntry(AbstractTimerTask timerTask, Long expiration) {
         if (Objects.nonNull(timerTask)) {
             timerTask.setTimerTaskEntry(this);
         }

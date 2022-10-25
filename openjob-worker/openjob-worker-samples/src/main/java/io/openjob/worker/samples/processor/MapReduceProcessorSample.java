@@ -22,33 +22,41 @@ import java.util.List;
 public class MapReduceProcessorSample implements MapReduceProcessor {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
+    private static final Integer FIRST_COUNT = 11;
+
+    private static final Integer SECOND_COUNT = 21;
+
+    private static final String TWO_NAME = "TASK_TWO";
+
+    private static final String THREE_NAME = "TASK_THREE";
+
     @Override
     public ProcessResult process(JobContext context) {
         if (context.isRoot()) {
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 11; i++) {
+            for (int i = 1; i < FIRST_COUNT; i++) {
                 System.out.println("root" + i);
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(1))));
             }
 
             logger.info("root task", new RuntimeException("test"));
             log.info("root task", new RuntimeException("test"));
-            return this.map(tasks, "TASK_TWO");
+            return this.map(tasks, TWO_NAME);
         }
 
-        if (context.isTask("TASK_TWO")) {
+        if (context.isTask(TWO_NAME)) {
             MrTaskTest task = (MrTaskTest) context.getTask();
 
             System.out.println("two paramsId=" + task.getId());
             List<MrTaskTest> tasks = new ArrayList<>();
-            for (int i = 1; i < 21; i++) {
+            for (int i = 1; i < SECOND_COUNT; i++) {
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(task.getId() * i))));
             }
 
-            return this.map(tasks, "TASK_THREE");
+            return this.map(tasks, THREE_NAME);
         }
 
-        if (context.isTask("TASK_THREE")) {
+        if (context.isTask(THREE_NAME)) {
             MrTaskTest task = (MrTaskTest) context.getTask();
             System.out.println("three=" + task.getId() + " name=" + task.getNames().get(0));
             return new ProcessResult(true, String.valueOf(task.getId() * 2));

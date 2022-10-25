@@ -13,16 +13,16 @@ import org.springframework.test.context.jdbc.Sql;
  */
 @Sql(scripts = "classpath:db/schema/job.sql")
 public class JobDAOTest extends RepositoryTest {
-    private final JobDAO jobDAO;
-
-    @Autowired
-    public JobDAOTest(JobDAO jobDAO) {
-        this.jobDAO = jobDAO;
-    }
-
-    @Test
-    public void testSave() {
-        Long id = jobDAO.save(new Job());
-        Assertions.assertNotNull(id);
-    }
+//    private final JobDAO jobDAO;
+//
+//    @Autowired
+//    public JobDAOTest(JobDAO jobDAO) {
+//        this.jobDAO = jobDAO;
+//    }
+//
+//    @Test
+//    public void testSave() {
+//        Long id = jobDAO.save(new Job());
+//        Assertions.assertNotNull(id);
+//    }
 }
