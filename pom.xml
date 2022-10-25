@@ -122,7 +122,7 @@
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${java.version}</targetJdk>
                     <printFailingErrors>true</printFailingErrors>
-                    <!-- 代码检查规则 -->
+                    <!-- rule sets -->
                     <rulesets>
                         <ruleset>rulesets/java/ali-comment.xml</ruleset>
                         <ruleset>rulesets/java/ali-concurrent.xml</ruleset>
