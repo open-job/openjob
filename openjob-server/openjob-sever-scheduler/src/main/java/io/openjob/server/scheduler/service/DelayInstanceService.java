@@ -40,6 +40,12 @@ public class DelayInstanceService {
         this.instanceManager = instanceManager;
     }
 
+    /**
+     * Pull instance.
+     *
+     * @param pullRequest pull request.
+     * @return ServerDelayPullResponse
+     */
     public ServerDelayPullResponse pullInstance(WorkerDelayPullRequest pullRequest) {
         List<ServerDelayInstanceResponse> responses = new ArrayList<>();
 
@@ -51,6 +57,12 @@ public class DelayInstanceService {
         return delayPullResponse;
     }
 
+    /**
+     * Add delay instance.
+     *
+     * @param addRequest add request.
+     * @return ServerDelayAddResponse
+     */
     public ServerDelayAddResponse addDelayInstance(WorkerDelayAddRequest addRequest) {
         ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse(addRequest.getDeliveryId());
         DelayInstanceAddRequestDTO addRequestDTO = new DelayInstanceAddRequestDTO();
@@ -94,6 +106,13 @@ public class DelayInstanceService {
         return responses;
     }
 
+    /**
+     * Get delay instance list.
+     *
+     * @param key   key
+     * @param count count
+     * @return List
+     */
     @SuppressWarnings("unchecked")
     public List<Object> getDelayInstanceList(String key, Integer count) {
         final List<Object> txResults = RedisUtil.getTemplate().execute(new SessionCallback<List<Object>>() {

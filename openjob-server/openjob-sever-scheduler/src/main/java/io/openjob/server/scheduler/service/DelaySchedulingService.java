@@ -30,12 +30,22 @@ public class DelaySchedulingService {
 
     private final DelayData delayData;
 
+    /**
+     * New delay scheduling service.
+     *
+     * @param delayInstanceDAO delay instance.
+     * @param delayWheel       delay wheel
+     * @param delayData        delay data
+     */
     public DelaySchedulingService(DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel, DelayData delayData) {
         this.delayInstanceDAO = delayInstanceDAO;
         this.delayWheel = delayWheel;
         this.delayData = delayData;
     }
 
+    /**
+     * Delay job.
+     */
     public void delayJob() {
         ArrayList<Long> currentSlots = new ArrayList<>(ClusterContext.getCurrentSlots());
         int maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);

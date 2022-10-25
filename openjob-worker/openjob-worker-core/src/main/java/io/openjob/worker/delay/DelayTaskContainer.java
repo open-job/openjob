@@ -21,6 +21,13 @@ public class DelayTaskContainer {
     private final Long id;
     private LinkedBlockingDeque<Runnable> blockingDeque;
 
+    /**
+     * New delay task container.
+     *
+     * @param id           id
+     * @param blockingSize blocking size.
+     * @param concurrency  concurrency
+     */
     public DelayTaskContainer(Long id, Integer blockingSize, Integer concurrency) {
         this.id = id;
         this.blockingDeque = new LinkedBlockingDeque<>(blockingSize);
@@ -38,6 +45,11 @@ public class DelayTaskContainer {
         executorService.allowCoreThreadTimeOut(true);
     }
 
+    /**
+     * Execute
+     *
+     * @param instanceList instance list.
+     */
     public void execute(List<DelayInstanceDTO> instanceList) {
         DelayDAO.INSTANCE.updatePullSizeById(this.id, -instanceList.size());
 
@@ -50,10 +62,18 @@ public class DelayTaskContainer {
         });
     }
 
+    /**
+     * Update concurrency
+     *
+     * @param concurrency concurrency
+     */
     public void updateConcurrency(Integer concurrency) {
         this.executorService.setMaximumPoolSize(concurrency);
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
         this.executorService.shutdownNow();
     }

@@ -94,6 +94,17 @@ public class Log4j2Appender extends AbstractAppender {
         this.formatter = formatter;
     }
 
+    /**
+     * Create Log4j2Appender
+     *
+     * @param name       name
+     * @param filter     filter
+     * @param layout     layout
+     * @param ignore     ignore
+     * @param timeFormat time format
+     * @param timeZone   time zone
+     * @return Log4j2Appender
+     */
     @PluginFactory
     public static Log4j2Appender create(
             @PluginAttribute("name") final String name,

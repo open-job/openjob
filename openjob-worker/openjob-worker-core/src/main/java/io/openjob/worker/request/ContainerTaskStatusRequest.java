@@ -20,6 +20,9 @@ public class ContainerTaskStatusRequest implements Serializable {
     private String masterActorPath;
     private String result;
 
+    /**
+     * New container task request.
+     */
     public ContainerTaskStatusRequest() {
         this.jobId = 0L;
         this.jobInstanceId = 0L;

@@ -36,6 +36,11 @@ public class ClusterUtil {
         ClusterContext.refreshNodeList(nodes);
     }
 
+    /**
+     * Refresh app workers.
+     *
+     * @param workers refresh workers.
+     */
     public static void refreshAppWorkers(List<Worker> workers) {
         Map<Long, List<WorkerDTO>> appWorkers = workers.stream()
                 .map(w -> {

@@ -26,16 +26,16 @@ public class JdbcDAOImpl implements LogDAO {
 
     @Override
     public void batchAdd(List<JobInstanceTaskLog> jobInstanceTaskLogs) throws SQLException {
-        String sql = "INSERT INTO job_instance_task_log (" +
-                "job_id," +
-                "job_instance_id," +
-                "circle_id," +
-                "task_id," +
-                "task_unique_id," +
-                "worker_address," +
-                "content," +
-                "`time`" +
-                ") VALUES (?, ?, ?, ?,?, ?, ?, ?)";
+        String sql = "INSERT INTO job_instance_task_log ("
+                + "job_id,"
+                + "job_instance_id,"
+                + "circle_id,"
+                + "task_id,"
+                + "task_unique_id,"
+                + "worker_address,"
+                + "content,"
+                + "`time`"
+                + ") VALUES (?, ?, ?, ?,?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.jdbcHikariClient.getConnection()) {
@@ -67,8 +67,7 @@ public class JdbcDAOImpl implements LogDAO {
     public List<JobInstanceTaskLog> queryByPage(String taskUniqueId, Long time, Long size) throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT * FROM job_instance_task_log WHERE task_id=? AND time > ? limit ?";
-        try (Connection connection = this.jdbcHikariClient.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, taskUniqueId);
             ps.setLong(2, time);
             ps.setLong(3, size);

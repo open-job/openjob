@@ -50,6 +50,11 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
     }
 
+    /**
+     * Dispatch tasks.
+     *
+     * @param startRequests start requests.
+     */
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
         String workerAddress = this.workerAddresses.get(0);
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);

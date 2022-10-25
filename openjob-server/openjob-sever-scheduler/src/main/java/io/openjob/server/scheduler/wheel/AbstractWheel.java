@@ -45,6 +45,12 @@ public abstract class AbstractWheel implements Wheel {
         slotsIds.forEach(id -> getSystemTimer(id).removeBySlotsId(id));
     }
 
+    /**
+     * Get system timer.
+     *
+     * @param slotsId slot id.
+     * @return SystemTimer
+     */
     public SystemTimer getSystemTimer(Long slotsId) {
         int size = this.systemTimers.size() - 1;
         int index = (int) (slotsId % size);

@@ -16,6 +16,11 @@ public class WorkerPersistentRoutingActor extends UntypedAbstractActor {
     private final Integer size;
     private final List<ActorRef> actors = new ArrayList<>();
 
+    /**
+     * New worker persistent routing
+     *
+     * @param size size.
+     */
     public WorkerPersistentRoutingActor(Integer size) {
         this.size = size;
 
@@ -30,7 +35,7 @@ public class WorkerPersistentRoutingActor extends UntypedAbstractActor {
         try {
             int index = ThreadLocalRandom.current().nextInt(this.size);
             actors.get(index).forward(message, getContext());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
     }

@@ -11,6 +11,12 @@ import io.openjob.worker.samples.processor.MapReduceProcessorSample;
  * @since 1.0.0
  */
 public class OpenjobWorkerSamples {
+
+    /**
+     * Main
+     *
+     * @param args args
+     */
     public static void main(String[] args) {
         try {
             OpenjobWorker openjobWorker = new OpenjobWorker();

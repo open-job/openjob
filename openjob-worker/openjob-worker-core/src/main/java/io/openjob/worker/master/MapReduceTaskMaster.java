@@ -68,6 +68,12 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         super.completeTask();
     }
 
+    /**
+     * Map operation.
+     *
+     * @param tasks    tasks
+     * @param taskName task name.
+     */
     public void map(List<byte[]> tasks, String taskName) {
         try {
             for (byte[] task : tasks) {

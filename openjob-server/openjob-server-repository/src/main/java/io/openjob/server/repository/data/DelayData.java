@@ -23,6 +23,12 @@ public class DelayData {
         this.delayDAO = delayDAO;
     }
 
+    /**
+     * Get delay by id.
+     *
+     * @param topic topic
+     * @return Delay
+     */
     public Delay getDelay(String topic) {
         String delayKey = CacheUtil.getDelayKey(topic);
         return RedisUtil.orElseGet(delayKey, () -> {
