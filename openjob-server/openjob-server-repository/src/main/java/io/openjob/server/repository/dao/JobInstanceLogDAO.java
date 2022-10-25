@@ -7,5 +7,12 @@ import io.openjob.server.repository.entity.JobInstanceLog;
  * @since 1.0.0
  */
 public interface JobInstanceLogDAO {
+
+    /**
+     * Save
+     *
+     * @param jobInstanceLog jobInstanceLog
+     * @return Long
+     */
     Long save(JobInstanceLog jobInstanceLog);
 }

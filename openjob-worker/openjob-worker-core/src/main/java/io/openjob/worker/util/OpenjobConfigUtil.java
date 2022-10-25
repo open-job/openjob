@@ -18,6 +18,6 @@ public class OpenjobConfigUtil {
     }
 
     public static Long getDelayPullStep() {
-        return OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_STEP, WorkerConstant.default_WORKER_DELAY_PULL_STEP);
+        return OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_STEP, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_STEP);
     }
 }

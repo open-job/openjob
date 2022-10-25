@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Getter
 @Setter
-public class SchedulerTimerTask extends TimerTask {
+public class SchedulerTimerTask extends AbstractTimerTask {
     protected Long jobId;
     protected String jobParams;
     protected Long appid;

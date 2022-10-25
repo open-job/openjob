@@ -4,7 +4,7 @@ package io.openjob.server.scheduler.timer;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class WorkflowTimerTask extends TimerTask {
+public class WorkflowTimerTask extends AbstractTimerTask {
 
     /**
      * Timer task.

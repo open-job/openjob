@@ -12,7 +12,7 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class H2Client extends JdbcHikariClient {
+public class H2Client extends AbstractJdbcHikariClient {
     private final LogProperties.H2Properties h2Properties;
 
     public H2Client(LogProperties.H2Properties h2Properties) {

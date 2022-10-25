@@ -13,6 +13,7 @@ public interface TaskPersistence {
 
     /**
      * Init table schema.
+     * @throws Exception Exception
      */
     void initTable() throws Exception;
 
@@ -21,6 +22,7 @@ public interface TaskPersistence {
      *
      * @param tasks task list.
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer batchSave(List<Task> tasks) throws SQLException;
 
@@ -29,6 +31,7 @@ public interface TaskPersistence {
      *
      * @param taskId task id.
      * @return Task
+     * @throws SQLException SQLException
      */
     Task findByTaskId(String taskId) throws SQLException;
 
@@ -37,6 +40,7 @@ public interface TaskPersistence {
      *
      * @param taskIds taskIds
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer batchDeleteByTaskIds(List<String> taskIds) throws SQLException;
 
@@ -44,8 +48,10 @@ public interface TaskPersistence {
      * Count task by status list.
      *
      * @param instanceId instanceId
+     * @param circleId circleId
      * @param statusList statusList
      * @return count
+     * @throws SQLException SQLException
      */
     Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) throws SQLException;
 
@@ -55,6 +61,7 @@ public interface TaskPersistence {
      * @param tasks         tasks
      * @param currentStatus currentStatus
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
 
@@ -65,6 +72,7 @@ public interface TaskPersistence {
      * @param circleId   circle id
      * @param size       size
      * @return List
+     * @throws SQLException SQLException
      */
     List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException;
 }

@@ -1,7 +1,7 @@
 package io.openjob.server.log.dao.impl;
 
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
-import io.openjob.server.log.client.JdbcHikariClient;
+import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.entity.JobInstanceTaskLog;
 
@@ -18,9 +18,9 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public class JdbcDAOImpl implements LogDAO {
-    private final JdbcHikariClient jdbcHikariClient;
+    private final AbstractJdbcHikariClient jdbcHikariClient;
 
-    public JdbcDAOImpl(JdbcHikariClient jdbcHikariClient) {
+    public JdbcDAOImpl(AbstractJdbcHikariClient jdbcHikariClient) {
         this.jdbcHikariClient = jdbcHikariClient;
     }
 

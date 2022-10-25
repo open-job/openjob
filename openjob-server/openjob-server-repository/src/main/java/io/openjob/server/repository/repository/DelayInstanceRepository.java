@@ -17,6 +17,14 @@ import java.util.List;
  */
 public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Long> {
 
+    /**
+     * Batch update status.
+     *
+     * @param ids        ids
+     * @param status     status
+     * @param updateTime updateTime
+     * @return Integer
+     */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update DelayInstance as d set d.status=?2, d.updateTime=?3 where d.id in(?1)")

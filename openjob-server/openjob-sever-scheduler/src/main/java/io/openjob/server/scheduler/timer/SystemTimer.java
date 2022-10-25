@@ -42,7 +42,7 @@ public class SystemTimer implements Timer {
     }
 
     @Override
-    public void add(TimerTask timerTask) {
+    public void add(AbstractTimerTask timerTask) {
         readLock.lock();
         try {
             this.addTimerTaskEntry(new TimerTaskEntry(timerTask, timerTask.getExpiration()));

@@ -11,9 +11,10 @@ import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.timer.SchedulerTimerTask;
-import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.wheel.SchedulerWheel;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Service
-@Log4j2
+@Slf4j
 public class JobSchedulingService {
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
@@ -77,7 +78,7 @@ public class JobSchedulingService {
                 j.setNextExecuteTime(nextExecuteTime);
                 j.setUpdateTime(now);
 
-                if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / 1000)) {
+                if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / SchedulerConstant.UNIT_MS)) {
                     this.createJobInstance(Collections.singletonList(j));
 
                     // Update next execute time.
@@ -97,7 +98,7 @@ public class JobSchedulingService {
      * @param jobs jobs
      */
     private void createJobInstance(List<Job> jobs) {
-        List<TimerTask> timerTasks = new ArrayList<>();
+        List<AbstractTimerTask> timerTasks = new ArrayList<>();
 
         jobs.forEach(j -> {
             int now = DateUtil.now();

@@ -13,13 +13,12 @@ import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class BroadcastTaskMaster extends DistributeTaskMaster {
+public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     public BroadcastTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }

@@ -8,9 +8,20 @@ import io.openjob.worker.context.JobContext;
  */
 public interface TaskContainer {
 
+    /**
+     * Execute
+     *
+     * @param jobContext jobContext
+     */
     void execute(JobContext jobContext);
 
+    /**
+     * Stop
+     */
     void stop();
 
+    /**
+     * Destroy
+     */
     void destroy();
 }

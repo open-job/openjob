@@ -19,7 +19,12 @@ public class LogContentDTO {
     private Long circleId;
     private Long taskId;
     private String workerAddress;
-    private List<WorkerJobInstanceTaskLogFieldRequest> fieldList = new ArrayList<>();
+
+    private List<WorkerJobInstanceTaskLogFieldRequest> fieldList;
+
+    public LogContentDTO() {
+        this.fieldList = new ArrayList<>();
+    }
 
     public void addField(String name, String value) {
         fieldList.add(new WorkerJobInstanceTaskLogFieldRequest(name, value));

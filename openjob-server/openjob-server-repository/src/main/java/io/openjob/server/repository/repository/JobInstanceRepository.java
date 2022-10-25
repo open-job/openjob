@@ -18,6 +18,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
      * @param id           id
      * @param status       status
      * @param completeTime completeTime
+     * @param updateTime   updateTime
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
@@ -30,6 +31,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
      *
      * @param id             id
      * @param lastReportTime lastReportTime
+     * @param updateTime     updateTime
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)

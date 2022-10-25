@@ -1,4 +1,4 @@
-package io.openjob.server.cluster.scheduler;
+package io.openjob.server.cluster.scheduling;
 
 import io.openjob.server.cluster.service.HealthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class HealthScheduler {
+public class HealthScheduling {
     private final HealthService healthService;
 
     @Autowired
-    public HealthScheduler(HealthService healthService) {
+    public HealthScheduling(HealthService healthService) {
         this.healthService = healthService;
     }
 

@@ -3,7 +3,7 @@ package io.openjob.server.scheduler.wheel;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.constant.TimerConstant;
 import io.openjob.server.scheduler.timer.SystemTimer;
-import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public abstract class AbstractWheel implements Wheel {
     private ThreadPoolExecutor taskExecutor;
 
     @Override
-    public void addTimerTask(List<TimerTask> timerTasks) {
+    public void addTimerTask(List<AbstractTimerTask> timerTasks) {
         timerTasks.forEach(t -> getSystemTimer(t.getSlotsId()).add(t));
     }
 

@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.contract;
 
-import io.openjob.server.scheduler.timer.TimerTask;
+import io.openjob.server.scheduler.timer.AbstractTimerTask;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -13,7 +13,7 @@ public interface Timer {
      *
      * @param timerTask
      */
-    void add(TimerTask timerTask);
+    void add(AbstractTimerTask timerTask);
 
     /**
      * Advance clock.

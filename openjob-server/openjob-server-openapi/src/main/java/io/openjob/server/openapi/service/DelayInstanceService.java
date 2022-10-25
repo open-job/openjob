@@ -8,5 +8,12 @@ import io.openjob.server.openapi.vo.DelayInstanceAddVO;
  * @since 1.0.0
  */
 public interface DelayInstanceService {
-    DelayInstanceAddVO add(DelayInstanceAddRequest addRequest) ;
+
+    /**
+     * Add delay.
+     *
+     * @param addRequest addRequest
+     * @return DelayInstanceAddVO
+     */
+    DelayInstanceAddVO add(DelayInstanceAddRequest addRequest);
 }

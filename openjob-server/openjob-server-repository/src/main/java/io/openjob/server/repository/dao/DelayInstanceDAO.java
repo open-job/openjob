@@ -28,5 +28,12 @@ public interface DelayInstanceDAO {
      */
     Long save(DelayInstance delayInstance);
 
+    /**
+     * Batch update status.
+     *
+     * @param ids    ids
+     * @param status status
+     * @return Integer
+     */
     Integer batchUpdateStatus(List<Long> ids, Integer status);
 }

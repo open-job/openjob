@@ -11,27 +11,27 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TaskStatusReporter {
-    private static final TaskQueue<ContainerTaskStatusRequest> taskQueue;
-    private static final ContainerTaskStatusConsumer<ContainerTaskStatusRequest> taskConsumer;
+    private static final TaskQueue<ContainerTaskStatusRequest> TASK_QUEUE;
+    private static final ContainerTaskStatusConsumer<ContainerTaskStatusRequest> TASK_CONSUMER;
 
     static {
-        taskQueue = new TaskQueue<>(0L, 1024);
-        taskConsumer = new ContainerTaskStatusConsumer<>(
+        TASK_QUEUE = new TaskQueue<>(0L, 1024);
+        TASK_CONSUMER = new ContainerTaskStatusConsumer<>(
                 0L,
                 1,
                 1,
                 "Openjob-container-status",
                 50,
                 "Openjob-container-status-consumer",
-                taskQueue
+                TASK_QUEUE
         );
 
-        taskConsumer.start();
+        TASK_CONSUMER.start();
     }
 
     public static void report(ContainerTaskStatusRequest statusRequest) {
         try {
-            taskQueue.submit(statusRequest);
+            TASK_QUEUE.submit(statusRequest);
         } catch (InterruptedException e) {
             log.error("Status report failed!", e);
         }

@@ -12,7 +12,9 @@ public class WorkerConstant {
     public static final String SERVER_HOST = "server.host";
     public static final String SERVER_PORT = "server.port";
 
-    // Routing
+    /**
+     * Routing
+     */
     public static final String ROUTING_HEARTBEAT = "heartbeat";
 
     /**
@@ -47,7 +49,7 @@ public class WorkerConstant {
 
     public static final Integer DEFAULT_WORKER_DELAY_PULL_SIZE = 10;
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
-    public static final Long default_WORKER_DELAY_PULL_STEP = 500L;
+    public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
 
     /**
      * Task

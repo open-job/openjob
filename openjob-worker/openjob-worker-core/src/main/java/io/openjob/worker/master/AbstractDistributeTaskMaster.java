@@ -23,13 +23,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public abstract class DistributeTaskMaster extends AbstractTaskMaster {
+public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
 
     protected AtomicBoolean running = new AtomicBoolean(false);
 
-    public DistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
+    public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }
 
@@ -44,10 +44,10 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
         );
 
         // Check task status.
-        this.scheduledService.scheduleWithFixedDelay(new DistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
 
         // Check task container alive
-        this.scheduledService.scheduleWithFixedDelay(new DistributeTaskMaster.TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
     }
 
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
@@ -102,9 +102,9 @@ public abstract class DistributeTaskMaster extends AbstractTaskMaster {
     }
 
     protected static class TaskStatusChecker implements Runnable {
-        private final DistributeTaskMaster taskMaster;
+        private final AbstractDistributeTaskMaster taskMaster;
 
-        public TaskStatusChecker(DistributeTaskMaster taskMaster) {
+        public TaskStatusChecker(AbstractDistributeTaskMaster taskMaster) {
             this.taskMaster = taskMaster;
         }
 

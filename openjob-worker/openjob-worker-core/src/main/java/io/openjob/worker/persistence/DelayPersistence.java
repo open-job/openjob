@@ -13,6 +13,7 @@ public interface DelayPersistence {
 
     /**
      * Init table schema.
+     * @throws Exception Exception
      */
     void initTable() throws Exception;
 
@@ -21,6 +22,7 @@ public interface DelayPersistence {
      *
      * @param delays delay task list.
      * @return Effect rows
+     * @throws SQLException SQLException
      */
     Integer batchSave(List<Delay> delays) throws SQLException;
 
@@ -31,6 +33,7 @@ public interface DelayPersistence {
      * @param size       size
      * @param updateTime updateTime
      * @return Effect rows
+     * @throws SQLException SQLException
      */
     Integer updatePullSizeById(Long id, Integer size, Integer updateTime) throws SQLException;
 
@@ -39,6 +42,7 @@ public interface DelayPersistence {
      *
      * @param delays delays
      * @return Effect rows
+     * @throws SQLException SQLException
      */
     Integer batchUpdatePullTime(List<Delay> delays) throws SQLException;
 
@@ -46,6 +50,7 @@ public interface DelayPersistence {
      * Find list.
      *
      * @return Effect rows
+     * @throws SQLException SQLException
      */
     List<Delay> findPullList() throws SQLException;
 
@@ -54,6 +59,7 @@ public interface DelayPersistence {
      *
      * @param ids ids
      * @return Effect rows
+     * @throws SQLException SQLException
      */
     Integer deleteByIds(List<Long> ids) throws SQLException;
 
