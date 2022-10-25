@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS  `job_instance`
+CREATE TABLE IF NOT EXISTS `job_instance`
 (
     `id`               bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `job_id`           bigint(20)          NOT NULL,
@@ -13,4 +13,6 @@ CREATE TABLE IF NOT EXISTS  `job_instance`
     `update_time`      int(11)             NOT NULL,
     `create_time`      int(11)             NOT NULL,
     PRIMARY KEY (`id`)
-);
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 81
+  DEFAULT CHARSET = utf8mb4;
