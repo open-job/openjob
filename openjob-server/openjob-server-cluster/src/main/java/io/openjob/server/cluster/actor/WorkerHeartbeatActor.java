@@ -35,6 +35,11 @@ public class WorkerHeartbeatActor extends BaseActor {
                 .build();
     }
 
+    /**
+     * Worker heartbeat request.
+     *
+     * @param workerHeartbeatRequest heartbeat request.
+     */
     public void workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatRequest) {
         workerHeartbeatService.workerHeartbeat(workerHeartbeatRequest);
         log.info("Worker({}) heartbeat success!", workerHeartbeatRequest.getAddress());

@@ -39,6 +39,11 @@ public class WorkerService {
         this.serverDAO = serverDAO;
     }
 
+    /**
+     * Worker start
+     *
+     * @param workerStartRequest start request.
+     */
     public void workerStart(WorkerStartRequest workerStartRequest) {
         // Update worker status.
         this.updateWorkerForStart(workerStartRequest);
@@ -51,6 +56,11 @@ public class WorkerService {
         ClusterUtil.sendMessage(new WorkerJoinDTO(), servers);
     }
 
+    /**
+     * Worker stop
+     *
+     * @param stopReq stop request.
+     */
     public void workerStop(WorkerStopRequest stopReq) {
         int now = DateUtil.now();
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());

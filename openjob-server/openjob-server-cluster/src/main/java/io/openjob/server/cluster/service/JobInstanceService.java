@@ -38,6 +38,11 @@ public class JobInstanceService {
         this.jobInstanceDAO = jobInstanceDAO;
     }
 
+    /**
+     * Handle instance status.
+     *
+     * @param statusRequest status request.
+     */
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // First page to update job instance status.
@@ -70,6 +75,11 @@ public class JobInstanceService {
         }
     }
 
+    /**
+     * Handle instance log.
+     *
+     * @param logRequest log request.
+     */
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Update job instance status.

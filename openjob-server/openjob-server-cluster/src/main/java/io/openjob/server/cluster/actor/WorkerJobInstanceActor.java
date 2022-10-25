@@ -35,6 +35,11 @@ public class WorkerJobInstanceActor extends BaseActor {
                 .build();
     }
 
+    /**
+     * Handle status.
+     *
+     * @param statusRequest status request.
+     */
     public void handleStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // Handle instance status
         this.instanceService.handleInstanceStatus(statusRequest);
@@ -44,6 +49,11 @@ public class WorkerJobInstanceActor extends BaseActor {
         getSender().tell(Result.success(serverResponse), getSelf());
     }
 
+    /**
+     * Handle instance log.
+     *
+     * @param logRequest log request.
+     */
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Handle instance log.
         this.instanceService.handleInstanceLog(logRequest);

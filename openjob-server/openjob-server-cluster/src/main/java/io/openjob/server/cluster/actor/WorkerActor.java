@@ -36,6 +36,11 @@ public class WorkerActor extends BaseActor {
                 .build();
     }
 
+    /**
+     * Worker start
+     *
+     * @param workerStartRequest start request.
+     */
     public void workerStart(WorkerStartRequest workerStartRequest) {
         this.workerService.workerStart(workerStartRequest);
 
