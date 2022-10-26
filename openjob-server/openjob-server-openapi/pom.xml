@@ -18,7 +18,7 @@
 
         <dependency>
             <groupId>io.openjob</groupId>
-            <artifactId>openjob-sever-scheduler</artifactId>
+            <artifactId>openjob-server-scheduler</artifactId>
         </dependency>
     </dependencies>
 </project>
