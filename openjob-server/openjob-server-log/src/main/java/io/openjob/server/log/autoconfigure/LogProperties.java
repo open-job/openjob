@@ -1,7 +1,6 @@
 package io.openjob.server.log.autoconfigure;
 
 import io.openjob.server.log.constant.LogStorageConstant;
-import jdk.nashorn.internal.scripts.JD;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
