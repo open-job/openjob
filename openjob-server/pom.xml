@@ -18,7 +18,7 @@
         <module>openjob-server-admin</module>
         <module>openjob-server-openapi</module>
         <module>openjob-server-starter</module>
-        <module>openjob-sever-scheduler</module>
+        <module>openjob-server-scheduler</module>
         <module>openjob-server-dispatcher</module>
     </modules>
 
@@ -38,7 +38,7 @@
 
             <dependency>
                 <groupId>io.openjob</groupId>
-                <artifactId>openjob-sever-scheduler</artifactId>
+                <artifactId>openjob-server-scheduler</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
