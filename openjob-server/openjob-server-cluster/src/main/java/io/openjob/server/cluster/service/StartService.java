@@ -5,11 +5,15 @@ import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
+import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
+import io.openjob.server.repository.dao.SystemDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.repository.entity.System;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +30,17 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Service
+@Slf4j
 public class StartService {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
 
+    private final SystemDAO systemDAO;
+
     @Autowired
-    public StartService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
+    public StartService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, SystemDAO systemDAO) {
         this.serverDAO = serverDAO;
+        this.systemDAO = systemDAO;
         this.jobSlotsDAO = jobSlotsDAO;
     }
 
@@ -53,6 +61,9 @@ public class StartService {
         // Set current node.
         this.setCurrentNode(currentServer);
 
+        // Refresh system.
+        this.refreshSystem();
+
         // Refresh nodes.
         ClusterUtil.refreshNodes(servers);
 
@@ -72,6 +83,8 @@ public class StartService {
         List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentServer.getId());
         Set<Long> currentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
         ClusterContext.refreshCurrentSlots(currentSlots);
+
+        log.info(String.format("Refresh slots %s", currentSlots));
     }
 
     /**
@@ -114,6 +127,22 @@ public class StartService {
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
         ClusterContext.setCurrentNode(currentNode);
+
+        log.info(String.format("Current node %s", server));
+    }
+
+    /**
+     * Refresh system.
+     */
+    private void refreshSystem() {
+        System system = this.systemDAO.getOne();
+
+        SystemDTO systemDTO = new SystemDTO();
+        systemDTO.setMaxSlot(system.getMaxSlot());
+        systemDTO.setClusterVersion(system.getClusterVersion());
+        ClusterContext.refreshSystem(systemDTO);
+
+        log.info(String.format("Refresh %s", system));
     }
 
     /**

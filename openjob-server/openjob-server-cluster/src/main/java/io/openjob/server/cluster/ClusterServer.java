@@ -44,7 +44,6 @@ public class ClusterServer {
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
         serverService.start(hostname, port);
-
     }
 
     /**
