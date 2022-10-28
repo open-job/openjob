@@ -5,12 +5,14 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.common.util.IpUtil;
 import io.openjob.server.cluster.ClusterServer;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import io.openjob.server.event.ApplicationReadyEventListener;
 import io.openjob.server.handler.ServerExceptionHandler;
 import io.openjob.server.scheduler.wheel.WheelManager;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -51,9 +53,17 @@ public class ServerAutoConfiguration {
      * @return ActorSystem
      */
     @Bean
-    public ActorSystem actorSystem(ApplicationContext applicationContext) {
+    public ActorSystem actorSystem(ApplicationContext applicationContext, AkkaProperties akkaProperties) {
+        String hostname = akkaProperties.getRemote().getHostname();
+        if (StringUtils.isEmpty(hostname)) {
+            hostname = IpUtil.getLocalAddress();
+        }
+
         // Merge config
-        Map<String, Object> newConfig = new HashMap<>(16);
+        Map<String, Object> newConfig = new HashMap<>(8);
+        newConfig.put("akka.remote.artery.canonical.hostname", hostname);
+        newConfig.put("akka.remote.artery.canonical.port", String.valueOf(akkaProperties.getRemote().getPort()));
+
         Config defaultConfig = ConfigFactory.load(AkkaConfigConstant.AKKA_CONFIG);
         Config mergedConfig = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
 

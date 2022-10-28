@@ -3,6 +3,7 @@ package io.openjob.server.common;
 import akka.actor.ActorRef;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
+import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.common.dto.WorkerDTO;
 
 import java.util.HashSet;
@@ -25,6 +26,11 @@ public class ClusterContext {
      * Current node.
      */
     private static Node currentNode;
+
+    /**
+     * System
+     */
+    private static SystemDTO system;
 
     /**
      * Current slots
@@ -105,6 +111,15 @@ public class ClusterContext {
      */
     public static synchronized void setCurrentNode(Node currentNode) {
         ClusterContext.currentNode = currentNode;
+    }
+
+    /**
+     * Refresh system.
+     *
+     * @param system system
+     */
+    public static synchronized void refreshSystem(SystemDTO system) {
+        ClusterContext.system = system;
     }
 
     public static Map<Long, Long> getSlotsListMap() {

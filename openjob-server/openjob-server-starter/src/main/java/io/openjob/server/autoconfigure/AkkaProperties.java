@@ -15,7 +15,6 @@ public class AkkaProperties {
     @Data
     public static class Remote {
         private String hostname;
-        private Integer port;
+        private Integer port = 25520;
     }
-
 }

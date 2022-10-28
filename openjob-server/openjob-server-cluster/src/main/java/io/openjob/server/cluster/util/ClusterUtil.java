@@ -8,6 +8,7 @@ import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class ClusterUtil {
 
     /**
@@ -35,6 +37,8 @@ public class ClusterUtil {
         }));
 
         ClusterContext.refreshNodeList(nodes);
+
+        log.info(String.format("Refresh servers %s", servers));
     }
 
     /**
