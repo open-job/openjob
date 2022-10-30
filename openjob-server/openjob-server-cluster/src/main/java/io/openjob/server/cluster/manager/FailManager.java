@@ -119,6 +119,6 @@ public class FailManager {
         failDTO.setIp(stopNode.getIp());
         failDTO.setServerId(stopNode.getServerId());
         failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-        ClusterUtil.sendMessage(failDTO, servers);
+        ClusterUtil.sendMessage(failDTO, stopNode);
     }
 }

@@ -71,7 +71,7 @@ public class StartService {
         this.refreshCurrentSlots(currentServer);
 
         // Akka message for join.
-        this.sendClusterStartMessage(servers);
+        this.sendClusterStartMessage();
     }
 
     /**
@@ -181,12 +181,16 @@ public class StartService {
         return servers;
     }
 
-    private void sendClusterStartMessage(List<Server> servers) {
+    /**
+     * Send start message.
+     */
+    private void sendClusterStartMessage() {
         Node currentNode = ClusterContext.getCurrentNode();
         NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
         nodeJoinDTO.setIp(currentNode.getIp());
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
-        ClusterUtil.sendMessage(nodeJoinDTO, servers);
+
+        ClusterUtil.sendMessage(nodeJoinDTO, currentNode);
     }
 }

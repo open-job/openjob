@@ -3,17 +3,14 @@ package io.openjob.server.cluster.service;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
-import io.openjob.server.cluster.dto.WorkerFailDTO;
-import io.openjob.server.cluster.dto.WorkerJoinDTO;
+import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
-import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
-import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +29,17 @@ import java.util.stream.Collectors;
 public class ClusterService {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
-    private final WorkerDAO workerDAO;
 
     private final WheelManager wheelManager;
 
     @Autowired
-    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO, WheelManager wheelManager) {
+    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WheelManager wheelManager) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
-        this.workerDAO = workerDAO;
         this.wheelManager = wheelManager;
+    }
+
+    public void receiveNodePing(NodePingDTO nodePingDTO) {
     }
 
     /**
@@ -78,30 +76,9 @@ public class ClusterService {
         // Refresh slots.
         Set<Long> addSlots = this.refreshJobSlots(false);
 
+        log.info(addSlots);
         // Add job instance to timing wheel.
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
-    }
-
-    /**
-     * Receive worker join success message.
-     *
-     * @param workerJoinDTO workerJoinDTO
-     */
-    public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
-        // Refresh app workers.
-        List<Worker> workers = workerDAO.listOnlineWorkers();
-        ClusterUtil.refreshAppWorkers(workers);
-    }
-
-    /**
-     * Receive worker fail success message.
-     *
-     * @param workerFailDTO workerFailDTO
-     */
-    public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
-        // Refresh app workers.
-        List<Worker> workers = workerDAO.listOnlineWorkers();
-        ClusterUtil.refreshAppWorkers(workers);
     }
 
     /**

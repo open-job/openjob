@@ -6,13 +6,12 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
-import io.openjob.server.repository.constant.ServerStatusEnum;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.WorkerStatusConstant;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.App;
-import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,7 @@ public class WorkerService {
         refreshClusterContext();
 
         // Akka message for worker start.
-        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterUtil.sendMessage(new WorkerJoinDTO(), servers);
+        ClusterUtil.sendMessage(new WorkerJoinDTO(), ClusterContext.getCurrentNode());
     }
 
     /**
@@ -76,8 +74,7 @@ public class WorkerService {
         this.refreshClusterContext();
 
         // Akka message for worker start.
-        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterUtil.sendMessage(new WorkerFailDTO(), servers);
+        ClusterUtil.sendMessage(new WorkerFailDTO(), ClusterContext.getCurrentNode());
     }
 
     private void refreshClusterContext() {

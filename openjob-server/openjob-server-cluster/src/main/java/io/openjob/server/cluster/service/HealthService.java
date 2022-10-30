@@ -1,12 +1,13 @@
 package io.openjob.server.cluster.service;
 
+import io.openjob.common.SpringContext;
+import io.openjob.common.context.Node;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.server.common.ClusterContext;
-import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.manager.FailManager;
-import io.openjob.common.SpringContext;
+import io.openjob.server.cluster.util.ClusterUtil;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.dao.ServerFailReportsDAO;
@@ -16,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +50,7 @@ public class HealthService {
             return;
         }
 
-        List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
+        List<Long> fixedPingList = ClusterUtil.getKnowServers(nodesMap, currentNode);
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));
     }
 
@@ -94,38 +93,5 @@ public class HealthService {
         if (reportsCount > ClusterConstant.CLUSTER_FAIL_TIMES) {
             this.failManager.fail(failNode);
         }
-    }
-
-    /**
-     * Get fixed ping server list.
-     *
-     * @param nodesMap    nodesMap
-     * @param currentNode currentNode
-     * @return List
-     */
-    public List<Long> getFixedPingSeverList(Map<Long, Node> nodesMap, Node currentNode) {
-        ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
-        Collections.sort(serverIds);
-        int serverSize = serverIds.size();
-
-        int currentIndex = serverIds.indexOf(currentNode.getServerId());
-
-        int subSize = serverSize - currentIndex - 1;
-        if (subSize > ClusterConstant.CLUSTER_PING_SIZE) {
-            subSize = ClusterConstant.CLUSTER_PING_SIZE;
-        }
-
-        List<Long> pingList = serverIds.subList(currentIndex, subSize);
-        int pingSize = pingList.size();
-        int remainPingSize = ClusterConstant.CLUSTER_PING_SIZE - pingSize;
-        int needPingSize = remainPingSize;
-        if (ClusterConstant.CLUSTER_PING_SIZE > serverSize - 1) {
-            needPingSize = serverSize - 1 - remainPingSize;
-        }
-
-        if (needPingSize > 0) {
-            pingList.addAll(serverIds.subList(0, needPingSize));
-        }
-        return pingList;
     }
 }
