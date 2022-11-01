@@ -9,8 +9,10 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class ResponseDTO implements Serializable {
-    private Integer status;
-    private String message;
-    private String data;
+public class NodePongDTO implements Serializable {
+
+    /**
+     * Cluster version.
+     */
+    private Long clusterVersion;
 }

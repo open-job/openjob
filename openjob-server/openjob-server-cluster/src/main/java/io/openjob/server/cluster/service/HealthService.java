@@ -1,10 +1,13 @@
 package io.openjob.server.cluster.service;
 
+import akka.actor.ActorSelection;
 import io.openjob.common.SpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.NodePongDTO;
 import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
@@ -25,16 +28,18 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Service
 @Log4j2
+@Service
 public class HealthService {
     private final FailManager failManager;
     private final ServerFailReportsDAO serverFailReportsDAO;
+    private final ClusterProperties clusterProperties;
 
     @Autowired
-    public HealthService(ServerFailReportsDAO serverFailReportsDAO, FailManager failManager) {
+    public HealthService(ServerFailReportsDAO serverFailReportsDAO, FailManager failManager, ClusterProperties clusterProperties) {
         this.serverFailReportsDAO = serverFailReportsDAO;
         this.failManager = failManager;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
@@ -61,16 +66,22 @@ public class HealthService {
      * @param serverId serverId
      */
     public void doCheck(Map<Long, Node> nodesMap, Long serverId) {
-        Node node = nodesMap.get(serverId);
-        boolean success = false;
-        try {
-            FutureUtil.ask(ServerUtil.getServerClusterActor(node.getAkkaAddress()), new NodePingDTO(), 3L);
-            success = true;
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        // Ping info.
+        NodePingDTO nodePingDTO = new NodePingDTO();
+        nodePingDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
 
-        if (!success) {
+        Node node = nodesMap.get(serverId);
+        try {
+            ActorSelection actor = ServerUtil.getServerClusterActor(node.getAkkaAddress());
+            NodePongDTO nodePongDTO = FutureUtil.mustAsk(actor, nodePingDTO, NodePongDTO.class, clusterProperties.getPingTimeout());
+
+            // Node ping success.
+            log.info("Ping success version{}", nodePongDTO.getClusterVersion());
+        } catch (Exception e) {
+            log.error("Node ping failed!", e);
+
+            // Node failed.
+            // Record node fail message.
             SpringContext.getBean(HealthService.class).checkFailReports(serverId, node);
         }
     }

@@ -1,10 +1,13 @@
 package io.openjob.server.cluster.actor;
 
 import akka.actor.AbstractActor;
+import io.openjob.common.response.Result;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.NodePongDTO;
 import io.openjob.server.cluster.service.ClusterService;
+import io.openjob.server.common.ClusterContext;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -42,7 +45,13 @@ public class ClusterActor extends AbstractActor {
      * @param nodePingDTO nodePing
      */
     public void handleNodePing(NodePingDTO nodePingDTO) {
+        // Do node ping.
         this.clusterService.receiveNodePing(nodePingDTO);
+
+        // Response pong.
+        NodePongDTO nodePongDTO = new NodePongDTO();
+        nodePongDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        getSender().tell(Result.success(nodePongDTO), getSelf());
     }
 
     /**

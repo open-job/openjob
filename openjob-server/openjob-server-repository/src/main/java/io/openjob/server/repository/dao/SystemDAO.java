@@ -18,9 +18,8 @@ public interface SystemDAO {
     /**
      * Update by id
      *
-     * @param id             id
      * @param clusterVersion cluster version.
      * @return effect rows.
      */
-    Integer updateClusterVersion(Integer id, Long clusterVersion);
+    Integer updateClusterVersion(Long clusterVersion);
 }

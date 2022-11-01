@@ -122,6 +122,10 @@ public class ClusterContext {
         ClusterContext.system = system;
     }
 
+    public static SystemDTO getSystem() {
+        return ClusterContext.system;
+    }
+
     public static Map<Long, Long> getSlotsListMap() {
         return SLOTS_LIST_MAP;
     }
