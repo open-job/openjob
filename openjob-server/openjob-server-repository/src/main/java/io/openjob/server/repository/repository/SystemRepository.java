@@ -13,6 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface SystemRepository extends JpaRepository<System, Integer> {
     @Modifying
     @Transactional(rollbackFor = Exception.class)
-    @Query("update System set clusterVersion=?2 where id=?1")
-    Integer updateClusterVersion(Integer id, Long clusterVersion);
+    @Query("update System set clusterVersion=clusterVersion+1 where id=?1")
+    Integer updateClusterVersion(Integer id);
 }

@@ -75,7 +75,7 @@ public class ClusterService {
         this.setCurrentNode(currentServer);
 
         // Refresh system.
-        this.systemDAO.updateClusterVersion(DateUtil.timestamp());
+        this.systemDAO.updateClusterVersion();
         this.refreshSystem();
 
         // Refresh nodes.

@@ -21,5 +21,5 @@ public interface SystemDAO {
      * @param clusterVersion cluster version.
      * @return effect rows.
      */
-    Integer updateClusterVersion(Long clusterVersion);
+    Integer updateClusterVersion();
 }

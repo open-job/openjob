@@ -11,6 +11,7 @@ import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Service
+@Component
 @Log4j2
 public class FailManager {
     private final ServerDAO serverDAO;
