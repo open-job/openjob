@@ -265,6 +265,9 @@ public class ClusterService {
         SystemDTO systemDTO = new SystemDTO();
         systemDTO.setMaxSlot(system.getMaxSlot());
         systemDTO.setClusterVersion(system.getClusterVersion());
+        systemDTO.setClusterSupervisorSlot(system.getClusterSupervisorSlot());
+        systemDTO.setWorkerSupervisorSlot(system.getWorkerSupervisorSlot());
+
         ClusterContext.refreshSystem(systemDTO);
 
         log.info(String.format("Refresh %s", system));

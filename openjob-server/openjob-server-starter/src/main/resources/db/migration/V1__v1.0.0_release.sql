@@ -610,6 +610,8 @@ CREATE TABLE `system` (
                           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                           `version` varchar(16) NOT NULL DEFAULT '0',
                           `cluster_version` bigint(12) NOT NULL DEFAULT '0',
+                          `cluster_supervisor_slot` int(11) NOT NULL DEFAULT '1',
+                          `worker_supervisor_slot` int(11) NOT NULL DEFAULT '256',
                           `max_slot` int(11) DEFAULT '256',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -617,9 +619,9 @@ CREATE TABLE `system` (
 LOCK TABLES `system` WRITE;
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `max_slot`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `max_slot`)
 VALUES
-    (1,'1.0.0',0,256);
+    (1,'1.0.0',0,1,256,256);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;
