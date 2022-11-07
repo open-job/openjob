@@ -11,9 +11,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Add namespace vo")
-public class AddNamespaceVO {
+@ApiModel("Add app vo")
+public class AddAppVO {
 
-    @ApiModelProperty(value = "New namespace primary id", required = true)
+    @ApiModelProperty(value = "New app primary id", required = true)
     private Long id;
 }
