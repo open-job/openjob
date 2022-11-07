@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:33:07
+ * @date 2022-11-07 21:35:56
  * @since 1.0.0
  */
-public interface JobAdminConfigData {
+public interface AdminConfigData {
 
     /**
-     * add JobAdminConfig
+     * add AdminConfig
      *
      * @param dto dto
      * @return id
@@ -21,7 +21,7 @@ public interface JobAdminConfigData {
     Long add(AdminConfigDTO dto);
 
     /**
-     * batch add JobAdminConfig
+     * batch add AdminConfig
      *
      * @param dtoList dto list
      * @return id
@@ -29,23 +29,23 @@ public interface JobAdminConfigData {
     Integer batchAdd(List<AdminConfigDTO> dtoList);
 
     /**
-     * get JobAdminConfig by ID
+     * get AdminConfig by ID
      *
      * @param id id
-     * @return JobAdminConfig
+     * @return AdminConfig
      */
     AdminConfigDTO getById(Long id);
 
     /**
-     * get JobAdminConfig by ID, will try get from cache.
+     * get AdminConfig by ID, will try get from cache.
      *
      * @param id id
-     * @return JobAdminConfig
+     * @return AdminConfig
      */
     AdminConfigDTO getByIdFromCache(Long id);
 
     /**
-     * update JobAdminConfig by ID
+     * update AdminConfig by ID
      *
      * @param dto dto
      * @return number

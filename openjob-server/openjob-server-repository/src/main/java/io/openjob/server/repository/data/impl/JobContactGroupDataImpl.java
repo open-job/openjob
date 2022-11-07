@@ -4,8 +4,8 @@ import com.kezhilian.boot.common.util.BeanMapperUtil;
 import com.kezhilian.boot.redis.operation.RedisOperation;
 import io.openjob.server.repository.dao.JobContactGroupDAO;
 import io.openjob.server.repository.data.JobContactGroupData;
-import io.openjob.server.repository.dto.JobContactGroupDTO;
-import io.openjob.server.repository.entity.JobContactGroup;
+import io.openjob.server.repository.dto.ContactGroupDTO;
+import io.openjob.server.repository.entity.ContactGroup;
 import io.openjob.server.repository.util.CacheUtil;
 // import com.kezhilian.wzl.service.order.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,8 @@ public class JobContactGroupDataImpl implements JobContactGroupData {
     }
 
     @Override
-    public Long add(JobContactGroupDTO dto) {
-        JobContactGroup entity = BeanMapperUtil.map(dto, JobContactGroup.class);
+    public Long add(ContactGroupDTO dto) {
+        ContactGroup entity = BeanMapperUtil.map(dto, ContactGroup.class);
 
         // 序列化扩展信息
         // if (Objects.nonNull(dto.getExtra())) {
@@ -44,27 +44,27 @@ public class JobContactGroupDataImpl implements JobContactGroupData {
     }
 
     @Override
-    public Integer batchAdd(List<JobContactGroupDTO> dtoList) {
-        List<JobContactGroup> entityList = BeanMapperUtil.mapList(dtoList, JobContactGroupDTO.class, JobContactGroup.class);
+    public Integer batchAdd(List<ContactGroupDTO> dtoList) {
+        List<ContactGroup> entityList = BeanMapperUtil.mapList(dtoList, ContactGroupDTO.class, ContactGroup.class);
 
         return jobContactGroupDAO.batchAdd(entityList);
     }
 
     @Override
-    public JobContactGroupDTO getById(Long id) {
-        return BeanMapperUtil.map(jobContactGroupDAO.getById(id), JobContactGroupDTO.class);
+    public ContactGroupDTO getById(Long id) {
+        return BeanMapperUtil.map(jobContactGroupDAO.getById(id), ContactGroupDTO.class);
     }
 
     @Override
-    public JobContactGroupDTO getByIdFromCache(Long id) {
+    public ContactGroupDTO getByIdFromCache(Long id) {
         return redisOperation.string()
                 .key(CacheKey.getJobContactGroupByIdKey(id))
                 .orElseGet(() -> getById(id));
     }
 
     @Override
-    public Integer updateById(JobContactGroupDTO dto) {
-        JobContactGroup entity = BeanMapperUtil.map(dto, JobContactGroup.class);
+    public Integer updateById(ContactGroupDTO dto) {
+        ContactGroup entity = BeanMapperUtil.map(dto, ContactGroup.class);
 
         redisOperation.delete(CacheKey.getJobContactGroupByIdKey(dto.getId()));
 

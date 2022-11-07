@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:44:57
+ * @date 2022-11-07 21:33:45
  * @since 1.0.0
  */
-public interface JobNotifyTemplateData {
+public interface NotifyTemplateData {
 
     /**
-     * add JobNotifyTemplate
+     * add NotifyTemplate
      *
      * @param dto dto
      * @return id
@@ -21,7 +21,7 @@ public interface JobNotifyTemplateData {
     Long add(NotifyTemplateDTO dto);
 
     /**
-     * batch add JobNotifyTemplate
+     * batch add NotifyTemplate
      *
      * @param dtoList dto list
      * @return id
@@ -29,23 +29,23 @@ public interface JobNotifyTemplateData {
     Integer batchAdd(List<NotifyTemplateDTO> dtoList);
 
     /**
-     * get JobNotifyTemplate by ID
+     * get NotifyTemplate by ID
      *
      * @param id id
-     * @return JobNotifyTemplate
+     * @return NotifyTemplate
      */
     NotifyTemplateDTO getById(Long id);
 
     /**
-     * get JobNotifyTemplate by ID, will try get from cache.
+     * get NotifyTemplate by ID, will try get from cache.
      *
      * @param id id
-     * @return JobNotifyTemplate
+     * @return NotifyTemplate
      */
     NotifyTemplateDTO getByIdFromCache(Long id);
 
     /**
-     * update JobNotifyTemplate by ID
+     * update NotifyTemplate by ID
      *
      * @param dto dto
      * @return number

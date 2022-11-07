@@ -1,7 +1,7 @@
 package io.openjob.server.repository.data;
 
-import io.openjob.server.repository.dto.JobContactGroupDTO;
-import io.openjob.server.repository.entity.JobContactGroup;
+import io.openjob.server.repository.dto.ContactGroupDTO;
+import io.openjob.server.repository.entity.ContactGroup;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface JobContactGroupData {
      * @param dto dto
      * @return id
      */
-    Long add(JobContactGroupDTO dto);
+    Long add(ContactGroupDTO dto);
 
     /**
      * batch add JobContactGroup
@@ -26,7 +26,7 @@ public interface JobContactGroupData {
      * @param dtoList dto list
      * @return id
      */
-    Integer batchAdd(List<JobContactGroupDTO> dtoList);
+    Integer batchAdd(List<ContactGroupDTO> dtoList);
 
     /**
      * get JobContactGroup by ID
@@ -34,7 +34,7 @@ public interface JobContactGroupData {
      * @param id id
      * @return JobContactGroup
      */
-    JobContactGroupDTO getById(Long id);
+    ContactGroupDTO getById(Long id);
 
     /**
      * get JobContactGroup by ID, will try get from cache.
@@ -42,7 +42,7 @@ public interface JobContactGroupData {
      * @param id id
      * @return JobContactGroup
      */
-    JobContactGroupDTO getByIdFromCache(Long id);
+    ContactGroupDTO getByIdFromCache(Long id);
 
     /**
      * update JobContactGroup by ID
@@ -50,7 +50,7 @@ public interface JobContactGroupData {
      * @param dto dto
      * @return number
      */
-    Integer updateById(JobContactGroupDTO dto);
+    Integer updateById(ContactGroupDTO dto);
 
 }
 

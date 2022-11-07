@@ -6,13 +6,13 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:33:03
+ * @date 2022-11-07 21:35:55
  * @since 1.0.0
  */
-public interface JobAdminConfigDAO {
+public interface AdminConfigDAO {
 
     /**
-     * add JobAdminConfig
+     * add AdminConfig
      *
      * @param entity entity
      * @return id
@@ -20,23 +20,23 @@ public interface JobAdminConfigDAO {
     Long add(AdminConfig entity);
 
     /**
-     * batch add JobAdminConfig
+     * batch add AdminConfig
      *
      * @param entityList entity list
      * @return number
      */
-    Integer batchAdd(List<AdminConfig> entityList);
+    void batchAdd(List<AdminConfig> entityList);
 
     /**
-     * get JobAdminConfig by Id
+     * get AdminConfig by Id
      *
      * @param id id
-     * @return JobAdminConfig
+     * @return AdminConfig
      */
     AdminConfig getById(Long id);
 
     /**
-     * update JobAdminConfig by ID
+     * update AdminConfig by ID
      *
      * @param entity entity
      * @return number

@@ -2,8 +2,8 @@ package io.openjob.server.repository.data.impl;
 
 import com.kezhilian.boot.common.util.BeanMapperUtil;
 import com.kezhilian.boot.redis.operation.RedisOperation;
-import io.openjob.server.repository.dao.JobNotifyContactDAO;
-import io.openjob.server.repository.data.JobNotifyContactData;
+import io.openjob.server.repository.dao.NotifyContactDAO;
+import io.openjob.server.repository.data.NotifyContactData;
 import io.openjob.server.repository.dto.NotifyContactDTO;
 import io.openjob.server.repository.entity.NotifyContact;
 import io.openjob.server.repository.util.CacheUtil;
@@ -16,18 +16,18 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:45:11
+ * @date 2022-11-07 21:34:42
  * @since 1.0.0
  */
 @Component
-public class JobNotifyContactDataImpl implements JobNotifyContactData {
+public class NotifyContactDataImpl implements NotifyContactData {
 
-    private final JobNotifyContactDAO jobNotifyContactDAO;
+    private final NotifyContactDAO notifyContactDAO;
     private final RedisOperation redisOperation;
 
     @Autowired
-    public JobNotifyContactDataImpl(JobNotifyContactDAO jobNotifyContactDAO, RedisOperation redisOperation) {
-        this.jobNotifyContactDAO = jobNotifyContactDAO;
+    public NotifyContactDataImpl(NotifyContactDAO notifyContactDAO, RedisOperation redisOperation) {
+        this.notifyContactDAO = notifyContactDAO;
         this.redisOperation = redisOperation;
     }
 
@@ -40,25 +40,25 @@ public class JobNotifyContactDataImpl implements JobNotifyContactData {
         //    entity.setExtra(JsonUtil.toJsonFilterEmpty(dto.getExtra()));
         // }
 
-        return jobNotifyContactDAO.add(entity);
+        return notifyContactDAO.add(entity);
     }
 
     @Override
     public Integer batchAdd(List<NotifyContactDTO> dtoList) {
         List<NotifyContact> entityList = BeanMapperUtil.mapList(dtoList, NotifyContactDTO.class, NotifyContact.class);
 
-        return jobNotifyContactDAO.batchAdd(entityList);
+        return notifyContactDAO.batchAdd(entityList);
     }
 
     @Override
     public NotifyContactDTO getById(Long id) {
-        return BeanMapperUtil.map(jobNotifyContactDAO.getById(id), NotifyContactDTO.class);
+        return BeanMapperUtil.map(notifyContactDAO.getById(id), NotifyContactDTO.class);
     }
 
     @Override
     public NotifyContactDTO getByIdFromCache(Long id) {
         return redisOperation.string()
-                .key(CacheKey.getJobNotifyContactByIdKey(id))
+                .key(CacheKey.getNotifyContactByIdKey(id))
                 .orElseGet(() -> getById(id));
     }
 
@@ -66,9 +66,9 @@ public class JobNotifyContactDataImpl implements JobNotifyContactData {
     public Integer updateById(NotifyContactDTO dto) {
         NotifyContact entity = BeanMapperUtil.map(dto, NotifyContact.class);
 
-        redisOperation.delete(CacheKey.getJobNotifyContactByIdKey(dto.getId()));
+        redisOperation.delete(CacheKey.getNotifyContactByIdKey(dto.getId()));
 
-        return jobNotifyContactDAO.updateById(entity);
+        return notifyContactDAO.updateById(entity);
     }
 }
 

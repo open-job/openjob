@@ -2,8 +2,8 @@ package io.openjob.server.repository.data.impl;
 
 import com.kezhilian.boot.common.util.BeanMapperUtil;
 import com.kezhilian.boot.redis.operation.RedisOperation;
-import io.openjob.server.repository.dao.JobAdminUserDAO;
-import io.openjob.server.repository.data.JobAdminUserData;
+import io.openjob.server.repository.dao.AdminUserDAO;
+import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.util.CacheUtil;
@@ -16,18 +16,18 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:33:42
+ * @date 2022-11-07 21:35:46
  * @since 1.0.0
  */
 @Component
-public class JobAdminUserDataImpl implements JobAdminUserData {
+public class AdminUserDataImpl implements AdminUserData {
 
-    private final JobAdminUserDAO jobAdminUserDAO;
+    private final AdminUserDAO adminUserDAO;
     private final RedisOperation redisOperation;
 
     @Autowired
-    public JobAdminUserDataImpl(JobAdminUserDAO jobAdminUserDAO, RedisOperation redisOperation) {
-        this.jobAdminUserDAO = jobAdminUserDAO;
+    public AdminUserDataImpl(AdminUserDAO adminUserDAO, RedisOperation redisOperation) {
+        this.adminUserDAO = adminUserDAO;
         this.redisOperation = redisOperation;
     }
 
@@ -40,25 +40,25 @@ public class JobAdminUserDataImpl implements JobAdminUserData {
         //    entity.setExtra(JsonUtil.toJsonFilterEmpty(dto.getExtra()));
         // }
 
-        return jobAdminUserDAO.add(entity);
+        return adminUserDAO.add(entity);
     }
 
     @Override
     public Integer batchAdd(List<AdminUserDTO> dtoList) {
         List<AdminUser> entityList = BeanMapperUtil.mapList(dtoList, AdminUserDTO.class, AdminUser.class);
 
-        return jobAdminUserDAO.batchAdd(entityList);
+        return adminUserDAO.batchAdd(entityList);
     }
 
     @Override
     public AdminUserDTO getById(Long id) {
-        return BeanMapperUtil.map(jobAdminUserDAO.getById(id), AdminUserDTO.class);
+        return BeanMapperUtil.map(adminUserDAO.getById(id), AdminUserDTO.class);
     }
 
     @Override
     public AdminUserDTO getByIdFromCache(Long id) {
         return redisOperation.string()
-                .key(CacheKey.getJobAdminUserByIdKey(id))
+                .key(CacheKey.getAdminUserByIdKey(id))
                 .orElseGet(() -> getById(id));
     }
 
@@ -66,9 +66,9 @@ public class JobAdminUserDataImpl implements JobAdminUserData {
     public Integer updateById(AdminUserDTO dto) {
         AdminUser entity = BeanMapperUtil.map(dto, AdminUser.class);
 
-        redisOperation.delete(CacheKey.getJobAdminUserByIdKey(dto.getId()));
+        redisOperation.delete(CacheKey.getAdminUserByIdKey(dto.getId()));
 
-        return jobAdminUserDAO.updateById(entity);
+        return adminUserDAO.updateById(entity);
     }
 }
 

@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:45:11
+ * @date 2022-11-07 21:34:42
  * @since 1.0.0
  */
-public interface JobNotifyContactData {
+public interface NotifyContactData {
 
     /**
-     * add JobNotifyContact
+     * add NotifyContact
      *
      * @param dto dto
      * @return id
@@ -21,7 +21,7 @@ public interface JobNotifyContactData {
     Long add(NotifyContactDTO dto);
 
     /**
-     * batch add JobNotifyContact
+     * batch add NotifyContact
      *
      * @param dtoList dto list
      * @return id
@@ -29,23 +29,23 @@ public interface JobNotifyContactData {
     Integer batchAdd(List<NotifyContactDTO> dtoList);
 
     /**
-     * get JobNotifyContact by ID
+     * get NotifyContact by ID
      *
      * @param id id
-     * @return JobNotifyContact
+     * @return NotifyContact
      */
     NotifyContactDTO getById(Long id);
 
     /**
-     * get JobNotifyContact by ID, will try get from cache.
+     * get NotifyContact by ID, will try get from cache.
      *
      * @param id id
-     * @return JobNotifyContact
+     * @return NotifyContact
      */
     NotifyContactDTO getByIdFromCache(Long id);
 
     /**
-     * update JobNotifyContact by ID
+     * update NotifyContact by ID
      *
      * @param dto dto
      * @return number

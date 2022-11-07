@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 13:43:07
+ * @date 2022-11-07 21:35:13
  * @since 1.0.0
  */
-public interface JobAdminRuleData {
+public interface AdminRuleData {
 
     /**
-     * add JobAdminRule
+     * add AdminRule
      *
      * @param dto dto
      * @return id
@@ -21,7 +21,7 @@ public interface JobAdminRuleData {
     Long add(AdminRuleDTO dto);
 
     /**
-     * batch add JobAdminRule
+     * batch add AdminRule
      *
      * @param dtoList dto list
      * @return id
@@ -29,23 +29,23 @@ public interface JobAdminRuleData {
     Integer batchAdd(List<AdminRuleDTO> dtoList);
 
     /**
-     * get JobAdminRule by ID
+     * get AdminRule by ID
      *
      * @param id id
-     * @return JobAdminRule
+     * @return AdminRule
      */
     AdminRuleDTO getById(Long id);
 
     /**
-     * get JobAdminRule by ID, will try get from cache.
+     * get AdminRule by ID, will try get from cache.
      *
      * @param id id
-     * @return JobAdminRule
+     * @return AdminRule
      */
     AdminRuleDTO getByIdFromCache(Long id);
 
     /**
-     * update JobAdminRule by ID
+     * update AdminRule by ID
      *
      * @param dto dto
      * @return number
