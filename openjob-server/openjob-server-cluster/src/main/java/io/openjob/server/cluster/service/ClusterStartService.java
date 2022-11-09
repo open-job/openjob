@@ -148,6 +148,7 @@ public class ClusterStartService {
         currentNode.setServerId(server.getId());
         currentNode.setIp(server.getIp());
         currentNode.setAkkaAddress(server.getAkkaAddress());
+        currentNode.setStatus(server.getStatus());
         ClusterContext.setCurrentNode(currentNode);
 
         log.info(String.format("Current node %s", server));

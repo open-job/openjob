@@ -5,6 +5,7 @@ import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.common.ClusterContext;
+import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,6 @@ public class ClusterService {
     public void receiveNodePing(NodePingDTO nodePingDTO) {
         // Ignore
         if (this.isIgnore(nodePingDTO.getClusterVersion())) {
-            return;
-        }
-
-        // Not refresh current node.
-        // Server status is offline.
-        if (!this.refreshManager.isRefreshServer()) {
             return;
         }
 
