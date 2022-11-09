@@ -6,7 +6,6 @@ import io.openjob.common.context.Node;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
-import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -105,7 +103,7 @@ public class ClusterUtil {
      * @param currentNode currentNode
      */
     public static void sendMessage(Object message, Node currentNode) {
-        Map<Long, Node> nodesList = ClusterContext.getNodesList();
+        Map<Long, Node> nodesList = ClusterContext.getNodesMap();
         List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode);
         knowServers.forEach(knowId -> ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender()));
     }

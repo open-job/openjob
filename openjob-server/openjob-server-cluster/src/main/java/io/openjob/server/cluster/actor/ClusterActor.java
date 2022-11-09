@@ -51,6 +51,10 @@ public class ClusterActor extends AbstractActor {
         // Response pong.
         NodePongDTO nodePongDTO = new NodePongDTO();
         nodePongDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+
+        // Response know status.
+        boolean isKnowServer = ClusterContext.getNodesMap().containsKey(nodePingDTO.getServerId());
+        nodePongDTO.setKnowServer(isKnowServer);
         getSender().tell(Result.success(nodePongDTO), getSelf());
     }
 

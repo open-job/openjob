@@ -15,4 +15,9 @@ public class NodePingDTO implements Serializable {
      * Cluster version.
      */
     private Long clusterVersion;
+
+    /**
+     * Server id.
+     */
+    private Long serverId;
 }

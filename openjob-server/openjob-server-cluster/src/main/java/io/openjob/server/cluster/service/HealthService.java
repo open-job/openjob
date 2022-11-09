@@ -47,7 +47,7 @@ public class HealthService {
      */
     public void check() {
         // Ping server list.
-        Map<Long, Node> nodesMap = ClusterContext.getNodesList();
+        Map<Long, Node> nodesMap = ClusterContext.getNodesMap();
         Node currentNode = ClusterContext.getCurrentNode();
 
         if (Objects.isNull(currentNode)) {
@@ -69,6 +69,7 @@ public class HealthService {
         // Ping info.
         NodePingDTO nodePingDTO = new NodePingDTO();
         nodePingDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        nodePingDTO.setServerId(ClusterContext.getCurrentNode().getServerId());
 
         Node node = nodesMap.get(serverId);
         try {
@@ -77,6 +78,11 @@ public class HealthService {
 
             // Node ping success.
             log.info("Ping success version{}", nodePongDTO.getClusterVersion());
+
+            // Current server is unknow.
+            if (!nodePongDTO.getKnowServer()) {
+                this.checkOnline();
+            }
         } catch (Exception e) {
             log.error("Node ping failed!", e);
 
@@ -104,5 +110,11 @@ public class HealthService {
         if (reportsCount > ClusterConstant.CLUSTER_FAIL_TIMES) {
             this.failManager.fail(failNode);
         }
+    }
+
+    /**
+     * Check online.
+     */
+    public void checkOnline() {
     }
 }

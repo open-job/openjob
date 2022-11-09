@@ -133,7 +133,7 @@ public class ClusterContext {
      *
      * @return Map<Long, Node>
      */
-    public static Map<Long, Node> getNodesList() {
+    public static Map<Long, Node> getNodesMap() {
         return NODES_LIST;
     }
 
