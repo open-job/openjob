@@ -3,6 +3,8 @@ package io.openjob.server.repository.dto;
 import lombok.Data;
 import java.util.List;
 
+import io.openjob.server.repository.entity.json.MenuExtra;
+
 /**
  * @author inhere
  * @date 2022-11-07 21:34:57
@@ -39,7 +41,7 @@ public class AdminMenuDTO {
     /**
      * Extra meta data. JSON object: {icon:xx,title:some.name}
      */
-    private Extra extra;
+    private MenuExtra extra;
 
     /**
      * Hidden status. 1=yes 2=no
