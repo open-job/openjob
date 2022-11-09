@@ -67,7 +67,7 @@ public class ClusterStartService {
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
-        this.refreshManager.refreshCurrentSlots(false, false);
+        this.refreshManager.initCurrentSlots();
 
         // Akka message for join.
         this.sendClusterStartMessage();

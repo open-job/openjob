@@ -8,15 +8,18 @@ import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.SystemDAO;
+import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.System;
+import io.openjob.server.repository.entity.Worker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,14 +33,25 @@ public class RefreshManager {
 
     private final SystemDAO systemDAO;
     private final ServerDAO serverDAO;
-
     private final JobSlotsDAO jobSlotsDAO;
+    private final WorkerDAO workerDAO;
 
     @Autowired
-    public RefreshManager(SystemDAO systemDAO, ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
+    public RefreshManager(SystemDAO systemDAO, ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO) {
         this.systemDAO = systemDAO;
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
+        this.workerDAO = workerDAO;
+    }
+
+    /**
+     * Whether to refresh server.
+     *
+     * @return Boolean
+     */
+    public Boolean isRefreshServer() {
+        Server server = this.serverDAO.getById(ClusterContext.getCurrentNode().getServerId());
+        return Objects.nonNull(server) && ServerStatusEnum.OK.getStatus().equals(server.getStatus());
     }
 
     /**
@@ -73,13 +87,31 @@ public class RefreshManager {
     }
 
     /**
-     * Refresh node current slots.
-     *
-     * @param isReturnDiff whether to return diff.
-     * @param isJoin       is refresh for join.
-     * @return Set
+     * Refresh app workers.
      */
-    public Set<Long> refreshCurrentSlots(Boolean isReturnDiff, Boolean isJoin) {
+    public void refreshAppWorkers() {
+        List<Worker> workers = workerDAO.listOnlineWorkers();
+        ClusterUtil.refreshAppWorkers(workers);
+    }
+
+    /**
+     * Init current slots.
+     */
+    public void initCurrentSlots() {
+        Node currentNode = ClusterContext.getCurrentNode();
+        List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
+        Set<Long> newCurrentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
+        ClusterContext.refreshCurrentSlots(newCurrentSlots);
+
+        log.info(String.format("Refresh slots %s", newCurrentSlots));
+    }
+
+    /**
+     * Refresh current slots.
+     *
+     * @return remove slots.
+     */
+    public Set<Long> refreshCurrentSlots() {
         Node currentNode = ClusterContext.getCurrentNode();
         Set<Long> currentSlots = ClusterContext.getCurrentSlots();
         List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
@@ -88,18 +120,8 @@ public class RefreshManager {
 
         log.info(String.format("Refresh slots %s", newCurrentSlots));
 
-        if (!isReturnDiff) {
-            return Collections.emptySet();
-        }
-
-        if (isJoin) {
-            // Node remove slots.
-            currentSlots.removeAll(newCurrentSlots);
-            return currentSlots;
-        } else {
-            // Node add slots.
-            newCurrentSlots.removeAll(currentSlots);
-            return newCurrentSlots;
-        }
+        // Node remove slots.
+        currentSlots.removeAll(newCurrentSlots);
+        return currentSlots;
     }
 }

@@ -66,15 +66,6 @@ public class ClusterUtil {
     }
 
     /**
-     * Refresh slot map.
-     *
-     * @param jobSlots slots
-     */
-    public static void refreshSlotsListMap(List<JobSlots> jobSlots) {
-        ClusterContext.refreshSlotsListMap(jobSlots.stream().collect(Collectors.toMap(JobSlots::getId, JobSlots::getServerId)));
-    }
-
-    /**
      * Get know servers.
      *
      * @param nodesMap    nodesMap

@@ -10,6 +10,12 @@ import java.io.Serializable;
  */
 @Data
 public class NodeJoinDTO implements Serializable {
+
+    /**
+     * Cluster version.
+     */
+    private Long clusterVersion;
+
     /**
      * Join server id.
      */

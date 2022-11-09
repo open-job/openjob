@@ -11,6 +11,12 @@ import java.util.List;
  */
 @Data
 public class NodeFailDTO implements Serializable {
+
+    /**
+     * Cluster version.
+     */
+    private Long clusterVersion;
+
     /**
      * Fail server id.
      */

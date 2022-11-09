@@ -42,16 +42,34 @@ public class ClusterService {
      * @param nodePingDTO nodePingDTO
      */
     public void receiveNodePing(NodePingDTO nodePingDTO) {
-        Long clusterVersion = ClusterContext.getSystem().getClusterVersion();
-        if (clusterVersion >= nodePingDTO.getClusterVersion()) {
+        // Ignore
+        if (this.isIgnore(nodePingDTO.getClusterVersion())) {
             return;
         }
 
-        if (this.refreshing.compareAndSet(false, true)) {
+        // Not refresh current node.
+        // Server status is offline.
+        if (!this.refreshManager.isRefreshServer()) {
             return;
         }
+
+        // Refresh nodes.
+        this.refreshManager.refreshClusterNodes();
+
+        // Refresh current slots.
+        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+        if (!removeSlots.isEmpty()) {
+            this.wheelManager.removeBySlotsId(removeSlots);
+        }
+
+        // Refresh app workers.
+        this.refreshManager.refreshAppWorkers();
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
 
         log.info("Begin to refreshing");
+        this.refreshing.set(false);
     }
 
     /**
@@ -60,7 +78,8 @@ public class ClusterService {
      * @param join join
      */
     public void receiveNodeJoin(NodeJoinDTO join) {
-        if (this.refreshing.compareAndSet(false, true)) {
+        // Ignore
+        if (this.isIgnore(join.getClusterVersion())) {
             return;
         }
 
@@ -70,10 +89,12 @@ public class ClusterService {
         this.refreshManager.refreshClusterNodes();
 
         // Refresh slots.
-        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots(true, true);
+        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
 
         // Remove job instance from timing wheel.
-        this.wheelManager.removeBySlotsId(removeSlots);
+        if (!removeSlots.isEmpty()) {
+            this.wheelManager.removeBySlotsId(removeSlots);
+        }
 
         // Refresh system.
         this.refreshManager.refreshSystem(false);
@@ -88,7 +109,8 @@ public class ClusterService {
      * @param fail fail
      */
     public void receiveNodeFail(NodeFailDTO fail) {
-        if (this.refreshing.compareAndSet(false, true)) {
+        // Ignore
+        if (this.isIgnore(fail.getClusterVersion())) {
             return;
         }
 
@@ -98,14 +120,27 @@ public class ClusterService {
         this.refreshManager.refreshClusterNodes();
 
         // Refresh slots.
-        Set<Long> addSlots = this.refreshManager.refreshCurrentSlots(true, false);
+        this.refreshManager.refreshCurrentSlots();
 
         // Refresh system.
         this.refreshManager.refreshSystem(false);
         this.refreshing.set(false);
 
-        log.info("Add new slots{}", addSlots);
         // Add job instance to timing wheel.
         log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
+    }
+
+    /**
+     * Ignore message.
+     *
+     * @param clusterVersion receive cluster version.
+     * @return Boolean
+     */
+    private Boolean isIgnore(Long clusterVersion) {
+        if (clusterVersion >= ClusterContext.getSystem().getClusterVersion()) {
+            return true;
+        }
+
+        return !this.refreshing.compareAndSet(false, true);
     }
 }

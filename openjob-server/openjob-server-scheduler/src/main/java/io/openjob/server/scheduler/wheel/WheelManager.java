@@ -11,13 +11,11 @@ import java.util.Set;
  */
 @Component
 public class WheelManager {
-    private final DelayWheel delayWheel;
     private final SchedulerWheel schedulerWheel;
     private final WorkflowWheel workflowWheel;
 
     @Autowired
-    public WheelManager(DelayWheel delayWheel, SchedulerWheel schedulerWheel, WorkflowWheel workflowWheel) {
-        this.delayWheel = delayWheel;
+    public WheelManager(SchedulerWheel schedulerWheel, WorkflowWheel workflowWheel) {
         this.schedulerWheel = schedulerWheel;
         this.workflowWheel = workflowWheel;
     }
@@ -28,9 +26,6 @@ public class WheelManager {
     public void start() {
         // Scheduler wheel
         this.schedulerWheel.start();
-
-        // Delay wheel
-        this.delayWheel.start();
 
         // Workflow wheel
         this.workflowWheel.start();
@@ -45,9 +40,6 @@ public class WheelManager {
         // Scheduler wheel
         this.schedulerWheel.removeBySlotsId(slotsIds);
 
-        // Delay wheel
-        this.delayWheel.removeBySlotsId(slotsIds);
-
         // Workflow wheel
         this.workflowWheel.removeBySlotsId(slotsIds);
     }
@@ -58,9 +50,6 @@ public class WheelManager {
     public void stop() {
         // Scheduler wheel
         this.schedulerWheel.stop();
-
-        // Delay wheel
-        this.delayWheel.stop();
 
         // Workflow wheel
         this.workflowWheel.stop();
