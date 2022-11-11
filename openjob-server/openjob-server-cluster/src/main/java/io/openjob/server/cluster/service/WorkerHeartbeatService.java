@@ -36,8 +36,7 @@ public class WorkerHeartbeatService {
             LogUtil.logAndThrow(String.format("worker(%s) do not exist!", workerHeartbeatReq.getAddress()));
         }
 
-        int now = DateUtil.now();
-        worker.setLastHeartbeatTime(now);
+        worker.setLastHeartbeatTime(DateUtil.timestamp());
         workerDAO.save(worker);
     }
 }

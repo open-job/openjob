@@ -18,6 +18,10 @@ public interface WorkerDAO {
      */
     Long save(Worker worker);
 
+    List<Worker> listFailWorkers(List<Long> slotsId, Long time);
+
+    List<Worker> listJoinWorkers(List<Long> slotsId, Long time);
+
     /**
      * Get by address.
      *

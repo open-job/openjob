@@ -55,7 +55,7 @@ public class WorkerDAOTest extends RepositoryTest {
 
     @Test
     public void testSave() {
-        int now = DateUtil.now();
+        long now = DateUtil.timestamp();
         Worker worker = workerDAO.getByAddress("127.0.0.1:25600");
         worker.setUpdateTime(now);
         worker.setSlotsId(1L);

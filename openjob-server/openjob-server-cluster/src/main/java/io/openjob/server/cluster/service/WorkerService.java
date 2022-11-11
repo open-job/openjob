@@ -3,7 +3,6 @@ package io.openjob.server.cluster.service;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
-import io.openjob.common.util.TaskUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
@@ -72,7 +71,6 @@ public class WorkerService {
      * @param stopReq stop request.
      */
     public void workerStop(WorkerStopRequest stopReq) {
-        int now = DateUtil.now();
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());
         if (Objects.isNull(worker)) {
             log.error("worker({}) do not exist!", stopReq.getAddress());
@@ -81,7 +79,7 @@ public class WorkerService {
 
         // Update worker
         worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
-        worker.setUpdateTime(now);
+        worker.setUpdateTime(DateUtil.timestamp());
 
         // Refresh system
         this.refreshManager.refreshSystem(true);
@@ -93,6 +91,9 @@ public class WorkerService {
         WorkerFailDTO workerFailDTO = new WorkerFailDTO();
         workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
+    }
+
+    public void workerCheck() {
     }
 
     private void refreshClusterContext() {
@@ -108,7 +109,7 @@ public class WorkerService {
         }
 
         // Update worker.
-        int now = DateUtil.now();
+        long now = DateUtil.timestamp();
         Worker worker = workerDAO.getByAddress(startReq.getAddress());
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
