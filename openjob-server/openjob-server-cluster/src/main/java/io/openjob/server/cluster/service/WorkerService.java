@@ -3,11 +3,12 @@ package io.openjob.server.cluster.service;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
-import io.openjob.server.repository.constant.WorkerStatusConstant;
+import io.openjob.server.repository.constant.WorkerStatusEnum;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.WorkerDAO;
@@ -29,13 +30,13 @@ import java.util.Objects;
 public class WorkerService {
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
-    private final ServerDAO serverDAO;
+    private final ClusterProperties clusterProperties;
 
     @Autowired
-    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ServerDAO serverDAO) {
+    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ClusterProperties clusterProperties) {
         this.workerDAO = workerDAO;
         this.appDAO = appDAO;
-        this.serverDAO = serverDAO;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
@@ -51,7 +52,7 @@ public class WorkerService {
         refreshClusterContext();
 
         // Akka message for worker start.
-        ClusterUtil.sendMessage(new WorkerJoinDTO(), ClusterContext.getCurrentNode());
+        ClusterUtil.sendMessage(new WorkerJoinDTO(), ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
     }
 
     /**
@@ -67,14 +68,14 @@ public class WorkerService {
             return;
         }
 
-        worker.setStatus(WorkerStatusConstant.OFFLINE.getStatus());
+        worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
         worker.setUpdateTime(now);
 
         // Refresh cluster context.
         this.refreshClusterContext();
 
         // Akka message for worker start.
-        ClusterUtil.sendMessage(new WorkerFailDTO(), ClusterContext.getCurrentNode());
+        ClusterUtil.sendMessage(new WorkerFailDTO(), ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
     }
 
     private void refreshClusterContext() {
@@ -94,7 +95,7 @@ public class WorkerService {
         Worker worker = workerDAO.getByAddress(startReq.getAddress());
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
-            worker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
+            worker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
             workerDAO.save(worker);
             return;
         }
@@ -105,7 +106,7 @@ public class WorkerService {
         saveWorker.setCreateTime(now);
         saveWorker.setWorkerKey(startReq.getWorkerKey());
         saveWorker.setAddress(startReq.getAddress());
-        saveWorker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
+        saveWorker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
         saveWorker.setAppId(app.getId());
         saveWorker.setAppName(startReq.getAppName());
         saveWorker.setLastHeartbeatTime(now);

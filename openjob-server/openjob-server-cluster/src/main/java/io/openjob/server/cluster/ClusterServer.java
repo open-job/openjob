@@ -6,7 +6,7 @@ import akka.actor.Props;
 import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import io.openjob.common.constant.AkkaConstant;
-import io.openjob.server.cluster.service.ClusterStartService;
+import io.openjob.server.cluster.service.JoinService;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.ServerActorConstant;
@@ -23,13 +23,13 @@ import org.springframework.stereotype.Component;
 public class ClusterServer {
     private final ActorSystem actorSystem;
     private final SchedulerProperties schedulerProperties;
-    private final ClusterStartService clusterStartService;
+    private final JoinService joinService;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, ClusterStartService clusterStartService) {
+    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService) {
         this.actorSystem = actorSystem;
         this.schedulerProperties = schedulerProperties;
-        this.clusterStartService = clusterStartService;
+        this.joinService = joinService;
     }
 
     /**
@@ -43,7 +43,7 @@ public class ClusterServer {
         Config config = actorSystem.settings().config();
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
-        this.clusterStartService.start(hostname, port);
+        this.joinService.join(hostname, port);
     }
 
     /**

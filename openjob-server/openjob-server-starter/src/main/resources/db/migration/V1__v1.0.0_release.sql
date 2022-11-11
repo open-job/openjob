@@ -537,18 +537,19 @@ CREATE TABLE `server` (
 
 
 
-# Dump of table server_fail_reports
+# Dump of table server_reports
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `server_fail_reports`;
+DROP TABLE IF EXISTS `server_reports`;
 
-CREATE TABLE `server_fail_reports` (
-                                       `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                       `server_id` bigint(20) NOT NULL,
-                                       `report_server_id` bigint(20) NOT NULL,
-                                       `create_time` int(11) NOT NULL,
-                                       PRIMARY KEY (`id`),
-                                       KEY `idx_create_time_server_id` (`create_time`,`server_id`)
+CREATE TABLE `server_reports` (
+                                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                                  `server_id` bigint(20) NOT NULL,
+                                  `report_server_id` bigint(20) NOT NULL,
+                                  `status` tinyint(2) NOT NULL DEFAULT '1',
+                                  `create_time` int(11) NOT NULL,
+                                  PRIMARY KEY (`id`),
+                                  KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

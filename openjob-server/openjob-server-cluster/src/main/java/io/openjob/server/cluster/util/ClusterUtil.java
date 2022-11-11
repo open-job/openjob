@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.util;
 
 import akka.actor.ActorRef;
+import io.openjob.common.SpringContext;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.common.constant.ClusterConstant;
@@ -68,9 +69,10 @@ public class ClusterUtil {
      *
      * @param nodesMap    nodesMap
      * @param currentNode currentNode
+     * @param spreadSize  spreadSize
      * @return List
      */
-    public static List<Long> getKnowServers(Map<Long, Node> nodesMap, Node currentNode) {
+    public static List<Long> getKnowServers(Map<Long, Node> nodesMap, Node currentNode, Integer spreadSize) {
         ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
         Collections.sort(serverIds);
         int serverSize = serverIds.size();
@@ -78,15 +80,15 @@ public class ClusterUtil {
         int currentIndex = serverIds.indexOf(currentNode.getServerId());
 
         int subSize = serverSize - currentIndex - 1;
-        if (subSize > ClusterConstant.CLUSTER_PING_SIZE) {
-            subSize = ClusterConstant.CLUSTER_PING_SIZE;
+        if (subSize > spreadSize) {
+            subSize = spreadSize;
         }
 
         List<Long> pingList = serverIds.subList(currentIndex, subSize);
         int pingSize = pingList.size();
-        int remainPingSize = ClusterConstant.CLUSTER_PING_SIZE - pingSize;
+        int remainPingSize = spreadSize - pingSize;
         int needPingSize = remainPingSize;
-        if (ClusterConstant.CLUSTER_PING_SIZE > serverSize - 1) {
+        if (spreadSize > serverSize - 1) {
             needPingSize = serverSize - 1 - remainPingSize;
         }
 
@@ -101,10 +103,11 @@ public class ClusterUtil {
      *
      * @param message     message
      * @param currentNode currentNode
+     * @param spreadSize  spreadSize
      */
-    public static void sendMessage(Object message, Node currentNode) {
+    public static void sendMessage(Object message, Node currentNode, Integer spreadSize) {
         Map<Long, Node> nodesList = ClusterContext.getNodesMap();
-        List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode);
+        List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode, spreadSize);
         knowServers.forEach(knowId -> ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender()));
     }
 }

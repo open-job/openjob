@@ -1,20 +1,20 @@
 package io.openjob.server.repository.dao;
 
-import io.openjob.server.repository.entity.ServerFailReports;
+import io.openjob.server.repository.entity.ServerReports;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public interface ServerFailReportsDAO {
+public interface ServerReportsDAO {
 
     /**
      * Save server fail reports.
      *
-     * @param serverFailReports serverFailReports
+     * @param serverReports serverReports
      * @return Save id.
      */
-    Long save(ServerFailReports serverFailReports);
+    Long save(ServerReports serverReports);
 
     /**
      * Fail reported count.
@@ -22,5 +22,5 @@ public interface ServerFailReportsDAO {
      * @param startTime startTime
      * @return Long
      */
-    Long countServerFailReports(Integer startTime);
+    Long countServerReports(Integer startTime, Long serverId, Integer status);
 }

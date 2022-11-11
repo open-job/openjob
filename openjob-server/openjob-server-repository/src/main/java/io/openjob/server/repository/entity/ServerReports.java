@@ -15,8 +15,8 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "server_fail_reports")
-public class ServerFailReports {
+@Table(name = "server_reports")
+public class ServerReports {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,9 @@ public class ServerFailReports {
 
     @Column(name = "report_server_id")
     private Long reportServerId;
+
+    @Column(name = "status")
+    private Integer status;
 
     @Column(name = "create_time")
     private Integer createTime;

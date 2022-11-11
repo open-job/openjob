@@ -19,7 +19,7 @@ public class ClusterProperties {
     /**
      * Ping node size.
      */
-    private Integer pingSize = 5;
+    private Integer spreadSize = 5;
 
     /**
      * Node fail times.
@@ -27,7 +27,17 @@ public class ClusterProperties {
     private Integer nodeFailTimes = 3;
 
     /**
-     * Cluster node period time(ms).
+     * Node success times.
+     */
+    private Integer nodeSuccessTimes = 3;
+
+    /**
+     * Cluster node fail period time(ms).
      */
     private Integer nodeFailPeriodTime = 15000;
+
+    /**
+     * Cluster node success period time(ms).
+     */
+    private Integer nodeSuccessPeriodTime = 15000;
 }

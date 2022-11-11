@@ -1,9 +1,9 @@
-package io.openjob.server.cluster.service;
+package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
-import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
@@ -12,7 +12,7 @@ import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -25,22 +25,22 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Slf4j
-@Service
-public class ClusterStartService {
+@Component
+public class JoinManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
-
     private final RefreshManager refreshManager;
+    private final ClusterProperties clusterProperties;
 
     /**
      * Refresh status.
      */
-
     @Autowired
-    public ClusterStartService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshManager refreshManager) {
+    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshManager refreshManager, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.refreshManager = refreshManager;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
@@ -50,7 +50,7 @@ public class ClusterStartService {
      * @param port     port
      */
     @Transactional(rollbackFor = Exception.class)
-    public void start(String hostname, Integer port) {
+    public void join(String hostname, Integer port) {
         // Register server.
         Server currentServer = this.registerOrUpdateServer(hostname, port);
 
@@ -164,6 +164,6 @@ public class ClusterStartService {
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
 
-        ClusterUtil.sendMessage(nodeJoinDTO, currentNode);
+        ClusterUtil.sendMessage(nodeJoinDTO, currentNode, this.clusterProperties.getSpreadSize());
     }
 }

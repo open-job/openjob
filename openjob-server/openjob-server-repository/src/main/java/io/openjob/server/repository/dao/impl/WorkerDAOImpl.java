@@ -1,6 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
-import io.openjob.server.repository.constant.WorkerStatusConstant;
+import io.openjob.server.repository.constant.WorkerStatusEnum;
 import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.repository.repository.WorkerRepository;
@@ -34,6 +34,6 @@ public class WorkerDAOImpl implements WorkerDAO {
 
     @Override
     public List<Worker> listOnlineWorkers() {
-        return workerRepository.findByStatus(WorkerStatusConstant.ONLINE.getStatus());
+        return workerRepository.findByStatus(WorkerStatusEnum.ONLINE.getStatus());
     }
 }

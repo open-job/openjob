@@ -2,6 +2,7 @@ package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.repository.constant.ServerStatusEnum;
@@ -12,7 +13,6 @@ import io.openjob.server.repository.entity.Server;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,11 +28,13 @@ import java.util.stream.Collectors;
 public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
+    private final ClusterProperties clusterProperties;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO) {
+    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
@@ -50,7 +52,7 @@ public class FailManager {
         List<Server> servers = this.migrateSlots(stopNode);
 
         // Akka message for stop.
-        this.sendClusterStopMessage(stopNode, servers);
+        this.sendClusterStopMessage(stopNode);
     }
 
     /**
@@ -113,13 +115,12 @@ public class FailManager {
      * Send cluster stop message.
      *
      * @param stopNode stopNode
-     * @param servers  servers
      */
-    private void sendClusterStopMessage(Node stopNode, List<Server> servers) {
+    private void sendClusterStopMessage(Node stopNode) {
         NodeFailDTO failDTO = new NodeFailDTO();
         failDTO.setIp(stopNode.getIp());
         failDTO.setServerId(stopNode.getServerId());
         failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-        ClusterUtil.sendMessage(failDTO, stopNode);
+        ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize());
     }
 }
