@@ -3,9 +3,10 @@ package io.openjob.server.cluster.service;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.WorkerFailDTO;
+import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.common.ClusterContext;
-import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class ClusterService {
             return;
         }
 
-        log.info("Join node starting {}({})", join.getAkkaAddress(), join.getServerId());
+        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
 
         // Refresh nodes.
         this.refreshManager.refreshClusterNodes();
@@ -95,7 +96,7 @@ public class ClusterService {
         this.refreshManager.refreshSystem(false);
 
         this.refreshing.set(false);
-        log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
+        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
     }
 
     /**
@@ -109,7 +110,7 @@ public class ClusterService {
             return;
         }
 
-        log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
+        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
 
         // Refresh nodes.
         this.refreshManager.refreshClusterNodes();
@@ -122,7 +123,39 @@ public class ClusterService {
         this.refreshing.set(false);
 
         // Add job instance to timing wheel.
-        log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
+        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
+    }
+
+    public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
+        // Ignore
+        if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
+            return;
+        }
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
+        // Refresh app workers.
+        this.refreshManager.refreshAppWorkers();
+
+        this.refreshing.set(false);
+        log.info("Worker join! {}", workerJoinDTO);
+    }
+
+    public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
+        // Ignore
+        if (this.isIgnore(workerFailDTO.getClusterVersion())) {
+            return;
+        }
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
+        // Refresh app workers.
+        this.refreshManager.refreshAppWorkers();
+
+        this.refreshing.set(false);
+        log.info("Worker fail! {}", workerFailDTO);
     }
 
     /**

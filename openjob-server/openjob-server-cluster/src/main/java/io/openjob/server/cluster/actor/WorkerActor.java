@@ -49,6 +49,6 @@ public class WorkerActor extends BaseActor {
     }
 
     public void workerStop(WorkerStopRequest workerStopRequest) {
-
+        this.workerService.workerStop(workerStopRequest);
     }
 }

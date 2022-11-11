@@ -6,6 +6,8 @@ import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.NodePongDTO;
+import io.openjob.server.cluster.dto.WorkerFailDTO;
+import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.service.ClusterService;
 import io.openjob.server.common.ClusterContext;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +37,8 @@ public class ClusterActor extends AbstractActor {
                 .match(NodePingDTO.class, this::handleNodePing)
                 .match(NodeJoinDTO.class, this::handleNodeJoin)
                 .match(NodeFailDTO.class, this::handleNodeFail)
+                .match(WorkerJoinDTO.class, this::handleWorkerJoin)
+                .match(WorkerFailDTO.class, this::handleWorkerFail)
                 .matchAny(obj -> System.out.println("akk mesage tst"))
                 .build();
     }
@@ -74,5 +78,13 @@ public class ClusterActor extends AbstractActor {
      */
     public void handleNodeFail(NodeFailDTO nodeFailDTO) {
         this.clusterService.receiveNodeFail(nodeFailDTO);
+    }
+
+    public void handleWorkerJoin(WorkerJoinDTO workerJoinDTO) {
+        this.clusterService.receiveWorkerJoin(workerJoinDTO);
+    }
+
+    public void handleWorkerFail(WorkerFailDTO workerFailDTO) {
+        this.clusterService.receiveWorkerFail(workerFailDTO);
     }
 }

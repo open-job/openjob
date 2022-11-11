@@ -161,6 +161,7 @@ public class JoinManager {
         Node currentNode = ClusterContext.getCurrentNode();
         NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
         nodeJoinDTO.setIp(currentNode.getIp());
+        nodeJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
 

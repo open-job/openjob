@@ -590,6 +590,7 @@ CREATE TABLE `worker` (
                           `namespace_id` bigint(20) NOT NULL,
                           `app_name` varchar(128) NOT NULL DEFAULT '',
                           `worker_key` varchar(64) NOT NULL DEFAULT '',
+                          `slots_id` bigint(20) NOT NULL,
                           `address` varchar(32) NOT NULL DEFAULT '',
                           `protocol_type` varchar(8) NOT NULL DEFAULT '',
                           `version` varchar(32) NOT NULL DEFAULT '',

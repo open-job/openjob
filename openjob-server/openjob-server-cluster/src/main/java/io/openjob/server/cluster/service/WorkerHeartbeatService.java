@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -38,7 +37,6 @@ public class WorkerHeartbeatService {
         }
 
         int now = DateUtil.now();
-        worker.setUpdateTime(now);
         worker.setLastHeartbeatTime(now);
         workerDAO.save(worker);
     }

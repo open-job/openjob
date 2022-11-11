@@ -10,4 +10,9 @@ import java.io.Serializable;
  */
 @Data
 public class WorkerJoinDTO implements Serializable {
+
+    /**
+     * Cluster version.
+     */
+    private Long clusterVersion;
 }

@@ -47,6 +47,12 @@ public class Worker {
     private String workerKey;
 
     /**
+     * Slot id.
+     */
+    @Column(name = "slots_id")
+    private Long slotsId;
+
+    /**
      * Address
      */
     @Column(name = "address")
