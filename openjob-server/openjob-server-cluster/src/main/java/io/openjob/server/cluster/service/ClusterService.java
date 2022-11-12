@@ -126,6 +126,11 @@ public class ClusterService {
         log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
     }
 
+    /**
+     * Receive worker join.
+     *
+     * @param workerJoinDTO worker join.
+     */
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
         // Ignore
         if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
@@ -142,6 +147,11 @@ public class ClusterService {
         log.info("Worker join! {}", workerJoinDTO);
     }
 
+    /**
+     * Receive worker fail.
+     *
+     * @param workerFailDTO worker fail.
+     */
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
         // Ignore
         if (this.isIgnore(workerFailDTO.getClusterVersion())) {
