@@ -18,8 +18,22 @@ public interface WorkerDAO {
      */
     Long save(Worker worker);
 
+    /**
+     * List fail workers.
+     *
+     * @param slotsId slot ids.
+     * @param time    time
+     * @return List
+     */
     List<Worker> listFailWorkers(List<Long> slotsId, Long time);
 
+    /**
+     * List join workers.
+     *
+     * @param slotsId slot id.
+     * @param time    time.
+     * @return List
+     */
     List<Worker> listJoinWorkers(List<Long> slotsId, Long time);
 
     /**

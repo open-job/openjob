@@ -17,9 +17,11 @@ public interface ServerReportsDAO {
     Long save(ServerReports serverReports);
 
     /**
-     * Fail reported count.
+     * Count reports.
      *
-     * @param startTime startTime
+     * @param startTime start time.
+     * @param serverId  server id.
+     * @param status    status.
      * @return Long
      */
     Long countServerReports(Integer startTime, Long serverId, Integer status);
