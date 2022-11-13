@@ -1,57 +1,56 @@
-package io.openjob.server.cluster.service;
+package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
-import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
-import io.openjob.server.repository.dao.SystemDAO;
-import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
-import io.openjob.server.repository.entity.System;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Service
 @Slf4j
-public class StartService {
+@Component
+public class JoinManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
+    private final RefreshManager refreshManager;
+    private final ClusterProperties clusterProperties;
 
-    private final SystemDAO systemDAO;
-
+    /**
+     * Refresh status.
+     */
     @Autowired
-    public StartService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, SystemDAO systemDAO) {
+    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshManager refreshManager, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
-        this.systemDAO = systemDAO;
         this.jobSlotsDAO = jobSlotsDAO;
+        this.refreshManager = refreshManager;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
-     * Start server
+     * Cluster node start.
      *
-     * @param hostname server hostname.
-     * @param port     server port.
+     * @param hostname hostname
+     * @param port     port
      */
     @Transactional(rollbackFor = Exception.class)
-    public void start(String hostname, Integer port) {
+    public void join(String hostname, Integer port) {
         // Register server.
         Server currentServer = this.registerOrUpdateServer(hostname, port);
 
@@ -62,29 +61,16 @@ public class StartService {
         this.setCurrentNode(currentServer);
 
         // Refresh system.
-        this.refreshSystem();
+        this.refreshManager.refreshSystem(true);
 
         // Refresh nodes.
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
-        this.refreshCurrentSlots(currentServer);
+        this.refreshManager.initCurrentSlots();
 
         // Akka message for join.
-        this.sendClusterStartMessage(servers);
-    }
-
-    /**
-     * Refresh current slots.
-     *
-     * @param currentServer currentServer
-     */
-    private void refreshCurrentSlots(Server currentServer) {
-        List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentServer.getId());
-        Set<Long> currentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
-        ClusterContext.refreshCurrentSlots(currentSlots);
-
-        log.info(String.format("Refresh slots %s", currentSlots));
+        this.sendClusterStartMessage();
     }
 
     /**
@@ -114,35 +100,6 @@ public class StartService {
         Long id = serverDAO.save(server);
         server.setId(id);
         return server;
-    }
-
-    /**
-     * Set current node.
-     *
-     * @param server server
-     */
-    private void setCurrentNode(Server server) {
-        Node currentNode = new Node();
-        currentNode.setServerId(server.getId());
-        currentNode.setIp(server.getIp());
-        currentNode.setAkkaAddress(server.getAkkaAddress());
-        ClusterContext.setCurrentNode(currentNode);
-
-        log.info(String.format("Current node %s", server));
-    }
-
-    /**
-     * Refresh system.
-     */
-    private void refreshSystem() {
-        System system = this.systemDAO.getOne();
-
-        SystemDTO systemDTO = new SystemDTO();
-        systemDTO.setMaxSlot(system.getMaxSlot());
-        systemDTO.setClusterVersion(system.getClusterVersion());
-        ClusterContext.refreshSystem(systemDTO);
-
-        log.info(String.format("Refresh %s", system));
     }
 
     /**
@@ -181,12 +138,33 @@ public class StartService {
         return servers;
     }
 
-    private void sendClusterStartMessage(List<Server> servers) {
+    /**
+     * Set current node.
+     *
+     * @param server server
+     */
+    private void setCurrentNode(Server server) {
+        Node currentNode = new Node();
+        currentNode.setServerId(server.getId());
+        currentNode.setIp(server.getIp());
+        currentNode.setAkkaAddress(server.getAkkaAddress());
+        currentNode.setStatus(server.getStatus());
+        ClusterContext.setCurrentNode(currentNode);
+
+        log.info(String.format("Current node %s", server));
+    }
+
+    /**
+     * Send start message.
+     */
+    private void sendClusterStartMessage() {
         Node currentNode = ClusterContext.getCurrentNode();
         NodeJoinDTO nodeJoinDTO = new NodeJoinDTO();
         nodeJoinDTO.setIp(currentNode.getIp());
+        nodeJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
-        ClusterUtil.sendMessage(nodeJoinDTO, servers);
+
+        ClusterUtil.sendMessage(nodeJoinDTO, currentNode, this.clusterProperties.getSpreadSize());
     }
 }

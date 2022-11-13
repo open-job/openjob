@@ -23,6 +23,6 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         taskDAO.add(this.convertToTask(startRequest));
 
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
-        FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3L);
+        FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3000L);
     }
 }

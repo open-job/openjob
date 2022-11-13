@@ -9,5 +9,15 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class NodePingDTO  implements Serializable {
+public class NodePingDTO implements Serializable {
+
+    /**
+     * Cluster version.
+     */
+    private Long clusterVersion;
+
+    /**
+     * Server id.
+     */
+    private Long serverId;
 }

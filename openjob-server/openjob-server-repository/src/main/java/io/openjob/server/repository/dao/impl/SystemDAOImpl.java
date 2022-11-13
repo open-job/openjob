@@ -31,10 +31,7 @@ public class SystemDAOImpl implements SystemDAO {
     }
 
     @Override
-    public Integer updateClusterVersion(Integer id, Long clusterVersion) {
-        System system = new System();
-        system.setId(id);
-        system.setClusterVersion(clusterVersion);
-        return systemRepository.save(system).getId();
+    public void updateClusterVersion() {
+        systemRepository.updateClusterVersion(DEFAULT_ID);
     }
 }

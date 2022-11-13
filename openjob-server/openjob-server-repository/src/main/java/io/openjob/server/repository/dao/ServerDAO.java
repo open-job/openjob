@@ -28,6 +28,14 @@ public interface ServerDAO {
     Integer update(Long id, Integer status);
 
     /**
+     * Get by id.
+     *
+     * @param id id
+     * @return Server
+     */
+    Server getById(Long id);
+
+    /**
      * Get one server by akkaAddress.
      *
      * @param akkaAddress akkaAddress

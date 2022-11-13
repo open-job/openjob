@@ -32,7 +32,7 @@ public class WorkerActor extends BaseActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(WorkerStartRequest.class, this::workerStart)
-                .match(WorkerStopRequest.class, this.workerService::workerStop)
+                .match(WorkerStopRequest.class, this::workerStop)
                 .build();
     }
 
@@ -46,5 +46,9 @@ public class WorkerActor extends BaseActor {
 
         log.info("Worker register success! address={}", workerStartRequest.getAddress());
         getSender().tell(Result.success(new ServerResponse()), getSelf());
+    }
+
+    public void workerStop(WorkerStopRequest workerStopRequest) {
+        this.workerService.workerStop(workerStopRequest);
     }
 }

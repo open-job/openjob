@@ -52,7 +52,7 @@ public interface MapProcessor extends BaseProcessor {
             mapTaskRequest.setTasks(byteList);
 
             try {
-                WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10L);
+                WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10000L);
                 result.setStatus(TaskStatusEnum.SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();

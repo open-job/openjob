@@ -1,6 +1,5 @@
 package io.openjob.common.util;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
@@ -21,26 +20,11 @@ public class FutureUtil {
     }
 
     /**
-     *
-     * @param ref
-     * @param msg
-     * @param seconds
-     * @return
-     * @throws Exception
-     */
-    public static Object ask(ActorRef ref, Object msg, Long seconds) throws Exception {
-        Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
-        Future<Object> future = Patterns.ask(ref, msg, timeout);
-        return Await.result(future, timeout.duration());
-    }
-
-    /**
-     *
-     * @param selection
-     * @param msg
-     * @param seconds
-     * @return
-     * @throws Exception
+     * @param selection selection
+     * @param msg       msg
+     * @param seconds   seconds
+     * @return Object
+     * @throws Exception Exception
      */
     public static Object ask(ActorSelection selection, Object msg, Long seconds) throws Exception {
         Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
@@ -48,17 +32,17 @@ public class FutureUtil {
         return Await.result(future, timeout.duration());
     }
 
+
     /**
-     *
-     * @param selection
-     * @param request
-     * @param ignoredType
-     * @param seconds
-     * @param <T>
-     * @return
+     * @param selection   selection
+     * @param request     request
+     * @param ignoredType ignored type
+     * @param ms          milliseconds
+     * @param <T>         ignoredType
+     * @return ignoredType
      */
-    public static <T> T mustAsk(ActorSelection selection, Object request, Class<T> ignoredType, Long seconds) {
-        Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
+    public static <T> T mustAsk(ActorSelection selection, Object request, Class<T> ignoredType, Long ms) {
+        Timeout timeout = new Timeout(Duration.create(ms, TimeUnit.MILLISECONDS));
         Future<Object> future = Patterns.ask(selection, request, timeout);
         try {
             @SuppressWarnings("unchecked")

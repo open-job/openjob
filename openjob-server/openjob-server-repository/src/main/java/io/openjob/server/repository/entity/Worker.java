@@ -47,6 +47,12 @@ public class Worker {
     private String workerKey;
 
     /**
+     * Slot id.
+     */
+    @Column(name = "slots_id")
+    private Long slotsId;
+
+    /**
      * Address
      */
     @Column(name = "address")
@@ -68,7 +74,7 @@ public class Worker {
      * Last heartbeat time
      */
     @Column(name = "last_heartbeat_time")
-    private Integer lastHeartbeatTime;
+    private Long lastHeartbeatTime;
 
     /**
      * Status
@@ -86,11 +92,11 @@ public class Worker {
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 }

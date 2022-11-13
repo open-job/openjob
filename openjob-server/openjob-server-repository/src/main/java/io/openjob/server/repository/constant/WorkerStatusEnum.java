@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum WorkerStatusConstant {
+public enum WorkerStatusEnum {
     /**
      * Online.
      */

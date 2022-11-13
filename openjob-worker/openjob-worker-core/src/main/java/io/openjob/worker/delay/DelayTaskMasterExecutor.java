@@ -75,7 +75,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
         // Pull delay instance by akka.
         ActorSelection instanceActor = WorkerUtil.getServerDelayInstanceActor();
-        ServerDelayPullResponse delayPullResponse = FutureUtil.mustAsk(instanceActor, delayPullRequest, ServerDelayPullResponse.class, 3L);
+        ServerDelayPullResponse delayPullResponse = FutureUtil.mustAsk(instanceActor, delayPullRequest, ServerDelayPullResponse.class, 3000L);
 
         //  All topic empty.
         if (CollectionUtils.isEmpty(delayPullResponse.getDelayInstanceResponses())) {

@@ -3,16 +3,17 @@ package io.openjob.server.cluster.service;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
+import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.cluster.util.ClusterUtil;
-import io.openjob.server.repository.constant.ServerStatusEnum;
-import io.openjob.server.repository.constant.WorkerStatusConstant;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.server.common.util.SlotsUtil;
+import io.openjob.server.repository.constant.WorkerStatusEnum;
 import io.openjob.server.repository.dao.AppDAO;
-import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.App;
-import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -30,13 +32,16 @@ import java.util.Objects;
 public class WorkerService {
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
-    private final ServerDAO serverDAO;
+    private final ClusterProperties clusterProperties;
+
+    private final RefreshManager refreshManager;
 
     @Autowired
-    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ServerDAO serverDAO) {
+    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ClusterProperties clusterProperties, RefreshManager refreshManager) {
         this.workerDAO = workerDAO;
         this.appDAO = appDAO;
-        this.serverDAO = serverDAO;
+        this.clusterProperties = clusterProperties;
+        this.refreshManager = refreshManager;
     }
 
     /**
@@ -48,12 +53,16 @@ public class WorkerService {
         // Update worker status.
         this.updateWorkerForStart(workerStartRequest);
 
+        // Refresh system
+        this.refreshManager.refreshSystem(true);
+
         // Refresh cluster context.
         refreshClusterContext();
 
         // Akka message for worker start.
-        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterUtil.sendMessage(new WorkerJoinDTO(), servers);
+        WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
+        workerJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
     }
 
     /**
@@ -62,22 +71,29 @@ public class WorkerService {
      * @param stopReq stop request.
      */
     public void workerStop(WorkerStopRequest stopReq) {
-        int now = DateUtil.now();
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());
         if (Objects.isNull(worker)) {
             log.error("worker({}) do not exist!", stopReq.getAddress());
             return;
         }
 
-        worker.setStatus(WorkerStatusConstant.OFFLINE.getStatus());
-        worker.setUpdateTime(now);
+        // Update worker
+        worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
+        worker.setUpdateTime(DateUtil.timestamp());
+
+        // Refresh system
+        this.refreshManager.refreshSystem(true);
 
         // Refresh cluster context.
         this.refreshClusterContext();
 
         // Akka message for worker start.
-        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterUtil.sendMessage(new WorkerFailDTO(), servers);
+        WorkerFailDTO workerFailDTO = new WorkerFailDTO();
+        workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
+    }
+
+    public void workerCheck() {
     }
 
     private void refreshClusterContext() {
@@ -93,11 +109,11 @@ public class WorkerService {
         }
 
         // Update worker.
-        int now = DateUtil.now();
+        long now = DateUtil.timestamp();
         Worker worker = workerDAO.getByAddress(startReq.getAddress());
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
-            worker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
+            worker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
             workerDAO.save(worker);
             return;
         }
@@ -108,7 +124,8 @@ public class WorkerService {
         saveWorker.setCreateTime(now);
         saveWorker.setWorkerKey(startReq.getWorkerKey());
         saveWorker.setAddress(startReq.getAddress());
-        saveWorker.setStatus(WorkerStatusConstant.ONLINE.getStatus());
+        saveWorker.setSlotsId(SlotsUtil.getSlotsId(UUID.randomUUID().toString()));
+        saveWorker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
         saveWorker.setAppId(app.getId());
         saveWorker.setAppName(startReq.getAppName());
         saveWorker.setLastHeartbeatTime(now);
