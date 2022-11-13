@@ -11,30 +11,36 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:29:02
+ * @date 2022-11-13 23:27:28
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "JobAdminUser", description = "JobAdminUser")
-public class AdminUserRequest {
+@ApiModel(value = "AdminMenuUpdate", description = "Update AdminMenu")
+public class AdminMenuUpdateRequest {
 
     @ApiModelProperty(value = "PK")
     private Integer id;
 
-    @ApiModelProperty(value = "User name")
-    private String username;
+    @ApiModelProperty(value = "Parent ID")
+    private Integer pid;
 
-    @ApiModelProperty(value = "Nickname")
-    private String nickname;
+    @ApiModelProperty(value = "Type. 1=menu 2=perm")
+    private Integer type;
 
-    @ApiModelProperty(value = "Password")
-    private String passwd;
+    @ApiModelProperty(value = "Menu name")
+    private String name;
 
-    @ApiModelProperty(value = "Api auth token")
-    private String token;
+    @ApiModelProperty(value = "Route path or API path")
+    private String path;
 
-    @ApiModelProperty(value = "Rule IDs. JSON: [1,2]")
-    private List<Long> rule_ids;
+    @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
+    private Meta meta;
+
+    @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
+    private Integer hidden;
+
+    @ApiModelProperty(value = "Sort value")
+    private Integer sort;
 
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;

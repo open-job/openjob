@@ -25,10 +25,10 @@ public class AdminRuleVO {
     private String desc;
 
     @ApiModelProperty(value = "Menu ids for rule. JSON array")
-    private Menus menus;
+    private List<Long> menus;
 
     @ApiModelProperty(value = "Menu ids for rule. JSON array")
-    private Perms perms;
+    private List<Long> perms;
 
     @ApiModelProperty(value = "Is Admin. 1=yes 2=no")
     private Integer admin;

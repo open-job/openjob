@@ -1,10 +1,17 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.AddJobAdminUserRequest;
-import io.openjob.server.admin.request.ListJobAdminUserRequest;
-import io.openjob.server.admin.request.UpdateJobAdminUserRequest;
+import io.openjob.server.admin.request.user.AdminUserAddRequest;
+import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
+import io.openjob.server.admin.request.user.AdminUserQueryRequest;
+import io.openjob.server.admin.request.user.AdminUserListRequest;
+import io.openjob.server.admin.request.user.AdminUserUpdateRequest;
 import io.openjob.server.admin.service.AdminUserService;
+import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
+import io.openjob.server.admin.vo.user.AdminUserAddVO;
+import io.openjob.server.admin.vo.user.AdminUserQueryVO;
+import io.openjob.server.admin.vo.user.AdminUserListVO;
+import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -35,20 +42,32 @@ public class UserController {
 
     @ApiOperation("Add AdminUser")
     @PostMapping("/add")
-    public Result<AddAdminUserVO> add(@Valid @RequestBody AddAdminUserRequest addRequest) {
+    public Result<AdminUserAddVO> add(@Valid @RequestBody AdminUserAddRequest addRequest) {
         return Result.success(this.adminUserService.add(addRequest));
     }
 
     @ApiOperation("Update AdminUser")
     @PostMapping("/update")
-    public Result<UpdateAdminUserVO> update(@Valid @RequestBody UpdateAdminUserRequest updateRequest) {
+    public Result<AdminUserUpdateVO> update(@Valid @RequestBody AdminUserUpdateRequest updateRequest) {
         return Result.success(this.adminUserService.update(updateRequest));
+    }
+
+    @ApiOperation("Delete AdminUser")
+    @PostMapping("/update")
+    public Result<AdminUserUpdateVO> delete(@Valid @RequestBody AdminUserDeleteRequest deleteRequest) {
+        return Result.success(this.adminUserService.delete(deleteRequest));
+    }
+
+    @ApiOperation("Get AdminUser")
+    @PostMapping("/get")
+    public Result<AdminUserQueryVO> get(@Valid @RequestBody AdminUserQueryRequest getRequest) {
+        return Result.success(this.adminUserService.query(getRequest));
     }
 
     @ApiOperation("List AdminUser")
     @PostMapping("/list")
-    public Result<ListAdminUserVO> list(@Valid @RequestBody ListAdminUserRequest listRequest) {
-        return Result.success(this.adminUserService.list(listRequest));
+    public Result<PageDTO> list(@Valid @RequestBody AdminUserListRequest listRequest) {
+        return Result.success(this.adminUserService.getPageList(listRequest));
     }
 }
 

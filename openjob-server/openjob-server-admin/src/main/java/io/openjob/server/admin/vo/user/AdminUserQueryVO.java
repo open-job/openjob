@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo;
+package io.openjob.server.admin.vo.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,11 +12,11 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "JobAdminUser", description = "JobAdminUser")
-public class AdminUserVO {
+@ApiModel(value = "AdminUserQueryVO", description = "AdminUserQueryVO")
+public class AdminUserQueryVO {
 
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "User name")
     private String username;

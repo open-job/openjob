@@ -1,60 +1,60 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.entity.JobAdminUser;
-import io.openjob.server.admin.request.JobAdminUserAddRequest;
-import io.openjob.server.admin.vo.JobAdminUserAddVO;
-import io.openjob.server.admin.request.JobAdminUserDetailRequest;
-import io.openjob.server.admin.vo.JobAdminUserDetailVO;
-import io.openjob.server.admin.request.JobAdminUserUpdateRequest;
-import io.openjob.server.admin.vo.JobAdminUserUpdateVO;
-import io.openjob.server.admin.request.JobAdminUserDeleteRequest;
-import io.openjob.server.admin.vo.JobAdminUserDeleteVO;
-import io.openjob.server.admin.request.JobAdminUserListRequest;
-import io.openjob.server.admin.vo.JobAdminUserListVO;
+import io.openjob.server.admin.request.user.AdminUserAddRequest;
+import io.openjob.server.admin.request.user.AdminUserQueryRequest;
+import io.openjob.server.admin.vo.user.AdminUserAddVO;
+import io.openjob.server.admin.vo.user.AdminUserQueryVO;
+import io.openjob.server.admin.request.user.AdminUserUpdateRequest;
+import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
+import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
+import io.openjob.server.admin.request.user.AdminUserListRequest;
+import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:29:06
+ * @date 2022-11-09 13:29:56
  * @since 1.0.0
  */
 public interface AdminUserService  {
 
     /**
-     * Add JobAdminUser
+     * Add AdminUser
      *
      * @param reqDTO reqDTO
-     * @return JobAdminUserAddVO
+     * @return AdminUserAddVO
      */
-    JobAdminUserAddVO add(JobAdminUserAddRequest reqDTO);
+    AdminUserAddVO add(AdminUserAddRequest reqDTO);
 
     /**
-     * Get one JobAdminUser
+     * Get one AdminUser
      *
      * @param reqDTO reqDTO
-     * @return JobAdminUserDetailDTO
+     * @return AdminUserDetailDTO
      */
-    JobAdminUserDetailDTO getById(JobAdminUserQueryRequest reqDTO);
+    AdminUserQueryVO query(AdminUserQueryRequest reqDTO);
 
     /**
-     * Update one JobAdminUser
+     * Update one AdminUser
      *
      * @param reqDTO reqDTO
-     * @return JobAdminUserUpdateVO
+     * @return AdminUserUpdateVO
      */
-    JobAdminUserUpdateVO update(JobAdminUserUpdateRequest reqDTO);
+    AdminUserUpdateVO update(AdminUserUpdateRequest reqDTO);
 
     /**
-     * @param reqDTO reqDTO
-     * @return JobAdminUserUpdateVO
-     */
-    JobAdminUserUpdateVO deleteById(JobAdminUserDeleteRequest reqDTO);
-
-    /**
-     * Get page list JobAdminUser
+     * Delete one
      *
      * @param reqDTO reqDTO
-     * @return JobAdminUserListVO
+     * @return AdminUserUpdateVO
      */
-    PageDTO<JobAdminUserListVO> getPageList(JobAdminUserListRequest reqDTO);
+    AdminUserUpdateVO delete(AdminUserDeleteRequest reqDTO);
+
+    /**
+     * Get page list AdminUser
+     *
+     * @param reqDTO reqDTO
+     * @return AdminUserListVO
+     */
+    PageDTO<AdminUserQueryVO> getPageList(AdminUserListRequest reqDTO);
 }
 
