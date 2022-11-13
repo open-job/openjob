@@ -5,13 +5,8 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
-import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
-import io.openjob.server.repository.data.DelayData;
-import io.openjob.server.scheduler.timer.DelayTimerTask;
-import io.openjob.server.scheduler.timer.AbstractTimerTask;
-import io.openjob.server.scheduler.wheel.DelayWheel;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,21 +21,14 @@ import java.util.Objects;
 public class DelaySchedulingService {
     private final DelayInstanceDAO delayInstanceDAO;
 
-    private final DelayWheel delayWheel;
-
-    private final DelayData delayData;
 
     /**
      * New delay scheduling service.
      *
      * @param delayInstanceDAO delay instance.
-     * @param delayWheel       delay wheel
-     * @param delayData        delay data
      */
-    public DelaySchedulingService(DelayInstanceDAO delayInstanceDAO, DelayWheel delayWheel, DelayData delayData) {
+    public DelaySchedulingService(DelayInstanceDAO delayInstanceDAO) {
         this.delayInstanceDAO = delayInstanceDAO;
-        this.delayWheel = delayWheel;
-        this.delayData = delayData;
     }
 
     /**
@@ -57,23 +45,8 @@ public class DelaySchedulingService {
             }
 
             List<Long> ids = Lists.newArrayList();
-            List<AbstractTimerTask> tasks = new ArrayList<>();
             delayInstances.forEach(d -> {
-                Delay delay = this.delayData.getDelay(d.getTopic());
-                DelayTimerTask delayTimerTask = new DelayTimerTask(d.getId(), d.getSlotsId(), (long) d.getExecuteTime());
-                delayTimerTask.setDelayId(d.getDelayId());
-                delayTimerTask.setDelayParams(d.getDelayParams());
-                delayTimerTask.setDelayExtra(d.getDelayExtra());
-                delayTimerTask.setTopic(d.getTopic());
-                delayTimerTask.setProcessorInfo(delayTimerTask.getProcessorInfo());
-                delayTimerTask.setFailRetryInterval(delayTimerTask.getFailRetryInterval());
-                delayTimerTask.setFailRetryTimes(delay.getFailRetryTimes());
-                delayTimerTask.setExecuteTimeout(delay.getExecuteTimeout());
-                delayTimerTask.setConcurrency(delay.getConcurrency());
             });
-
-            // Add to timing wheel.
-            this.delayWheel.addTimerTask(tasks);
 
             // Update delay instance status.
             this.delayInstanceDAO.batchUpdateStatus(ids, InstanceStatusEnum.DISPATCHED.getStatus());

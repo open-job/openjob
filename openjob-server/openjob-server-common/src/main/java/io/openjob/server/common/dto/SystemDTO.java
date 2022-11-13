@@ -15,6 +15,16 @@ public class SystemDTO {
     private Long clusterVersion;
 
     /**
+     * Cluster supervisor slot.
+     */
+    private Integer clusterSupervisorSlot;
+
+    /**
+     * Worker supervisor slot.
+     */
+    private Integer workerSupervisorSlot;
+
+    /**
      * Max slot
      */
     private Integer maxSlot;

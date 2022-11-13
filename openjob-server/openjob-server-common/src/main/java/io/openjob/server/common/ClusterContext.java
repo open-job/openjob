@@ -38,12 +38,6 @@ public class ClusterContext {
     private static final Set<Long> CURRENT_SLOTS = new HashSet<>();
 
     /**
-     * Slots list map.
-     * Key is slots id, Value is server id.
-     */
-    private static final Map<Long, Long> SLOTS_LIST_MAP = Maps.newHashMap();
-
-    /**
      * Cluster nodes.
      * Key is server id, Value is server node.
      */
@@ -51,9 +45,9 @@ public class ClusterContext {
 
     /**
      * App worker list.
+     * Key is appid, Value is workers.
      */
     private static final Map<Long, List<WorkerDTO>> APP_WORKERS = Maps.newConcurrentMap();
-
 
     /**
      * Refresh Current node.
@@ -86,16 +80,6 @@ public class ClusterContext {
     }
 
     /**
-     * Refresh slots list.
-     *
-     * @param slotsList Slots list.
-     */
-    public static synchronized void refreshSlotsListMap(Map<Long, Long> slotsList) {
-        SLOTS_LIST_MAP.clear();
-        SLOTS_LIST_MAP.putAll(slotsList);
-    }
-
-    /**
      * Set cluster actor reference.
      *
      * @param clusterActorRef clusterActorRef
@@ -122,8 +106,8 @@ public class ClusterContext {
         ClusterContext.system = system;
     }
 
-    public static Map<Long, Long> getSlotsListMap() {
-        return SLOTS_LIST_MAP;
+    public static SystemDTO getSystem() {
+        return ClusterContext.system;
     }
 
     public static Map<Long, List<WorkerDTO>> get() {
@@ -149,7 +133,7 @@ public class ClusterContext {
      *
      * @return Map<Long, Node>
      */
-    public static Map<Long, Node> getNodesList() {
+    public static Map<Long, Node> getNodesMap() {
         return NODES_LIST;
     }
 

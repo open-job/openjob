@@ -537,18 +537,19 @@ CREATE TABLE `server` (
 
 
 
-# Dump of table server_fail_reports
+# Dump of table server_reports
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `server_fail_reports`;
+DROP TABLE IF EXISTS `server_reports`;
 
-CREATE TABLE `server_fail_reports` (
-                                       `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                       `server_id` bigint(20) NOT NULL,
-                                       `report_server_id` bigint(20) NOT NULL,
-                                       `create_time` int(11) NOT NULL,
-                                       PRIMARY KEY (`id`),
-                                       KEY `idx_create_time_server_id` (`create_time`,`server_id`)
+CREATE TABLE `server_reports` (
+                                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                                  `server_id` bigint(20) NOT NULL,
+                                  `report_server_id` bigint(20) NOT NULL,
+                                  `status` tinyint(2) NOT NULL DEFAULT '1',
+                                  `create_time` int(11) NOT NULL,
+                                  PRIMARY KEY (`id`),
+                                  KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -589,6 +590,7 @@ CREATE TABLE `worker` (
                           `namespace_id` bigint(20) NOT NULL,
                           `app_name` varchar(128) NOT NULL DEFAULT '',
                           `worker_key` varchar(64) NOT NULL DEFAULT '',
+                          `slots_id` bigint(20) NOT NULL,
                           `address` varchar(32) NOT NULL DEFAULT '',
                           `protocol_type` varchar(8) NOT NULL DEFAULT '',
                           `version` varchar(32) NOT NULL DEFAULT '',
@@ -610,6 +612,8 @@ CREATE TABLE `system` (
                           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                           `version` varchar(16) NOT NULL DEFAULT '0',
                           `cluster_version` bigint(12) NOT NULL DEFAULT '0',
+                          `cluster_supervisor_slot` int(11) NOT NULL DEFAULT '1',
+                          `worker_supervisor_slot` int(11) NOT NULL DEFAULT '256',
                           `max_slot` int(11) DEFAULT '256',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -617,9 +621,9 @@ CREATE TABLE `system` (
 LOCK TABLES `system` WRITE;
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `max_slot`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `max_slot`)
 VALUES
-    (1,'1.0.0',0,256);
+    (1,'1.0.0',0,1,256,256);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;

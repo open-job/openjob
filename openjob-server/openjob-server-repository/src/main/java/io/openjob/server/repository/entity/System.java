@@ -34,6 +34,18 @@ public class System {
     private Long clusterVersion;
 
     /**
+     * Cluster supervisor slot.
+     */
+    @Column(name = "cluster_supervisor_slot")
+    private Integer clusterSupervisorSlot;
+
+    /**
+     * Worker supervisor slot.
+     */
+    @Column(name = "worker_supervisor_slot")
+    private Integer workerSupervisorSlot;
+
+    /**
      * Max slot
      */
     @Column(name = "max_slot")

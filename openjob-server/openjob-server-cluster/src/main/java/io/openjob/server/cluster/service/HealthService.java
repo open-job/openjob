@@ -1,23 +1,33 @@
 package io.openjob.server.cluster.service;
 
+import akka.actor.ActorSelection;
+import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import io.openjob.common.SpringContext;
+import io.openjob.common.context.Node;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.server.common.ClusterContext;
-import io.openjob.common.context.Node;
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.NodePongDTO;
 import io.openjob.server.cluster.manager.FailManager;
-import io.openjob.common.SpringContext;
+import io.openjob.server.cluster.manager.JoinManager;
+import io.openjob.server.cluster.util.ClusterUtil;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.server.common.constant.AkkaConfigConstant;
 import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.ServerUtil;
-import io.openjob.server.repository.dao.ServerFailReportsDAO;
-import io.openjob.server.repository.entity.ServerFailReports;
+import io.openjob.server.repository.constant.ServerReportStatusEnum;
+import io.openjob.server.repository.dao.JobSlotsDAO;
+import io.openjob.server.repository.dao.ServerReportsDAO;
+import io.openjob.server.repository.entity.JobSlots;
+import io.openjob.server.repository.entity.ServerReports;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,16 +36,25 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Service
 @Log4j2
+@Service
 public class HealthService {
     private final FailManager failManager;
-    private final ServerFailReportsDAO serverFailReportsDAO;
+    private final ServerReportsDAO serverReportsDAO;
+    private final ClusterProperties clusterProperties;
+    private final JobSlotsDAO jobSlotsDAO;
+    private final JoinManager joinManager;
+
+    private final ActorSystem actorSystem;
 
     @Autowired
-    public HealthService(ServerFailReportsDAO serverFailReportsDAO, FailManager failManager) {
-        this.serverFailReportsDAO = serverFailReportsDAO;
+    public HealthService(ServerReportsDAO serverReportsDAO, FailManager failManager, ClusterProperties clusterProperties, JobSlotsDAO jobSlotsDAO, JoinManager joinManager, ActorSystem actorSystem) {
+        this.serverReportsDAO = serverReportsDAO;
         this.failManager = failManager;
+        this.clusterProperties = clusterProperties;
+        this.jobSlotsDAO = jobSlotsDAO;
+        this.joinManager = joinManager;
+        this.actorSystem = actorSystem;
     }
 
     /**
@@ -43,7 +62,7 @@ public class HealthService {
      */
     public void check() {
         // Ping server list.
-        Map<Long, Node> nodesMap = ClusterContext.getNodesList();
+        Map<Long, Node> nodesMap = ClusterContext.getNodesMap();
         Node currentNode = ClusterContext.getCurrentNode();
 
         if (Objects.isNull(currentNode)) {
@@ -51,7 +70,7 @@ public class HealthService {
             return;
         }
 
-        List<Long> fixedPingList = this.getFixedPingSeverList(nodesMap, currentNode);
+        List<Long> fixedPingList = ClusterUtil.getKnowServers(nodesMap, currentNode, this.clusterProperties.getSpreadSize());
         fixedPingList.forEach(serverId -> doCheck(nodesMap, serverId));
     }
 
@@ -62,16 +81,28 @@ public class HealthService {
      * @param serverId serverId
      */
     public void doCheck(Map<Long, Node> nodesMap, Long serverId) {
-        Node node = nodesMap.get(serverId);
-        boolean success = false;
-        try {
-            FutureUtil.ask(ServerUtil.getServerClusterActor(node.getAkkaAddress()), new NodePingDTO(), 3L);
-            success = true;
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        // Ping info.
+        NodePingDTO nodePingDTO = new NodePingDTO();
+        nodePingDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        nodePingDTO.setServerId(ClusterContext.getCurrentNode().getServerId());
 
-        if (!success) {
+        Node node = nodesMap.get(serverId);
+        try {
+            ActorSelection actor = ServerUtil.getServerClusterActor(node.getAkkaAddress());
+            NodePongDTO nodePongDTO = FutureUtil.mustAsk(actor, nodePingDTO, NodePongDTO.class, clusterProperties.getPingTimeout());
+
+            // Node ping success.
+            log.info("Ping success version{}", nodePongDTO.getClusterVersion());
+
+            // Current server is unknow.
+            if (!nodePongDTO.getKnowServer()) {
+                this.checkOnline(node);
+            }
+        } catch (Exception e) {
+            log.error("Node ping failed!", e);
+
+            // Node failed.
+            // Record node fail message.
             SpringContext.getBean(HealthService.class).checkFailReports(serverId, node);
         }
     }
@@ -84,48 +115,51 @@ public class HealthService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void checkFailReports(Long failServerId, Node failNode) {
-        ServerFailReports serverFailReports = new ServerFailReports();
-        serverFailReports.setServerId(failNode.getServerId());
-        serverFailReports.setReportServerId(failServerId);
-        serverFailReportsDAO.save(serverFailReports);
+        // Save report
+        ServerReports serverReports = new ServerReports();
+        serverReports.setServerId(failNode.getServerId());
+        serverReports.setReportServerId(failServerId);
+        serverReports.setStatus(ServerReportStatusEnum.SUCCESS.getStatus());
+        serverReportsDAO.save(serverReports);
 
-        Integer startTime = DateUtil.now() - ClusterConstant.CLUSTER_NODE_TIMEOUT / 1000 * 2;
-        Long reportsCount = serverFailReportsDAO.countServerFailReports(startTime);
-        if (reportsCount > ClusterConstant.CLUSTER_FAIL_TIMES) {
+        Integer startTime = DateUtil.now() - this.clusterProperties.getNodeFailPeriodTime() / 1000 * 2;
+        Long reportsCount = serverReportsDAO.countServerReports(startTime, failServerId, ServerReportStatusEnum.FAIL.getStatus());
+
+        // Offline
+        if (reportsCount > this.clusterProperties.getNodeFailTimes()) {
             this.failManager.fail(failNode);
         }
     }
 
     /**
-     * Get fixed ping server list.
-     *
-     * @param nodesMap    nodesMap
-     * @param currentNode currentNode
-     * @return List
+     * Check online.
      */
-    public List<Long> getFixedPingSeverList(Map<Long, Node> nodesMap, Node currentNode) {
-        ArrayList<Long> serverIds = new ArrayList<>(nodesMap.keySet());
-        Collections.sort(serverIds);
-        int serverSize = serverIds.size();
+    public void checkOnline(Node reportNode) {
+        Long currentServerId = ClusterContext.getCurrentNode().getServerId();
+        List<JobSlots> jobSlots = this.jobSlotsDAO.listJobSlotsByServerId(currentServerId);
 
-        int currentIndex = serverIds.indexOf(currentNode.getServerId());
-
-        int subSize = serverSize - currentIndex - 1;
-        if (subSize > ClusterConstant.CLUSTER_PING_SIZE) {
-            subSize = ClusterConstant.CLUSTER_PING_SIZE;
+        // Current is online.
+        if (!CollectionUtils.isEmpty(jobSlots)) {
+            return;
         }
 
-        List<Long> pingList = serverIds.subList(currentIndex, subSize);
-        int pingSize = pingList.size();
-        int remainPingSize = ClusterConstant.CLUSTER_PING_SIZE - pingSize;
-        int needPingSize = remainPingSize;
-        if (ClusterConstant.CLUSTER_PING_SIZE > serverSize - 1) {
-            needPingSize = serverSize - 1 - remainPingSize;
-        }
+        // Save report
+        ServerReports serverReports = new ServerReports();
+        serverReports.setServerId(currentServerId);
+        serverReports.setReportServerId(reportNode.getServerId());
+        serverReports.setStatus(ServerReportStatusEnum.FAIL.getStatus());
+        serverReportsDAO.save(serverReports);
 
-        if (needPingSize > 0) {
-            pingList.addAll(serverIds.subList(0, needPingSize));
+        Integer startTime = DateUtil.now() - this.clusterProperties.getNodeSuccessPeriodTime() / 1000 * 2;
+        Long reportsCount = serverReportsDAO.countServerReports(startTime, currentServerId, ServerReportStatusEnum.FAIL.getStatus());
+
+        // Online
+        if (reportsCount > this.clusterProperties.getNodeSuccessTimes()) {
+            // Join node to cluster.
+            Config config = this.actorSystem.settings().config();
+            Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
+            String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
+            this.joinManager.join(hostname, port);
         }
-        return pingList;
     }
 }

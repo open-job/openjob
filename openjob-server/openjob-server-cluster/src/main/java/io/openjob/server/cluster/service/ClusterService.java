@@ -1,27 +1,19 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.common.context.Node;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
+import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
-import io.openjob.server.cluster.util.ClusterUtil;
+import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.common.ClusterContext;
-import io.openjob.server.repository.constant.ServerStatusEnum;
-import io.openjob.server.repository.dao.JobSlotsDAO;
-import io.openjob.server.repository.dao.ServerDAO;
-import io.openjob.server.repository.dao.WorkerDAO;
-import io.openjob.server.repository.entity.JobSlots;
-import io.openjob.server.repository.entity.Server;
-import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -30,18 +22,50 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class ClusterService {
-    private final ServerDAO serverDAO;
-    private final JobSlotsDAO jobSlotsDAO;
-    private final WorkerDAO workerDAO;
 
     private final WheelManager wheelManager;
 
+    private final RefreshManager refreshManager;
+
+    /**
+     * Refresh status.
+     */
+    private final AtomicBoolean refreshing = new AtomicBoolean(false);
+
     @Autowired
-    public ClusterService(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO, WheelManager wheelManager) {
-        this.serverDAO = serverDAO;
-        this.jobSlotsDAO = jobSlotsDAO;
-        this.workerDAO = workerDAO;
+    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager) {
         this.wheelManager = wheelManager;
+        this.refreshManager = refreshManager;
+    }
+
+    /**
+     * Receive node ping.
+     *
+     * @param nodePingDTO nodePingDTO
+     */
+    public void receiveNodePing(NodePingDTO nodePingDTO) {
+        // Ignore
+        if (this.isIgnore(nodePingDTO.getClusterVersion())) {
+            return;
+        }
+
+        // Refresh nodes.
+        this.refreshManager.refreshClusterNodes();
+
+        // Refresh current slots.
+        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+        if (!removeSlots.isEmpty()) {
+            this.wheelManager.removeBySlotsId(removeSlots);
+        }
+
+        // Refresh app workers.
+        this.refreshManager.refreshAppWorkers();
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
+        log.info("Begin to refreshing");
+        this.refreshing.set(false);
     }
 
     /**
@@ -50,18 +74,29 @@ public class ClusterService {
      * @param join join
      */
     public void receiveNodeJoin(NodeJoinDTO join) {
-        log.info("Join node starting {}({})", join.getAkkaAddress(), join.getServerId());
+        // Ignore
+        if (this.isIgnore(join.getClusterVersion())) {
+            return;
+        }
+
+        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
 
         // Refresh nodes.
-        this.refreshNodes();
+        this.refreshManager.refreshClusterNodes();
 
         // Refresh slots.
-        Set<Long> removeSlots = this.refreshJobSlots(true);
+        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
 
         // Remove job instance from timing wheel.
-        this.wheelManager.removeBySlotsId(removeSlots);
+        if (!removeSlots.isEmpty()) {
+            this.wheelManager.removeBySlotsId(removeSlots);
+        }
 
-        log.info("Join node success {}({})", join.getAkkaAddress(), join.getServerId());
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
+        this.refreshing.set(false);
+        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
     }
 
     /**
@@ -70,75 +105,80 @@ public class ClusterService {
      * @param fail fail
      */
     public void receiveNodeFail(NodeFailDTO fail) {
-        log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
+        // Ignore
+        if (this.isIgnore(fail.getClusterVersion())) {
+            return;
+        }
+
+        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
 
         // Refresh nodes.
-        this.refreshNodes();
+        this.refreshManager.refreshClusterNodes();
 
         // Refresh slots.
-        Set<Long> addSlots = this.refreshJobSlots(false);
+        this.refreshManager.refreshCurrentSlots();
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+        this.refreshing.set(false);
 
         // Add job instance to timing wheel.
-        log.info("Fail node starting {}({})", fail.getAkkaAddress(), fail.getServerId());
+        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
     }
 
     /**
-     * Receive worker join success message.
+     * Receive worker join.
      *
-     * @param workerJoinDTO workerJoinDTO
+     * @param workerJoinDTO worker join.
      */
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
+        // Ignore
+        if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
+            return;
+        }
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
         // Refresh app workers.
-        List<Worker> workers = workerDAO.listOnlineWorkers();
-        ClusterUtil.refreshAppWorkers(workers);
+        this.refreshManager.refreshAppWorkers();
+
+        this.refreshing.set(false);
+        log.info("Worker join! {}", workerJoinDTO);
     }
 
     /**
-     * Receive worker fail success message.
+     * Receive worker fail.
      *
-     * @param workerFailDTO workerFailDTO
+     * @param workerFailDTO worker fail.
      */
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
-        // Refresh app workers.
-        List<Worker> workers = workerDAO.listOnlineWorkers();
-        ClusterUtil.refreshAppWorkers(workers);
-    }
-
-    /**
-     * Refresh nodes.
-     */
-    private void refreshNodes() {
-        List<Server> servers = serverDAO.listServers(ServerStatusEnum.OK.getStatus());
-        ClusterUtil.refreshNodes(servers);
-        log.info("Refresh nodes {}", servers);
-    }
-
-    /**
-     * Refresh job slots.
-     *
-     * @param isJoin isJoin
-     * @return Set
-     */
-    private Set<Long> refreshJobSlots(Boolean isJoin) {
-        Node currentNode = ClusterContext.getCurrentNode();
-        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
-        List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
-        Set<Long> newSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
-
-        // Refresh current slots.
-        ClusterContext.refreshCurrentSlots(newSlots);
-
-        log.info("Refresh slots {}", jobSlots);
-        ClusterUtil.refreshSlotsListMap(jobSlots);
-
-        if (isJoin) {
-            // Node remove slots.
-            currentSlots.removeAll(newSlots);
-            return currentSlots;
-        } else {
-            // Node add slots.
-            newSlots.removeAll(currentSlots);
-            return newSlots;
+        // Ignore
+        if (this.isIgnore(workerFailDTO.getClusterVersion())) {
+            return;
         }
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(false);
+
+        // Refresh app workers.
+        this.refreshManager.refreshAppWorkers();
+
+        this.refreshing.set(false);
+        log.info("Worker fail! {}", workerFailDTO);
+    }
+
+    /**
+     * Ignore message.
+     *
+     * @param clusterVersion receive cluster version.
+     * @return Boolean
+     */
+    private Boolean isIgnore(Long clusterVersion) {
+        if (clusterVersion >= ClusterContext.getSystem().getClusterVersion()) {
+            return true;
+        }
+
+        return !this.refreshing.compareAndSet(false, true);
     }
 }

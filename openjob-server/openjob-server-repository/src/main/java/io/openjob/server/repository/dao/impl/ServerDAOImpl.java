@@ -36,6 +36,11 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
+    public Server getById(Long id) {
+        return this.serverRepository.getById(id);
+    }
+
+    @Override
     public Optional<Server> getOne(String akkaAddress) {
         Server server = new Server();
         server.setAkkaAddress(akkaAddress);
