@@ -1,16 +1,14 @@
 package io.openjob.server.repository.data.impl;
 
-import com.kezhilian.boot.common.util.BeanMapperUtil;
-import com.kezhilian.boot.redis.operation.RedisOperation;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import io.openjob.server.repository.entity.AdminUser;
-import io.openjob.server.repository.util.CacheUtil;
-// import com.kezhilian.wzl.service.order.util.JsonUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,50 +21,41 @@ import java.util.List;
 public class AdminUserDataImpl implements AdminUserData {
 
     private final AdminUserDAO adminUserDAO;
-    private final RedisOperation redisOperation;
 
     @Autowired
-    public AdminUserDataImpl(AdminUserDAO adminUserDAO, RedisOperation redisOperation) {
+    public AdminUserDataImpl(AdminUserDAO adminUserDAO) {
         this.adminUserDAO = adminUserDAO;
-        this.redisOperation = redisOperation;
     }
 
     @Override
     public Long add(AdminUserDTO dto) {
-        AdminUser entity = BeanMapperUtil.map(dto, AdminUser.class);
-
-        // 序列化扩展信息
-        // if (Objects.nonNull(dto.getExtra())) {
-        //    entity.setExtra(JsonUtil.toJsonFilterEmpty(dto.getExtra()));
-        // }
+        AdminUser entity = new AdminUser();
+        BeanUtils.copyProperties(dto, entity);
 
         return adminUserDAO.add(entity);
     }
 
     @Override
-    public Integer batchAdd(List<AdminUserDTO> dtoList) {
-        List<AdminUser> entityList = BeanMapperUtil.mapList(dtoList, AdminUserDTO.class, AdminUser.class);
+    public void batchAdd(List<AdminUserDTO> dtoList) {
+        List<AdminUser> entityList = new ArrayList<>();
+        // TODO copy data
 
-        return adminUserDAO.batchAdd(entityList);
+        adminUserDAO.batchAdd(entityList);
     }
 
     @Override
     public AdminUserDTO getById(Long id) {
-        return BeanMapperUtil.map(adminUserDAO.getById(id), AdminUserDTO.class);
-    }
+        AdminUserDTO entDTO = new AdminUserDTO();
+        AdminUser entity = adminUserDAO.getById(id);
+        BeanUtils.copyProperties(entity, entDTO);
 
-    @Override
-    public AdminUserDTO getByIdFromCache(Long id) {
-        return redisOperation.string()
-                .key(CacheKey.getAdminUserByIdKey(id))
-                .orElseGet(() -> getById(id));
+        return entDTO;
     }
 
     @Override
     public Integer updateById(AdminUserDTO dto) {
-        AdminUser entity = BeanMapperUtil.map(dto, AdminUser.class);
-
-        redisOperation.delete(CacheKey.getAdminUserByIdKey(dto.getId()));
+        AdminUser entity = new AdminUser();
+        BeanUtils.copyProperties(dto, entity);
 
         return adminUserDAO.updateById(entity);
     }

@@ -1,7 +1,7 @@
 package io.openjob.server.repository.entity;
 
+import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Data;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,8 +55,8 @@ public class AdminMenu {
     /**
      * Extra meta data. JSON object: {icon:xx,title:some.name}
      */
-    @Column(name = "extra")
-    private Extra extra;
+    @Column(name = "meta")
+    private MenuMeta meta;
 
     /**
      * Hidden status. 1=yes 2=no

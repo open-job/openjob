@@ -23,7 +23,6 @@ public interface AdminConfigDAO {
      * batch add AdminConfig
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<AdminConfig> entityList);
 

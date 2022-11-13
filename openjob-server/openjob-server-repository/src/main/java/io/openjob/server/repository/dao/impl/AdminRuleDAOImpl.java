@@ -39,7 +39,8 @@ public class AdminRuleDAOImpl implements AdminRuleDAO {
 
     @Override
     public Integer updateById(AdminRule entity) {
-        return adminRuleRepository.updateById(entity);
+        // return adminRuleRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 

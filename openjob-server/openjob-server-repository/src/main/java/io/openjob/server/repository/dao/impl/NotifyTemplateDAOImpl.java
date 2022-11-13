@@ -39,7 +39,8 @@ public class NotifyTemplateDAOImpl implements NotifyTemplateDAO {
 
     @Override
     public Integer updateById(NotifyTemplate entity) {
-        return notifyTemplateRepository.updateById(entity);
+        // return notifyTemplateRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 

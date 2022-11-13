@@ -39,7 +39,8 @@ public class NotifyGroupDAOImpl implements NotifyGroupDAO {
 
     @Override
     public Integer updateById(NotifyGroup entity) {
-        return notifyGroupRepository.updateById(entity);
+        // return notifyGroupRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 

@@ -29,12 +29,12 @@ public class AdminRuleDTO {
     /**
      * Menu ids for rule. JSON array
      */
-    private Menus menus;
+    private List<Long> menus;
 
     /**
      * Menu ids for rule. JSON array
      */
-    private Perms perms;
+    private List<Long> perms;
 
     /**
      * Is Admin. 1=yes 2=no

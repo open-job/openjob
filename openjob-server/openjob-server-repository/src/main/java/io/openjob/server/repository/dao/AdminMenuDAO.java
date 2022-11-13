@@ -23,7 +23,6 @@ public interface AdminMenuDAO {
      * batch add AdminMenu
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<AdminMenu> entityList);
 

@@ -39,7 +39,8 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public Integer updateById(AdminUser entity) {
-        return adminUserRepository.updateById(entity);
+        // return adminUserRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 

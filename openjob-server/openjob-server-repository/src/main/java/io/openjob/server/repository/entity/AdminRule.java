@@ -44,13 +44,15 @@ public class AdminRule {
      * Menu ids for rule. JSON array
      */
     @Column(name = "menus")
-    private Menus menus;
+    private String menus;
+    // private List<Long> menus;
 
     /**
      * Menu ids for rule. JSON array
      */
     @Column(name = "perms")
-    private Perms perms;
+    private String perms;
+    // private List<Long> perms;
 
     /**
      * Is Admin. 1=yes 2=no

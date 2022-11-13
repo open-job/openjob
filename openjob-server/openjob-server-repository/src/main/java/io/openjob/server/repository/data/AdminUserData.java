@@ -24,9 +24,8 @@ public interface AdminUserData {
      * batch add AdminUser
      *
      * @param dtoList dto list
-     * @return id
      */
-    Integer batchAdd(List<AdminUserDTO> dtoList);
+    void batchAdd(List<AdminUserDTO> dtoList);
 
     /**
      * get AdminUser by ID
@@ -35,14 +34,6 @@ public interface AdminUserData {
      * @return AdminUser
      */
     AdminUserDTO getById(Long id);
-
-    /**
-     * get AdminUser by ID, will try get from cache.
-     *
-     * @param id id
-     * @return AdminUser
-     */
-    AdminUserDTO getByIdFromCache(Long id);
 
     /**
      * update AdminUser by ID

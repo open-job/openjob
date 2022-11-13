@@ -39,7 +39,8 @@ public class NotifyContactDAOImpl implements NotifyContactDAO {
 
     @Override
     public Integer updateById(NotifyContact entity) {
-        return notifyContactRepository.updateById(entity);
+        // return notifyContactRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 

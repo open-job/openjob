@@ -39,7 +39,8 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
 
     @Override
     public Integer updateById(AdminMenu entity) {
-        return adminMenuRepository.updateById(entity);
+        // return adminMenuRepository.updateById(entity); // TODO
+        return 0;
     }
 }
 
