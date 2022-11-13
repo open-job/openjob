@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:34:58
+ * @date 2022-11-13 23:10:22
  * @since 1.0.0
  */
 public interface AdminMenuData {
@@ -24,9 +24,8 @@ public interface AdminMenuData {
      * batch add AdminMenu
      *
      * @param dtoList dto list
-     * @return id
      */
-    Integer batchAdd(List<AdminMenuDTO> dtoList);
+    void batchAdd(List<AdminMenuDTO> dtoList);
 
     /**
      * get AdminMenu by ID
@@ -37,20 +36,20 @@ public interface AdminMenuData {
     AdminMenuDTO getById(Long id);
 
     /**
-     * get AdminMenu by ID, will try get from cache.
-     *
-     * @param id id
-     * @return AdminMenu
-     */
-    AdminMenuDTO getByIdFromCache(Long id);
-
-    /**
      * update AdminMenu by ID
      *
      * @param dto dto
      * @return number
      */
     Integer updateById(AdminMenuDTO dto);
+
+    /**
+     * get AdminMenu list by params
+     *
+     * @param id id
+     * @return AdminMenu list
+     */
+    List<AdminMenuDTO> getPageList(Long id);
 
 }
 

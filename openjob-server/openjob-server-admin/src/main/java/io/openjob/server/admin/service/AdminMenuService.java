@@ -1,29 +1,27 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.entity.JobAdminMenu;
-import io.openjob.server.admin.request.JobAdminMenuAddRequest;
-import io.openjob.server.admin.vo.JobAdminMenuAddVO;
-import io.openjob.server.admin.request.JobAdminMenuDetailRequest;
-import io.openjob.server.admin.vo.JobAdminMenuDetailVO;
-import io.openjob.server.admin.request.JobAdminMenuUpdateRequest;
-import io.openjob.server.admin.vo.JobAdminMenuUpdateVO;
-import io.openjob.server.admin.request.JobAdminMenuDeleteRequest;
-import io.openjob.server.admin.vo.JobAdminMenuDeleteVO;
-import io.openjob.server.admin.request.JobAdminMenuListRequest;
-import io.openjob.server.admin.vo.JobAdminMenuListVO;
+import io.openjob.server.admin.request.AdminMenuAddRequest;
+import io.openjob.server.admin.vo.AdminMenuAddVO;
+import io.openjob.server.admin.request.AdminMenuQueryRequest;
+import io.openjob.server.admin.vo.AdminMenuQueryVO;
+import io.openjob.server.admin.request.AdminMenuUpdateRequest;
+import io.openjob.server.admin.vo.AdminMenuUpdateVO;
+import io.openjob.server.admin.request.AdminMenuDeleteRequest;
+import io.openjob.server.admin.request.AdminMenuListRequest;
+import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:21:42
+ * @date 2022-11-13 23:24:47
  * @since 1.0.0
  */
 public interface AdminMenuService  {
 
     /**
-     * Add JobAdminMenu
+     * Add AdminMenu
      *
      * @param reqDTO reqDTO
-     * @return JobAdminMenuAddVO
+     * @return AdminMenuAddVO
      */
     AdminMenuAddVO add(AdminMenuAddRequest reqDTO);
 
@@ -31,9 +29,9 @@ public interface AdminMenuService  {
      * Get one AdminMenu
      *
      * @param reqDTO reqDTO
-     * @return AdminMenuDetailDTO
+     * @return AdminMenuQueryVO
      */
-    AdminMenuDetailDTO getById(AdminMenuQueryRequest reqDTO);
+    AdminMenuQueryVO query(AdminMenuQueryRequest reqDTO);
 
     /**
      * Update one AdminMenu
@@ -44,10 +42,12 @@ public interface AdminMenuService  {
     AdminMenuUpdateVO update(AdminMenuUpdateRequest reqDTO);
 
     /**
+     * Delete one AdminMenu
+     *
      * @param reqDTO reqDTO
      * @return AdminMenuUpdateVO
      */
-    AdminMenuUpdateVO deleteById(AdminMenuDeleteRequest reqDTO);
+    AdminMenuUpdateVO delete(AdminMenuDeleteRequest reqDTO);
 
     /**
      * Get page list AdminMenu
@@ -55,6 +55,6 @@ public interface AdminMenuService  {
      * @param reqDTO reqDTO
      * @return AdminMenuListVO
      */
-    PageDTO<AdminMenuListVO> getPageList(AdminMenuListRequest reqDTO);
+    PageDTO<AdminMenuQueryVO> getPageList(AdminMenuListRequest reqDTO);
 }
 
