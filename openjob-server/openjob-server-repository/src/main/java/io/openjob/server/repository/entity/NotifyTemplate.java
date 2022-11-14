@@ -1,6 +1,10 @@
 package io.openjob.server.repository.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import java.util.List;
 
 import javax.persistence.Column;
@@ -19,6 +23,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "notify_template")
+@TypeDef(name = "json", typeClass = JsonType.class)
 public class NotifyTemplate {
 
     /**
@@ -29,13 +34,13 @@ public class NotifyTemplate {
     private Long id;
 
     /**
-     * Tempalte name
+     * Template name
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * Tempalte contents
+     * Template contents
      */
     @Column(name = "content")
     private String content;
@@ -49,13 +54,15 @@ public class NotifyTemplate {
     /**
      * related contact ids. JSON [12, 34]
      */
-    @Column(name = "contact_ids")
+    @Type(type = "json")
+    @Column(name = "contact_ids", columnDefinition = "json")
     private List<Long> contactIds;
 
     /**
      * related group ids. JSON [12, 34]
      */
-    @Column(name = "group_ids")
+    @Type(type = "json")
+    @Column(name = "group_ids", columnDefinition = "json")
     private List<Long> groupIds;
 
     /**

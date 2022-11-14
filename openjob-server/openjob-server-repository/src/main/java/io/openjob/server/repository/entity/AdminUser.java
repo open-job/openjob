@@ -1,6 +1,10 @@
 package io.openjob.server.repository.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import java.util.List;
 
 import javax.persistence.Column;
@@ -19,6 +23,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "admin_user")
+@TypeDef(name = "json", typeClass = JsonType.class)
 public class AdminUser {
 
     /**
@@ -55,7 +60,8 @@ public class AdminUser {
     /**
      * Rule IDs. JSON: [1,2]
      */
-    @Column(name = "rule_ids")
+    @Type(type = "json")
+    @Column(name = "rule_ids", columnDefinition = "json")
     private List<Long> ruleIds;
 
     /**

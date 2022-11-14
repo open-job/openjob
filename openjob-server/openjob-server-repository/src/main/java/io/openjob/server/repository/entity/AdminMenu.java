@@ -1,7 +1,11 @@
 package io.openjob.server.repository.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Data;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +23,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "admin_menu")
+@TypeDef(name = "json", typeClass = JsonType.class)
 public class AdminMenu {
 
     /**
@@ -55,7 +60,8 @@ public class AdminMenu {
     /**
      * Extra meta data. JSON object: {icon:xx,title:some.name}
      */
-    @Column(name = "meta")
+    @Type(type = "json")
+    @Column(name = "meta", columnDefinition = "json")
     private MenuMeta meta;
 
     /**
