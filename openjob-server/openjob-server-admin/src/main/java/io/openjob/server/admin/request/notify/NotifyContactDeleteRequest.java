@@ -1,5 +1,4 @@
-
-package io.openjob.server.admin.request.user;
+package io.openjob.server.admin.request.notify;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,12 +11,12 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:29:02
+ * @date 2022-11-14 20:21:17
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminUserDeleteRequest", description = "AdminUserDeleteRequest")
-public class AdminUserDeleteRequest {
+@ApiModel(value = "NotifyContactDeleteRequest", description = "NotifyContact delete request")
+public class NotifyContactDeleteRequest {
 
     @Min(1)
     @NotNull()

@@ -12,7 +12,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenu", description = "AdminMenu")
+@ApiModel(value = "AdminMenuUpdateVO", description = "AdminMenuUpdateVO")
 public class AdminMenuUpdateVO {
 
     @ApiModelProperty(value = "PK")

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AddAdminUserRequest", description = "AddAdminUserRequest")
+@ApiModel(value = "AdminUserAddRequest", description = "AdminUserAddRequest")
 public class AdminUserAddRequest {
 
     @NotBlank

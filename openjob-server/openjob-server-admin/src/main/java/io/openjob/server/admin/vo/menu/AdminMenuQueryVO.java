@@ -13,11 +13,11 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenu", description = "AdminMenu")
+@ApiModel(value = "AdminMenuQueryVO", description = "AdminMenuQueryVO")
 public class AdminMenuQueryVO {
 
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;

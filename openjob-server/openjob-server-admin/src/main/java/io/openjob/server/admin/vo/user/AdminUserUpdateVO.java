@@ -14,7 +14,7 @@ import lombok.Data;
 public class AdminUserUpdateVO {
 
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
 }
 

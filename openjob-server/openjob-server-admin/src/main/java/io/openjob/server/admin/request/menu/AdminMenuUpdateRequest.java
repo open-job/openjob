@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 public class AdminMenuUpdateRequest {
 
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;

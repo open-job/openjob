@@ -21,7 +21,7 @@ public class AdminUserUpdateRequest {
     @Min(1)
     @NotBlank
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
     @NotBlank
     @ApiModelProperty(value = "User name")

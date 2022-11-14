@@ -5,6 +5,7 @@
 Generate entity,repo,dto,dao,data:
 
 ```shell
+cd openjob-server/openjob-server-repository
 kite plug run 'gen java ser code' -- --cs @c --tpl openjob/entity,repo,dto,openjob/dao,openjob/dao-impl,openjob/data,openjob/data-impl --pkg io.openjob.server.repository -o @pkg
 ```
 

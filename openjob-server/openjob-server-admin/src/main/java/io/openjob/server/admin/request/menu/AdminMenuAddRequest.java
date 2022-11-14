@@ -19,9 +19,6 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "AdminMenuAddRequest", description = "Add AdminMenu")
 public class AdminMenuAddRequest {
 
-    @ApiModelProperty(value = "PK")
-    private Integer id;
-
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
 
