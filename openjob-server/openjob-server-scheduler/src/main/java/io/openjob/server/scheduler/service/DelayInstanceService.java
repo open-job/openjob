@@ -6,12 +6,12 @@ import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
+import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.util.RedisUtil;
 import io.openjob.server.scheduler.dto.DelayDTO;
-import io.openjob.server.repository.dto.DelayInstanceAddRequestDTO;
-import io.openjob.server.repository.dto.DelayInstanceAddResponseDTO;
-import io.openjob.server.repository.manager.DelayInstanceManager;
+import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import io.openjob.server.scheduler.util.CacheUtil;
-import io.openjob.server.repository.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -33,11 +33,11 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class DelayInstanceService {
-    private final DelayInstanceManager instanceManager;
+    private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceService(DelayInstanceManager instanceManager) {
-        this.instanceManager = instanceManager;
+    public DelayInstanceService(DelayInstanceScheduler delayInstanceScheduler) {
+        this.delayInstanceScheduler = delayInstanceScheduler;
     }
 
     /**
@@ -71,7 +71,7 @@ public class DelayInstanceService {
         addRequestDTO.setParams(addRequest.getParams());
         addRequestDTO.setExtra(addRequest.getExtra());
         addRequestDTO.setExecuteTime(addRequest.getExecuteTime());
-        DelayInstanceAddResponseDTO addResponseDTO = this.instanceManager.add(addRequestDTO);
+        DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceScheduler.add(addRequestDTO);
         serverDelayAddResponse.setTaskId(addResponseDTO.getTaskId());
         return serverDelayAddResponse;
     }

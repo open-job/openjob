@@ -1,9 +1,9 @@
-package io.openjob.server.repository.data;
+package io.openjob.server.scheduler.data;
 
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.entity.Delay;
-import io.openjob.server.repository.util.CacheUtil;
-import io.openjob.server.repository.util.RedisUtil;
+import io.openjob.server.scheduler.util.RedisUtil;
+import io.openjob.server.scheduler.util.CacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

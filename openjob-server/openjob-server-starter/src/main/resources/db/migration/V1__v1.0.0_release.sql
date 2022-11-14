@@ -72,7 +72,8 @@ CREATE TABLE `delay_instance` (
                                   `execute_time` int(11) NOT NULL,
                                   `create_time` int(11) NOT NULL,
                                   `update_time` int(11) NOT NULL,
-                                  PRIMARY KEY (`id`)
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `udx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

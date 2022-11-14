@@ -1,4 +1,4 @@
-package io.openjob.server.repository.dto;
+package io.openjob.server.scheduler.dto;
 
 import lombok.Data;
 

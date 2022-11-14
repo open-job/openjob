@@ -3,9 +3,9 @@ package io.openjob.server.openapi.service.impl;
 import io.openjob.server.openapi.request.DelayInstanceAddRequest;
 import io.openjob.server.openapi.service.DelayInstanceService;
 import io.openjob.server.openapi.vo.DelayInstanceAddVO;
-import io.openjob.server.repository.dto.DelayInstanceAddRequestDTO;
-import io.openjob.server.repository.dto.DelayInstanceAddResponseDTO;
-import io.openjob.server.repository.manager.DelayInstanceManager;
+import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DelayInstanceServiceImpl implements DelayInstanceService {
-    private final DelayInstanceManager delayInstanceManager;
+    private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceServiceImpl(DelayInstanceManager delayInstanceManager) {
-        this.delayInstanceManager = delayInstanceManager;
+    public DelayInstanceServiceImpl( DelayInstanceScheduler delayInstanceScheduler) {
+        this.delayInstanceScheduler = delayInstanceScheduler;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         addRequestDTO.setExtra(addRequest.getExtra());
         addRequestDTO.setExecuteTime(addRequest.getExecuteTime());
 
-        DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceManager.add(addRequestDTO);
+        DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceScheduler.add(addRequestDTO);
         DelayInstanceAddVO delayInstanceAddVO = new DelayInstanceAddVO();
         delayInstanceAddVO.setTaskId(addResponseDTO.getTaskId());
         return delayInstanceAddVO;
