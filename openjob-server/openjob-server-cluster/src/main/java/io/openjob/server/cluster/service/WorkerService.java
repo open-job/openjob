@@ -4,6 +4,7 @@ import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
+import io.openjob.server.cluster.constant.ClusterConstant;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.manager.RefreshManager;
@@ -19,9 +20,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -33,7 +38,6 @@ public class WorkerService {
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
     private final ClusterProperties clusterProperties;
-
     private final RefreshManager refreshManager;
 
     @Autowired
@@ -94,6 +98,35 @@ public class WorkerService {
     }
 
     public void workerCheck() {
+        // Query all workers.
+        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_DELAY;
+        Map<Integer, List<Worker>> workerMap = this.workerDAO.listAllWorkers().stream().collect(Collectors.groupingBy(Worker::getStatus));
+
+        // New join worker
+        List<Worker> offlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.OFFLINE.getStatus())).orElseGet(ArrayList::new);
+        offlineWorkers.forEach(w -> {
+            // Join worker
+            if (w.getLastHeartbeatTime() > timePos) {
+                WorkerStartRequest workerStartRequest = new WorkerStartRequest();
+                workerStartRequest.setAddress(w.getAddress());
+                workerStartRequest.setAppName(w.getAppName());
+                workerStartRequest.setWorkerKey(w.getWorkerKey());
+                this.workerStart(workerStartRequest);
+            }
+        });
+
+        // New fail worker.
+        List<Worker> onlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.ONLINE.getStatus())).orElseGet(ArrayList::new);
+        onlineWorkers.forEach(w -> {
+            // Fail worker
+            if (w.getLastHeartbeatTime() < timePos) {
+                WorkerStopRequest workerStopRequest = new WorkerStopRequest();
+                workerStopRequest.setWorkerKey(w.getWorkerKey());
+                workerStopRequest.setAddress(w.getAddress());
+                workerStopRequest.setAppName(w.getAppName());
+                this.workerStop(workerStopRequest);
+            }
+        });
     }
 
     private void refreshClusterContext() {

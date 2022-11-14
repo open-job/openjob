@@ -1,10 +1,8 @@
 package io.openjob.server.cluster.util;
 
 import akka.actor.ActorRef;
-import io.openjob.common.SpringContext;
-import io.openjob.server.common.ClusterContext;
 import io.openjob.common.context.Node;
-import io.openjob.server.common.constant.ClusterConstant;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.entity.Server;
