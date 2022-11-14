@@ -23,7 +23,6 @@ public interface NotifyGroupDAO {
      * batch add NotifyGroup
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<NotifyGroup> entityList);
 

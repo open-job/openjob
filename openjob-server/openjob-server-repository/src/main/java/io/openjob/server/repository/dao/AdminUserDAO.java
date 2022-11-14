@@ -23,7 +23,6 @@ public interface AdminUserDAO {
      * batch add AdminUser
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<AdminUser> entityList);
 

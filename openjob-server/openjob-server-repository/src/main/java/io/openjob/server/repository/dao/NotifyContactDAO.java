@@ -23,7 +23,6 @@ public interface NotifyContactDAO {
      * batch add NotifyContact
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<NotifyContact> entityList);
 
