@@ -1,5 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
+import io.openjob.server.common.constant.CommonConst;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.admin.service.AdminMenuService;
 import io.openjob.server.admin.request.AdminMenuAddRequest;
@@ -9,7 +10,6 @@ import io.openjob.server.admin.vo.AdminMenuQueryVO;
 import io.openjob.server.admin.request.AdminMenuUpdateRequest;
 import io.openjob.server.admin.vo.AdminMenuUpdateVO;
 import io.openjob.server.admin.request.AdminMenuDeleteRequest;
-import io.openjob.server.admin.vo.AdminMenuDeleteVO;
 import io.openjob.server.admin.request.AdminMenuListRequest;
 import io.openjob.server.repository.dto.AdminMenuDTO;
 import io.openjob.server.common.dto.PageDTO;
@@ -49,7 +49,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
         BeanUtils.copyProperties(reqDTO, entDTO);
 
         AdminMenuUpdateVO retVo = new AdminMenuUpdateVO();
-        adminMenuData.update(entDTO);
+        adminMenuData.updateById(entDTO);
         return retVo;
     }
 
@@ -59,7 +59,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
         entDTO.setDeleted(CommonConst.YES);
 
         AdminMenuUpdateVO retVo = new AdminMenuUpdateVO();
-        adminMenuData.update(entDTO);
+        adminMenuData.updateById(entDTO);
 
         return retVo;
     }

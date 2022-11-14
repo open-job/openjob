@@ -15,4 +15,6 @@ cd openjob-server/openjob-server-admin
 kite plug run 'gen java ser code' -- --cs @c --tpl curd,openjob/controller,openjob/service,openjob/service-impl --pkg io.openjob.server.admin -o @pkg
 
 kite plug run 'gen java ser code' -- --cs @c --tpl openjob/service,openjob/service-impl --pkg io.openjob.server.admin -o @pkg
+
+kite plug run 'gen java ser code' -- --cs @c --tpl openjob/controller --pkg io.openjob.server.admin -o @pkg
 ```

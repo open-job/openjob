@@ -1,5 +1,6 @@
 package io.openjob.server.admin.request;
 
+import io.openjob.server.admin.request.part.MenuMeta;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,7 +35,7 @@ public class AdminMenuUpdateRequest {
     private String path;
 
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
-    private Meta meta;
+    private MenuMeta meta;
 
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;
@@ -45,13 +46,5 @@ public class AdminMenuUpdateRequest {
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;
 
-    @ApiModelProperty(value = "Delete time")
-    private Integer delete_time;
-
-    @ApiModelProperty(value = "Update time")
-    private Integer update_time;
-
-    @ApiModelProperty(value = "Create time")
-    private Integer create_time;
 }
 

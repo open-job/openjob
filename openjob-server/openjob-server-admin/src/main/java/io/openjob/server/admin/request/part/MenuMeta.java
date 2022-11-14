@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.part;
+package io.openjob.server.admin.request.part;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

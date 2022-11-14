@@ -46,27 +46,27 @@ public class UserController {
         return Result.success(this.adminUserService.add(addRequest));
     }
 
-    @ApiOperation("Update AdminUser")
+    @ApiOperation("Update a AdminUser")
     @PostMapping("/update")
     public Result<AdminUserUpdateVO> update(@Valid @RequestBody AdminUserUpdateRequest updateRequest) {
         return Result.success(this.adminUserService.update(updateRequest));
     }
 
-    @ApiOperation("Delete AdminUser")
+    @ApiOperation("Delete a AdminUser")
     @PostMapping("/update")
     public Result<AdminUserUpdateVO> delete(@Valid @RequestBody AdminUserDeleteRequest deleteRequest) {
         return Result.success(this.adminUserService.delete(deleteRequest));
     }
 
-    @ApiOperation("Get AdminUser")
+    @ApiOperation("Get a AdminUser")
     @PostMapping("/get")
-    public Result<AdminUserQueryVO> get(@Valid @RequestBody AdminUserQueryRequest getRequest) {
+    public Result<AdminUserQueryVO> query(@Valid @RequestBody AdminUserQueryRequest getRequest) {
         return Result.success(this.adminUserService.query(getRequest));
     }
 
-    @ApiOperation("List AdminUser")
+    @ApiOperation("List AdminUser by page")
     @PostMapping("/list")
-    public Result<PageDTO> list(@Valid @RequestBody AdminUserListRequest listRequest) {
+    public Result<PageDTO<AdminUserQueryVO>> list(@Valid @RequestBody AdminUserListRequest listRequest) {
         return Result.success(this.adminUserService.getPageList(listRequest));
     }
 }
