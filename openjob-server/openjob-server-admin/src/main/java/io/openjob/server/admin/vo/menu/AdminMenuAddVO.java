@@ -1,26 +1,23 @@
-package io.openjob.server.admin.request;
+package io.openjob.server.admin.vo.menu;
 
-import io.openjob.server.admin.request.part.MenuMeta;
+import io.openjob.server.admin.vo.part.MenuMeta;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
- * @date 2022-11-13 23:27:24
+ * @date 2022-11-13 23:23:06
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuAdd", description = "Add AdminMenu")
-public class AdminMenuAddRequest {
+@ApiModel(value = "AdminMenu", description = "AdminMenu")
+public class AdminMenuAddVO {
 
     @ApiModelProperty(value = "PK")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
@@ -47,12 +44,12 @@ public class AdminMenuAddRequest {
     private Integer deleted;
 
     @ApiModelProperty(value = "Delete time")
-    private Integer delete_time;
+    private Integer deleteTime;
 
     @ApiModelProperty(value = "Update time")
-    private Integer update_time;
+    private Integer updateTime;
 
     @ApiModelProperty(value = "Create time")
-    private Integer create_time;
+    private Integer createTime;
 }
 

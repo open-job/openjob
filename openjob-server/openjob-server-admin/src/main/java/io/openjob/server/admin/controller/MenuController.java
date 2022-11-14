@@ -1,15 +1,15 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.AdminMenuAddRequest;
-import io.openjob.server.admin.request.AdminMenuDeleteRequest;
-import io.openjob.server.admin.request.AdminMenuListRequest;
-import io.openjob.server.admin.request.AdminMenuQueryRequest;
-import io.openjob.server.admin.request.AdminMenuUpdateRequest;
+import io.openjob.server.admin.request.menu.AdminMenuAddRequest;
+import io.openjob.server.admin.request.menu.AdminMenuDeleteRequest;
+import io.openjob.server.admin.request.menu.AdminMenuListRequest;
+import io.openjob.server.admin.request.menu.AdminMenuQueryRequest;
+import io.openjob.server.admin.request.menu.AdminMenuUpdateRequest;
 import io.openjob.server.admin.service.AdminMenuService;
-import io.openjob.server.admin.vo.AdminMenuAddVO;
-import io.openjob.server.admin.vo.AdminMenuQueryVO;
-import io.openjob.server.admin.vo.AdminMenuUpdateVO;
+import io.openjob.server.admin.vo.menu.AdminMenuAddVO;
+import io.openjob.server.admin.vo.menu.AdminMenuQueryVO;
+import io.openjob.server.admin.vo.menu.AdminMenuUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,13 +28,13 @@ import javax.validation.Valid;
  */
 @Api(value = "AdminMenu", tags = "AdminMenu")
 @RestController
-@RequestMapping("/admin/xxx")
-public class AdminMenuController {
+@RequestMapping("/admin/menu")
+public class MenuController {
 
     private final AdminMenuService adminMenuService;
 
     @Autowired
-    public AdminMenuController(AdminMenuService adminMenuService) {
+    public MenuController(AdminMenuService adminMenuService) {
         this.adminMenuService = adminMenuService;
     }
 

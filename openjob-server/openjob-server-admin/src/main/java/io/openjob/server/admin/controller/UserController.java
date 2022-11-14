@@ -10,7 +10,6 @@ import io.openjob.server.admin.service.AdminUserService;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.admin.vo.user.AdminUserAddVO;
 import io.openjob.server.admin.vo.user.AdminUserQueryVO;
-import io.openjob.server.admin.vo.user.AdminUserListVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,7 +52,7 @@ public class UserController {
     }
 
     @ApiOperation("Delete a AdminUser")
-    @PostMapping("/update")
+    @PostMapping("/delete")
     public Result<AdminUserUpdateVO> delete(@Valid @RequestBody AdminUserDeleteRequest deleteRequest) {
         return Result.success(this.adminUserService.delete(deleteRequest));
     }

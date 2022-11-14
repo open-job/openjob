@@ -1,13 +1,13 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.AdminMenuAddRequest;
-import io.openjob.server.admin.vo.AdminMenuAddVO;
-import io.openjob.server.admin.request.AdminMenuQueryRequest;
-import io.openjob.server.admin.vo.AdminMenuQueryVO;
-import io.openjob.server.admin.request.AdminMenuUpdateRequest;
-import io.openjob.server.admin.vo.AdminMenuUpdateVO;
-import io.openjob.server.admin.request.AdminMenuDeleteRequest;
-import io.openjob.server.admin.request.AdminMenuListRequest;
+import io.openjob.server.admin.request.menu.AdminMenuAddRequest;
+import io.openjob.server.admin.vo.menu.AdminMenuAddVO;
+import io.openjob.server.admin.request.menu.AdminMenuQueryRequest;
+import io.openjob.server.admin.vo.menu.AdminMenuQueryVO;
+import io.openjob.server.admin.request.menu.AdminMenuUpdateRequest;
+import io.openjob.server.admin.vo.menu.AdminMenuUpdateVO;
+import io.openjob.server.admin.request.menu.AdminMenuDeleteRequest;
+import io.openjob.server.admin.request.menu.AdminMenuListRequest;
 import io.openjob.server.common.dto.PageDTO;
 
 /**

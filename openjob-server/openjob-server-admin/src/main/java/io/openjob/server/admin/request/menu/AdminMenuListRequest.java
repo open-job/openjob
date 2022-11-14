@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request;
+package io.openjob.server.admin.request.menu;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuList", description = "List AdminMenu")
+@ApiModel(description = "List AdminMenu")
 public class AdminMenuListRequest {
 
     @ApiModelProperty(value = "List page.")
