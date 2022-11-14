@@ -1,12 +1,12 @@
 package io.openjob.server.repository.dto;
 
-import java.util.List;
-
+import io.openjob.server.repository.dto.json.TemplateExtraDTO;
 import lombok.Data;
+import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:33:21
+ * @date 2022-11-14 20:34:24
  * @since 1.0.0
  */
 @Data
@@ -18,19 +18,24 @@ public class NotifyTemplateDTO {
     private Integer id;
 
     /**
-     * Tempalte name
+     * Template name. eg: Wechat, DingTalk, Wecom, Feishu
      */
     private String name;
 
     /**
-     * Tempalte contents
+     * notify type. 1 webhook 2 email 3 sms
      */
-    private String content;
+    private Integer type;
 
     /**
      * Level. 1 notice 2 warning 3 error
      */
     private String level;
+
+    /**
+     * notify events list. JSON: [task_fail, task_suc, task_cancel, task_skip]
+     */
+    private List<String> events;
 
     /**
      * related contact ids. JSON [12, 34]
@@ -48,9 +53,14 @@ public class NotifyTemplateDTO {
     private String webhook;
 
     /**
-     * Third info. JSON: Dingding, wecom, feishu
+     * Template contents
      */
-    private String thirdInfo;
+    private String content;
+
+    /**
+     * Extra info. eg: third platform token
+     */
+    private TemplateExtraDTO extra;
 
     /**
      * Creator user ID
@@ -76,5 +86,6 @@ public class NotifyTemplateDTO {
      * Create time
      */
     private Integer createTime;
+
 }
 

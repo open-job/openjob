@@ -23,7 +23,6 @@ public interface NotifyTemplateDAO {
      * batch add NotifyTemplate
      *
      * @param entityList entity list
-     * @return number
      */
     void batchAdd(List<NotifyTemplate> entityList);
 

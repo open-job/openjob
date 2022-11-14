@@ -14,7 +14,7 @@ public class AdminUserDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * User name
