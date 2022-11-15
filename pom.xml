@@ -135,7 +135,7 @@
                         <ruleset>rulesets/java/ali-other.xml</ruleset>
                         <ruleset>rulesets/java/ali-set.xml</ruleset>
                         <!-- custom rules -->
-                        <ruleset>${basedir}/config/pmd/exclude-ruleset.xml</ruleset>
+                        <ruleset>${session.executionRootDirectory}/config/pmd/exclude-ruleset.xml</ruleset>
                     </rulesets>
 
                     <excludes>
