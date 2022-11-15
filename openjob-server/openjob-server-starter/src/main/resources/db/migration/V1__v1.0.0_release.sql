@@ -652,8 +652,7 @@ CREATE TABLE `admin_menu` (
                               INDEX  `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
 
-
-
+DROP TABLE IF EXISTS `admin_config`;
 CREATE TABLE `admin_config` (
                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                 `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
@@ -665,23 +664,6 @@ CREATE TABLE `admin_config` (
                                 PRIMARY KEY (`id`),
                                 INDEX `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
-
-
-CREATE TABLE `admin_user` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
-                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
-                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
-                              `token` varchar(48) NOT NULL DEFAULT '' COMMENT 'Api auth token',
-                              `rule_ids` JSON COMMENT 'Rule IDs. JSON: [1,2]',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_name` (`username`),
-                              UNIQUE `uni_token` (`token`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
 
 CREATE TABLE `admin_user` (
@@ -701,6 +683,7 @@ CREATE TABLE `admin_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
 
+DROP TABLE IF EXISTS `admin_rule`;
 CREATE TABLE `admin_rule` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Rule name',
