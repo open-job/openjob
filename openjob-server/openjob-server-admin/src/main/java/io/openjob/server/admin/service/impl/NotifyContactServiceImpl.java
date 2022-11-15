@@ -10,9 +10,7 @@ import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
 import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
 import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
-// import io.openjob.server.admin.vo.NotifyContactDeleteVO;
 import io.openjob.server.admin.request.notify.NotifyContactListRequest;
-// import io.openjob.server.admin.vo.NotifyContactListVO;
 import io.openjob.server.repository.dto.NotifyContactDTO;
 import io.openjob.server.common.dto.PageDTO;
 import org.springframework.beans.BeanUtils;
@@ -78,7 +76,7 @@ public class NotifyContactServiceImpl implements NotifyContactService {
 
     @Override
     public PageDTO<NotifyContactQueryVO> getPageList(NotifyContactListRequest reqDTO) {
-        // return notifyContactData.getPageList(reqDTO);
+        // TODO
         return null;
     }
 }

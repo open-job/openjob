@@ -10,9 +10,7 @@ import io.openjob.server.admin.request.notify.NotifyTemplateQueryRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateUpdateRequest;
 import io.openjob.server.admin.vo.notify.NotifyTemplateUpdateVO;
 import io.openjob.server.admin.request.notify.NotifyTemplateDeleteRequest;
-// import io.openjob.server.admin.vo.NotifyTemplateDeleteVO;
 import io.openjob.server.admin.request.notify.NotifyTemplateListRequest;
-// import io.openjob.server.admin.vo.NotifyTemplateListVO;
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
 import io.openjob.server.common.dto.PageDTO;
 import org.springframework.beans.BeanUtils;
@@ -78,7 +76,7 @@ public class NotifyTemplateServiceImpl implements NotifyTemplateService {
 
     @Override
     public PageDTO<NotifyTemplateQueryVO> getPageList(NotifyTemplateListRequest reqDTO) {
-        // return notifyTemplateData.getPageList(reqDTO);
+        // TODO
         return null;
     }
 }

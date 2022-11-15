@@ -76,7 +76,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
 
     @Override
     public PageDTO<AdminMenuQueryVO> getPageList(AdminMenuListRequest reqDTO) {
-        // return adminMenuData.getPageList(reqDTO);
+        // TODO
         return null;
     }
 }
