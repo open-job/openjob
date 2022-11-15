@@ -627,3 +627,122 @@ VALUES
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;
+
+/*
+    ------------------------------------
+            admin manage tables
+    ------------------------------------
+*/;
+
+CREATE TABLE `admin_menu` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent ID',
+                              `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Type. 1=menu 2=perm',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Menu name',
+                              `path` varchar(86) NOT NULL DEFAULT '' COMMENT 'Route path or API path',
+                              `meta` JSON COMMENT 'Extra meta data. JSON object: {icon:xx,title:some.name}',
+                              `hidden` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Hidden status. 1=yes 2=no',
+                              `sort` int(10) NOT NULL DEFAULT '0' COMMENT 'Sort value',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              PRIMARY KEY (`id`),
+                              INDEX  `idx_pid` (`pid`),
+                              INDEX  `idx_path` (`path`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
+
+DROP TABLE IF EXISTS `admin_config`;
+CREATE TABLE `admin_config` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
+                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`),
+                                INDEX `idx_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
+
+
+CREATE TABLE `admin_user` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
+                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
+                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
+                              `rule_ids` JSON COMMENT 'Rule IDs. JSON: [1,2]',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`username`),
+                              UNIQUE `uni_token` (`token`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
+
+
+DROP TABLE IF EXISTS `admin_rule`;
+CREATE TABLE `admin_rule` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Rule name',
+                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
+                              `menus` JSON COMMENT 'Menu ids for rule. JSON array',
+                              `perms` JSON COMMENT 'Permissions ids for rule. JSON array',
+                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is Admin. 1=yes 2=no',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`name`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin rules';
+
+CREATE TABLE `notify_template` (
+                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                   `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Template name. eg: Wechat, DingTalk, Wecom, Feishu',
+                                   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'notify type. 1 webhook 2 email 3 sms',
+                                   `level` varchar(16) NOT NULL DEFAULT 'error' COMMENT 'Level. 1 notice 2 warning 3 error',
+                                   `events` JSON COMMENT 'notify events list. JSON: [task_fail, task_suc, task_cancel, task_skip]',
+                                   `contact_ids` JSON COMMENT 'related contact ids. JSON [12, 34]',
+                                   `group_ids` JSON COMMENT 'related group ids. JSON [12, 34]',
+                                   `webhook` varchar(128) NOT NULL DEFAULT '' COMMENT 'Webhook URL',
+                                   `content` varchar(2048) NOT NULL DEFAULT '' COMMENT 'Template contents',
+                                   `extra` JSON COMMENT 'Extra info. eg: third platform token',
+                                   `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Creator user ID',
+                                   `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                   `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                   `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                   INDEX `idx_name` (`name`),
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify template table';
+
+
+CREATE TABLE `notify_contact` (
+                                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                  `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'User name',
+                                  `phone` varchar(24) NOT NULL DEFAULT '' COMMENT 'Phone',
+                                  `email` varchar(64) NOT NULL DEFAULT '' COMMENT 'Email address',
+                                  `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
+                                  `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                  `delete_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                  INDEX `idx_name` (`name`),
+                                  INDEX `idx_phone` (`phone`),
+                                  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify contact';
+
+CREATE TABLE `notify_group` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Group name',
+                                `contact_ids` varchar(2048) NOT NULL DEFAULT '' COMMENT '[12, 34]',
+                                `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Notify contact group';

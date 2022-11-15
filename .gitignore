@@ -1,5 +1,5 @@
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -31,3 +31,4 @@ hs_err_pid*
 
 .gradle
 build
+.vscode/
