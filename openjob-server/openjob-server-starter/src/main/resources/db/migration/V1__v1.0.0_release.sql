@@ -69,13 +69,13 @@ CREATE TABLE `delay_instance` (
                                   `delay_extra` text NOT NULL,
                                   `status` tinyint(2) NOT NULL,
                                   `slots_id` bigint(20) NOT NULL,
-                                  `execute_time` int(11) NOT NULL,
-                                  `create_time` int(11) NOT NULL,
-                                  `update_time` int(11) NOT NULL,
+                                  `execute_time` bigint(12) NOT NULL,
+                                  `deleted` tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                  `create_time` bigint(12) NOT NULL,
+                                  `update_time` bigint(12) NOT NULL,
                                   PRIMARY KEY (`id`),
                                   UNIQUE KEY `udx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 
 # Dump of table delay_worker
