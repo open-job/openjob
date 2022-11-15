@@ -1,7 +1,7 @@
 package io.openjob.server.common.constant;
 
 /**
- * @author inhere <inhere@okzl.com>
+ * @author inhere <in.798@qq.com>
  * @date 2022/11/13 21:57
  */
 public class CommonConst {
