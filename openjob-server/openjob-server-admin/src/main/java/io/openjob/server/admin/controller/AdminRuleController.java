@@ -14,6 +14,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +58,13 @@ public class AdminRuleController {
     }
 
     @ApiOperation("Get a adminRule")
-    @PostMapping("/get")
+    @GetMapping("/get")
     public Result<AdminRuleQueryVO> query(@Valid @RequestBody AdminRuleQueryRequest getRequest) {
         return Result.success(this.adminRuleService.query(getRequest));
     }
 
     @ApiOperation("List adminRule by page")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public Result<PageDTO<AdminRuleQueryVO>> list(@Valid @RequestBody AdminRuleListRequest listRequest) {
         return Result.success(this.adminRuleService.getPageList(listRequest));
     }

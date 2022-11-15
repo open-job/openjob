@@ -1,5 +1,9 @@
 package io.openjob.server.admin.service.impl;
 
+import io.openjob.server.admin.request.user.AdminUserLoginRequest;
+import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
+import io.openjob.server.admin.vo.user.AdminUserLoginVO;
+import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
 import io.openjob.server.common.constant.CommonConst;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.data.AdminUserData;
@@ -80,6 +84,16 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public PageDTO<AdminUserQueryVO> getPageList(AdminUserListRequest reqDTO) {
         // TODO
+        return null;
+    }
+
+    @Override
+    public AdminUserLoginVO login(AdminUserLoginRequest request) {
+        return null;
+    }
+
+    @Override
+    public AdminUserLogoutVO logout(AdminUserLogoutRequest request) {
         return null;
     }
 }

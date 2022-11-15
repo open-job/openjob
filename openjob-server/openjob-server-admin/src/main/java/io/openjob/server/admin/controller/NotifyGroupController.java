@@ -14,6 +14,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +58,13 @@ public class NotifyGroupController {
     }
 
     @ApiOperation("Get a notifyGroup")
-    @PostMapping("/get")
+    @GetMapping("/get")
     public Result<NotifyGroupQueryVO> query(@Valid @RequestBody NotifyGroupQueryRequest getRequest) {
         return Result.success(this.notifyGroupService.query(getRequest));
     }
 
     @ApiOperation("List notifyGroup by page")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public Result<PageDTO<NotifyGroupQueryVO>> list(@Valid @RequestBody NotifyGroupListRequest listRequest) {
         return Result.success(this.notifyGroupService.getPageList(listRequest));
     }
