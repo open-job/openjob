@@ -31,12 +31,12 @@ public class NotifyGroupQueryVO {
     private Integer deleted;
 
     @ApiModelProperty(value = "Delete time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     @ApiModelProperty(value = "Update time")
-    private Integer updateTime;
+    private Long updateTime;
 
     @ApiModelProperty(value = "Create time")
-    private Integer createTime;
+    private Long createTime;
 }
 

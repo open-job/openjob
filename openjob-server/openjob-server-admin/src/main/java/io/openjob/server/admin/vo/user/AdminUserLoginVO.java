@@ -33,7 +33,7 @@ public class AdminUserLoginVO {
 
     @Data
     @ApiModel(value = "AdminUserLoginVO_MenuItem", description = "AdminUserLoginVO MenuItem")
-    public static class MenuItem{
+    public static class MenuItem {
 
         @ApiModelProperty(value = "Menu name")
         private String name;
@@ -50,7 +50,7 @@ public class AdminUserLoginVO {
 
     @Data
     @ApiModel(value = "AdminUserLoginVO_PermItem", description = "AdminUserLoginVO PermItem")
-    public static class PermItem{
+    public static class PermItem {
 
         @ApiModelProperty(value = "Perm name")
         private String name;

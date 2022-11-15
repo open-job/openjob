@@ -1,6 +1,5 @@
 package io.openjob.server.repository.entity;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Data;
@@ -80,23 +79,23 @@ public class AdminMenu {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted;
+    private Long deleted;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 }

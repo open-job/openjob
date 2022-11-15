@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author inhere
  * @date 2022-11-14 20:21:20
@@ -34,12 +32,12 @@ public class NotifyContactQueryVO {
     private Integer deleted;
 
     @ApiModelProperty(value = "Delete time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     @ApiModelProperty(value = "Update time")
-    private Integer updateTime;
+    private Long updateTime;
 
     @ApiModelProperty(value = "Create time")
-    private Integer createTime;
+    private Long createTime;
 }
 

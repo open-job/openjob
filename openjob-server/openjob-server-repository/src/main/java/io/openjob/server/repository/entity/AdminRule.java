@@ -5,14 +5,13 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * Job admin rules
@@ -75,17 +74,17 @@ public class AdminRule {
      * Delete time
      */
     @Column(name = "delete_time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 }
