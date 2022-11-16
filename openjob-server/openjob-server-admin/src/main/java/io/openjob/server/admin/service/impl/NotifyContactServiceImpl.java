@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.notify.NotifyContactAddRequest;
 import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyContactListRequest;
@@ -56,7 +56,7 @@ public class NotifyContactServiceImpl implements NotifyContactService {
     @Override
     public NotifyContactUpdateVO delete(NotifyContactDeleteRequest reqDTO) {
         NotifyContactDTO entDTO = new NotifyContactDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         NotifyContactUpdateVO retVo = new NotifyContactUpdateVO();
         notifyContactData.updateById(entDTO);

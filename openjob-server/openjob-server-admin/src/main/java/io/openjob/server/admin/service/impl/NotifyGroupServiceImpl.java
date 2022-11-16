@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.notify.NotifyGroupAddRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupListRequest;
@@ -56,7 +56,7 @@ public class NotifyGroupServiceImpl implements NotifyGroupService {
     @Override
     public NotifyGroupUpdateVO delete(NotifyGroupDeleteRequest reqDTO) {
         NotifyGroupDTO entDTO = new NotifyGroupDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         NotifyGroupUpdateVO retVo = new NotifyGroupUpdateVO();
         notifyGroupData.updateById(entDTO);

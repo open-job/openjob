@@ -1,4 +1,4 @@
-package io.openjob.server.repository.util;
+package io.openjob.server.scheduler.util;
 
 import io.openjob.common.SpringContext;
 import org.springframework.data.redis.core.RedisTemplate;

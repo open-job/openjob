@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.user.AdminUserAddRequest;
 import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
 import io.openjob.server.admin.request.user.AdminUserListRequest;
@@ -64,7 +64,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         AdminUserUpdateVO retVo = new AdminUserUpdateVO();
 
         AdminUserDTO entDto = new AdminUserDTO();
-        entDto.setDeleted(CommonConst.YES);
+        entDto.setDeleted(CommonConstant.YES);
 
         adminUserData.updateById(entDto);
 

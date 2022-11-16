@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.user.AdminRuleAddRequest;
 import io.openjob.server.admin.request.user.AdminRuleDeleteRequest;
 import io.openjob.server.admin.request.user.AdminRuleListRequest;
@@ -56,7 +56,7 @@ public class AdminRuleServiceImpl implements AdminRuleService {
     @Override
     public AdminRuleUpdateVO delete(AdminRuleDeleteRequest reqDTO) {
         AdminRuleDTO entDTO = new AdminRuleDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         AdminRuleUpdateVO retVo = new AdminRuleUpdateVO();
         adminRuleData.updateById(entDTO);

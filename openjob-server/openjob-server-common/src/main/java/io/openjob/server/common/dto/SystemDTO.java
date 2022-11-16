@@ -28,4 +28,14 @@ public class SystemDTO {
      * Max slot
      */
     private Integer maxSlot;
+
+    /**
+     * Delay task max slot.
+     */
+    private Integer delayZsetMaxSlot;
+
+    /**
+     * Delay list max slot.
+     */
+    private Integer delayListMaxSlot;
 }

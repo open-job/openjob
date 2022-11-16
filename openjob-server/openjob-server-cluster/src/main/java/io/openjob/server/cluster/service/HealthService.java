@@ -15,7 +15,6 @@ import io.openjob.server.cluster.manager.JoinManager;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.constant.AkkaConfigConstant;
-import io.openjob.server.common.constant.ClusterConstant;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.constant.ServerReportStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;

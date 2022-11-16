@@ -1,6 +1,6 @@
 package io.openjob.common.util;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ public class CommonUtil {
      * @return bool
      */
     public static boolean isTrue(Integer val) {
-        return Objects.nonNull(val) && CommonConst.YES.equals(val);
+        return Objects.nonNull(val) && CommonConstant.YES.equals(val);
     }
 
     /**
@@ -26,6 +26,6 @@ public class CommonUtil {
      * @return bool
      */
     public static boolean isFalse(Integer val) {
-        return Objects.isNull(val) || !CommonConst.YES.equals(val);
+        return Objects.isNull(val) || !CommonConstant.YES.equals(val);
     }
 }

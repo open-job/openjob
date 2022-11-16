@@ -5,7 +5,6 @@ import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.repository.repository.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,12 +38,7 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
-    public List<Worker> listFailWorkers(List<Long> slotsId, Long time) {
-        return this.workerRepository.findBySlotsIdIsInAndStatusAndLastHeartbeatTimeLessThan(slotsId, WorkerStatusEnum.ONLINE.getStatus(), time);
-    }
-
-    @Override
-    public List<Worker> listJoinWorkers(List<Long> slotsId, Long time) {
-        return this.workerRepository.findBySlotsIdIsInAndStatusAndLastHeartbeatTimeGreaterThan(slotsId, WorkerStatusEnum.OFFLINE.getStatus(), time);
+    public List<Worker> listAllWorkers() {
+        return this.workerRepository.findAll();
     }
 }

@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.AdminConfigAddRequest;
 import io.openjob.server.admin.request.AdminConfigDeleteRequest;
 import io.openjob.server.admin.request.AdminConfigListRequest;
@@ -56,7 +56,7 @@ public class AdminConfigServiceImpl implements AdminConfigService {
     @Override
     public AdminConfigUpdateVO delete(AdminConfigDeleteRequest reqDTO) {
         AdminConfigDTO entDTO = new AdminConfigDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         AdminConfigUpdateVO retVo = new AdminConfigUpdateVO();
         adminConfigData.updateById(entDTO);

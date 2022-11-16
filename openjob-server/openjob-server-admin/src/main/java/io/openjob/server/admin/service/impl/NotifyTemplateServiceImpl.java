@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.notify.NotifyTemplateAddRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateListRequest;
@@ -56,7 +56,7 @@ public class NotifyTemplateServiceImpl implements NotifyTemplateService {
     @Override
     public NotifyTemplateUpdateVO delete(NotifyTemplateDeleteRequest reqDTO) {
         NotifyTemplateDTO entDTO = new NotifyTemplateDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         NotifyTemplateUpdateVO retVo = new NotifyTemplateUpdateVO();
         notifyTemplateData.updateById(entDTO);

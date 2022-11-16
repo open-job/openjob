@@ -50,11 +50,14 @@ public class DelayInstance {
     private Long slotsId;
 
     @Column(name = "execute_time")
-    private Integer executeTime;
+    private Long executeTime;
+
+    @Column(name = "deleted")
+    private Integer deleted;
 
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 }

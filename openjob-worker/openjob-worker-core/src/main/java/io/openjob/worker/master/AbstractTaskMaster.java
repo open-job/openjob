@@ -2,7 +2,7 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import io.openjob.common.constant.AkkaConstant;
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
@@ -189,7 +189,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
 
         long size = 100;
-        long page = CommonConst.FIRST_PAGE;
+        long page = CommonConstant.FIRST_PAGE;
         while (true) {
             List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
 

@@ -1,6 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConst;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.menu.AdminMenuAddRequest;
 import io.openjob.server.admin.request.menu.AdminMenuDeleteRequest;
 import io.openjob.server.admin.request.menu.AdminMenuListRequest;
@@ -56,7 +56,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     @Override
     public AdminMenuUpdateVO delete(AdminMenuDeleteRequest reqDTO) {
         AdminMenuDTO entDTO = new AdminMenuDTO();
-        entDTO.setDeleted(CommonConst.YES);
+        entDTO.setDeleted(CommonConstant.YES);
 
         AdminMenuUpdateVO retVo = new AdminMenuUpdateVO();
         adminMenuData.updateById(entDTO);
