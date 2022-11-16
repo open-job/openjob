@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.CommonConst;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.server.repository.dao.JobInstanceDAO;
@@ -46,7 +46,7 @@ public class JobInstanceService {
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // First page to update job instance status.
-        if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
+        if (CommonConst.FIRST_PAGE.equals(statusRequest.getPage())) {
             this.jobInstanceDAO.updateStatusAndCompleteTimeById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
         }
 

@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author inhere
  * @date 2022-11-13 23:24:42
@@ -44,12 +42,12 @@ public class AdminMenuQueryVO {
     private Integer deleted;
 
     @ApiModelProperty(value = "Delete time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     @ApiModelProperty(value = "Update time")
-    private Integer updateTime;
+    private Long updateTime;
 
     @ApiModelProperty(value = "Create time")
-    private Integer createTime;
+    private Long createTime;
 }
 

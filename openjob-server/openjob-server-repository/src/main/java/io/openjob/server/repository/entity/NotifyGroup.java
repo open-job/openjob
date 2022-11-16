@@ -55,17 +55,17 @@ public class NotifyGroup {
      * Delete time
      */
     @Column(name = "delete_time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 }

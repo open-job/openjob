@@ -3,10 +3,14 @@ package io.openjob.server.admin.controller;
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.user.AdminUserAddRequest;
 import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
+import io.openjob.server.admin.request.user.AdminUserLoginRequest;
+import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.user.AdminUserQueryRequest;
 import io.openjob.server.admin.request.user.AdminUserListRequest;
 import io.openjob.server.admin.request.user.AdminUserUpdateRequest;
 import io.openjob.server.admin.service.AdminUserService;
+import io.openjob.server.admin.vo.user.AdminUserLoginVO;
+import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.admin.vo.user.AdminUserAddVO;
 import io.openjob.server.admin.vo.user.AdminUserQueryVO;
@@ -17,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,15 +63,16 @@ public class UserController {
     }
 
     @ApiOperation("Get a AdminUser")
-    @PostMapping("/get")
+    @GetMapping("/get")
     public Result<AdminUserQueryVO> query(@Valid @RequestBody AdminUserQueryRequest getRequest) {
         return Result.success(this.adminUserService.query(getRequest));
     }
 
     @ApiOperation("List AdminUser by page")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public Result<PageDTO<AdminUserQueryVO>> list(@Valid @RequestBody AdminUserListRequest listRequest) {
         return Result.success(this.adminUserService.getPageList(listRequest));
     }
+
 }
 

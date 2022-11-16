@@ -1,18 +1,18 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.server.common.constant.CommonConst;
-import io.openjob.server.repository.data.NotifyContactData;
-import io.openjob.server.admin.service.NotifyContactService;
+import io.openjob.common.constant.CommonConst;
 import io.openjob.server.admin.request.notify.NotifyContactAddRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
-import io.openjob.server.admin.request.notify.NotifyContactQueryRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
-import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyContactListRequest;
-import io.openjob.server.repository.dto.NotifyContactDTO;
+import io.openjob.server.admin.request.notify.NotifyContactQueryRequest;
+import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
+import io.openjob.server.admin.service.NotifyContactService;
+import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
+import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
+import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.data.NotifyContactData;
+import io.openjob.server.repository.dto.NotifyContactDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

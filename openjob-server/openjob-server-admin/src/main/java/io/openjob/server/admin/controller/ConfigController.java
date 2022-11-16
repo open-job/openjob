@@ -14,6 +14,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +58,13 @@ public class ConfigController {
     }
 
     @ApiOperation("Get a adminConfig")
-    @PostMapping("/get")
+    @GetMapping("/get")
     public Result<AdminConfigQueryVO> query(@Valid @RequestBody AdminConfigQueryRequest getRequest) {
         return Result.success(this.adminConfigService.query(getRequest));
     }
 
     @ApiOperation("List adminConfig by page")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public Result<PageDTO<AdminConfigQueryVO>> list(@Valid @RequestBody AdminConfigListRequest listRequest) {
         return Result.success(this.adminConfigService.getPageList(listRequest));
     }

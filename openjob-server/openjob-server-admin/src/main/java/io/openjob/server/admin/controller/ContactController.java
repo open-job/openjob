@@ -14,6 +14,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +58,13 @@ public class ContactController {
     }
 
     @ApiOperation("Get a notifyContact")
-    @PostMapping("/get")
+    @GetMapping("/get")
     public Result<NotifyContactQueryVO> query(@Valid @RequestBody NotifyContactQueryRequest getRequest) {
         return Result.success(this.notifyContactService.query(getRequest));
     }
 
     @ApiOperation("List notifyContact by page")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public Result<PageDTO<NotifyContactQueryVO>> list(@Valid @RequestBody NotifyContactListRequest listRequest) {
         return Result.success(this.notifyContactService.getPageList(listRequest));
     }

@@ -1,7 +1,6 @@
 package io.openjob.server.repository.entity;
 
 import lombok.Data;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,17 +61,17 @@ public class NotifyContact {
      * Delete time
      */
     @Column(name = "delete_time")
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 }
