@@ -25,6 +25,11 @@ public class DateUtil {
         return (int) instant().getEpochSecond();
     }
 
+    /**
+     * current timestamp long value.
+     *
+     * @return long
+     */
     public static Long timestamp() {
         return instant().getEpochSecond();
     }

@@ -11,7 +11,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel
+@ApiModel("List namespace")
 public class ListNamespaceVO {
 
     @ApiModelProperty("Current page.")
@@ -21,7 +21,19 @@ public class ListNamespaceVO {
     private List<NamespaceVO> namespaceList;
 
     @Data
+    @ApiModel("Namespace item")
     public static class NamespaceVO {
 
+        @ApiModelProperty(value = "Namespace primary id", required = true)
+        private Long id;
+
+        @ApiModelProperty(value = "Namespace name", required = true)
+        private String name;
+
+        @ApiModelProperty(value = "Namespace desc", required = true)
+        private String desc;
+
+        @ApiModelProperty(value = "Namespace status", required = true)
+        private Integer status;
     }
 }

@@ -4,12 +4,12 @@
 DROP TABLE IF EXISTS `app`;
 
 CREATE TABLE `app` (
-                       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                       `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                        `namespace_id` bigint(20) NOT NULL,
                        `name` varchar(256) NOT NULL DEFAULT '',
                        `desc` varchar(256) NOT NULL DEFAULT '',
-                       `create_time` int(11) NOT NULL,
-                       `update_time` int(11) NOT NULL,
+                       `create_time` bigint(12) unsigned NOT NULL,
+                       `update_time` bigint(12) unsigned NOT NULL,
                        PRIMARY KEY (`id`),
                        UNIQUE KEY `udx_app_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -38,15 +38,15 @@ CREATE TABLE `delay` (
                          `name` varchar(128) NOT NULL DEFAULT '',
                          `description` varchar(256) NOT NULL DEFAULT '',
                          `processor_info` varchar(256) NOT NULL DEFAULT '',
-                         `fail_retry_times` int(11) NOT NULL DEFAULT '0',
-                         `fail_retry_interval` int(11) NOT NULL DEFAULT '1000',
-                         `status` int(11) NOT NULL DEFAULT '1',
-                         `execute_timeout` int(11) NOT NULL DEFAULT '0',
-                         `concurrency` int(11) NOT NULL DEFAULT '2',
-                         `blocking_size` int(11) NOT NULL DEFAULT '20',
+                         `fail_retry_times` int(11) unsigned NOT NULL DEFAULT '0',
+                         `fail_retry_interval` int(11) unsigned NOT NULL DEFAULT '1000',
+                         `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                         `execute_timeout` int(11) unsigned NOT NULL DEFAULT '0',
+                         `concurrency` int(11) unsigned NOT NULL DEFAULT '2',
+                         `blocking_size` int(11) unsigned NOT NULL DEFAULT '20',
                          `topic` varchar(128) NOT NULL DEFAULT '',
-                         `create_time` int(11) NOT NULL,
-                         `update_time` int(11) NOT NULL,
+                         `create_time` bigint(12) NOT NULL,
+                         `update_time` bigint(12) NOT NULL,
                          PRIMARY KEY (`id`),
                          KEY `udx_topic` (`topic`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -60,11 +60,11 @@ DROP TABLE IF EXISTS `delay_instance`;
 
 CREATE TABLE `delay_instance` (
                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                  `app_id` bigint(20) NOT NULL,
-                                  `namespace_id` bigint(20) NOT NULL,
+                                  `app_id` bigint(20) unsigned NOT NULL,
+                                  `namespace_id` bigint(20) unsigned NOT NULL,
                                   `task_id` varchar(64) NOT NULL DEFAULT '',
                                   `topic` varchar(128) NOT NULL DEFAULT '',
-                                  `delay_id` bigint(20) NOT NULL,
+                                  `delay_id` bigint(20) unsigned NOT NULL,
                                   `delay_params` longtext NOT NULL,
                                   `delay_extra` text NOT NULL,
                                   `status` tinyint(2) NOT NULL,
@@ -75,6 +75,7 @@ CREATE TABLE `delay_instance` (
                                   `update_time` bigint(12) NOT NULL,
                                   PRIMARY KEY (`id`),
                                   UNIQUE KEY `udx_task_id` (`task_id`)
+                                  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -86,10 +87,10 @@ DROP TABLE IF EXISTS `delay_worker`;
 CREATE TABLE `delay_worker` (
                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                                 `topic` varchar(128) NOT NULL DEFAULT '',
-                                `pull_size` int(11) NOT NULL DEFAULT '0',
-                                `pull_time` bigint(16) NOT NULL DEFAULT '0',
-                                `create_time` int(11) NOT NULL,
-                                `update_time` int(11) NOT NULL,
+                                `pull_size` int(11) unsigned NOT NULL DEFAULT '0',
+                                `pull_time` bigint(16) unsigned NOT NULL DEFAULT '0',
+                                `create_time` bigint(12) NOT NULL,
+                                `update_time` bigint(12) NOT NULL,
                                 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -102,25 +103,25 @@ DROP TABLE IF EXISTS `job`;
 
 CREATE TABLE `job` (
                        `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                       `namespace_id` bigint(20) NOT NULL,
-                       `app_id` bigint(20) NOT NULL,
-                       `workflow_id` bigint(20) NOT NULL DEFAULT '0',
+                       `namespace_id` bigint(20) unsigned NOT NULL,
+                       `app_id` bigint(20) unsigned NOT NULL,
+                       `workflow_id` bigint(20) unsigned NOT NULL DEFAULT '0',
                        `name` varchar(32) NOT NULL DEFAULT '',
                        `description` varchar(128) NOT NULL DEFAULT '',
                        `processor_type` varchar(16) NOT NULL DEFAULT 'java' COMMENT 'java /shell/python',
                        `processor_info` varchar(128) NOT NULL DEFAULT '',
                        `execute_type` varchar(16) NOT NULL DEFAULT 'standalone' COMMENT 'execute type 1=standalone 2=broadcast 3=MR',
                        `params` varchar(3096) NOT NULL DEFAULT '',
-                       `fail_retry_times` int(11) NOT NULL,
-                       `fail_retry_interval` int(11) NOT NULL,
-                       `concurrency` int(11) NOT NULL DEFAULT '1',
+                       `fail_retry_times` int(11) unsigned NOT NULL,
+                       `fail_retry_interval` int(11) unsigned NOT NULL,
+                       `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
                        `time_expression_type` varchar(16) NOT NULL DEFAULT 'cron' COMMENT 'cron/second/delay',
                        `time_expression` varchar(32) NOT NULL DEFAULT '' COMMENT 'Cron express type',
-                       `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '1=running 2=stop',
-                       `next_execute_time` int(11) NOT NULL,
-                       `slots_id` int(11) NOT NULL,
-                       `create_time` int(11) NOT NULL,
-                       `update_time` int(11) NOT NULL,
+                       `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1=running 2=stop',
+                       `next_execute_time` bigint(12) unsigned NOT NULL,
+                       `slots_id` int(11) unsigned NOT NULL,
+                       `create_time` bigint(12) unsigned NOT NULL,
+                       `update_time` bigint(12) unsigned NOT NULL,
                        PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -146,17 +147,17 @@ DROP TABLE IF EXISTS `job_instance`;
 
 CREATE TABLE `job_instance` (
                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                `job_id` bigint(20) NOT NULL,
+                                `job_id` bigint(20) unsigned NOT NULL,
                                 `job_params` varchar(3096) NOT NULL,
-                                `status` tinyint(11) NOT NULL DEFAULT '1',
-                                `slots_id` bigint(20) NOT NULL,
-                                `namespace_id` bigint(20) NOT NULL,
-                                `app_id` bigint(20) NOT NULL,
-                                `execute_time` int(11) NOT NULL,
-                                `complete_time` int(11) NOT NULL DEFAULT '0',
-                                `last_report_time` int(11) NOT NULL DEFAULT '0',
-                                `update_time` int(11) NOT NULL,
-                                `create_time` int(11) NOT NULL,
+                                `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                                `slots_id` bigint(20) unsigned NOT NULL,
+                                `namespace_id` bigint(20) unsigned NOT NULL,
+                                `app_id` bigint(20) unsigned NOT NULL,
+                                `execute_time` bigint(12) unsigned NOT NULL,
+                                `complete_time` bigint(12) unsigned NOT NULL DEFAULT '0',
+                                `last_report_time` bigint(12) unsigned NOT NULL DEFAULT '0',
+                                `update_time` bigint(12) unsigned NOT NULL,
+                                `create_time` bigint(12) unsigned NOT NULL,
                                 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -169,11 +170,11 @@ DROP TABLE IF EXISTS `job_instance_log`;
 
 CREATE TABLE `job_instance_log` (
                                     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                    `job_id` bigint(20) NOT NULL,
-                                    `job_instance_id` bigint(20) NOT NULL,
+                                    `job_id` bigint(20) unsigned NOT NULL,
+                                    `job_instance_id` bigint(20) unsigned NOT NULL,
                                     `message` longtext,
-                                    `create_time` int(11) NOT NULL,
-                                    `update_time` int(11) DEFAULT NULL,
+                                    `create_time` bigint(12) unsigned NOT NULL,
+                                    `update_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -184,17 +185,17 @@ DROP TABLE IF EXISTS `job_instance_task`;
 
 CREATE TABLE `job_instance_task` (
                                      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                                     `job_id` bigint(20) NOT NULL,
-                                     `job_instance_id` bigint(20) NOT NULL,
-                                     `circle_id` bigint(20) NOT NULL,
+                                     `job_id` bigint(20) unsigned NOT NULL,
+                                     `job_instance_id` bigint(20) unsigned NOT NULL,
+                                     `circle_id` bigint(20) unsigned NOT NULL,
                                      `task_id` varchar(64) NOT NULL DEFAULT '',
                                      `parent_task_id` varchar(64) NOT NULL DEFAULT '0',
                                      `task_name` varchar(128) NOT NULL DEFAULT '',
-                                     `status` tinyint(2) NOT NULL DEFAULT '1',
+                                     `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                                      `result` longtext,
                                      `worker_address` varchar(128) NOT NULL DEFAULT '',
-                                     `create_time` int(11) DEFAULT NULL,
-                                     `update_time` int(11) DEFAULT NULL,
+                                     `create_time` bigint(12) unsigned DEFAULT NULL,
+                                     `update_time` bigint(12) unsigned DEFAULT NULL,
                                      PRIMARY KEY (`id`),
                                      UNIQUE KEY `udx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -208,14 +209,14 @@ DROP TABLE IF EXISTS `job_instance_task_log`;
 
 CREATE TABLE `job_instance_task_log` (
                                          `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                         `job_id` bigint(20) NOT NULL,
-                                         `job_instance_id` bigint(20) NOT NULL,
-                                         `circle_id` bigint(20) NOT NULL,
-                                         `task_id` bigint(20) NOT NULL,
+                                         `job_id` bigint(20) unsigned NOT NULL,
+                                         `job_instance_id` bigint(20) unsigned NOT NULL,
+                                         `circle_id` bigint(20) unsigned NOT NULL,
+                                         `task_id` bigint(20) unsigned NOT NULL,
                                          `task_unique_id` varchar(64) NOT NULL DEFAULT '',
                                          `worker_address` varchar(128) NOT NULL DEFAULT '',
                                          `content` longtext NOT NULL,
-                                         `time` bigint(16) NOT NULL,
+                                         `time` bigint(16) unsigned NOT NULL,
                                          PRIMARY KEY (`id`),
                                          KEY `idx_task_unique_id_time` (`task_unique_id`,`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -229,9 +230,9 @@ DROP TABLE IF EXISTS `job_slots`;
 
 CREATE TABLE `job_slots` (
                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                             `server_id` bigint(20) NOT NULL,
-                             `create_time` int(11) NOT NULL,
-                             `update_time` int(11) NOT NULL,
+                             `server_id` bigint(20) unsigned NOT NULL,
+                             `create_time` bigint(12) unsigned NOT NULL,
+                             `update_time` bigint(12) unsigned NOT NULL,
                              PRIMARY KEY (`id`),
                              KEY `idx_server_id` (`server_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -511,9 +512,9 @@ CREATE TABLE `namespace` (
                              `name` varchar(64) NOT NULL DEFAULT '',
                              `desc` varchar(64) NOT NULL DEFAULT '',
                              `secret` varchar(64) NOT NULL DEFAULT '',
-                             `status` tinyint(2) NOT NULL DEFAULT '1',
-                             `create_time` bigint(12) NOT NULL,
-                             `update_time` bigint(12) NOT NULL,
+                             `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                             `create_time` bigint(12) unsigned NOT NULL,
+                             `update_time` bigint(12) unsigned NOT NULL,
                              PRIMARY KEY (`id`),
                              UNIQUE KEY `udx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -528,10 +529,10 @@ DROP TABLE IF EXISTS `server`;
 CREATE TABLE `server` (
                           `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
                           `ip` varchar(32) NOT NULL DEFAULT '' COMMENT 'Server ip',
-                          `akka_address` varchar(32) NOT NULL DEFAULT '' COMMENT 'Akka adress like `127.0.0.1:25520`',
-                          `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Server status 1=ok 2=fail',
-                          `create_time` int(11) NOT NULL COMMENT 'Create time',
-                          `update_time` int(11) NOT NULL COMMENT 'Update time',
+                          `akka_address` varchar(32) NOT NULL DEFAULT '' COMMENT 'Akka address like `127.0.0.1:25520`',
+                          `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Server status 1=ok 2=fail',
+                          `create_time` bigint(12) unsigned NOT NULL COMMENT 'Create time',
+                          `update_time` bigint(12) unsigned NOT NULL COMMENT 'Update time',
                           PRIMARY KEY (`id`),
                           KEY `udx_akka_address` (`akka_address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -545,10 +546,10 @@ DROP TABLE IF EXISTS `server_reports`;
 
 CREATE TABLE `server_reports` (
                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                  `server_id` bigint(20) NOT NULL,
-                                  `report_server_id` bigint(20) NOT NULL,
-                                  `status` tinyint(2) NOT NULL DEFAULT '1',
-                                  `create_time` int(11) NOT NULL,
+                                  `server_id` bigint(20) unsigned NOT NULL,
+                                  `report_server_id` bigint(20) unsigned NOT NULL,
+                                  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                                  `create_time` bigint(12) unsigned NOT NULL,
                                   PRIMARY KEY (`id`),
                                   KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -562,18 +563,18 @@ DROP TABLE IF EXISTS `task`;
 
 CREATE TABLE `task` (
                         `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                        `job_id` bigint(20) NOT NULL,
-                        `instance_id` bigint(20) NOT NULL,
-                        `circle_id` bigint(20) NOT NULL DEFAULT '0',
+                        `job_id` bigint(20) unsigned NOT NULL,
+                        `instance_id` bigint(20) unsigned NOT NULL,
+                        `circle_id` bigint(20) unsigned NOT NULL DEFAULT '0',
                         `task_id` varchar(64) NOT NULL DEFAULT '',
                         `task_name` varchar(128) NOT NULL,
                         `task_parent_id` varchar(64) NOT NULL DEFAULT '0',
-                        `status` tinyint(2) NOT NULL DEFAULT '1',
+                        `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                         `worker_address` varchar(32) NOT NULL DEFAULT '',
                         `result` longtext,
                         `task_body` blob,
-                        `create_time` int(11) NOT NULL,
-                        `update_time` int(11) NOT NULL,
+                        `create_time` bigint(12) unsigned NOT NULL,
+                        `update_time` bigint(12) unsigned NOT NULL,
                         PRIMARY KEY (`id`),
                         UNIQUE KEY `udx_task_id` (`task_id`),
                         KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)
@@ -587,19 +588,19 @@ DROP TABLE IF EXISTS `worker`;
 
 CREATE TABLE `worker` (
                           `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                          `app_id` bigint(20) NOT NULL,
-                          `namespace_id` bigint(20) NOT NULL,
+                          `app_id` bigint(20) unsigned NOT NULL,
+                          `namespace_id` bigint(20) unsigned NOT NULL,
                           `app_name` varchar(128) NOT NULL DEFAULT '',
                           `worker_key` varchar(64) NOT NULL DEFAULT '',
-                          `slots_id` bigint(20) NOT NULL,
+                          `slots_id` bigint(20) unsigned NOT NULL,
                           `address` varchar(32) NOT NULL DEFAULT '',
                           `protocol_type` varchar(8) NOT NULL DEFAULT '',
                           `version` varchar(32) NOT NULL DEFAULT '',
-                          `last_heartbeat_time` int(11) NOT NULL,
-                          `status` tinyint(2) NOT NULL DEFAULT '1',
+                          `last_heartbeat_time` bigint(12) unsigned NOT NULL,
+                          `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                           `metric` varchar(1024) NOT NULL DEFAULT '',
-                          `create_time` int(11) NOT NULL,
-                          `update_time` int(11) NOT NULL,
+                          `create_time` bigint(12) unsigned NOT NULL,
+                          `update_time` bigint(12) unsigned NOT NULL,
                           PRIMARY KEY (`id`),
                           KEY `udx_address` (`address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -612,10 +613,10 @@ DROP TABLE IF EXISTS `system`;
 CREATE TABLE `system` (
                           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                           `version` varchar(16) NOT NULL DEFAULT '0',
-                          `cluster_version` bigint(12) NOT NULL DEFAULT '0',
-                          `cluster_supervisor_slot` int(11) NOT NULL DEFAULT '1',
-                          `worker_supervisor_slot` int(11) NOT NULL DEFAULT '256',
-                          `max_slot` int(11) DEFAULT '256',
+                          `cluster_version` bigint(12) unsigned NOT NULL DEFAULT '0',
+                          `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
+                          `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '256',
+                          `max_slot` int(11) unsigned DEFAULT '256',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -628,3 +629,122 @@ VALUES
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;
+
+/*
+    ------------------------------------
+            admin manage tables
+    ------------------------------------
+*/;
+
+CREATE TABLE `admin_menu` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent ID',
+                              `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Type. 1=menu 2=perm',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Menu name',
+                              `path` varchar(86) NOT NULL DEFAULT '' COMMENT 'Route path or API path',
+                              `meta` JSON COMMENT 'Extra meta data. JSON object: {icon:xx,title:some.name}',
+                              `hidden` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Hidden status. 1=yes 2=no',
+                              `sort` int(10) NOT NULL DEFAULT '0' COMMENT 'Sort value',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              PRIMARY KEY (`id`),
+                              INDEX  `idx_pid` (`pid`),
+                              INDEX  `idx_path` (`path`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
+
+DROP TABLE IF EXISTS `admin_config`;
+CREATE TABLE `admin_config` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
+                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`),
+                                INDEX `idx_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
+
+
+CREATE TABLE `admin_user` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
+                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
+                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
+                              `rule_ids` JSON COMMENT 'Rule IDs. JSON: [1,2]',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`username`),
+                              UNIQUE `uni_token` (`token`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
+
+
+DROP TABLE IF EXISTS `admin_rule`;
+CREATE TABLE `admin_rule` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Rule name',
+                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
+                              `menus` JSON COMMENT 'Menu ids for rule. JSON array',
+                              `perms` JSON COMMENT 'Permissions ids for rule. JSON array',
+                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is Admin. 1=yes 2=no',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`name`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin rules';
+
+CREATE TABLE `notify_template` (
+                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                   `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Template name. eg: Wechat, DingTalk, Wecom, Feishu',
+                                   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'notify type. 1 webhook 2 email 3 sms',
+                                   `level` varchar(16) NOT NULL DEFAULT 'error' COMMENT 'Level. 1 notice 2 warning 3 error',
+                                   `events` JSON COMMENT 'notify events list. JSON: [task_fail, task_suc, task_cancel, task_skip]',
+                                   `contact_ids` JSON COMMENT 'related contact ids. JSON [12, 34]',
+                                   `group_ids` JSON COMMENT 'related group ids. JSON [12, 34]',
+                                   `webhook` varchar(128) NOT NULL DEFAULT '' COMMENT 'Webhook URL',
+                                   `content` varchar(2048) NOT NULL DEFAULT '' COMMENT 'Template contents',
+                                   `extra` JSON COMMENT 'Extra info. eg: third platform token',
+                                   `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Creator user ID',
+                                   `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                   `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                   `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                   INDEX `idx_name` (`name`),
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify template table';
+
+
+CREATE TABLE `notify_contact` (
+                                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                  `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'User name',
+                                  `phone` varchar(24) NOT NULL DEFAULT '' COMMENT 'Phone',
+                                  `email` varchar(64) NOT NULL DEFAULT '' COMMENT 'Email address',
+                                  `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
+                                  `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                  `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                  `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                  `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                  INDEX `idx_name` (`name`),
+                                  INDEX `idx_phone` (`phone`),
+                                  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify contact';
+
+CREATE TABLE `notify_group` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Group name',
+                                `contact_ids` varchar(2048) NOT NULL DEFAULT '' COMMENT '[12, 34]',
+                                `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Notify contact group';
