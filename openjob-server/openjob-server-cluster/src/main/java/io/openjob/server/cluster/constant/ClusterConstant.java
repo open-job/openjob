@@ -8,5 +8,5 @@ public class ClusterConstant {
     /**
      * Worker check delay.
      */
-    public final static long WORKER_CHECK_DELAY = 20000L;
+    public static final long WORKER_CHECK_DELAY = 20000L;
 }

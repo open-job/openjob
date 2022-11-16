@@ -18,7 +18,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceServiceImpl( DelayInstanceScheduler delayInstanceScheduler) {
+    public DelayInstanceServiceImpl(DelayInstanceScheduler delayInstanceScheduler) {
         this.delayInstanceScheduler = delayInstanceScheduler;
     }
 

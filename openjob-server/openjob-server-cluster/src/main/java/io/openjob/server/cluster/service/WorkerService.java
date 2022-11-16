@@ -97,6 +97,9 @@ public class WorkerService {
         ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
     }
 
+    /**
+     * Worker check
+     */
     public void workerCheck() {
         // Query all workers.
         long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_DELAY;
