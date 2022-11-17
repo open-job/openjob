@@ -614,7 +614,7 @@ CREATE TABLE `system` (
                           `version` varchar(16) NOT NULL DEFAULT '0',
                           `cluster_version` bigint(12) unsigned NOT NULL DEFAULT '0',
                           `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
-                          `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '256',
+                          `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `max_slot` int(11) unsigned DEFAULT '256',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

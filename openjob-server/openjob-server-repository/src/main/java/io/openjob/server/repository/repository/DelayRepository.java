@@ -8,4 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface DelayRepository extends JpaRepository<Delay, Long> {
+
+    /**
+     * Find by topic
+     *
+     * @param topic topic
+     * @return Delay
+     */
+    Delay findByTopic(String topic);
 }

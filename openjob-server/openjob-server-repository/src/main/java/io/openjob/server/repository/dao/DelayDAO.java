@@ -22,5 +22,5 @@ public interface DelayDAO {
      * @param topic topic
      * @return Delay
      */
-    Delay findByNamespaceIdAndTopic(String topic);
+    Delay findByTopic(String topic);
 }

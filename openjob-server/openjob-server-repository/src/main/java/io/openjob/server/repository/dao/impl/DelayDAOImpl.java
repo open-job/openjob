@@ -2,6 +2,8 @@ package io.openjob.server.repository.dao.impl;
 
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.repository.repository.DelayRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,13 +12,20 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DelayDAOImpl implements DelayDAO {
-    @Override
-    public Long save(Delay delay) {
-        return null;
+    private final DelayRepository delayRepository;
+
+    @Autowired
+    public DelayDAOImpl(DelayRepository delayRepository) {
+        this.delayRepository = delayRepository;
     }
 
     @Override
-    public Delay findByNamespaceIdAndTopic(String topic) {
-        return null;
+    public Long save(Delay delay) {
+        return this.delayRepository.save(delay).getId();
+    }
+
+    @Override
+    public Delay findByTopic(String topic) {
+        return this.delayRepository.findByTopic(topic);
     }
 }

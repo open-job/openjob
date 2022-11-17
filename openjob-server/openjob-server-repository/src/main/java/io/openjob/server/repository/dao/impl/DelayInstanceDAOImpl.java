@@ -41,4 +41,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     public Integer batchUpdateStatus(List<Long> ids, Integer status) {
         return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.now());
     }
+
+    @Override
+    public void deleteByTaskId(String taskId) {
+        this.delayInstanceRepository.deleteByTaskId(taskId);
+    }
 }

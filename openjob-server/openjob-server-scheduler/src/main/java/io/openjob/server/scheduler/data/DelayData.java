@@ -32,7 +32,7 @@ public class DelayData {
     public Delay getDelay(String topic) {
         String delayKey = CacheUtil.getDelayKey(topic);
         return RedisUtil.orElseGet(delayKey, () -> {
-            Delay delay = this.delayDAO.findByNamespaceIdAndTopic(topic);
+            Delay delay = this.delayDAO.findByTopic(topic);
             if (Objects.isNull(delay)) {
                 return new Delay();
             }

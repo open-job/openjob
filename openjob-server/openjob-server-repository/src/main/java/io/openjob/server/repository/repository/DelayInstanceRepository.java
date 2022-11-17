@@ -29,4 +29,11 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     @Modifying
     @Query(value = "update DelayInstance as d set d.status=?2, d.updateTime=?3 where d.id in(?1)")
     Integer batchUpdateStatus(List<Long> ids, Integer status, Integer updateTime);
+
+    /**
+     * Delete by task id.
+     *
+     * @param taskId taskId
+     */
+    void deleteByTaskId(String taskId);
 }
