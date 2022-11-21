@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class RedisUtil {
     @SuppressWarnings("unchecked")
     public static RedisTemplate<String, Object> getTemplate() {
-        return SpringContext.getBean(RedisTemplate.class);
+        return SpringContext.getBean("redisTemplate", RedisTemplate.class);
     }
 
     /**
@@ -24,11 +24,11 @@ public class RedisUtil {
      * @param key      key
      * @param supplier supplier
      * @param duration duration
-     * @param <R> r
+     * @param <R>      r
      * @return R
      */
     @SuppressWarnings("unchecked")
-    public static  <R> R orElseGet(String key, Supplier<R> supplier, Duration duration) {
+    public static <R> R orElseGet(String key, Supplier<R> supplier, Duration duration) {
         Optional.ofNullable(key).orElseThrow(() -> new IllegalArgumentException("Key is empty."));
 
         RedisTemplate<String, Object> redisTemplate = RedisUtil.getTemplate();
