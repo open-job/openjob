@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.wheel;
 
-import io.openjob.server.scheduler.service.DelaySchedulingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,17 +10,16 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 @Component
 public class WheelManager {
     private final SchedulerWheel schedulerWheel;
     private final WorkflowWheel workflowWheel;
-    private final DelaySchedulingService delaySchedulingService;
 
     @Autowired
-    public WheelManager(SchedulerWheel schedulerWheel, WorkflowWheel workflowWheel, DelaySchedulingService delaySchedulingService) {
+    public WheelManager(SchedulerWheel schedulerWheel, WorkflowWheel workflowWheel) {
         this.schedulerWheel = schedulerWheel;
         this.workflowWheel = workflowWheel;
-        this.delaySchedulingService = delaySchedulingService;
     }
 
     /**
@@ -32,8 +31,6 @@ public class WheelManager {
 
         // Workflow wheel
         this.workflowWheel.start();
-
-        this.delaySchedulingService.start();
     }
 
     /**

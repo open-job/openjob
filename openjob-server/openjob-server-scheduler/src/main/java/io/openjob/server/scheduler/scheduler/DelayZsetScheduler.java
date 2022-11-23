@@ -1,24 +1,28 @@
-package io.openjob.server.scheduler.service;
+package io.openjob.server.scheduler.scheduler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
+import io.openjob.server.scheduler.contract.DelayScheduler;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,11 +36,12 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Log4j2
-@Service
-public class DelaySchedulingService {
+@Component
+public class DelayZsetScheduler implements DelayScheduler {
     private ThreadPoolExecutor executorService;
     private final Map<Long, ZsetRunnable> runnableList = Maps.newConcurrentMap();
 
+    @Override
     public void start() {
         List<Long> slots = this.getCurrentZsetSlots();
         int maxSize = slots.size() > 0 ? slots.size() : 1;
@@ -60,6 +65,40 @@ public class DelaySchedulingService {
         executorService.allowCoreThreadTimeOut(true);
     }
 
+    @Override
+    public void stop() {
+        this.executorService.shutdownNow();
+        log.info("Range delay instance shutdown now!");
+    }
+
+    @Override
+    public void refresh() {
+        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
+        Set<Long> runningSlots = this.runnableList.keySet();
+
+        // Remove slots.
+        Set<Long> removeSlots = new HashSet<>(runningSlots);
+        removeSlots.removeAll(currentSlots);
+        removeSlots.forEach(rs -> Optional.ofNullable(this.runnableList.get(rs)).ifPresent(z -> z.setFinish(true)));
+
+        // Add slots.
+        Set<Long> addSlots = new HashSet<>(currentSlots);
+        removeSlots.removeAll(runningSlots);
+        addSlots.forEach(as -> {
+            ZsetRunnable zsetRunnable = Optional.ofNullable(this.runnableList.get(as))
+                    .orElseGet(() -> new ZsetRunnable(as));
+
+            // Set finish false.
+            zsetRunnable.setFinish(false);
+            runnableList.put(as, zsetRunnable);
+            executorService.submit(zsetRunnable);
+        });
+
+        // Reset executor.
+        this.executorService.setMaximumPoolSize(this.runnableList.size());
+        this.executorService.setCorePoolSize(this.runnableList.size());
+    }
+
     static class ZsetRunnable implements Runnable {
         private final Long currentSlotId;
         private final AtomicBoolean finish = new AtomicBoolean(false);
@@ -72,14 +111,23 @@ public class DelaySchedulingService {
         public void run() {
             // Cache key.
             String key = CacheUtil.getZsetKey(this.currentSlotId);
+            log.info("Range delay instance begin！slotId={}", this.currentSlotId);
 
             while (!finish.get()) {
                 try {
                     this.rangeDelayInstance(key);
+                } catch (InterruptedException interruptedException) {
+                    log.info("Range delay instance interrupted complete！slotId={}", this.currentSlotId);
+                } catch (BeanCreationNotAllowedException beanCreationNotAllowedException) {
+                    // Fixed executor shutdown error.
+                    log.info("Range delay instance complete！slotId={}", this.currentSlotId);
+                    break;
                 } catch (Throwable ex) {
                     log.error("Range delay instance failed!", ex);
                 }
             }
+
+            log.info("Range delay instance complete！slotId={}", this.currentSlotId);
         }
 
         /**
@@ -114,9 +162,7 @@ public class DelaySchedulingService {
             }
 
             List<String> cacheKeys = Lists.newArrayList();
-            removeMembers.forEach(rm -> {
-                cacheKeys.add(CacheUtil.getDetailKey(rm));
-            });
+            removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDetailKey(rm)));
 
             List<Object> cacheList = RedisUtil.getTemplate().opsForValue().multiGet(cacheKeys);
             if (CollectionUtils.isEmpty(cacheList)) {
@@ -152,6 +198,7 @@ public class DelaySchedulingService {
                 }
             });
         }
+
     }
 
     private List<Long> getCurrentZsetSlots() {
