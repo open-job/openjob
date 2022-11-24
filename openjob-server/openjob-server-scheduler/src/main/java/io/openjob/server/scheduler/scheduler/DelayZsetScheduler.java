@@ -120,7 +120,7 @@ public class DelayZsetScheduler implements DelayScheduler {
                     log.info("Range delay instance interrupted complete！slotId={}", this.currentSlotId);
                 } catch (BeanCreationNotAllowedException beanCreationNotAllowedException) {
                     // Fixed executor shutdown error.
-                    log.info("Range delay instance complete！slotId={}", this.currentSlotId);
+                    log.info("Range delay instance destroy complete！slotId={}", this.currentSlotId);
                     break;
                 } catch (Throwable ex) {
                     log.error("Range delay instance failed!", ex);
@@ -139,21 +139,35 @@ public class DelayZsetScheduler implements DelayScheduler {
             this.finish.set(finish);
         }
 
+        /**
+         * Range delay instance.
+         *
+         * @param key zset cache key.
+         * @throws InterruptedException interruptedException
+         */
         private void rangeDelayInstance(String key) throws InterruptedException {
+            // Range delay instance from zset.
             Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, DateUtil.timestamp(), -1, 0, 50);
-            if (Objects.isNull(rangeObjects)) {
+
+            // Delay instance is empty.
+            if (CollectionUtils.isEmpty(rangeObjects)) {
+                Thread.sleep(500);
                 return;
             }
 
+            // Push to list and remove from zset
             this.pushAndRemoveDelayInstance(key, rangeObjects);
-
-            if (rangeObjects.isEmpty()) {
-                Thread.sleep(500);
-            }
         }
 
+        /**
+         * Push to list and remove from zset
+         *
+         * @param key          zset cache key.
+         * @param rangeObjects range objects.
+         */
         @SuppressWarnings("unchecked")
         private void pushAndRemoveDelayInstance(String key, Set<Object> rangeObjects) {
+            // Remove zset members.
             List<String> removeMembers = Lists.newArrayList();
             for (Object rangeObject : rangeObjects) {
                 ZSetOperations.TypedTuple<Object> typedTuple = (ZSetOperations.TypedTuple<Object>) rangeObject;
@@ -161,14 +175,17 @@ public class DelayZsetScheduler implements DelayScheduler {
                 removeMembers.add(String.valueOf(value));
             }
 
+            // Delay detail keys.
             List<String> cacheKeys = Lists.newArrayList();
             removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDetailKey(rm)));
 
+            // Multi to get detail.
             List<Object> cacheList = RedisUtil.getTemplate().opsForValue().multiGet(cacheKeys);
             if (CollectionUtils.isEmpty(cacheList)) {
                 return;
             }
 
+            // Delay detail list.
             List<DelayInstanceAddRequestDTO> detailList = Lists.newArrayList();
             for (Object detail : cacheList) {
                 if (Objects.isNull(detail)) {
@@ -180,25 +197,28 @@ public class DelayZsetScheduler implements DelayScheduler {
                 }
             }
 
+            // Group by topic.
             Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()
                     .collect(Collectors.groupingBy(DelayInstanceAddRequestDTO::getTopic));
 
+            // Execute by pipelined.
             RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
                 @Override
                 public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                     operations.multi();
 
+                    // Push by topic
                     detailListMap.forEach((t, list) -> {
                         String cacheListKey = CacheUtil.getTopicKey(t);
                         operations.opsForList().rightPushAll(cacheListKey, list.toArray());
                     });
 
+                    // Remove from zset.
                     RedisUtil.getTemplate().opsForZSet().remove(key, removeMembers.toArray());
                     return operations.exec();
                 }
             });
         }
-
     }
 
     private List<Long> getCurrentZsetSlots() {

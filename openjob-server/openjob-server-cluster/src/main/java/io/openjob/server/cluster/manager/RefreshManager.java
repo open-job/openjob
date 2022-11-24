@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -95,33 +96,22 @@ public class RefreshManager {
     }
 
     /**
-     * Init current slots.
-     */
-    public void initCurrentSlots() {
-        Node currentNode = ClusterContext.getCurrentNode();
-        List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
-        Set<Long> newCurrentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
-        ClusterContext.refreshCurrentSlots(newCurrentSlots);
-
-        log.info(String.format("Refresh slots %s", newCurrentSlots));
-    }
-
-    /**
      * Refresh current slots.
      *
      * @return remove slots.
      */
     public Set<Long> refreshCurrentSlots() {
+        // Node remove slots.
+        Set<Long> removeSlots = new HashSet<>(ClusterContext.getCurrentSlots());
+
+        // New current slots.
         Node currentNode = ClusterContext.getCurrentNode();
-        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
         List<JobSlots> jobSlots = jobSlotsDAO.listJobSlotsByServerId(currentNode.getServerId());
         Set<Long> newCurrentSlots = jobSlots.stream().map(JobSlots::getId).collect(Collectors.toSet());
         ClusterContext.refreshCurrentSlots(newCurrentSlots);
 
         log.info(String.format("Refresh slots %s", newCurrentSlots));
-
-        // Node remove slots.
-        currentSlots.removeAll(newCurrentSlots);
-        return currentSlots;
+        removeSlots.removeAll(newCurrentSlots);
+        return removeSlots;
     }
 }
