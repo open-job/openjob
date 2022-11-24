@@ -3,10 +3,10 @@ package io.openjob.server.scheduler.scheduler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.common.ClusterContext;
 import io.openjob.server.scheduler.contract.DelayScheduler;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
+import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
@@ -43,7 +43,7 @@ public class DelayZsetScheduler implements DelayScheduler {
 
     @Override
     public void start() {
-        List<Long> slots = this.getCurrentZsetSlots();
+        List<Long> slots = DelaySlotUtil.getCurrentSlots();
         int maxSize = slots.size() > 0 ? slots.size() : 1;
 
         AtomicInteger threadId = new AtomicInteger(1);
@@ -63,6 +63,7 @@ public class DelayZsetScheduler implements DelayScheduler {
         });
 
         executorService.allowCoreThreadTimeOut(true);
+        log.info("Delay instance slots{}", slots);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class DelayZsetScheduler implements DelayScheduler {
 
     @Override
     public void refresh() {
-        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
+        Set<Long> currentSlots = new HashSet<>(DelaySlotUtil.getCurrentSlots());
         Set<Long> runningSlots = this.runnableList.keySet();
 
         // Remove slots.
@@ -95,8 +96,10 @@ public class DelayZsetScheduler implements DelayScheduler {
         });
 
         // Reset executor.
-        this.executorService.setMaximumPoolSize(this.runnableList.size());
-        this.executorService.setCorePoolSize(this.runnableList.size());
+        this.executorService.setMaximumPoolSize(currentSlots.size());
+        this.executorService.setCorePoolSize(currentSlots.size());
+
+        log.info("Refresh delay instance slots{}", currentSlots);
     }
 
     static class ZsetRunnable implements Runnable {
@@ -219,15 +222,5 @@ public class DelayZsetScheduler implements DelayScheduler {
                 }
             });
         }
-    }
-
-    private List<Long> getCurrentZsetSlots() {
-        List<Long> slots = Lists.newArrayList();
-        ClusterContext.getCurrentSlots().forEach(i -> {
-            if (i <= ClusterContext.getSystem().getDelayZsetMaxSlot()) {
-                slots.add(i);
-            }
-        });
-        return slots;
     }
 }
