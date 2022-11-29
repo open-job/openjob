@@ -1,9 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.scheduler.contract.DelayScheduler;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
@@ -18,16 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -37,10 +31,7 @@ import java.util.stream.Collectors;
  */
 @Log4j2
 @Component
-public class DelayZsetScheduler implements DelayScheduler {
-    private ThreadPoolExecutor executorService;
-    private final Map<Long, ZsetRunnable> runnableList = Maps.newConcurrentMap();
-
+public class DelayZsetScheduler extends AbstractDelayScheduler {
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
@@ -63,7 +54,7 @@ public class DelayZsetScheduler implements DelayScheduler {
         });
 
         executorService.allowCoreThreadTimeOut(true);
-        log.info("Delay instance slots{}", slots);
+        log.info("Range Delay instance slots{}", slots);
     }
 
     @Override
@@ -74,40 +65,15 @@ public class DelayZsetScheduler implements DelayScheduler {
 
     @Override
     public void refresh() {
-        Set<Long> currentSlots = new HashSet<>(DelaySlotUtil.getCurrentZsetSlots());
-        Set<Long> runningSlots = this.runnableList.keySet();
+        List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
+        this.refreshSlots(slots, ZsetRunnable::new);
 
-        // Remove slots.
-        Set<Long> removeSlots = new HashSet<>(runningSlots);
-        removeSlots.removeAll(currentSlots);
-        removeSlots.forEach(rs -> Optional.ofNullable(this.runnableList.get(rs)).ifPresent(z -> z.setFinish(true)));
-
-        // Add slots.
-        Set<Long> addSlots = new HashSet<>(currentSlots);
-        removeSlots.removeAll(runningSlots);
-        addSlots.forEach(as -> {
-            ZsetRunnable zsetRunnable = Optional.ofNullable(this.runnableList.get(as))
-                    .orElseGet(() -> new ZsetRunnable(as));
-
-            // Set finish false.
-            zsetRunnable.setFinish(false);
-            runnableList.put(as, zsetRunnable);
-            executorService.submit(zsetRunnable);
-        });
-
-        // Reset executor.
-        this.executorService.setMaximumPoolSize(currentSlots.size());
-        this.executorService.setCorePoolSize(currentSlots.size());
-
-        log.info("Refresh delay instance slots{}", currentSlots);
+        log.info("Refresh range delay instance slots{}", slots);
     }
 
-    static class ZsetRunnable implements Runnable {
-        private final Long currentSlotId;
-        private final AtomicBoolean finish = new AtomicBoolean(false);
-
+    static class ZsetRunnable extends AbstractRunnable {
         public ZsetRunnable(Long currentSlotId) {
-            this.currentSlotId = currentSlotId;
+            super(currentSlotId);
         }
 
         @Override
@@ -131,15 +97,6 @@ public class DelayZsetScheduler implements DelayScheduler {
             }
 
             log.info("Range delay instance complete！slotId={}", this.currentSlotId);
-        }
-
-        /**
-         * Set finish.
-         *
-         * @param finish finish
-         */
-        public void setFinish(Boolean finish) {
-            this.finish.set(finish);
         }
 
         /**
@@ -182,23 +139,8 @@ public class DelayZsetScheduler implements DelayScheduler {
             List<String> cacheKeys = Lists.newArrayList();
             removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDetailKey(rm)));
 
-            // Multi to get detail.
-            List<Object> cacheList = RedisUtil.getTemplate().opsForValue().multiGet(cacheKeys);
-            if (CollectionUtils.isEmpty(cacheList)) {
-                return;
-            }
-
-            // Delay detail list.
-            List<DelayInstanceAddRequestDTO> detailList = Lists.newArrayList();
-            for (Object detail : cacheList) {
-                if (Objects.isNull(detail)) {
-                    continue;
-                }
-
-                if (detail instanceof DelayInstanceAddRequestDTO) {
-                    detailList.add((DelayInstanceAddRequestDTO) detail);
-                }
-            }
+            // Get delay instance detail list
+            List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
 
             // Group by topic.
             Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()

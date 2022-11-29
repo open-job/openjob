@@ -27,8 +27,8 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public Long save(DelayInstance delayInstance) {
-        return this.delayInstanceRepository.save(delayInstance).getId();
+    public void batchSave(List<DelayInstance> delayInstanceList) {
+
     }
 
     @Override

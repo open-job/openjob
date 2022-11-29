@@ -81,57 +81,26 @@ public class DelayInstanceService {
 
         // Pull from redis.
         String topicKey = CacheUtil.getTopicKey(item.getTopic());
-        List<Object> delayList = this.getDelayInstanceList(topicKey, item.getSize());
+        List<Object> delayList = RedisUtil.popAndRemoveFromList(topicKey, item.getSize());
 
         // Not empty
-        if (Objects.nonNull(delayList)) {
-            delayList.forEach(d -> {
-                if (d instanceof DelayDTO) {
-                    DelayDTO delayDTO = (DelayDTO) d;
-                    ServerDelayInstanceResponse delayInstanceResponse = new ServerDelayInstanceResponse();
-                    delayInstanceResponse.setDelayId(delayDTO.getDelayId());
-                    delayInstanceResponse.setDelayParams(delayDTO.getDelayParams());
-                    delayInstanceResponse.setDelayExtra(delayDTO.getDelayExtra());
-                    delayInstanceResponse.setTopic(delayDTO.getTopic());
-                    delayInstanceResponse.setProcessorInfo(delayDTO.getProcessorInfo());
-                    delayInstanceResponse.setFailRetryTimes(delayDTO.getFailRetryTimes());
-                    delayInstanceResponse.setFailRetryInterval(delayDTO.getFailRetryInterval());
-                    delayInstanceResponse.setExecuteTimeout(delayDTO.getExecuteTimeout());
-                    delayInstanceResponse.setBlockingSize(delayDTO.getBlockingSize());
-                    delayInstanceResponse.setConcurrency(delayDTO.getConcurrency());
-                    responses.add(delayInstanceResponse);
-                }
-            });
-        }
-        return responses;
-    }
-
-    /**
-     * Get delay instance list.
-     *
-     * @param key   key
-     * @param count count
-     * @return List
-     */
-    @SuppressWarnings("unchecked")
-    public List<Object> getDelayInstanceList(String key, Integer count) {
-        final List<Object> txResults = RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
-            @Override
-            public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForList().range(key, 0, count - 1);
-                operations.opsForList().trim(key, count, -1);
-                return operations.exec();
+        delayList.forEach(d -> {
+            if (d instanceof DelayDTO) {
+                DelayDTO delayDTO = (DelayDTO) d;
+                ServerDelayInstanceResponse delayInstanceResponse = new ServerDelayInstanceResponse();
+                delayInstanceResponse.setDelayId(delayDTO.getDelayId());
+                delayInstanceResponse.setDelayParams(delayDTO.getDelayParams());
+                delayInstanceResponse.setDelayExtra(delayDTO.getDelayExtra());
+                delayInstanceResponse.setTopic(delayDTO.getTopic());
+                delayInstanceResponse.setProcessorInfo(delayDTO.getProcessorInfo());
+                delayInstanceResponse.setFailRetryTimes(delayDTO.getFailRetryTimes());
+                delayInstanceResponse.setFailRetryInterval(delayDTO.getFailRetryInterval());
+                delayInstanceResponse.setExecuteTimeout(delayDTO.getExecuteTimeout());
+                delayInstanceResponse.setBlockingSize(delayDTO.getBlockingSize());
+                delayInstanceResponse.setConcurrency(delayDTO.getConcurrency());
+                responses.add(delayInstanceResponse);
             }
         });
-
-        if (CollectionUtils.isEmpty(txResults)) {
-            return Collections.emptyList();
-        }
-        Object result = txResults.get(0);
-        if (result instanceof ArrayList) {
-            return (List<Object>) result;
-        }
-        return Collections.emptyList();
+        return responses;
     }
 }

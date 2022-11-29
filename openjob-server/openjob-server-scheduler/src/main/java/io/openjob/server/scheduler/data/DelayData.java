@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,5 +40,9 @@ public class DelayData {
             }
             return delay;
         }, Duration.ofDays(1));
+    }
+
+    public List<Delay> getDelayList(List<String> topics) {
+        return Collections.emptyList();
     }
 }
