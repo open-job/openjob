@@ -43,7 +43,7 @@ public class DelayZsetScheduler implements DelayScheduler {
 
     @Override
     public void start() {
-        List<Long> slots = DelaySlotUtil.getCurrentSlots();
+        List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
         int maxSize = slots.size() > 0 ? slots.size() : 1;
 
         AtomicInteger threadId = new AtomicInteger(1);
@@ -74,7 +74,7 @@ public class DelayZsetScheduler implements DelayScheduler {
 
     @Override
     public void refresh() {
-        Set<Long> currentSlots = new HashSet<>(DelaySlotUtil.getCurrentSlots());
+        Set<Long> currentSlots = new HashSet<>(DelaySlotUtil.getCurrentZsetSlots());
         Set<Long> runningSlots = this.runnableList.keySet();
 
         // Remove slots.
