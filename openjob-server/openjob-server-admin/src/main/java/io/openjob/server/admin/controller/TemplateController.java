@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.notify.NotifyTemplateAddRequest;
+import io.openjob.server.admin.request.notify.NotifyTemplateDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateListRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateQueryRequest;
 import io.openjob.server.admin.request.notify.NotifyTemplateUpdateRequest;
-import io.openjob.server.admin.request.notify.NotifyTemplateDeleteRequest;
 import io.openjob.server.admin.service.NotifyTemplateService;
 import io.openjob.server.admin.vo.notify.NotifyTemplateAddVO;
 import io.openjob.server.admin.vo.notify.NotifyTemplateQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:20:45
  * @since 1.0.0
  */
 @Api(value = "NotifyTemplate", tags = "NotifyTemplate")

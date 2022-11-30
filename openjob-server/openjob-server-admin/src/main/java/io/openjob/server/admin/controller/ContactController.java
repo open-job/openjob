@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.notify.NotifyContactAddRequest;
+import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyContactListRequest;
 import io.openjob.server.admin.request.notify.NotifyContactQueryRequest;
 import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
-import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
 import io.openjob.server.admin.service.NotifyContactService;
 import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
 import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:21:23
  * @since 1.0.0
  */
 @Api(value = "NotifyContact", tags = "NotifyContact")

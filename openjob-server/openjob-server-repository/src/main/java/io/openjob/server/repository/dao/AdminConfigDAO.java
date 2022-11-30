@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:15:41
  * @since 1.0.0
  */
 public interface AdminConfigDAO {

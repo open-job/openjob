@@ -2,11 +2,11 @@ package io.openjob.server.repository.dto;
 
 import io.openjob.server.repository.dto.json.TemplateExtraDTO;
 import lombok.Data;
+
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:34:24
  * @since 1.0.0
  */
 @Data

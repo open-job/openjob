@@ -1,12 +1,10 @@
 package io.openjob.server.repository.dto;
 
-import lombok.Data;
-
 import io.openjob.server.repository.entity.json.MenuMeta;
+import lombok.Data;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:34:57
  * @since 1.0.0
  */
 @Data

@@ -17,7 +17,6 @@ import java.util.List;
  * Job admin rules
  *
  * @author inhere
- * @date 2022-11-07
  */
 @Data
 @Entity

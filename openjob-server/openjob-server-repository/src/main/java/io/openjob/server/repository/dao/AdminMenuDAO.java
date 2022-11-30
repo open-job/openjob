@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:34:58
  * @since 1.0.0
  */
 public interface AdminMenuDAO {

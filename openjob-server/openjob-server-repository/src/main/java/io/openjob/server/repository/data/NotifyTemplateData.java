@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
-import io.openjob.server.repository.entity.NotifyTemplate;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:39:11
  * @since 1.0.0
  */
 public interface NotifyTemplateData {

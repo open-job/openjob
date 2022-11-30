@@ -1,21 +1,20 @@
 package io.openjob.server.admin.service;
 
 import io.openjob.server.admin.request.user.AdminRuleAddRequest;
-import io.openjob.server.admin.vo.user.AdminRuleAddVO;
-import io.openjob.server.admin.request.user.AdminRuleQueryRequest;
-import io.openjob.server.admin.vo.user.AdminRuleQueryVO;
-import io.openjob.server.admin.request.user.AdminRuleUpdateRequest;
-import io.openjob.server.admin.vo.user.AdminRuleUpdateVO;
 import io.openjob.server.admin.request.user.AdminRuleDeleteRequest;
 import io.openjob.server.admin.request.user.AdminRuleListRequest;
+import io.openjob.server.admin.request.user.AdminRuleQueryRequest;
+import io.openjob.server.admin.request.user.AdminRuleUpdateRequest;
+import io.openjob.server.admin.vo.user.AdminRuleAddVO;
+import io.openjob.server.admin.vo.user.AdminRuleQueryVO;
+import io.openjob.server.admin.vo.user.AdminRuleUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:16:59
  * @since 1.0.0
  */
-public interface AdminRuleService  {
+public interface AdminRuleService {
 
     /**
      * Add AdminRule

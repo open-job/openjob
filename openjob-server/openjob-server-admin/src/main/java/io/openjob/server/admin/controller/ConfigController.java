@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.AdminConfigAddRequest;
+import io.openjob.server.admin.request.AdminConfigDeleteRequest;
 import io.openjob.server.admin.request.AdminConfigListRequest;
 import io.openjob.server.admin.request.AdminConfigQueryRequest;
 import io.openjob.server.admin.request.AdminConfigUpdateRequest;
-import io.openjob.server.admin.request.AdminConfigDeleteRequest;
 import io.openjob.server.admin.service.AdminConfigService;
 import io.openjob.server.admin.vo.AdminConfigAddVO;
 import io.openjob.server.admin.vo.AdminConfigQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:15:28
  * @since 1.0.0
  */
 @Api(value = "AdminConfig", tags = "AdminConfig")

@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminRuleDTO;
-import io.openjob.server.repository.entity.AdminRule;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:13
  * @since 1.0.0
  */
 public interface AdminRuleData {

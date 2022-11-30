@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.user.AdminRuleAddRequest;
+import io.openjob.server.admin.request.user.AdminRuleDeleteRequest;
 import io.openjob.server.admin.request.user.AdminRuleListRequest;
 import io.openjob.server.admin.request.user.AdminRuleQueryRequest;
 import io.openjob.server.admin.request.user.AdminRuleUpdateRequest;
-import io.openjob.server.admin.request.user.AdminRuleDeleteRequest;
 import io.openjob.server.admin.service.AdminRuleService;
 import io.openjob.server.admin.vo.user.AdminRuleAddVO;
 import io.openjob.server.admin.vo.user.AdminRuleQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:16:58
  * @since 1.0.0
  */
 @Api(value = "AdminRule", tags = "AdminRule")

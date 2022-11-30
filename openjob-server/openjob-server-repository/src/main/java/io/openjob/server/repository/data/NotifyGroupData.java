@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.NotifyGroupDTO;
-import io.openjob.server.repository.entity.NotifyGroup;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:51
  * @since 1.0.0
  */
 public interface NotifyGroupData {

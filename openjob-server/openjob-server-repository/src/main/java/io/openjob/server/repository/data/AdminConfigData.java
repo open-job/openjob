@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminConfigDTO;
-import io.openjob.server.repository.entity.AdminConfig;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:16:25
  * @since 1.0.0
  */
 public interface AdminConfigData {

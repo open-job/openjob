@@ -13,7 +13,6 @@ import javax.persistence.Table;
  * Job notify contact
  *
  * @author inhere
- * @date 2022-11-07
  */
 @Data
 @Entity

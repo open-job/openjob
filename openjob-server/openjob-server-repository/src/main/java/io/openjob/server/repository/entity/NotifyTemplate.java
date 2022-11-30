@@ -18,7 +18,6 @@ import java.util.List;
  * Job notify template table
  *
  * @author inhere
- * @date 2022-11-07
  */
 @Data
 @Entity

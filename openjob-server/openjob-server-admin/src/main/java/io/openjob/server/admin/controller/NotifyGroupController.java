@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.notify.NotifyGroupAddRequest;
+import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupListRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupQueryRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupUpdateRequest;
-import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.service.NotifyGroupService;
 import io.openjob.server.admin.vo.notify.NotifyGroupAddVO;
 import io.openjob.server.admin.vo.notify.NotifyGroupQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:59
  * @since 1.0.0
  */
 @Api(value = "NotifyGroup", tags = "NotifyGroup")

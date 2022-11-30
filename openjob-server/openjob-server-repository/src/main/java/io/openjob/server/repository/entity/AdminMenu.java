@@ -17,7 +17,6 @@ import javax.persistence.Table;
  * Job admin menu and perms
  *
  * @author inhere
- * @date 2022-11-07
  */
 @Data
 @Entity

@@ -24,7 +24,7 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-14 11:11:17
+ *
  * @since 1.0.0
  */
 @Api(value = "AdminMenu", tags = "AdminMenu")

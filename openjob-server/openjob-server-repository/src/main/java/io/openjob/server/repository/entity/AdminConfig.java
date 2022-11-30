@@ -13,7 +13,6 @@ import javax.persistence.Table;
  * Job admin config
  *
  * @author inhere
- * @date 2022-11-14
  */
 @Data
 @Entity
