@@ -8,8 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -21,14 +26,43 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     private final DelayInstanceRepository delayInstanceRepository;
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    public DelayInstanceDAOImpl(DelayInstanceRepository delayInstanceRepository) {
+    public DelayInstanceDAOImpl(DelayInstanceRepository delayInstanceRepository, JdbcTemplate jdbcTemplate) {
         this.delayInstanceRepository = delayInstanceRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void batchSave(List<DelayInstance> delayInstanceList) {
+        String sql = "INSERT INTO `delay_instance` (" +
+                "`namespace_id`, " +
+                "`app_id`, " +
+                "`task_id`, " +
+                "`topic`, " +
+                "`delay_id`, " +
+                "`delay_params`, " +
+                "`delay_extra`, " +
+                "`status`, " +
+                "`execute_time`, " +
+                "`deleted`, " +
+                "`createTime`, " +
+                "`updateTime`) " +
+                "VALUES(?, ?)";
 
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
+                ps.setLong(1, delayInstanceList.get(i).getNamespaceId());
+                ps.setLong(2, delayInstanceList.get(i).getAppId());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return delayInstanceList.size();
+            }
+        });
     }
 
     @Override

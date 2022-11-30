@@ -17,7 +17,7 @@ public interface DelayScheduler {
     void stop();
 
     /**
-     *
+     * Refresh
      */
     void refresh();
 }
