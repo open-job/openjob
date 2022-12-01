@@ -35,7 +35,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public void batchSave(List<DelayInstance> delayInstanceList) {
+    public Integer batchSave(List<DelayInstance> delayInstanceList) {
         String sql = "INSERT INTO `delay_instance` (" +
                 "`namespace_id`, " +
                 "`app_id`, " +
@@ -47,15 +47,26 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 "`status`, " +
                 "`execute_time`, " +
                 "`deleted`, " +
-                "`createTime`, " +
-                "`updateTime`) " +
-                "VALUES(?, ?)";
+                "`create_time`, " +
+                "`update_time`) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
-                ps.setLong(1, delayInstanceList.get(i).getNamespaceId());
-                ps.setLong(2, delayInstanceList.get(i).getAppId());
+                DelayInstance d = delayInstanceList.get(i);
+                ps.setLong(1, d.getNamespaceId());
+                ps.setLong(2, d.getAppId());
+                ps.setString(3, d.getTaskId());
+                ps.setString(4, d.getTopic());
+                ps.setLong(5, d.getDelayId());
+                ps.setString(6, d.getDelayParams());
+                ps.setString(7, d.getDelayExtra());
+                ps.setInt(8, d.getStatus());
+                ps.setLong(9, d.getExecuteTime());
+                ps.setInt(10, d.getDeleted());
+                ps.setLong(11, d.getCreateTime());
+                ps.setLong(12, d.getUpdateTime());
             }
 
             @Override
@@ -63,6 +74,8 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 return delayInstanceList.size();
             }
         });
+
+        return ints.length;
     }
 
     @Override

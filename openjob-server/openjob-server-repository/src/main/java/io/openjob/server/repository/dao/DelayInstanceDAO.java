@@ -15,7 +15,7 @@ public interface DelayInstanceDAO {
      *
      * @param delayInstanceList delay instance list.
      */
-    void batchSave(List<DelayInstance> delayInstanceList);
+    Integer batchSave(List<DelayInstance> delayInstanceList);
 
     /**
      * List delay instance.
