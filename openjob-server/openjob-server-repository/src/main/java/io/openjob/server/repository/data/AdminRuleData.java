@@ -34,6 +34,14 @@ public interface AdminRuleData {
     AdminRuleDTO getById(Long id);
 
     /**
+     * get AdminRule list by IDs
+     *
+     * @param ids ids
+     * @return AdminRule list
+     */
+    List<AdminRuleDTO> getByIds(List<Long> ids);
+
+    /**
      * update AdminRule by ID
      *
      * @param dto dto

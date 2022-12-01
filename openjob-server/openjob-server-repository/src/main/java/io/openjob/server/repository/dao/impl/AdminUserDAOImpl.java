@@ -41,5 +41,10 @@ public class AdminUserDAOImpl implements AdminUserDAO {
         // return adminUserRepository.updateById(entity); // TODO
         return 0;
     }
+
+    @Override
+    public AdminUser getByUsername(String username) {
+        return adminUserRepository.findByUsername(username);
+    }
 }
 

@@ -41,5 +41,10 @@ public class AdminRuleDAOImpl implements AdminRuleDAO {
         // return adminRuleRepository.updateById(entity); // TODO
         return 0;
     }
+
+    @Override
+    public List<AdminRule> getByIds(List<Long> ids) {
+        return adminRuleRepository.findByIdIn(ids);
+    }
 }
 

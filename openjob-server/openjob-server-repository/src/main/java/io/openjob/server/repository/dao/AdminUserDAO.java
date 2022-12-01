@@ -41,5 +41,12 @@ public interface AdminUserDAO {
      */
     Integer updateById(AdminUser entity);
 
+    /**
+     * get AdminUser by username
+     *
+     * @param username username
+     * @return AdminUser
+     */
+    AdminUser getByUsername(String username);
 }
 

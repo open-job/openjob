@@ -49,5 +49,12 @@ public interface AdminMenuData {
      */
     List<AdminMenuDTO> getPageList(Long id);
 
+    /**
+     * get AdminMenu list by IDs
+     *
+     * @param ids ids
+     * @return AdminMenu list
+     */
+    List<AdminMenuDTO> getByIds(List<Long> ids);
 }
 

@@ -8,5 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
+    /**
+     * find by username
+     *
+     * @param username username
+     * @return AdminUser
+     */
+    AdminUser findByUsername(String username);
 }
 

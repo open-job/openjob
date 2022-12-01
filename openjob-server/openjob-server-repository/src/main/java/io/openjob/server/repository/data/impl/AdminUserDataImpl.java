@@ -52,6 +52,15 @@ public class AdminUserDataImpl implements AdminUserData {
     }
 
     @Override
+    public AdminUserDTO getByUsername(String username) {
+        AdminUser entity = adminUserDAO.getByUsername(username);
+        AdminUserDTO entDTO = new AdminUserDTO();
+        BeanUtils.copyProperties(entity, entDTO);
+
+        return entDTO;
+    }
+
+    @Override
     public Integer updateById(AdminUserDTO dto) {
         AdminUser entity = new AdminUser();
         BeanUtils.copyProperties(dto, entity);

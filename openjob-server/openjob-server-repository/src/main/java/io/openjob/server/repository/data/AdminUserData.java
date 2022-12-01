@@ -34,6 +34,14 @@ public interface AdminUserData {
     AdminUserDTO getById(Long id);
 
     /**
+     * get AdminUser by username
+     *
+     * @param username username
+     * @return AdminUser
+     */
+    AdminUserDTO getByUsername(String username);
+
+    /**
      * update AdminUser by ID
      *
      * @param dto dto

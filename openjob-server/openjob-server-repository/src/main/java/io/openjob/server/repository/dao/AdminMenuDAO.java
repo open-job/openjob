@@ -41,5 +41,12 @@ public interface AdminMenuDAO {
      */
     Integer updateById(AdminMenu entity);
 
+    /**
+     * get AdminMenu list by ID
+     *
+     * @param ids ids
+     * @return AdminMenu list
+     */
+    List<AdminMenu> getByIds(List<Long> ids);
 }
 

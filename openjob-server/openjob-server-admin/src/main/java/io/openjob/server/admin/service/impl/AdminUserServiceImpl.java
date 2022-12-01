@@ -4,14 +4,10 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.user.AdminUserAddRequest;
 import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
 import io.openjob.server.admin.request.user.AdminUserListRequest;
-import io.openjob.server.admin.request.user.AdminUserLoginRequest;
-import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.user.AdminUserQueryRequest;
 import io.openjob.server.admin.request.user.AdminUserUpdateRequest;
 import io.openjob.server.admin.service.AdminUserService;
 import io.openjob.server.admin.vo.user.AdminUserAddVO;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
-import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
 import io.openjob.server.admin.vo.user.AdminUserQueryVO;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
@@ -86,14 +82,5 @@ public class AdminUserServiceImpl implements AdminUserService {
         return null;
     }
 
-    @Override
-    public AdminUserLoginVO login(AdminUserLoginRequest request) {
-        return null;
-    }
-
-    @Override
-    public AdminUserLogoutVO logout(AdminUserLogoutRequest request) {
-        return null;
-    }
 }
 

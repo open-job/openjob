@@ -53,6 +53,20 @@ public class AdminRuleDataImpl implements AdminRuleData {
     }
 
     @Override
+    public List<AdminRuleDTO> getByIds(List<Long> ids) {
+        List<AdminRule> entList = adminRuleDAO.getByIds(ids);
+        List<AdminRuleDTO> dtoList = new ArrayList<>();
+
+        entList.forEach(entity -> {
+            AdminRuleDTO entDTO = new AdminRuleDTO();
+            BeanUtils.copyProperties(entity, entDTO);
+            dtoList.add(entDTO);
+        });
+
+        return dtoList;
+    }
+
+    @Override
     public Integer updateById(AdminRuleDTO dto) {
         AdminRule entity = new AdminRule();
         BeanUtils.copyProperties(dto, entity);

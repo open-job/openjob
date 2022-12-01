@@ -41,5 +41,10 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
         // return adminMenuRepository.updateById(entity); // TODO
         return 0;
     }
+
+    @Override
+    public List<AdminMenu> getByIds(List<Long> ids) {
+        return adminMenuRepository.findByIdIn(ids);
+    }
 }
 

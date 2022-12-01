@@ -64,5 +64,19 @@ public class AdminMenuDataImpl implements AdminMenuData {
     public List<AdminMenuDTO> getPageList(Long id) {
         return null;
     }
+
+    @Override
+    public List<AdminMenuDTO> getByIds(List<Long> ids) {
+        List<AdminMenu> entList = adminMenuDAO.getByIds(ids);
+        List<AdminMenuDTO> dtoList = new ArrayList<>();
+
+        entList.forEach(entity -> {
+            AdminMenuDTO entDTO = new AdminMenuDTO();
+            BeanUtils.copyProperties(entity, entDTO);
+            dtoList.add(entDTO);
+        });
+
+        return dtoList;
+    }
 }
 

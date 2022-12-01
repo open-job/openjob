@@ -41,5 +41,12 @@ public interface AdminRuleDAO {
      */
     Integer updateById(AdminRule entity);
 
+    /**
+     * get AdminRule list by IDs
+     *
+     * @param ids ids
+     * @return AdminRule list
+     */
+    List<AdminRule> getByIds(List<Long> ids);
 }
 
