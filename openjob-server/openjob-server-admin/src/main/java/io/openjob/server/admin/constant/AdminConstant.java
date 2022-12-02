@@ -14,8 +14,13 @@ public class AdminConstant {
      */
     public static final String LOGIN_HEADER_KEY = "session-key";
 
-
+    /**
+     * mark is permission data
+     */
     public static final Integer MENU_TYPE_PERM = 1;
 
+    /**
+     * mark is admin menu data
+     */
     public static final Integer MENU_TYPE_MENU = 2;
 }

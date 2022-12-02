@@ -4,8 +4,9 @@ import lombok.Data;
 
 /**
  * @author inhere <in.798@qq.com>
+ * @since 1.0.0
  */
 @Data
-public class TemplateExtra {
+public class TemplateExtraVO {
     private String aptToken;
 }

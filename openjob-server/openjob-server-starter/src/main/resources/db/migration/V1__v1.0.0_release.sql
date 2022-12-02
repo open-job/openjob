@@ -691,7 +691,7 @@ CREATE TABLE `admin_rule` (
                               `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
                               `menus` JSON COMMENT 'Menu ids for rule. JSON array',
                               `perms` JSON COMMENT 'Permissions ids for rule. JSON array',
-                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is Admin. 1=yes 2=no',
+                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is supper admin. 1=yes 2=no',
                               `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                               `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                               `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
