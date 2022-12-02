@@ -143,7 +143,7 @@ public class RedisUtil {
         }
 
         MultiValueMap<String, Integer> keyForIndex = new LinkedMultiValueMap<>();
-        Map<T, String> idForKey = new HashMap<>();
+        Map<T, String> idForKey = new HashMap<>(16);
         List<T> nullKeysValues = new ArrayList<>();
         for (int i = 0; i < valueSize; i++) {
             // Not in cache.
@@ -206,7 +206,8 @@ public class RedisUtil {
      * @return List
      */
     private static <R> Boolean isEntireKeysExist(List<R> value) {
-        int count = 0, valueSize = value.size();
+        int count = 0;
+        int valueSize = value.size();
         for (R r : value) {
             if (r != null) {
                 count++;
@@ -225,7 +226,7 @@ public class RedisUtil {
      * @return Map
      */
     private static <T, R> Map<String, R> buildStoreMap(Map<T, R> result, Map<T, String> idForKey) {
-        Map<String, R> store = new HashMap<>();
+        Map<String, R> store = new HashMap<>(16);
         for (Map.Entry<T, R> entry : result.entrySet()) {
             String key = idForKey.get(entry.getKey());
             if (key == null) {

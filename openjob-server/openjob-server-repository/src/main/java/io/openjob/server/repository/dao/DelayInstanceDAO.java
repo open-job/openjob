@@ -14,6 +14,7 @@ public interface DelayInstanceDAO {
      * Batch save.
      *
      * @param delayInstanceList delay instance list.
+     * @return save size.
      */
     Integer batchSave(List<DelayInstance> delayInstanceList);
 

@@ -21,6 +21,7 @@ public interface WorkerDAO {
     /**
      * List all workers.
      *
+     * @param slotsIds slot ids.
      * @return List
      */
     List<Worker> listAllWorkersBySlotIds(List<Long> slotsIds);

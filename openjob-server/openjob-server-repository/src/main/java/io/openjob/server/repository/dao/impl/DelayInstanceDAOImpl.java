@@ -36,20 +36,20 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     @Override
     public Integer batchSave(List<DelayInstance> delayInstanceList) {
-        String sql = "INSERT INTO `delay_instance` (" +
-                "`namespace_id`, " +
-                "`app_id`, " +
-                "`task_id`, " +
-                "`topic`, " +
-                "`delay_id`, " +
-                "`delay_params`, " +
-                "`delay_extra`, " +
-                "`status`, " +
-                "`execute_time`, " +
-                "`deleted`, " +
-                "`create_time`, " +
-                "`update_time`) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `delay_instance` ("
+                + "`namespace_id`, "
+                + "`app_id`, "
+                + "`task_id`, "
+                + "`topic`, "
+                + "`delay_id`, "
+                + "`delay_params`, "
+                + "`delay_extra`, "
+                + "`status`, "
+                + "`execute_time`, "
+                + "`deleted`, "
+                + "`create_time`, "
+                + "`update_time`) "
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override

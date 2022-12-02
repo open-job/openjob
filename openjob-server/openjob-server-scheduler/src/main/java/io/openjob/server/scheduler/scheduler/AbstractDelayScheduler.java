@@ -62,7 +62,7 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
     /**
      * Abstract runnable.
      */
-    static abstract class AbstractRunnable implements Runnable {
+    abstract static class AbstractRunnable implements Runnable {
         protected final Long currentSlotId;
         protected final AtomicBoolean finish = new AtomicBoolean(false);
 
