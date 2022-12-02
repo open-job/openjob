@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.scheduler;
 
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.common.util.SlotsUtil;
+import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
@@ -31,10 +32,12 @@ import java.util.Objects;
 @Component
 public class DelayInstanceScheduler {
     private final DelayData delayData;
+    private final DelayInstanceDAO delayInstanceDAO;
 
     @Autowired
-    public DelayInstanceScheduler(DelayData delayData) {
+    public DelayInstanceScheduler(DelayData delayData, DelayInstanceDAO delayInstanceDAO) {
         this.delayData = delayData;
+        this.delayInstanceDAO = delayInstanceDAO;
     }
 
     /**
@@ -85,6 +88,7 @@ public class DelayInstanceScheduler {
         this.deleteDelay(deleteRequest);
 
         // Delete from storage.
+        this.delayInstanceDAO.deleteByTaskId(deleteRequest.getTaskId());
         return new DelayInstanceDeleteResponseDTO();
     }
 
@@ -100,6 +104,7 @@ public class DelayInstanceScheduler {
         String detailKey = CacheUtil.getDetailKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(SlotsUtil.getDelayMaxZsetSlotsId(taskId));
         String listKey = CacheUtil.getListKey(SlotsUtil.getDelayMaxListSlotsId(taskId));
+
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {

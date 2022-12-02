@@ -38,7 +38,7 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
-    public List<Worker> listAllWorkers() {
-        return this.workerRepository.findAll();
+    public List<Worker> listAllWorkersBySlotIds(List<Long> slotsIds) {
+        return this.workerRepository.findBySlotsIdIsIn(slotsIds);
     }
 }

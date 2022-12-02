@@ -67,7 +67,7 @@ public class JoinManager {
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
-        this.refreshManager.initCurrentSlots();
+        this.refreshManager.refreshCurrentSlots();
 
         // Akka message for join.
         this.sendClusterStartMessage();

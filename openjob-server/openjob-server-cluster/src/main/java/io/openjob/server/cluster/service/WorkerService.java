@@ -1,5 +1,6 @@
 package io.openjob.server.cluster.service;
 
+import com.google.common.collect.Lists;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,20 @@ public class WorkerService {
     public void workerCheck() {
         // Query all workers.
         long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_DELAY;
-        Map<Integer, List<Worker>> workerMap = this.workerDAO.listAllWorkers().stream().collect(Collectors.groupingBy(Worker::getStatus));
+        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
+
+        // Query slot ids.
+        List<Long> querySlotIds = Lists.newArrayList();
+        currentSlots.forEach(id -> {
+            if (id <= ClusterContext.getSystem().getWorkerSupervisorSlot()) {
+                querySlotIds.add(id);
+            }
+        });
+
+        // Query workers
+        Map<Integer, List<Worker>> workerMap = this.workerDAO.listAllWorkersBySlotIds(querySlotIds)
+                .stream()
+                .collect(Collectors.groupingBy(Worker::getStatus));
 
         // New join worker
         List<Worker> offlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.OFFLINE.getStatus())).orElseGet(ArrayList::new);
@@ -160,7 +175,7 @@ public class WorkerService {
         saveWorker.setCreateTime(now);
         saveWorker.setWorkerKey(startReq.getWorkerKey());
         saveWorker.setAddress(startReq.getAddress());
-        saveWorker.setSlotsId(SlotsUtil.getSlotsId(UUID.randomUUID().toString()));
+        saveWorker.setSlotsId(SlotsUtil.getWorkerSupervisorSlotsId(UUID.randomUUID().toString()));
         saveWorker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
         saveWorker.setAppId(app.getId());
         saveWorker.setAppName(startReq.getAppName());
