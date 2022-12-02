@@ -6,6 +6,8 @@ import io.openjob.server.repository.repository.DelayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -27,5 +29,10 @@ public class DelayDAOImpl implements DelayDAO {
     @Override
     public Delay findByTopic(String topic) {
         return this.delayRepository.findByTopic(topic);
+    }
+
+    @Override
+    public List<Delay> findByTopics(List<String> topics) {
+        return this.delayRepository.findByTopicIn(topics);
     }
 }
