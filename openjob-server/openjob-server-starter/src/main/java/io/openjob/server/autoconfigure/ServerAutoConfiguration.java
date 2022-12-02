@@ -11,6 +11,7 @@ import io.openjob.server.common.actor.PropsFactoryManager;
 import io.openjob.server.common.constant.AkkaConfigConstant;
 import io.openjob.server.event.ApplicationReadyEventListener;
 import io.openjob.server.handler.ServerExceptionHandler;
+import io.openjob.server.scheduler.Scheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,11 +35,12 @@ public class ServerAutoConfiguration {
      * Application ready event listener.
      *
      * @param clusterManager clusterManager
+     * @param scheduler      scheduler
      * @return ApplicationReadyEventListener
      */
     @Bean
-    public ApplicationReadyEventListener listener(ClusterServer clusterManager, WheelManager wheelManager) {
-        return new ApplicationReadyEventListener(clusterManager, wheelManager);
+    public ApplicationReadyEventListener listener(ClusterServer clusterManager, Scheduler scheduler) {
+        return new ApplicationReadyEventListener(clusterManager, scheduler);
     }
 
     @Bean

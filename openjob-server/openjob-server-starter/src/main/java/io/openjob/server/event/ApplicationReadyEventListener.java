@@ -1,7 +1,7 @@
 package io.openjob.server.event;
 
 import io.openjob.server.cluster.ClusterServer;
-import io.openjob.server.scheduler.wheel.WheelManager;
+import io.openjob.server.scheduler.Scheduler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -13,12 +13,12 @@ import org.springframework.context.ApplicationListener;
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private final ClusterServer clusterServer;
+    private final Scheduler scheduler;
 
-    private final WheelManager wheelManager;
 
-    public ApplicationReadyEventListener(ClusterServer clusterManager, WheelManager wheelManager) {
-        this.wheelManager = wheelManager;
+    public ApplicationReadyEventListener(ClusterServer clusterManager, Scheduler scheduler) {
         this.clusterServer = clusterManager;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ApplicationReadyEventListener implements ApplicationListener<Applic
         // Start server.
         this.clusterServer.start();
 
-        // Start wheel.
-        this.wheelManager.start();
+        // Start scheduler.
+        this.scheduler.start();
     }
 }

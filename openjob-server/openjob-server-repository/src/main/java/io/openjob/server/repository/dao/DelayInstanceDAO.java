@@ -11,6 +11,14 @@ import java.util.List;
 public interface DelayInstanceDAO {
 
     /**
+     * Batch save.
+     *
+     * @param delayInstanceList delay instance list.
+     * @return save size.
+     */
+    Integer batchSave(List<DelayInstance> delayInstanceList);
+
+    /**
      * List delay instance.
      *
      * @param slotIds slotIds
@@ -21,14 +29,6 @@ public interface DelayInstanceDAO {
     List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size);
 
     /**
-     * Save delay instance.
-     *
-     * @param delayInstance delayInstance
-     * @return Long
-     */
-    Long save(DelayInstance delayInstance);
-
-    /**
      * Batch update status.
      *
      * @param ids    ids
@@ -36,4 +36,11 @@ public interface DelayInstanceDAO {
      * @return Integer
      */
     Integer batchUpdateStatus(List<Long> ids, Integer status);
+
+    /**
+     * Delete by task id.
+     *
+     * @param taskId task id.
+     */
+    void deleteByTaskId(String taskId);
 }

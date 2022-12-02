@@ -2,6 +2,8 @@ package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.Delay;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -22,5 +24,13 @@ public interface DelayDAO {
      * @param topic topic
      * @return Delay
      */
-    Delay findByNamespaceIdAndTopic(String topic);
+    Delay findByTopic(String topic);
+
+    /**
+     * Find by topics
+     *
+     * @param topics topic list.
+     * @return list
+     */
+    List<Delay> findByTopics(List<String> topics);
 }

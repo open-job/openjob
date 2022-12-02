@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.wheel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 @Component
 public class WheelManager {
     private final SchedulerWheel schedulerWheel;

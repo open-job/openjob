@@ -26,4 +26,12 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
      * @return List
      */
     List<Worker> findByStatus(Integer status);
+
+    /**
+     * Find by slot ids.
+     *
+     * @param slotIds slotIds
+     * @return List
+     */
+    List<Worker> findBySlotsIdIsIn(List<Long> slotIds);
 }

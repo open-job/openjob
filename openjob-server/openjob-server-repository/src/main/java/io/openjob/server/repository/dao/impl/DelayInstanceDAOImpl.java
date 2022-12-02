@@ -8,8 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -21,14 +26,56 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     private final DelayInstanceRepository delayInstanceRepository;
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    public DelayInstanceDAOImpl(DelayInstanceRepository delayInstanceRepository) {
+    public DelayInstanceDAOImpl(DelayInstanceRepository delayInstanceRepository, JdbcTemplate jdbcTemplate) {
         this.delayInstanceRepository = delayInstanceRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Long save(DelayInstance delayInstance) {
-        return this.delayInstanceRepository.save(delayInstance).getId();
+    public Integer batchSave(List<DelayInstance> delayInstanceList) {
+        String sql = "INSERT INTO `delay_instance` ("
+                + "`namespace_id`, "
+                + "`app_id`, "
+                + "`task_id`, "
+                + "`topic`, "
+                + "`delay_id`, "
+                + "`delay_params`, "
+                + "`delay_extra`, "
+                + "`status`, "
+                + "`execute_time`, "
+                + "`deleted`, "
+                + "`create_time`, "
+                + "`update_time`) "
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
+                DelayInstance d = delayInstanceList.get(i);
+                ps.setLong(1, d.getNamespaceId());
+                ps.setLong(2, d.getAppId());
+                ps.setString(3, d.getTaskId());
+                ps.setString(4, d.getTopic());
+                ps.setLong(5, d.getDelayId());
+                ps.setString(6, d.getDelayParams());
+                ps.setString(7, d.getDelayExtra());
+                ps.setInt(8, d.getStatus());
+                ps.setLong(9, d.getExecuteTime());
+                ps.setInt(10, d.getDeleted());
+                ps.setLong(11, d.getCreateTime());
+                ps.setLong(12, d.getUpdateTime());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return delayInstanceList.size();
+            }
+        });
+
+        return ints.length;
     }
 
     @Override
@@ -40,5 +87,10 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     @Override
     public Integer batchUpdateStatus(List<Long> ids, Integer status) {
         return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.now());
+    }
+
+    @Override
+    public void deleteByTaskId(String taskId) {
+        this.delayInstanceRepository.deleteByTaskId(taskId);
     }
 }

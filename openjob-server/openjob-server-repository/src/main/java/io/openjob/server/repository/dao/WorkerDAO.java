@@ -20,10 +20,12 @@ public interface WorkerDAO {
 
     /**
      * List all workers.
+     *
+     * @param slotsIds slot ids.
      * @return List
      */
-    List<Worker> listAllWorkers();
-    
+    List<Worker> listAllWorkersBySlotIds(List<Long> slotsIds);
+
     /**
      * Get by address.
      *

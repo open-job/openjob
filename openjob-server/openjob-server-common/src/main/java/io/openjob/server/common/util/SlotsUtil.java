@@ -19,6 +19,16 @@ public class SlotsUtil {
     }
 
     /**
+     * Get slots id
+     *
+     * @param key key
+     * @return Long
+     */
+    public static Long getWorkerSupervisorSlotsId(String key) {
+        return (long) (CrcUtil.crc16(key.getBytes()) % ClusterContext.getSystem().getWorkerSupervisorSlot());
+    }
+
+    /**
      * Get delay max zset slots id.
      *
      * @param key key

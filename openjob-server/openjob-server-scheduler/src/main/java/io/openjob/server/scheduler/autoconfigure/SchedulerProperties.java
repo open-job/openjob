@@ -15,5 +15,6 @@ public class SchedulerProperties {
     @Data
     public static class Delay {
         private Boolean enable = false;
+        private Integer zsetBathPopSize = 100;
     }
 }
