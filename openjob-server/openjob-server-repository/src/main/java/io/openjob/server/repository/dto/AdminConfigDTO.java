@@ -12,7 +12,7 @@ public class AdminConfigDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Config name

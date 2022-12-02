@@ -14,7 +14,7 @@ public class AdminRuleDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Rule name
@@ -37,7 +37,7 @@ public class AdminRuleDTO {
     private List<Long> perms;
 
     /**
-     * Is Admin. 1=yes 2=no
+     * Is supper admin. 1=yes 2=no
      */
     private Integer admin;
 

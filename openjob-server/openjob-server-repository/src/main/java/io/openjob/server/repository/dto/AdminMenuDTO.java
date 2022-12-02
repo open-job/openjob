@@ -13,12 +13,12 @@ public class AdminMenuDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Parent ID
      */
-    private Integer pid;
+    private Long pid;
 
     /**
      * Type. 1=menu 2=perm

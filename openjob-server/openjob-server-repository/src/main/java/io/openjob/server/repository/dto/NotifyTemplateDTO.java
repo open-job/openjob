@@ -15,7 +15,7 @@ public class NotifyTemplateDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Template name. eg: Wechat, DingTalk, Wecom, Feishu

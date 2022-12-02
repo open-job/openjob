@@ -12,7 +12,7 @@ public class NotifyGroupDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Group name

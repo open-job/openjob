@@ -12,7 +12,7 @@ public class NotifyContactDTO {
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * User name
