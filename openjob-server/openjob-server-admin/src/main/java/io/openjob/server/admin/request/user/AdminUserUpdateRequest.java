@@ -18,7 +18,7 @@ import java.util.List;
 public class AdminUserUpdateRequest {
 
     @Min(1)
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "PK")
     private Long id;
 

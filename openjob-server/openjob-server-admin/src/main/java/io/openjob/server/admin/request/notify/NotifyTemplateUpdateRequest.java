@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
 @ApiModel(value = "NotifyTemplateUpdateRequest", description = "NotifyTemplate update request")
 public class NotifyTemplateUpdateRequest {
 
+    @NotNull
+    @Min(1)
     @ApiModelProperty(value = "PK")
     private Long id;
 

@@ -41,8 +41,9 @@ public class AdminConfigDAOImpl implements AdminConfigDAO {
 
     @Override
     public Integer updateById(AdminConfig entity) {
+        adminConfigRepository.save(entity);
         // return adminConfigRepository.updateById(entity); // TODO
-        return 0;
+        return 1;
     }
 
     @Override
