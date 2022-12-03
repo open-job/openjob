@@ -36,7 +36,7 @@ public class AdminConfigDAOImpl implements AdminConfigDAO {
 
     @Override
     public AdminConfig getById(Long id) {
-        return adminConfigRepository.getById(id);
+        return adminConfigRepository.findById(id).orElse(null);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class NotifyGroupDAOImpl implements NotifyGroupDAO {
 
     @Override
     public NotifyGroup getById(Long id) {
-        return notifyGroupRepository.getById(id);
+        return notifyGroupRepository.findById(id).orElse(null);
     }
 
     @Override

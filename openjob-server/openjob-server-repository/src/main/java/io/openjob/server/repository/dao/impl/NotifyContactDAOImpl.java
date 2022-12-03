@@ -33,7 +33,7 @@ public class NotifyContactDAOImpl implements NotifyContactDAO {
 
     @Override
     public NotifyContact getById(Long id) {
-        return notifyContactRepository.getById(id);
+        return notifyContactRepository.findById(id).orElse(null);
     }
 
     @Override

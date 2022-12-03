@@ -33,7 +33,7 @@ public class NotifyTemplateDAOImpl implements NotifyTemplateDAO {
 
     @Override
     public NotifyTemplate getById(Long id) {
-        return notifyTemplateRepository.getById(id);
+        return notifyTemplateRepository.findById(id).orElse(null);
     }
 
     @Override

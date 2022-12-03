@@ -36,7 +36,7 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
 
     @Override
     public AdminMenu getById(Long id) {
-        return adminMenuRepository.getById(id);
+        return adminMenuRepository.findById(id).orElse(null);
     }
 
     @Override

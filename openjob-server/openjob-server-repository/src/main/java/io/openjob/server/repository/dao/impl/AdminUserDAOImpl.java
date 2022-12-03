@@ -36,7 +36,7 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public AdminUser getById(Long id) {
-        return adminUserRepository.getById(id);
+        return adminUserRepository.findById(id).orElse(null);
     }
 
     @Override
