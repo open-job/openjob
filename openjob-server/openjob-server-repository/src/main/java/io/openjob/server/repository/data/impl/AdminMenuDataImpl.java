@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
@@ -48,10 +49,8 @@ public class AdminMenuDataImpl implements AdminMenuData {
     @Override
     public AdminMenuDTO getById(Long id) {
         AdminMenu entity = adminMenuDAO.getById(id);
-        AdminMenuDTO entDTO = new AdminMenuDTO();
-        BeanUtils.copyProperties(entity, entDTO);
 
-        return entDTO;
+        return ObjectUtil.mapObject(entity, AdminMenuDTO.class);
     }
 
     @Override

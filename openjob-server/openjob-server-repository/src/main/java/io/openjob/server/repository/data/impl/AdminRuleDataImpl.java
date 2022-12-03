@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminRuleDAO;
 import io.openjob.server.repository.data.AdminRuleData;
 import io.openjob.server.repository.dto.AdminRuleDTO;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
@@ -51,10 +51,8 @@ public class AdminRuleDataImpl implements AdminRuleData {
     @Override
     public AdminRuleDTO getById(Long id) {
         AdminRule entity = adminRuleDAO.getById(id);
-        AdminRuleDTO entDTO = new AdminRuleDTO();
-        BeanUtils.copyProperties(entity, entDTO);
 
-        return entDTO;
+        return ObjectUtil.mapObject(entity, AdminRuleDTO.class);
     }
 
     @Override
@@ -63,9 +61,7 @@ public class AdminRuleDataImpl implements AdminRuleData {
         List<AdminRuleDTO> dtoList = new ArrayList<>();
 
         entList.forEach(entity -> {
-            AdminRuleDTO entDTO = new AdminRuleDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-            dtoList.add(entDTO);
+            dtoList.add(ObjectUtil.copyObject(entity, new AdminRuleDTO()));
         });
 
         return dtoList;
@@ -85,22 +81,10 @@ public class AdminRuleDataImpl implements AdminRuleData {
         List<AdminRuleDTO> dtoList = new ArrayList<>();
 
         entPage.forEach(entity -> {
-            AdminRuleDTO entDTO = new AdminRuleDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-            dtoList.add(entDTO);
+            dtoList.add(ObjectUtil.copyObject(entity, new AdminRuleDTO()));
         });
 
         return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());
-    }
-
-    private AdminRuleDTO entityToDto(AdminRule entity) {
-        AdminRuleDTO entDTO = null;
-
-        if (Objects.nonNull(entity)) {
-            entDTO = new AdminRuleDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-        }
-        return entDTO;
     }
 
 }

@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyContactDAO;
 import io.openjob.server.repository.data.NotifyContactData;
 import io.openjob.server.repository.dto.NotifyContactDTO;
@@ -47,11 +48,7 @@ public class NotifyContactDataImpl implements NotifyContactData {
 
     @Override
     public NotifyContactDTO getById(Long id) {
-        NotifyContact entity = notifyContactDAO.getById(id);
-        NotifyContactDTO entDTO = new NotifyContactDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyContactDAO.getById(id), NotifyContactDTO.class);
     }
 
     @Override

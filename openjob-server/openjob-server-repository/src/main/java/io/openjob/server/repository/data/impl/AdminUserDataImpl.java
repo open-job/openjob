@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
@@ -49,24 +49,14 @@ public class AdminUserDataImpl implements AdminUserData {
 
     @Override
     public AdminUserDTO getById(Long id) {
-        return entityToDto(adminUserDAO.getById(id));
+        return ObjectUtil.mapObject(adminUserDAO.getById(id), AdminUserDTO.class);
     }
 
     @Override
     public AdminUserDTO getByUsername(String username) {
         AdminUser entity = adminUserDAO.getByUsername(username);
 
-        return entityToDto(entity);
-    }
-
-    private AdminUserDTO entityToDto(AdminUser entity) {
-        AdminUserDTO entDTO = null;
-
-        if (Objects.nonNull(entity)) {
-            entDTO = new AdminUserDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-        }
-        return entDTO;
+        return ObjectUtil.mapObject(entity, AdminUserDTO.class);
     }
 
     @Override
@@ -83,9 +73,7 @@ public class AdminUserDataImpl implements AdminUserData {
         List<AdminUserDTO> dtoList = new ArrayList<>();
 
         entPage.forEach(entity -> {
-            AdminUserDTO entDTO = new AdminUserDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-            dtoList.add(entDTO);
+            dtoList.add(ObjectUtil.copyObject(entity, new AdminUserDTO()));
         });
 
         return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());

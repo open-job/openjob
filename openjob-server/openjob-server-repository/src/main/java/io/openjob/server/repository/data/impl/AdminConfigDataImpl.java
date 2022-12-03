@@ -1,11 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminConfigDAO;
 import io.openjob.server.repository.data.AdminConfigData;
 import io.openjob.server.repository.dto.AdminConfigDTO;
 import io.openjob.server.repository.entity.AdminConfig;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class AdminConfigDataImpl implements AdminConfigData {
     @Override
     public Long add(AdminConfigDTO dto) {
         AdminConfig entity = new AdminConfig();
-        BeanUtils.copyProperties(dto, entity);
+        ObjectUtil.copyObject(dto, entity);
         entity.setCreateTime(DateUtil.timestamp());
 
         return adminConfigDAO.add(entity);
@@ -48,16 +48,14 @@ public class AdminConfigDataImpl implements AdminConfigData {
     @Override
     public AdminConfigDTO getById(Long id) {
         AdminConfig entity = adminConfigDAO.getById(id);
-        AdminConfigDTO entDTO = new AdminConfigDTO();
-        BeanUtils.copyProperties(entity, entDTO);
 
-        return entDTO;
+        return ObjectUtil.mapObject(entity, AdminConfigDTO.class);
     }
 
     @Override
     public Integer updateById(AdminConfigDTO dto) {
         AdminConfig entity = new AdminConfig();
-        BeanUtils.copyProperties(dto, entity);
+        ObjectUtil.copyObject(dto, entity);
 
         return adminConfigDAO.updateById(entity);
     }

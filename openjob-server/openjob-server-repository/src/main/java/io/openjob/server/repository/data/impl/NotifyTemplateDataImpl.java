@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyTemplateDAO;
 import io.openjob.server.repository.data.NotifyTemplateData;
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
@@ -47,11 +48,7 @@ public class NotifyTemplateDataImpl implements NotifyTemplateData {
 
     @Override
     public NotifyTemplateDTO getById(Long id) {
-        NotifyTemplate entity = notifyTemplateDAO.getById(id);
-        NotifyTemplateDTO entDTO = new NotifyTemplateDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyTemplateDAO.getById(id), NotifyTemplateDTO.class);
     }
 
     @Override

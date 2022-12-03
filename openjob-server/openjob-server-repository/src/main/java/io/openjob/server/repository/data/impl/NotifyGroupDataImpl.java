@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data.impl;
 
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyGroupDAO;
 import io.openjob.server.repository.data.NotifyGroupData;
 import io.openjob.server.repository.dto.NotifyGroupDTO;
@@ -47,11 +48,7 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
 
     @Override
     public NotifyGroupDTO getById(Long id) {
-        NotifyGroup entity = notifyGroupDAO.getById(id);
-        NotifyGroupDTO entDTO = new NotifyGroupDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyGroupDAO.getById(id), NotifyGroupDTO.class);
     }
 
     @Override
