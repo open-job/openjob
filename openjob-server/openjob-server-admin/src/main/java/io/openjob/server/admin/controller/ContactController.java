@@ -58,13 +58,13 @@ public class ContactController {
 
     @ApiOperation("Get a notifyContact")
     @GetMapping("/get")
-    public Result<NotifyContactQueryVO> query(@Valid @RequestBody NotifyContactQueryRequest getRequest) {
+    public Result<NotifyContactQueryVO> query(@Valid NotifyContactQueryRequest getRequest) {
         return Result.success(this.notifyContactService.query(getRequest));
     }
 
     @ApiOperation("List notifyContact by page")
     @GetMapping("/list")
-    public Result<PageDTO<NotifyContactQueryVO>> list(@Valid @RequestBody NotifyContactListRequest listRequest) {
+    public Result<PageDTO<NotifyContactQueryVO>> list(@Valid NotifyContactListRequest listRequest) {
         return Result.success(this.notifyContactService.getPageList(listRequest));
     }
 }

@@ -58,13 +58,13 @@ public class TemplateController {
 
     @ApiOperation("Get a notifyTemplate")
     @GetMapping("/get")
-    public Result<NotifyTemplateQueryVO> query(@Valid @RequestBody NotifyTemplateQueryRequest getRequest) {
+    public Result<NotifyTemplateQueryVO> query(@Valid NotifyTemplateQueryRequest getRequest) {
         return Result.success(this.notifyTemplateService.query(getRequest));
     }
 
     @ApiOperation("List notifyTemplate by page")
     @GetMapping("/list")
-    public Result<PageDTO<NotifyTemplateQueryVO>> list(@Valid @RequestBody NotifyTemplateListRequest listRequest) {
+    public Result<PageDTO<NotifyTemplateQueryVO>> list(@Valid NotifyTemplateListRequest listRequest) {
         return Result.success(this.notifyTemplateService.getPageList(listRequest));
     }
 }

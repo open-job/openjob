@@ -15,7 +15,10 @@ import io.openjob.server.repository.data.AdminRuleData;
 import io.openjob.server.repository.dto.AdminRuleDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 /**
  * @author inhere
@@ -75,8 +78,20 @@ public class AdminRuleServiceImpl implements AdminRuleService {
 
     @Override
     public PageDTO<AdminRuleQueryVO> getPageList(AdminRuleListRequest reqDTO) {
-        // TODO
-        return null;
+        Page<AdminRuleDTO> pageList = adminRuleData.getPageList(reqDTO.getPage(), reqDTO.getSize());
+
+        PageDTO<AdminRuleQueryVO> pageVo = new PageDTO<>();
+        pageVo.setTotal(pageList.getTotalElements());
+        pageVo.setList(new ArrayList<>());
+
+        pageList.forEach(entDTO -> {
+            AdminRuleQueryVO retVo = new AdminRuleQueryVO();
+            BeanUtils.copyProperties(entDTO, retVo);
+
+            pageVo.getList().add(retVo);
+        });
+
+        return pageVo;
     }
 }
 

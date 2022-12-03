@@ -58,13 +58,13 @@ public class AdminRuleController {
 
     @ApiOperation("Get a adminRule")
     @GetMapping("/get")
-    public Result<AdminRuleQueryVO> query(@Valid @RequestBody AdminRuleQueryRequest getRequest) {
+    public Result<AdminRuleQueryVO> query(@Valid AdminRuleQueryRequest getRequest) {
         return Result.success(this.adminRuleService.query(getRequest));
     }
 
     @ApiOperation("List adminRule by page")
     @GetMapping("/list")
-    public Result<PageDTO<AdminRuleQueryVO>> list(@Valid @RequestBody AdminRuleListRequest listRequest) {
+    public Result<PageDTO<AdminRuleQueryVO>> list(@Valid AdminRuleListRequest listRequest) {
         return Result.success(this.adminRuleService.getPageList(listRequest));
     }
 }

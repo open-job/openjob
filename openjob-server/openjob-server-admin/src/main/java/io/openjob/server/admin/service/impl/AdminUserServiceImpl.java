@@ -15,7 +15,10 @@ import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 /**
  * @author inhere
@@ -78,8 +81,20 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public PageDTO<AdminUserQueryVO> getPageList(AdminUserListRequest reqDTO) {
-        // TODO
-        return null;
+        Page<AdminUserDTO> pageList = adminUserData.getPageList(reqDTO.getPage(), reqDTO.getSize());
+
+        PageDTO<AdminUserQueryVO> pageVo = new PageDTO<>();
+        pageVo.setTotal(pageList.getTotalElements());
+        pageVo.setList(new ArrayList<>());
+
+        pageList.forEach(entDTO -> {
+            AdminUserQueryVO retVo = new AdminUserQueryVO();
+            BeanUtils.copyProperties(entDTO, retVo);
+
+            pageVo.getList().add(retVo);
+        });
+
+        return pageVo;
     }
 
 }

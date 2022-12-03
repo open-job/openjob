@@ -58,13 +58,13 @@ public class ConfigController {
 
     @ApiOperation("Get a adminConfig")
     @GetMapping("/get")
-    public Result<AdminConfigQueryVO> query(@Valid @RequestBody AdminConfigQueryRequest getRequest) {
+    public Result<AdminConfigQueryVO> query(@Valid AdminConfigQueryRequest getRequest) {
         return Result.success(this.adminConfigService.query(getRequest));
     }
 
     @ApiOperation("List adminConfig by page")
     @GetMapping("/list")
-    public Result<PageDTO<AdminConfigQueryVO>> list(@Valid @RequestBody AdminConfigListRequest listRequest) {
+    public Result<PageDTO<AdminConfigQueryVO>> list(@Valid AdminConfigListRequest listRequest) {
         return Result.success(this.adminConfigService.getPageList(listRequest));
     }
 }

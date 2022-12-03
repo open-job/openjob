@@ -58,13 +58,13 @@ public class NotifyGroupController {
 
     @ApiOperation("Get a notifyGroup")
     @GetMapping("/get")
-    public Result<NotifyGroupQueryVO> query(@Valid @RequestBody NotifyGroupQueryRequest getRequest) {
+    public Result<NotifyGroupQueryVO> query(@Valid NotifyGroupQueryRequest getRequest) {
         return Result.success(this.notifyGroupService.query(getRequest));
     }
 
     @ApiOperation("List notifyGroup by page")
     @GetMapping("/list")
-    public Result<PageDTO<NotifyGroupQueryVO>> list(@Valid @RequestBody NotifyGroupListRequest listRequest) {
+    public Result<PageDTO<NotifyGroupQueryVO>> list(@Valid NotifyGroupListRequest listRequest) {
         return Result.success(this.notifyGroupService.getPageList(listRequest));
     }
 }

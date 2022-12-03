@@ -30,7 +30,7 @@ public class AdminUserLoginRequest {
 
     @NotNull
     @ApiModelProperty(value = "Keep Login, if false will expired on after 30min")
-    private Boolean keepLogin;
+    private Boolean keepLogin = false;
 
 }
 

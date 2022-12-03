@@ -58,13 +58,13 @@ public class UserController {
 
     @ApiOperation("Get a AdminUser")
     @GetMapping("/get")
-    public Result<AdminUserQueryVO> query(@Valid @RequestBody AdminUserQueryRequest getRequest) {
+    public Result<AdminUserQueryVO> query(@Valid AdminUserQueryRequest getRequest) {
         return Result.success(this.adminUserService.query(getRequest));
     }
 
     @ApiOperation("List AdminUser by page")
     @GetMapping("/list")
-    public Result<PageDTO<AdminUserQueryVO>> list(@Valid @RequestBody AdminUserListRequest listRequest) {
+    public Result<PageDTO<AdminUserQueryVO>> list(@Valid AdminUserListRequest listRequest) {
         return Result.success(this.adminUserService.getPageList(listRequest));
     }
 

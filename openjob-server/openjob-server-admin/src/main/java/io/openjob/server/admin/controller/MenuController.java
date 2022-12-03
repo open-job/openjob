@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- *
  * @since 1.0.0
  */
 @Api(value = "AdminMenu", tags = "AdminMenu")
@@ -59,13 +58,13 @@ public class MenuController {
 
     @ApiOperation("Get a adminMenu")
     @GetMapping("/get")
-    public Result<AdminMenuQueryVO> query(@Valid @RequestBody AdminMenuQueryRequest getRequest) {
+    public Result<AdminMenuQueryVO> query(@Valid AdminMenuQueryRequest getRequest) {
         return Result.success(this.adminMenuService.query(getRequest));
     }
 
     @ApiOperation("List adminMenu")
     @GetMapping("/list")
-    public Result<PageDTO<AdminMenuQueryVO>> list(@Valid @RequestBody AdminMenuListRequest listRequest) {
+    public Result<PageDTO<AdminMenuQueryVO>> list(@Valid AdminMenuListRequest listRequest) {
         return Result.success(this.adminMenuService.getPageList(listRequest));
     }
 }
