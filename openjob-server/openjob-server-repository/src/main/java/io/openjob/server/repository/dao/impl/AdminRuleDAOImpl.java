@@ -4,6 +4,9 @@ import io.openjob.server.repository.dao.AdminRuleDAO;
 import io.openjob.server.repository.entity.AdminRule;
 import io.openjob.server.repository.repository.AdminRuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,7 +36,7 @@ public class AdminRuleDAOImpl implements AdminRuleDAO {
 
     @Override
     public AdminRule getById(Long id) {
-        return adminRuleRepository.getById(id);
+        return adminRuleRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -45,6 +48,13 @@ public class AdminRuleDAOImpl implements AdminRuleDAO {
     @Override
     public List<AdminRule> getByIds(List<Long> ids) {
         return adminRuleRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public Page<AdminRule> getPageList(Integer page, Integer size) {
+        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+
+        return adminRuleRepository.findAll(pageReq);
     }
 }
 

@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminMenu;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -48,5 +49,14 @@ public interface AdminMenuDAO {
      * @return AdminMenu list
      */
     List<AdminMenu> getByIds(List<Long> ids);
+
+    /**
+     * get AdminMenu list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminMenu list
+     */
+    Page<AdminMenu> getPageList(Integer page, Integer size);
 }
 

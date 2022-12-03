@@ -6,7 +6,12 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Job admin menu and perms
@@ -73,7 +78,7 @@ public class AdminMenu {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Long deleted;
+    private Integer deleted;
 
     /**
      * Delete time

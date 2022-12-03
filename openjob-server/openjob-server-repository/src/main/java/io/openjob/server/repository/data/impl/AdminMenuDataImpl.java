@@ -1,5 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
@@ -31,6 +32,7 @@ public class AdminMenuDataImpl implements AdminMenuData {
     public Long add(AdminMenuDTO dto) {
         AdminMenu entity = new AdminMenu();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return adminMenuDAO.add(entity);
     }

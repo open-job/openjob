@@ -18,5 +18,6 @@ public interface AdminRuleRepository extends JpaRepository<AdminRule, Long> {
      * @return list
      */
     List<AdminRule> findByIdIn(Collection<Long> ids);
+
 }
 

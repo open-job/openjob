@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminRule;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -48,5 +49,14 @@ public interface AdminRuleDAO {
      * @return AdminRule list
      */
     List<AdminRule> getByIds(List<Long> ids);
+
+    /**
+     * get AdminRule list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminRule list
+     */
+    Page<AdminRule> getPageList(Integer page, Integer size);
 }
 

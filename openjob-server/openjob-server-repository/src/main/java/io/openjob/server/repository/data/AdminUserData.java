@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminUserDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -49,5 +50,13 @@ public interface AdminUserData {
      */
     Integer updateById(AdminUserDTO dto);
 
+    /**
+     * get AdminUser list by page
+     *
+     * @param page page
+     * @param size size
+     * @return AdminUser list
+     */
+    Page<AdminUserDTO> getPageList(Integer page, Integer size);
 }
 

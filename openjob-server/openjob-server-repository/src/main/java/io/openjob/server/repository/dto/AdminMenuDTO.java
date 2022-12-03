@@ -58,16 +58,16 @@ public class AdminMenuDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 }
 

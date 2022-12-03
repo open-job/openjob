@@ -4,6 +4,9 @@ import io.openjob.server.repository.dao.AdminConfigDAO;
 import io.openjob.server.repository.entity.AdminConfig;
 import io.openjob.server.repository.repository.AdminConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -40,6 +43,13 @@ public class AdminConfigDAOImpl implements AdminConfigDAO {
     public Integer updateById(AdminConfig entity) {
         // return adminConfigRepository.updateById(entity); // TODO
         return 0;
+    }
+
+    @Override
+    public Page<AdminConfig> getPageList(Integer page, Integer size) {
+        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+
+        return adminConfigRepository.findAll(pageReq);
     }
 }
 

@@ -1,5 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NotifyGroupDAO;
 import io.openjob.server.repository.data.NotifyGroupData;
 import io.openjob.server.repository.dto.NotifyGroupDTO;
@@ -31,6 +32,7 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
     public Long add(NotifyGroupDTO dto) {
         NotifyGroup entity = new NotifyGroup();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return notifyGroupDAO.add(entity);
     }

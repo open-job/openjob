@@ -1,15 +1,19 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.AdminRuleDAO;
 import io.openjob.server.repository.data.AdminRuleData;
 import io.openjob.server.repository.dto.AdminRuleDTO;
 import io.openjob.server.repository.entity.AdminRule;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -31,6 +35,7 @@ public class AdminRuleDataImpl implements AdminRuleData {
     public Long add(AdminRuleDTO dto) {
         AdminRule entity = new AdminRule();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return adminRuleDAO.add(entity);
     }
@@ -75,9 +80,28 @@ public class AdminRuleDataImpl implements AdminRuleData {
     }
 
     @Override
-    public List<AdminRuleDTO> getPageList(Long id) {
-        // TODO
-        return null;
+    public Page<AdminRuleDTO> getPageList(Integer page, Integer size) {
+        Page<AdminRule> entPage = adminRuleDAO.getPageList(page, size);
+        List<AdminRuleDTO> dtoList = new ArrayList<>();
+
+        entPage.forEach(entity -> {
+            AdminRuleDTO entDTO = new AdminRuleDTO();
+            BeanUtils.copyProperties(entity, entDTO);
+            dtoList.add(entDTO);
+        });
+
+        return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());
     }
+
+    private AdminRuleDTO entityToDto(AdminRule entity) {
+        AdminRuleDTO entDTO = null;
+
+        if (Objects.nonNull(entity)) {
+            entDTO = new AdminRuleDTO();
+            BeanUtils.copyProperties(entity, entDTO);
+        }
+        return entDTO;
+    }
+
 }
 

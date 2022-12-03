@@ -4,6 +4,9 @@ import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.entity.AdminMenu;
 import io.openjob.server.repository.repository.AdminMenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -45,6 +48,13 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
     @Override
     public List<AdminMenu> getByIds(List<Long> ids) {
         return adminMenuRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public Page<AdminMenu> getPageList(Integer page, Integer size) {
+        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+
+        return adminMenuRepository.findAll(pageReq);
     }
 }
 

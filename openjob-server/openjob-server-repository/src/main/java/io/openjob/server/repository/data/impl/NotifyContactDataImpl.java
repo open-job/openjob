@@ -1,5 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NotifyContactDAO;
 import io.openjob.server.repository.data.NotifyContactData;
 import io.openjob.server.repository.dto.NotifyContactDTO;
@@ -31,6 +32,7 @@ public class NotifyContactDataImpl implements NotifyContactData {
     public Long add(NotifyContactDTO dto) {
         NotifyContact entity = new NotifyContact();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return notifyContactDAO.add(entity);
     }

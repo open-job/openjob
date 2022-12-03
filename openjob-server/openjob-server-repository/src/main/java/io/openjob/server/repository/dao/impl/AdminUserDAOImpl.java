@@ -4,6 +4,9 @@ import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -45,6 +48,13 @@ public class AdminUserDAOImpl implements AdminUserDAO {
     @Override
     public AdminUser getByUsername(String username) {
         return adminUserRepository.findByUsername(username);
+    }
+
+    @Override
+    public Page<AdminUser> getPageList(Integer page, Integer size) {
+        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+
+        return adminUserRepository.findAll(pageReq);
     }
 }
 

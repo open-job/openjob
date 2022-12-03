@@ -1,5 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NotifyTemplateDAO;
 import io.openjob.server.repository.data.NotifyTemplateData;
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
@@ -31,6 +32,7 @@ public class NotifyTemplateDataImpl implements NotifyTemplateData {
     public Long add(NotifyTemplateDTO dto) {
         NotifyTemplate entity = new NotifyTemplate();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return notifyTemplateDAO.add(entity);
     }

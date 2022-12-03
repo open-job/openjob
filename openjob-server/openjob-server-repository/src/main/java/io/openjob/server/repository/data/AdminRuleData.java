@@ -1,6 +1,7 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminRuleDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -52,10 +53,11 @@ public interface AdminRuleData {
     /**
      * get AdminRule list by params
      *
-     * @param id id
+     * @param page page
+     * @param size size
      * @return AdminRule list
      */
-    List<AdminRuleDTO> getPageList(Long id);
+    Page<AdminRuleDTO> getPageList(Integer page, Integer size);
 
 }
 

@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminUser;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -48,5 +49,14 @@ public interface AdminUserDAO {
      * @return AdminUser
      */
     AdminUser getByUsername(String username);
+
+    /**
+     * get AdminUser list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminUser list
+     */
+    Page<AdminUser> getPageList(Integer page, Integer size);
 }
 

@@ -1,5 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.AdminConfigDAO;
 import io.openjob.server.repository.data.AdminConfigData;
 import io.openjob.server.repository.dto.AdminConfigDTO;
@@ -31,6 +32,7 @@ public class AdminConfigDataImpl implements AdminConfigData {
     public Long add(AdminConfigDTO dto) {
         AdminConfig entity = new AdminConfig();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCreateTime(DateUtil.timestamp());
 
         return adminConfigDAO.add(entity);
     }
