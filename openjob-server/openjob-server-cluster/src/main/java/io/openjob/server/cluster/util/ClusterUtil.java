@@ -75,25 +75,30 @@ public class ClusterUtil {
         Collections.sort(serverIds);
         int serverSize = serverIds.size();
 
-        int currentIndex = serverIds.indexOf(currentNode.getServerId());
+        // Server size is less than spread size.
+        if (serverSize <= spreadSize) {
+            return serverIds.stream().filter(c -> !c.equals(currentNode.getServerId())).collect(Collectors.toList());
+        }
 
+        // Current index and sub size from tail
+        int currentIndex = serverIds.indexOf(currentNode.getServerId());
         int subSize = serverSize - currentIndex - 1;
         if (subSize > spreadSize) {
             subSize = spreadSize;
         }
 
-        List<Long> pingList = serverIds.subList(currentIndex, subSize);
-        int pingSize = pingList.size();
-        int remainPingSize = spreadSize - pingSize;
-        int needPingSize = remainPingSize;
-        if (spreadSize > serverSize - 1) {
-            needPingSize = serverSize - 1 - remainPingSize;
+        // Sub from tail by size.
+        List<Long> fixedList = new ArrayList<>(serverIds.subList(currentIndex + 1, currentIndex + 1 + subSize));
+        int pingSize = fixedList.size();
+        int needPingSize = spreadSize - pingSize;
+
+        // Sub from head by size.
+        if (needPingSize > 0) {
+            fixedList.addAll(serverIds.subList(0, needPingSize));
         }
 
-        if (needPingSize > 0) {
-            pingList.addAll(serverIds.subList(0, needPingSize));
-        }
-        return pingList;
+        Collections.sort(fixedList);
+        return fixedList;
     }
 
     /**
