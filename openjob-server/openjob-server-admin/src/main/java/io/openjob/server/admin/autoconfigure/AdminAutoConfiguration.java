@@ -23,6 +23,11 @@ public class AdminAutoConfiguration {
         this.userProperties = userProperties;
     }
 
+    /**
+     * make loginCache bean
+     *
+     * @return bean
+     */
     @Bean
     public Cache<String, AdminUserLoginVO> loginCache() {
         return Caffeine.newBuilder()
