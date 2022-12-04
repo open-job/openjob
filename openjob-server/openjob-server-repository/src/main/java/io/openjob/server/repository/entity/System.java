@@ -46,6 +46,18 @@ public class System {
     private Integer workerSupervisorSlot;
 
     /**
+     * Delay zset slot.
+     */
+    @Column(name = "delay_zset_slot")
+    private Integer DelayZsetSlot;
+
+    /**
+     * Delay list slot.
+     */
+    @Column(name = "delay_list_slot")
+    private Integer DelayListSlot;
+
+    /**
      * Max slot
      */
     @Column(name = "max_slot")

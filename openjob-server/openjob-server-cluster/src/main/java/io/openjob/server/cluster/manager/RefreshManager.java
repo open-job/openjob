@@ -72,7 +72,8 @@ public class RefreshManager {
         systemDTO.setClusterVersion(system.getClusterVersion());
         systemDTO.setClusterSupervisorSlot(system.getClusterSupervisorSlot());
         systemDTO.setWorkerSupervisorSlot(system.getWorkerSupervisorSlot());
-        systemDTO.setDelayZsetMaxSlot(2);
+        systemDTO.setDelayZsetMaxSlot(system.getDelayZsetSlot());
+        systemDTO.setDelayListMaxSlot(system.getDelayListSlot());
 
         ClusterContext.refreshSystem(systemDTO);
         log.info(String.format("Refresh %s", system));
