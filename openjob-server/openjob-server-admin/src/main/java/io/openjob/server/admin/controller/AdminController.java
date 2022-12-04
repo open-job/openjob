@@ -44,7 +44,7 @@ public class AdminController {
     @PostMapping("/logout")
     public Result<AdminUserLogoutVO> logout(
             @Valid @RequestBody AdminUserLogoutRequest request,
-            @RequestHeader(name = AdminConstant.LOGIN_HEADER_KEY) String sessKey
+            @RequestHeader(name = AdminConstant.HEADER_SESSION_KEY) String sessKey
     ) {
         return Result.success(this.adminLoginService.logout(request, sessKey));
     }

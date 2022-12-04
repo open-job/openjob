@@ -54,9 +54,12 @@ public class AdminUserDataImpl implements AdminUserData {
 
     @Override
     public AdminUserDTO getByUsername(String username) {
-        AdminUser entity = adminUserDAO.getByUsername(username);
+        return ObjectUtil.mapOrNull(adminUserDAO.getByUsername(username), AdminUserDTO.class);
+    }
 
-        return ObjectUtil.mapObject(entity, AdminUserDTO.class);
+    @Override
+    public AdminUserDTO getByToken(String token) {
+        return ObjectUtil.mapOrNull(adminUserDAO.getByToken(token), AdminUserDTO.class);
     }
 
     @Override

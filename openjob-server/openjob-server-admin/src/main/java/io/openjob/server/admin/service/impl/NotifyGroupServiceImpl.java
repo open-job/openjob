@@ -11,6 +11,7 @@ import io.openjob.server.admin.vo.notify.NotifyGroupAddVO;
 import io.openjob.server.admin.vo.notify.NotifyGroupQueryVO;
 import io.openjob.server.admin.vo.notify.NotifyGroupUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.data.NotifyGroupData;
 import io.openjob.server.repository.dto.NotifyGroupDTO;
 import org.springframework.beans.BeanUtils;
@@ -66,11 +67,8 @@ public class NotifyGroupServiceImpl implements NotifyGroupService {
     @Override
     public NotifyGroupQueryVO query(NotifyGroupQueryRequest reqDTO) {
         NotifyGroupDTO entDTO = notifyGroupData.getById(reqDTO.getId());
-        NotifyGroupQueryVO retVo = new NotifyGroupQueryVO();
 
-        BeanUtils.copyProperties(entDTO, retVo);
-
-        return retVo;
+        return ObjectUtil.mapObject(entDTO, NotifyGroupQueryVO.class);
     }
 
     @Override

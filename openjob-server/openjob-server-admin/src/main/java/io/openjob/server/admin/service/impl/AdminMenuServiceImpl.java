@@ -11,6 +11,7 @@ import io.openjob.server.admin.vo.menu.AdminMenuAddVO;
 import io.openjob.server.admin.vo.menu.AdminMenuQueryVO;
 import io.openjob.server.admin.vo.menu.AdminMenuUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
 import org.springframework.beans.BeanUtils;
@@ -66,11 +67,8 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     @Override
     public AdminMenuQueryVO query(AdminMenuQueryRequest reqDTO) {
         AdminMenuDTO entDTO = adminMenuData.getById(reqDTO.getId());
-        AdminMenuQueryVO retVo = new AdminMenuQueryVO();
 
-        BeanUtils.copyProperties(entDTO, retVo);
-
-        return retVo;
+        return ObjectUtil.mapObject(entDTO, AdminMenuQueryVO.class);
     }
 
     @Override

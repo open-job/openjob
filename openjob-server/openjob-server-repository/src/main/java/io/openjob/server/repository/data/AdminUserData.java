@@ -43,6 +43,14 @@ public interface AdminUserData {
     AdminUserDTO getByUsername(String username);
 
     /**
+     * get AdminUser by token
+     *
+     * @param token token
+     * @return AdminUserDTO or null
+     */
+    AdminUserDTO getByToken(String token);
+
+    /**
      * update AdminUser by ID
      *
      * @param dto dto

@@ -30,7 +30,6 @@ public class AdminUserUpdateRequest {
     @ApiModelProperty(value = "Nickname")
     private String nickname;
 
-    @NotBlank
     @ApiModelProperty(value = "Password, md5 hashed before submit")
     private String passwd;
 

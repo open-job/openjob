@@ -11,16 +11,23 @@ public class AdminConstant {
 
     /**
      * user login session key name in headers
+     * "session: session_key"
      */
-    public static final String LOGIN_HEADER_KEY = "session-key";
+    public static final String HEADER_SESSION_KEY = "session";
+
+    /**
+     * user api token header name in headers
+     * "token: user_token"
+     */
+    public static final String HEADER_TOKEN_KEY = "token";
 
     /**
      * mark is permission data
      */
-    public static final Integer MENU_TYPE_PERM = 1;
+    public static final Integer MENU_TYPE_PERM = 2;
 
     /**
      * mark is admin menu data
      */
-    public static final Integer MENU_TYPE_MENU = 2;
+    public static final Integer MENU_TYPE_MENU = 1;
 }

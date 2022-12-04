@@ -26,7 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -63,18 +68,35 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     @Override
     public AdminUserLoginVO login(AdminUserLoginRequest reqDTO) {
-        AdminUserDTO entDTO = adminUserData.getByUsername(reqDTO.getUsername());
-        checkLoginUser(entDTO, reqDTO.getPasswd());
+        AdminUserDTO userDto = adminUserData.getByUsername(reqDTO.getUsername());
+        checkLoginUser(userDto, reqDTO.getPasswd());
 
         // build return vo
         AdminUserLoginVO vo = AdminUserLoginVO.builder()
-                .id(entDTO.getId())
-                .username(entDTO.getUsername())
-                .nickname(entDTO.getNickname())
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .nickname(userDto.getNickname())
                 .build();
 
         // query user perms and menus
-        appendUserMenuAndPerms(vo, entDTO);
+        appendMenuAndPerms(vo, userDto, false);
+
+        return vo;
+    }
+
+    @Override
+    public AdminUserLoginVO authByToken(String token) {
+        AdminUserDTO userDto = adminUserData.getByToken(token);
+
+        // build return vo
+        AdminUserLoginVO vo = AdminUserLoginVO.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .nickname(userDto.getNickname())
+                .build();
+
+        // query user perms and menus
+        appendMenuAndPerms(vo, userDto, true);
 
         return vo;
     }
@@ -99,10 +121,10 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private String userSessionKey(String username) {
         String str = DateUtil.milliLongTime() + username;
-        return HmacUtil.encrypt(str, "", HmacUtil.HMAC_MD5);
+        return HmacUtil.encrypt(str, "SESS", HmacUtil.HMAC_MD5);
     }
 
-    private void appendUserMenuAndPerms(AdminUserLoginVO vo, AdminUserDTO entDTO) {
+    private void appendMenuAndPerms(AdminUserLoginVO vo, AdminUserDTO entDTO, Boolean onlyPerms) {
         // query user rule and perms
         List<AdminRuleDTO> rules = adminRuleData.getByIds(entDTO.getRuleIds());
         if (CollectionUtils.isEmpty(rules)) {
@@ -118,7 +140,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 isAdmin = true;
             }
 
-            menuIds.addAll(ruleDto.getMenus());
+            if (!onlyPerms) {
+                menuIds.addAll(ruleDto.getMenus());
+            }
             menuIds.addAll(ruleDto.getPerms());
         }
 
@@ -142,6 +166,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         }
 
         vo.setPerms(userPerms);
+        if (onlyPerms) {
+            return;
+        }
 
         // format menus
         menuDtos.sort(Comparator.comparingInt(AdminMenuDTO::getSort));
@@ -152,6 +179,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         loginCache.put(sessKey, vo);
 
         vo.setMenus(userMenus);
+        vo.setSessionKey(sessKey);
     }
 
     private List<MenuItemVO> formatTreeMenus(List<AdminMenuDTO> dtoList) {
@@ -163,9 +191,10 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         for (AdminMenuDTO dataRecord : dtoList) {
             MenuItemVO node = new MenuItemVO();
             node.setId(dataRecord.getId());
+            node.setPid(dataRecord.getPid());
             node.setName(dataRecord.getName());
             node.setPath(dataRecord.getPath());
-            node.setPid(dataRecord.getPid());
+            node.setSort(dataRecord.getSort());
 
             // build meta info
             MenuMetaVO menuMeta = new MenuMetaVO();

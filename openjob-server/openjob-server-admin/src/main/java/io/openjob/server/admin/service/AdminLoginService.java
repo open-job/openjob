@@ -9,6 +9,13 @@ import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
  * @author inhere
  */
 public interface AdminLoginService {
+    /**
+     * get user by token
+     *
+     * @param token token
+     * @return user
+     */
+    AdminUserLoginVO authByToken(String token);
 
     /**
      * admin user login

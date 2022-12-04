@@ -1,6 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.server.admin.autoconfigure.AdminUserProperties;
 import io.openjob.server.admin.request.user.AdminUserAddRequest;
 import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
 import io.openjob.server.admin.request.user.AdminUserListRequest;
@@ -11,6 +12,8 @@ import io.openjob.server.admin.vo.user.AdminUserAddVO;
 import io.openjob.server.admin.vo.user.AdminUserQueryVO;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.HmacUtil;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import org.springframework.beans.BeanUtils;
@@ -29,15 +32,20 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     private final AdminUserData adminUserData;
 
+    private final AdminUserProperties userProperties;
+
     @Autowired
-    public AdminUserServiceImpl(AdminUserData adminUserData) {
+    public AdminUserServiceImpl(AdminUserData adminUserData, AdminUserProperties userProperties) {
         this.adminUserData = adminUserData;
+        this.userProperties = userProperties;
     }
 
     @Override
     public AdminUserAddVO add(AdminUserAddRequest reqDTO) {
-        AdminUserDTO entDto = new AdminUserDTO();
-        BeanUtils.copyProperties(reqDTO, entDto);
+        AdminUserDTO entDto = ObjectUtil.copyObject(reqDTO, new AdminUserDTO());
+
+        // hash input passwd
+        entDto.setPasswd(HmacUtil.hashPasswd(reqDTO.getPasswd(), userProperties.getPasswdSalt()));
         adminUserData.add(entDto);
 
         AdminUserAddVO retVo = new AdminUserAddVO();
@@ -72,11 +80,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public AdminUserQueryVO query(AdminUserQueryRequest reqDTO) {
         AdminUserDTO entDTO = adminUserData.getById(reqDTO.getId());
-        AdminUserQueryVO retVo = new AdminUserQueryVO();
 
-        BeanUtils.copyProperties(entDTO, retVo);
-
-        return retVo;
+        return ObjectUtil.mapObject(entDTO, AdminUserQueryVO.class);
     }
 
     @Override
@@ -88,10 +93,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         pageVo.setList(new ArrayList<>());
 
         pageList.forEach(entDTO -> {
-            AdminUserQueryVO retVo = new AdminUserQueryVO();
-            BeanUtils.copyProperties(entDTO, retVo);
-
-            pageVo.getList().add(retVo);
+            pageVo.getList().add(ObjectUtil.mapObject(entDTO, AdminUserQueryVO.class));
         });
 
         return pageVo;

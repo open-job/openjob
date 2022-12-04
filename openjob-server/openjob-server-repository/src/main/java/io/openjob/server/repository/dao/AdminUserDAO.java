@@ -58,5 +58,13 @@ public interface AdminUserDAO {
      * @return AdminUser list
      */
     Page<AdminUser> getPageList(Integer page, Integer size);
+
+    /**
+     * get AdminUser by token
+     *
+     * @param token token
+     * @return AdminUser or null
+     */
+    AdminUser getByToken(String token);
 }
 

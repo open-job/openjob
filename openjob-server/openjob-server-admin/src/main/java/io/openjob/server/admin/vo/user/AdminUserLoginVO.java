@@ -27,6 +27,9 @@ public class AdminUserLoginVO {
     @ApiModelProperty(value = "Nickname")
     private String nickname;
 
+    @ApiModelProperty(value = "Session Key, please set to header \"session: sessionKey\"")
+    private String sessionKey;
+
     @ApiModelProperty(value = "user is supper admin")
     private Boolean supperAdmin;
 

@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
@@ -48,6 +49,11 @@ public class AdminUserDAOImpl implements AdminUserDAO {
     @Override
     public AdminUser getByUsername(String username) {
         return adminUserRepository.findByUsername(username);
+    }
+
+    @Override
+    public AdminUser getByToken(String token) {
+        return adminUserRepository.findByTokenAndDeleted(token, CommonConstant.NO);
     }
 
     @Override

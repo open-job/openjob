@@ -11,6 +11,7 @@ import io.openjob.server.admin.vo.user.AdminRuleAddVO;
 import io.openjob.server.admin.vo.user.AdminRuleQueryVO;
 import io.openjob.server.admin.vo.user.AdminRuleUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.data.AdminRuleData;
 import io.openjob.server.repository.dto.AdminRuleDTO;
 import org.springframework.beans.BeanUtils;
@@ -69,11 +70,8 @@ public class AdminRuleServiceImpl implements AdminRuleService {
     @Override
     public AdminRuleQueryVO query(AdminRuleQueryRequest reqDTO) {
         AdminRuleDTO entDTO = adminRuleData.getById(reqDTO.getId());
-        AdminRuleQueryVO retVo = new AdminRuleQueryVO();
 
-        BeanUtils.copyProperties(entDTO, retVo);
-
-        return retVo;
+        return ObjectUtil.mapObject(entDTO, AdminRuleQueryVO.class);
     }
 
     @Override
