@@ -7,6 +7,7 @@ import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.common.ClusterContext;
+import io.openjob.server.scheduler.Scheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClusterService {
 
     private final WheelManager wheelManager;
-
     private final RefreshManager refreshManager;
+    private final Scheduler scheduler;
 
     /**
      * Refresh status.
@@ -33,9 +34,10 @@ public class ClusterService {
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
 
     @Autowired
-    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager) {
+    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager, Scheduler scheduler) {
         this.wheelManager = wheelManager;
         this.refreshManager = refreshManager;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -54,9 +56,9 @@ public class ClusterService {
 
         // Refresh current slots.
         Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
-        if (!removeSlots.isEmpty()) {
-            this.wheelManager.removeBySlotsId(removeSlots);
-        }
+
+        // Refresh scheduler.
+        this.scheduler.refresh(removeSlots);
 
         // Refresh app workers.
         this.refreshManager.refreshAppWorkers();
@@ -87,10 +89,8 @@ public class ClusterService {
         // Refresh slots.
         Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
 
-        // Remove job instance from timing wheel.
-        if (!removeSlots.isEmpty()) {
-            this.wheelManager.removeBySlotsId(removeSlots);
-        }
+        // Refresh scheduler.
+        this.scheduler.refresh(removeSlots);
 
         // Refresh system.
         this.refreshManager.refreshSystem(false);

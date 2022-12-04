@@ -123,7 +123,7 @@ public class JoinManager {
         List<Long> migratedList = new ArrayList<>();
         serverIdToSlots.forEach((id, slots) -> {
             int migratedSize = (int) Math.floor(slots.size() * (1.0 / (slotsServerCount + 1)));
-            List<Long> migratedIds = slots.subList(0, migratedSize - 1);
+            List<Long> migratedIds = slots.subList(0, migratedSize);
             migratedList.addAll(migratedIds);
         });
 
