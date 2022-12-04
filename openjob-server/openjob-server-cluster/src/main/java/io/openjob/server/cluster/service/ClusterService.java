@@ -175,7 +175,7 @@ public class ClusterService {
      * @return Boolean
      */
     private Boolean isIgnore(Long clusterVersion) {
-        if (clusterVersion >= ClusterContext.getSystem().getClusterVersion()) {
+        if (clusterVersion <= ClusterContext.getSystem().getClusterVersion()) {
             return true;
         }
 
