@@ -1,5 +1,7 @@
 package io.openjob.server.common.util;
 
+import org.apache.tomcat.util.security.MD5Encoder;
+
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,11 +18,6 @@ public class HmacUtil {
      * HmacSHA1 method, encrypted length is 32
      */
     public static final String HMAC_SHA1 = "HmacSHA1";
-
-    /**
-     * HmacSHA1 method, encrypted length is 32
-     */
-    public static final String HMAC_MD5 = "HmacMD5";
 
     /**
      * HmacSHA1 method, encrypted length is 64
@@ -87,6 +84,15 @@ public class HmacUtil {
         return cipher;
     }
 
+    /**
+     * md5 input string
+     *
+     * @param input string
+     * @return string
+     */
+    public static String md5(String input) {
+        return MD5Encoder.encode(input.getBytes());
+    }
 
     /**
      * byte数组转16进制字符串

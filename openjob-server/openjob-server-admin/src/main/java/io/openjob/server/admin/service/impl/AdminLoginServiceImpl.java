@@ -120,8 +120,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private String userSessionKey(String username) {
-        String str = DateUtil.milliLongTime() + username;
-        return HmacUtil.encrypt(str, "SESS", HmacUtil.HMAC_MD5);
+        return HmacUtil.md5(DateUtil.milliLongTime() + username);
     }
 
     private void appendMenuAndPerms(AdminUserLoginVO vo, AdminUserDTO entDTO, Boolean onlyPerms) {
