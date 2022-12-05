@@ -37,9 +37,9 @@ public class AdminUserDTO {
     private String token;
 
     /**
-     * Rule IDs. JSON: [1,2]
+     * Role IDs. JSON: [1,2]
      */
-    private List<Long> ruleIds;
+    private List<Long> roleIds;
 
     /**
      * Delete status. 1=yes 2=no

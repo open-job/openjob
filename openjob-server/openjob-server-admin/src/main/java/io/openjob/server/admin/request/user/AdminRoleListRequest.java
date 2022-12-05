@@ -9,8 +9,8 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleListRequest", description = "AdminRule page list request")
-public class AdminRuleListRequest {
+@ApiModel(value = "AdminRoleListRequest", description = "AdminRole page list request")
+public class AdminRoleListRequest {
 
     @ApiModelProperty(value = "List page.")
     private Integer page = 1;

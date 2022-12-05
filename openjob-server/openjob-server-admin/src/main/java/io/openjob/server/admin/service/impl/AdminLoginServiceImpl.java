@@ -17,14 +17,15 @@ import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
 import io.openjob.server.common.exception.BusinessException;
 import io.openjob.server.common.util.HmacUtil;
 import io.openjob.server.repository.data.AdminMenuData;
-import io.openjob.server.repository.data.AdminRuleData;
+import io.openjob.server.repository.data.AdminRoleData;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
-import io.openjob.server.repository.dto.AdminRuleDTO;
+import io.openjob.server.repository.dto.AdminRoleDTO;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 @Service
 public class AdminLoginServiceImpl implements AdminLoginService {
 
-    private final AdminRuleData adminRuleData;
+    private final AdminRoleData adminRoleData;
 
     private final AdminUserData adminUserData;
 
@@ -53,12 +54,12 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     @Autowired
     public AdminLoginServiceImpl(
-            AdminRuleData adminRuleData,
+            AdminRoleData adminRoleData,
             AdminUserData adminUserData,
             AdminMenuData adminMenuData, AdminUserProperties userProperties,
             Cache<String, AdminUserLoginVO> loginCache
     ) {
-        this.adminRuleData = adminRuleData;
+        this.adminRoleData = adminRoleData;
         this.adminUserData = adminUserData;
         this.adminMenuData = adminMenuData;
         this.userProperties = userProperties;
@@ -117,35 +118,35 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             throw new BusinessException("input user password is error");
         }
 
-        if (CollectionUtils.isEmpty(entDTO.getRuleIds())) {
-            throw new BusinessException("not set rule for user, please contact administrator");
+        if (CollectionUtils.isEmpty(entDTO.getRoleIds())) {
+            throw new BusinessException("not set role for user, please contact administrator");
         }
     }
 
     private String userSessionKey(String username) {
-        return HmacUtil.md5(DateUtil.milliLongTime() + username);
+        return DigestUtils.md5DigestAsHex((DateUtil.milliLongTime() + username).getBytes());
     }
 
     private void appendMenuAndPerms(AdminUserLoginVO vo, AdminUserDTO entDTO, Boolean onlyPerms) {
-        // query user rule and perms
-        List<AdminRuleDTO> rules = adminRuleData.getByIds(entDTO.getRuleIds());
-        if (CollectionUtils.isEmpty(rules)) {
-            throw new BusinessException("login user rules not found");
+        // query user role and perms
+        List<AdminRoleDTO> roles = adminRoleData.getByIds(entDTO.getRoleIds());
+        if (CollectionUtils.isEmpty(roles)) {
+            throw new BusinessException("login user roles not found");
         }
 
         boolean isAdmin = false;
         List<Long> menuIds = new ArrayList<>();
 
         // collect admin_menu.id list
-        for (AdminRuleDTO ruleDto : rules) {
-            if (CommonUtil.isTrue(ruleDto.getAdmin())) {
+        for (AdminRoleDTO roleDto : roles) {
+            if (CommonUtil.isTrue(roleDto.getAdmin())) {
                 isAdmin = true;
             }
 
             if (!onlyPerms) {
-                menuIds.addAll(ruleDto.getMenus());
+                menuIds.addAll(roleDto.getMenus());
             }
-            menuIds.addAll(ruleDto.getPerms());
+            menuIds.addAll(roleDto.getPerms());
         }
 
         vo.setSupperAdmin(isAdmin);

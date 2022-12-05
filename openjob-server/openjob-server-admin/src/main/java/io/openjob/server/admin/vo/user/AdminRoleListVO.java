@@ -11,14 +11,14 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleListVO", description = "AdminRule list VO")
-public class AdminRuleListVO {
+@ApiModel(value = "AdminRoleListVO", description = "AdminRole list VO")
+public class AdminRoleListVO {
 
     @ApiModelProperty(value = "total count")
     private Integer total;
 
     @ApiModelProperty(value = "user list")
-    private List<AdminRuleQueryVO> list;
+    private List<AdminRoleQueryVO> list;
 
 
 }

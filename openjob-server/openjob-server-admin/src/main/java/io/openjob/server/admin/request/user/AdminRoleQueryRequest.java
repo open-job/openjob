@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleDeleteRequest", description = "AdminRule delete request")
-public class AdminRuleDeleteRequest {
+@ApiModel(value = "AdminRoleQueryRequest", description = "AdminRole query request")
+public class AdminRoleQueryRequest {
 
     @Min(1)
     @NotNull()

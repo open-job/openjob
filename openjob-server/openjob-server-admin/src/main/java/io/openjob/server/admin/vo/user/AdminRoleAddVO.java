@@ -9,11 +9,10 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleUpdateVO", description = "AdminRule update VO")
-public class AdminRuleUpdateVO {
+@ApiModel(value = "AdminRoleVO", description = "AdminRole add VO")
+public class AdminRoleAddVO {
 
     @ApiModelProperty(value = "PK")
     private Long id;
-
 }
 

@@ -37,8 +37,8 @@ public class AdminUserAddRequest {
 
     @NotNull
     @Size(min = 1, max = 10)
-    @ApiModelProperty(value = "Rule IDs. JSON: [1,2]")
-    private List<Long> ruleIds;
+    @ApiModelProperty(value = "Role IDs. JSON: [1,2]")
+    private List<Long> roleIds;
 
 }
 

@@ -11,22 +11,22 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleQueryVO", description = "AdminRule query VO")
-public class AdminRuleQueryVO {
+@ApiModel(value = "AdminRoleQueryVO", description = "AdminRole query VO")
+public class AdminRoleQueryVO {
 
     @ApiModelProperty(value = "PK")
     private Long id;
 
-    @ApiModelProperty(value = "Rule name")
+    @ApiModelProperty(value = "Role name")
     private String name;
 
     @ApiModelProperty(value = "Description")
     private String desc;
 
-    @ApiModelProperty(value = "Menu ids for rule. JSON array")
+    @ApiModelProperty(value = "Menu ids for role. JSON array")
     private List<Long> menus;
 
-    @ApiModelProperty(value = "Permissions ids for rule. JSON array")
+    @ApiModelProperty(value = "Permissions ids for role. JSON array")
     private List<Long> perms;
 
     @ApiModelProperty(value = "Is Admin. 1=yes 2=no")

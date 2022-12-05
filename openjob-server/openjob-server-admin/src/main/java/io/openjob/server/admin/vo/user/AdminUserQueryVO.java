@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * @author inhere
- *
  * @since 1.0.0
  */
 @Data
@@ -24,14 +23,11 @@ public class AdminUserQueryVO {
     @ApiModelProperty(value = "Nickname")
     private String nickname;
 
-    @ApiModelProperty(value = "Password")
-    private String passwd;
-
     @ApiModelProperty(value = "Api auth token")
     private String token;
 
-    @ApiModelProperty(value = "Rule IDs. JSON: [1,2]")
-    private List<Long> ruleIds;
+    @ApiModelProperty(value = "Role IDs. JSON: [1,2]")
+    private List<Long> roleIds;
 
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;

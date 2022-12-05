@@ -9,7 +9,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-public class AdminRuleDTO {
+public class AdminRoleDTO {
 
     /**
      * PK
@@ -17,7 +17,7 @@ public class AdminRuleDTO {
     private Long id;
 
     /**
-     * Rule name
+     * Role name
      */
     private String name;
 
@@ -27,12 +27,12 @@ public class AdminRuleDTO {
     private String desc;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     private List<Long> menus;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     private List<Long> perms;
 

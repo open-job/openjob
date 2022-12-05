@@ -14,15 +14,15 @@ import javax.persistence.Table;
 import java.util.List;
 
 /**
- * Job admin rules
+ * Job admin roles
  *
  * @author inhere
  */
 @Data
 @Entity
-@Table(name = "admin_rule")
+@Table(name = "admin_role")
 @TypeDef(name = "json", typeClass = JsonType.class)
-public class AdminRule {
+public class AdminRole {
 
     /**
      * PK
@@ -32,7 +32,7 @@ public class AdminRule {
     private Long id;
 
     /**
-     * Rule name
+     * Role name
      */
     @Column(name = "name")
     private String name;
@@ -44,14 +44,14 @@ public class AdminRule {
     private String desc;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     @Type(type = "json")
     @Column(name = "menus", columnDefinition = "json")
     private List<Long> menus;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     @Type(type = "json")
     @Column(name = "perms", columnDefinition = "json")

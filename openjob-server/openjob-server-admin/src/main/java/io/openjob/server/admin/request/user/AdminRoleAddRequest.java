@@ -14,12 +14,12 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleAddRequest", description = "AdminRule add Request")
-public class AdminRuleAddRequest {
+@ApiModel(value = "AdminRoleAddRequest", description = "AdminRole add Request")
+public class AdminRoleAddRequest {
 
     @NotNull
     @NotBlank
-    @ApiModelProperty(value = "Rule name")
+    @ApiModelProperty(value = "Role name")
     private String name;
 
     @NotNull
@@ -28,11 +28,11 @@ public class AdminRuleAddRequest {
     private String desc;
 
     @NotNull
-    @ApiModelProperty(value = "Menu ids for rule. JSON array")
+    @ApiModelProperty(value = "Menu ids for role. JSON array")
     private List<Long> menus;
 
     @NotNull
-    @ApiModelProperty(value = "Permissions ids for rule. JSON array")
+    @ApiModelProperty(value = "Permissions ids for role. JSON array")
     private List<Long> perms;
 
     @NotNull

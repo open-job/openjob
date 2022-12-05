@@ -37,8 +37,8 @@ public class AdminUserUpdateRequest {
     private String token;
 
     @Min(1)
-    @ApiModelProperty(value = "Rule IDs. JSON: [1,2]")
-    private List<Long> ruleIds;
+    @ApiModelProperty(value = "Role IDs. JSON: [1,2]")
+    private List<Long> roleIds;
 
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;

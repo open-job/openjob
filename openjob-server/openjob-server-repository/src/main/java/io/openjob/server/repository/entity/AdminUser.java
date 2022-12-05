@@ -56,11 +56,11 @@ public class AdminUser {
     private String token;
 
     /**
-     * Rule IDs. JSON: [1,2]
+     * Role IDs. JSON: [1,2]
      */
     @Type(type = "json")
-    @Column(name = "rule_ids", columnDefinition = "json")
-    private List<Long> ruleIds;
+    @Column(name = "role_ids", columnDefinition = "json")
+    private List<Long> roleIds;
 
     /**
      * Delete status. 1=yes 2=no
