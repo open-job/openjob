@@ -46,6 +46,8 @@ public class AccessInterceptor implements HandlerInterceptor {
         this.loginCache = loginCache;
 
         noLoginRoutes = new ArrayList<>();
+        noLoginRoutes.add("/");
+        noLoginRoutes.add("/csrf");
         noLoginRoutes.add("/error");
         noLoginRoutes.add("/admin/login");
         noLoginRoutes.add("/favicon.ico");

@@ -22,6 +22,10 @@ import static com.google.common.collect.Lists.newArrayList;
 @Configuration
 public class SwaggerAutoConfiguration {
 
+    private static final String API_KEY_TOKEN_AUTH = "TokenAuth";
+
+    private static final String API_KEY_SESSION_AUTH = "SessionAuth";
+
     /**
      * Openapi.
      *
@@ -56,8 +60,8 @@ public class SwaggerAutoConfiguration {
 
     private List<ApiKey> securitySchemes() {
         return newArrayList(
-                new ApiKey("TokenAuth", "Token", "header"),
-                new ApiKey("SessionAuth", "Session", "header")
+                new ApiKey(API_KEY_TOKEN_AUTH, "Token", "header"),
+                new ApiKey(API_KEY_SESSION_AUTH, "Session", "header")
         );
     }
 
@@ -72,8 +76,13 @@ public class SwaggerAutoConfiguration {
 
     List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return newArrayList(new SecurityReference("Authorization", authorizationScopes));
+
+        AuthorizationScope[] scopes = new AuthorizationScope[1];
+        scopes[0] = authorizationScope;
+
+        return newArrayList(
+                new SecurityReference(API_KEY_TOKEN_AUTH, scopes),
+                new SecurityReference(API_KEY_SESSION_AUTH, scopes)
+        );
     }
 }

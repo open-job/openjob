@@ -1,6 +1,6 @@
 package io.openjob.server.common.util;
 
-import org.apache.tomcat.util.security.MD5Encoder;
+import org.springframework.util.DigestUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -91,7 +91,7 @@ public class HmacUtil {
      * @return string
      */
     public static String md5(String input) {
-        return MD5Encoder.encode(input.getBytes());
+        return DigestUtils.md5DigestAsHex(input.getBytes());
     }
 
     /**

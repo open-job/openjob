@@ -635,6 +635,66 @@ UNLOCK TABLES;
     ------------------------------------
 */;
 
+DROP TABLE IF EXISTS `admin_config`;
+CREATE TABLE `admin_config` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
+                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`),
+                                INDEX `idx_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
+
+INSERT INTO `admin_config` (`name`, `value`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('system_name', 'OpenJob Admin', 2, 0, 1670255999, 1670255999);
+
+DROP TABLE IF EXISTS `admin_user`;
+CREATE TABLE `admin_user` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
+                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
+                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
+                              `role_ids` JSON COMMENT 'role IDs. JSON: [1,2]',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`username`),
+                              UNIQUE `uni_token` (`token`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
+
+INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('admin', 'Administrator', 'fa1ed17dd70b536168522136eab8cdd70203586d35c8dc5b78d531ca04c1ebca', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+    ('openjob', 'OpenJob User', 'c20d5129757d5a04f0b99f31fd337dfe323f60862adbe857868c04eab00284dd', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+
+DROP TABLE IF EXISTS `admin_role`;
+CREATE TABLE `admin_role` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'role name',
+                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
+                              `menus` JSON COMMENT 'Menu ids for role. JSON array',
+                              `perms` JSON COMMENT 'Permissions ids for role. JSON array',
+                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is supper admin. 1=yes 2=no',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`name`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin roles';
+
+INSERT INTO `admin_role` (`name`, `desc`, `menus`, `perms`, `admin`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('Admin', 'Administrator role', '[1, 2, 3]', '[4, 5, 6, 7]', 1, 2, 0, 1670255999, 1670255999),
+    ('Developer', 'Developer role', '[1, 2, 3]', '[4, 5, 6, 7]', 2, 2, 0, 1670255999, 1670255999);
+
 DROP TABLE IF EXISTS `admin_menu`;
 CREATE TABLE `admin_menu` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
@@ -654,53 +714,28 @@ CREATE TABLE `admin_menu` (
                               INDEX  `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
 
-DROP TABLE IF EXISTS `admin_config`;
-CREATE TABLE `admin_config` (
-                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
-                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
-                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                PRIMARY KEY (`id`),
-                                INDEX `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
+INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    /** menus **/
+    (1, 0, 1, 'Dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (2, 0, 1, 'Manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (5, 2, 1, 'Users', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (6, 3, 1, 'Users Add', '/users/add', '{"title": "users.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (7, 3, 1, 'Users View', '/users/view', '{"title": "users.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (10, 2, 1, 'Roles', '/roles', '{"icon": "fa-list", "title": "roles.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (11, 6, 1, 'Roles Add', '/roles/add', '{"title": "roles.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (12, 6, 1, 'Roles View', '/roles/view', '{"title": "roles.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (15, 2, 1, 'Menus', '/menus', '{"icon": "fa-list", "title": "menus.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (20, 2, 1, 'Perms', '/perms', '{"icon": "fa-list", "title": "perms.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (25, 2, 1, 'Jobs', '/jobs', '{"icon": "fa-list", "title": "jobs.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (30, 2, 1, 'Executors', '/executors', '{"icon": "fa-list", "title": "executors.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (40, 2, 1, 'Notify Manage', '/notify/manage', '{"icon": "fa-list", "title": "notify.template.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    /** permissions **/
+    (55, 0, 2, 'Users Add', '/admin/users/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (56, 0, 2, 'Users Get', '/admin/users/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (57, 0, 2, 'Users List', '/admin/users/list', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (58, 0, 2, 'Rule Get', '/admin/rules/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
 
-
-DROP TABLE IF EXISTS `admin_user`;
-CREATE TABLE `admin_user` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
-                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
-                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
-                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
-                              `rule_ids` JSON COMMENT 'Rule IDs. JSON: [1,2]',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_name` (`username`),
-                              UNIQUE `uni_token` (`token`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
-
-
-DROP TABLE IF EXISTS `admin_rule`;
-CREATE TABLE `admin_rule` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Rule name',
-                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
-                              `menus` JSON COMMENT 'Menu ids for rule. JSON array',
-                              `perms` JSON COMMENT 'Permissions ids for rule. JSON array',
-                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is supper admin. 1=yes 2=no',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_name` (`name`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin rules';
 
 DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (
