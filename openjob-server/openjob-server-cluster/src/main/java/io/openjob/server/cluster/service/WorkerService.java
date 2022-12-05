@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,7 +69,7 @@ public class WorkerService {
         // Akka message for worker start.
         WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
         workerJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
+        ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
     /**
@@ -96,7 +97,7 @@ public class WorkerService {
         // Akka message for worker start.
         WorkerFailDTO workerFailDTO = new WorkerFailDTO();
         workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize());
+        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
     /**

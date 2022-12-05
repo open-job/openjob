@@ -17,5 +17,5 @@ public interface ServerReportsRepository extends JpaRepository<ServerReports, Lo
      * @param status     status
      * @return Long
      */
-    Long countByCreateTimeAndServerIdAndStatus(Integer createTime, Long serverId, Integer status);
+    Long countByCreateTimeGreaterThanEqualAndServerIdAndStatus(Integer createTime, Long serverId, Integer status);
 }

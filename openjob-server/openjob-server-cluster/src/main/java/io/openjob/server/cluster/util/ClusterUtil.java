@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -108,9 +109,15 @@ public class ClusterUtil {
      * @param currentNode currentNode
      * @param spreadSize  spreadSize
      */
-    public static void sendMessage(Object message, Node currentNode, Integer spreadSize) {
+    public static void sendMessage(Object message, Node currentNode, Integer spreadSize, Set<Long> excludeNodes) {
         Map<Long, Node> nodesList = ClusterContext.getNodesMap();
         List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode, spreadSize);
-        knowServers.forEach(knowId -> ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender()));
+        knowServers.forEach(knowId -> {
+            try {
+                ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender());
+            } catch (Throwable e) {
+                log.warn("Akka cluster message error!", e);
+            }
+        });
     }
 }

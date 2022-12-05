@@ -5,16 +5,20 @@ import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
+import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
+import io.openjob.server.scheduler.Scheduler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,12 +33,16 @@ public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final ClusterProperties clusterProperties;
+    private final RefreshManager refreshManager;
+    private final Scheduler scheduler;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties) {
+    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshManager refreshManager, Scheduler scheduler) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.clusterProperties = clusterProperties;
+        this.refreshManager = refreshManager;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -49,7 +57,19 @@ public class FailManager {
         log.info("Update server to fail status {}", stopNode.getServerId());
 
         // Migrate slots.
-        List<Server> servers = this.migrateSlots(stopNode);
+        this.migrateSlots(stopNode);
+
+        // Refresh nodes.
+        this.refreshManager.refreshClusterNodes();
+
+        // Refresh slots.
+        this.refreshManager.refreshCurrentSlots();
+
+        // Refresh system.
+        this.refreshManager.refreshSystem(true);
+
+        // Refresh scheduler.
+        this.scheduler.refresh(Collections.emptySet());
 
         // Akka message for stop.
         this.sendClusterStopMessage(stopNode);
@@ -59,9 +79,8 @@ public class FailManager {
      * Migrate slots.
      *
      * @param stopNode stopNode
-     * @return List
      */
-    private List<Server> migrateSlots(Node stopNode) {
+    private void migrateSlots(Node stopNode) {
         List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(stopNode.getServerId());
         List<Server> servers = this.serverDAO.listServers(ServerStatusEnum.OK.getStatus());
 
@@ -72,7 +91,7 @@ public class FailManager {
         if (serverCount == 0) {
             jobSlotsDAO.updateByServerId(0L);
             log.info("Migrate slots to 0");
-            return servers;
+            return;
         }
 
         int index = 0;
@@ -108,7 +127,6 @@ public class FailManager {
 
         migrationSlots.forEach(this.jobSlotsDAO::updateByServerId);
         log.info("Migration slots {}", migrationSlots);
-        return servers;
     }
 
     /**
@@ -118,9 +136,13 @@ public class FailManager {
      */
     private void sendClusterStopMessage(Node stopNode) {
         NodeFailDTO failDTO = new NodeFailDTO();
+        failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         failDTO.setIp(stopNode.getIp());
         failDTO.setServerId(stopNode.getServerId());
         failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-        ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize());
+
+        HashSet<Long> excludes = new HashSet<>();
+        excludes.add(stopNode.getServerId());
+        ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludes);
     }
 }

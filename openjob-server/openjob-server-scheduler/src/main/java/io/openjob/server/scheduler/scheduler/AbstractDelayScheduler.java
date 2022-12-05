@@ -35,6 +35,7 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
     protected void refreshSlots(List<Long> slots, Function<Long, AbstractRunnable> function) {
         Set<Long> currentSlots = new HashSet<>(slots);
         Set<Long> runningSlots = this.runnableList.keySet();
+        int originRunnableSize = runningSlots.size();
 
         // Remove slots.
         Set<Long> removeSlots = new HashSet<>(runningSlots);
@@ -55,9 +56,13 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         });
 
         // Reset executor.
-        // Must first CorePoolSize and second MaximumPoolSize
-        this.executorService.setCorePoolSize(currentSlots.size());
-        this.executorService.setMaximumPoolSize(currentSlots.size());
+        if (originRunnableSize > slots.size()) {
+            this.executorService.setMaximumPoolSize(slots.size());
+            this.executorService.setCorePoolSize(slots.size());
+        } else if (originRunnableSize < slots.size()) {
+            this.executorService.setCorePoolSize(slots.size());
+            this.executorService.setMaximumPoolSize(slots.size());
+        }
     }
 
     /**
