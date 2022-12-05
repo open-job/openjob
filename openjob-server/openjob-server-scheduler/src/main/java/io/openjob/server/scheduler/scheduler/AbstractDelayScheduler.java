@@ -56,10 +56,10 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         });
 
         // Reset executor.
-        if (originRunnableSize > slots.size()) {
+        if (slots.size() > originRunnableSize) {
             this.executorService.setMaximumPoolSize(slots.size());
             this.executorService.setCorePoolSize(slots.size());
-        } else if (originRunnableSize < slots.size()) {
+        } else if (slots.size() < originRunnableSize) {
             this.executorService.setCorePoolSize(slots.size());
             this.executorService.setMaximumPoolSize(slots.size());
         }
