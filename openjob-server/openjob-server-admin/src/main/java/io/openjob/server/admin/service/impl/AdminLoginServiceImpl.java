@@ -87,6 +87,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     @Override
     public AdminUserLoginVO authByToken(String token) {
         AdminUserDTO userDto = adminUserData.getByToken(token);
+        if (Objects.isNull(userDto)) {
+            return null;
+        }
 
         // build return vo
         AdminUserLoginVO vo = AdminUserLoginVO.builder()

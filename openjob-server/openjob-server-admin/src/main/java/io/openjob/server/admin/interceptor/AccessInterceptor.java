@@ -38,13 +38,23 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     private final List<String> noLoginRoutes;
 
+    private final List<String> noLoginPrefixes;
+
     @Autowired
     public AccessInterceptor(AdminLoginService adminLoginService, Cache<String, AdminUserLoginVO> loginCache) {
         this.adminLoginService = adminLoginService;
         this.loginCache = loginCache;
 
         noLoginRoutes = new ArrayList<>();
+        noLoginRoutes.add("/error");
         noLoginRoutes.add("/admin/login");
+        noLoginRoutes.add("/favicon.ico");
+        noLoginRoutes.add("/swagger-ui.html");
+
+        noLoginPrefixes = new ArrayList<>();
+        noLoginPrefixes.add("/webjars/");
+        noLoginPrefixes.add("/swagger-resources");
+        noLoginPrefixes.add("/null/swagger-resources");
     }
 
     /**
@@ -72,7 +82,7 @@ public class AccessInterceptor implements HandlerInterceptor {
         }
 
         // web login
-        if (!noLoginRoutes.contains(route)) {
+        if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
             if (StringUtils.isBlank(sessKey)) {
                 throw new BusinessException("need login for " + route);
@@ -96,6 +106,26 @@ public class AccessInterceptor implements HandlerInterceptor {
         }
 
         return true;
+    }
+
+    /**
+     * is no login required route path.
+     *
+     * @param route route path
+     * @return bool
+     */
+    private Boolean isNoLoginRoute(String route) {
+        if (noLoginRoutes.contains(route)) {
+            return true;
+        }
+
+        for (String prefix : noLoginPrefixes) {
+            if (route.startsWith(prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Boolean checkUserPerm(String route, AdminUserLoginVO user) {

@@ -635,6 +635,7 @@ UNLOCK TABLES;
     ------------------------------------
 */;
 
+DROP TABLE IF EXISTS `admin_menu`;
 CREATE TABLE `admin_menu` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent ID',
@@ -667,6 +668,7 @@ CREATE TABLE `admin_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
 
 
+DROP TABLE IF EXISTS `admin_user`;
 CREATE TABLE `admin_user` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
@@ -700,6 +702,7 @@ CREATE TABLE `admin_rule` (
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin rules';
 
+DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (
                                    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                    `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Template name. eg: Wechat, DingTalk, Wecom, Feishu',
@@ -720,7 +723,7 @@ CREATE TABLE `notify_template` (
                                    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify template table';
 
-
+DROP TABLE IF EXISTS `notify_contact`;
 CREATE TABLE `notify_contact` (
                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                   `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'User name',
@@ -736,6 +739,7 @@ CREATE TABLE `notify_contact` (
                                   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify contact';
 
+DROP TABLE IF EXISTS `notify_group`;
 CREATE TABLE `notify_group` (
                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                 `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Group name',
