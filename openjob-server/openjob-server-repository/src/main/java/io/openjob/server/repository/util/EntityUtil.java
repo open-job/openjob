@@ -15,7 +15,7 @@ public class EntityUtil {
      * <p>
      * - tip: the second param is entity property name, is not table column name.
      */
-    public final static Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "createTime");
+    public static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "createTime");
 
     /**
      * init entity dto

@@ -6,7 +6,7 @@ import lombok.Data;
  * @author inhere <in.798@qq.com>
  */
 @Data
-abstract public class BaseFieldsDTO {
+public abstract class BaseFieldsDTO {
 
     /**
      * Delete status. 1=yes 2=no
