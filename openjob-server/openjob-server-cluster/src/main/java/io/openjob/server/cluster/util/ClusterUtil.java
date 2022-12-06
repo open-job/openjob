@@ -2,6 +2,8 @@ package io.openjob.server.cluster.util;
 
 import akka.actor.ActorRef;
 import io.openjob.common.context.Node;
+import io.openjob.common.util.FutureUtil;
+import io.openjob.server.cluster.dto.NodeResponseDTO;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -119,23 +122,28 @@ public class ClusterUtil {
         List<Long> sendServers = knowServers.stream().filter(i -> !excludeNodes.contains(i)).collect(Collectors.toList());
 
         // Empty send servers.
-        AtomicBoolean sendResult = new AtomicBoolean(false);
         if (CollectionUtils.isEmpty(sendServers)) {
             return true;
         }
 
         // Loop to send message.
+        AtomicInteger successCounter = new AtomicInteger(0);
         sendServers.forEach(knowId -> {
             try {
                 String akkaAddress = nodesList.get(knowId).getAkkaAddress();
                 ServerUtil.getServerClusterActor(akkaAddress).tell(message, ActorRef.noSender());
-                sendResult.set(true);
+                NodeResponseDTO nodeResponse = FutureUtil.mustAsk(ServerUtil.getServerClusterActor(akkaAddress), message, NodeResponseDTO.class, 3000L);
 
-                log.info("Cluster message success! {} {}", akkaAddress, message);
+                // Counter
+                successCounter.incrementAndGet();
+
+                log.info("Cluster message success! akkaAddress={}, message={} response={}", akkaAddress, message, nodeResponse);
             } catch (Throwable e) {
                 log.warn("Akka cluster message error!", e);
             }
         });
-        return sendResult.get();
+
+        int half = (int) Math.ceil((double) sendServers.size() / 2);
+        return successCounter.get() >= half;
     }
 }

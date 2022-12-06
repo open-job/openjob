@@ -157,6 +157,9 @@ public class ClusterService {
         // Refresh app workers.
         this.refreshManager.refreshAppWorkers();
 
+        // Forward message.
+        this.forwardMessage(workerJoinDTO);
+
         this.refreshing.set(false);
         log.info("Worker join! {}", workerJoinDTO);
     }
@@ -178,6 +181,9 @@ public class ClusterService {
 
         // Refresh app workers.
         this.refreshManager.refreshAppWorkers();
+
+        // Forward message.
+        this.forwardMessage(workerFailDTO);
 
         this.refreshing.set(false);
         log.info("Worker fail! {}", workerFailDTO);
