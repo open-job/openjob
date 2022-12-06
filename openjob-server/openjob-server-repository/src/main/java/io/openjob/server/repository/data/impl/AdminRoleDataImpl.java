@@ -35,7 +35,10 @@ public class AdminRoleDataImpl implements AdminRoleData {
     public Long add(AdminRoleDTO dto) {
         AdminRole entity = new AdminRole();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return adminRoleDAO.add(entity);
     }

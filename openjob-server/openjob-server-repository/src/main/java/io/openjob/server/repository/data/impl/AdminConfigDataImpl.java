@@ -33,6 +33,7 @@ public class AdminConfigDataImpl implements AdminConfigData {
         AdminConfig entity = new AdminConfig();
         ObjectUtil.copyObject(dto, entity);
         entity.setCreateTime(DateUtil.timestamp());
+        entity.setUpdateTime(entity.getCreateTime());
 
         return adminConfigDAO.add(entity);
     }

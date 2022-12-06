@@ -1,5 +1,6 @@
 package io.openjob.server.repository.entity;
 
+import io.openjob.common.constant.CommonConstant;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -54,13 +55,13 @@ public class NotifyContact {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted;
+    private Integer deleted = CommonConstant.NO;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime;
+    private Long deleteTime = 0L;
 
     /**
      * Update time

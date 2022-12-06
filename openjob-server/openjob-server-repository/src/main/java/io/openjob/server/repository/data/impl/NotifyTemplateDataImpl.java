@@ -33,7 +33,10 @@ public class NotifyTemplateDataImpl implements NotifyTemplateData {
     public Long add(NotifyTemplateDTO dto) {
         NotifyTemplate entity = new NotifyTemplate();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return notifyTemplateDAO.add(entity);
     }

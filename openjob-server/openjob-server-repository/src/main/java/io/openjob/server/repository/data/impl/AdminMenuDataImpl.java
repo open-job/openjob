@@ -33,7 +33,10 @@ public class AdminMenuDataImpl implements AdminMenuData {
     public Long add(AdminMenuDTO dto) {
         AdminMenu entity = new AdminMenu();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return adminMenuDAO.add(entity);
     }

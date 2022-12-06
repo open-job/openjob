@@ -1,6 +1,7 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.openjob.common.constant.CommonConstant;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -67,13 +68,13 @@ public class AdminRole {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted;
+    private Integer deleted = CommonConstant.NO;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime;
+    private Long deleteTime = 0L;
 
     /**
      * Update time

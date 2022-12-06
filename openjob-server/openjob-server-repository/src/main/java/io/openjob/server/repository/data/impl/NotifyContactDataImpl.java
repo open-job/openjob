@@ -33,7 +33,10 @@ public class NotifyContactDataImpl implements NotifyContactData {
     public Long add(NotifyContactDTO dto) {
         NotifyContact entity = new NotifyContact();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return notifyContactDAO.add(entity);
     }

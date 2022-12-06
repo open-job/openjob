@@ -33,7 +33,10 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
     public Long add(NotifyGroupDTO dto) {
         NotifyGroup entity = new NotifyGroup();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return notifyGroupDAO.add(entity);
     }

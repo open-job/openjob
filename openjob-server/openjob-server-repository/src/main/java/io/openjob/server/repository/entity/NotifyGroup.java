@@ -1,5 +1,6 @@
 package io.openjob.server.repository.entity;
 
+import io.openjob.common.constant.CommonConstant;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -33,10 +34,10 @@ public class NotifyGroup {
     private String name;
 
     /**
-     * [12, 34]
+     * contact ids [12, 34]
      */
-    @Column(name = "notify_user_ids")
-    private String notifyUserIds;
+    @Column(name = "contact_ids")
+    private String contactIds;
 
     /**
      * Status. 1=OK 2=disabled
@@ -48,13 +49,13 @@ public class NotifyGroup {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted;
+    private Integer deleted = CommonConstant.NO;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime;
+    private Long deleteTime = 0L;
 
     /**
      * Update time

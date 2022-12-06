@@ -1,7 +1,9 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import lombok.Data;
+import io.openjob.common.constant.CommonConstant;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -18,7 +20,8 @@ import java.util.List;
  *
  * @author inhere
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "admin_user")
 @TypeDef(name = "json", typeClass = JsonType.class)
@@ -66,13 +69,13 @@ public class AdminUser {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted;
+    private Integer deleted = CommonConstant.NO;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime;
+    private Long deleteTime = 0L;
 
     /**
      * Update time

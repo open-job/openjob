@@ -34,7 +34,10 @@ public class AdminUserDataImpl implements AdminUserData {
     public Long add(AdminUserDTO dto) {
         AdminUser entity = new AdminUser();
         BeanUtils.copyProperties(dto, entity);
-        entity.setCreateTime(DateUtil.timestamp());
+
+        long curTime = DateUtil.timestamp();
+        entity.setCreateTime(curTime);
+        entity.setUpdateTime(curTime);
 
         return adminUserDAO.add(entity);
     }
