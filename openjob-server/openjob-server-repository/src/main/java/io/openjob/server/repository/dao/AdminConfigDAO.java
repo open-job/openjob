@@ -1,12 +1,12 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminConfig;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:15:41
  * @since 1.0.0
  */
 public interface AdminConfigDAO {
@@ -42,5 +42,13 @@ public interface AdminConfigDAO {
      */
     Integer updateById(AdminConfig entity);
 
+    /**
+     * get AdminConfig list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminConfig list
+     */
+    Page<AdminConfig> getPageList(Integer page, Integer size);
 }
 

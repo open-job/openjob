@@ -1,21 +1,20 @@
 package io.openjob.server.admin.service;
 
 import io.openjob.server.admin.request.notify.NotifyGroupAddRequest;
-import io.openjob.server.admin.vo.notify.NotifyGroupAddVO;
-import io.openjob.server.admin.request.notify.NotifyGroupQueryRequest;
-import io.openjob.server.admin.vo.notify.NotifyGroupQueryVO;
-import io.openjob.server.admin.request.notify.NotifyGroupUpdateRequest;
-import io.openjob.server.admin.vo.notify.NotifyGroupUpdateVO;
 import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupListRequest;
+import io.openjob.server.admin.request.notify.NotifyGroupQueryRequest;
+import io.openjob.server.admin.request.notify.NotifyGroupUpdateRequest;
+import io.openjob.server.admin.vo.notify.NotifyGroupAddVO;
+import io.openjob.server.admin.vo.notify.NotifyGroupQueryVO;
+import io.openjob.server.admin.vo.notify.NotifyGroupUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:20:00
  * @since 1.0.0
  */
-public interface NotifyGroupService  {
+public interface NotifyGroupService {
 
     /**
      * Add NotifyGroup

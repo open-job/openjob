@@ -4,20 +4,20 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:29:02
  * @since 1.0.0
  */
 @Data
 @ApiModel(value = "AdminUserAddRequest", description = "AdminUserAddRequest")
 public class AdminUserAddRequest {
 
+    @NotNull
     @NotBlank
     @ApiModelProperty(value = "User name")
     private String username;
@@ -26,18 +26,19 @@ public class AdminUserAddRequest {
     @ApiModelProperty(value = "Nickname")
     private String nickname;
 
+    @NotNull
     @NotBlank
-    @ApiModelProperty(value = "Password")
+    @ApiModelProperty(value = "Password, md5 hashed before submit")
     private String passwd;
 
+    @NotNull
     @ApiModelProperty(value = "Api auth token")
     private String token;
 
-    @Min(1)
-    @ApiModelProperty(value = "Rule IDs. JSON: [1,2]")
-    private List<Long> ruleIds;
+    @NotNull
+    @Size(min = 1, max = 10)
+    @ApiModelProperty(value = "Role IDs. JSON: [1,2]")
+    private List<Long> roleIds;
 
-    @ApiModelProperty(value = "Delete status. 1=yes 2=no")
-    private Integer deleted;
 }
 

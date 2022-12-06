@@ -1,6 +1,7 @@
 package io.openjob.server.repository.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,9 +14,9 @@ import javax.persistence.Table;
  * Job admin config
  *
  * @author inhere
- * @date 2022-11-14
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "admin_config")
 public class AdminConfig {
@@ -62,4 +63,5 @@ public class AdminConfig {
      */
     @Column(name = "create_time")
     private Long createTime;
+
 }

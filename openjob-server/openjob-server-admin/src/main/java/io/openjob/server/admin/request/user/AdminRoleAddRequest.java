@@ -1,37 +1,43 @@
 package io.openjob.server.admin.request.user;
 
+import io.openjob.common.constant.CommonConstant;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:16:52
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleAddRequest", description = "AdminRule add Request")
-public class AdminRuleAddRequest {
+@ApiModel(value = "AdminRoleAddRequest", description = "AdminRole add Request")
+public class AdminRoleAddRequest {
 
-    @ApiModelProperty(value = "Rule name")
+    @NotNull
+    @NotBlank
+    @ApiModelProperty(value = "Role name")
     private String name;
 
+    @NotNull
+    @NotBlank
     @ApiModelProperty(value = "Description")
     private String desc;
 
-    @ApiModelProperty(value = "Menu ids for rule. JSON array")
+    @NotNull
+    @ApiModelProperty(value = "Menu ids for role. JSON array")
     private List<Long> menus;
 
-    @ApiModelProperty(value = "Permissions ids for rule. JSON array")
+    @NotNull
+    @ApiModelProperty(value = "Permissions ids for role. JSON array")
     private List<Long> perms;
 
+    @NotNull
     @ApiModelProperty(value = "Is Admin. 1=yes 2=no")
-    private Integer admin;
+    private Integer admin = CommonConstant.NO;
 
 }
 

@@ -1,21 +1,20 @@
 package io.openjob.server.admin.service;
 
 import io.openjob.server.admin.request.notify.NotifyContactAddRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
-import io.openjob.server.admin.request.notify.NotifyContactQueryRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
-import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
-import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.admin.request.notify.NotifyContactDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyContactListRequest;
+import io.openjob.server.admin.request.notify.NotifyContactQueryRequest;
+import io.openjob.server.admin.request.notify.NotifyContactUpdateRequest;
+import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
+import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
+import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:21:23
  * @since 1.0.0
  */
-public interface NotifyContactService  {
+public interface NotifyContactService {
 
     /**
      * Add NotifyContact

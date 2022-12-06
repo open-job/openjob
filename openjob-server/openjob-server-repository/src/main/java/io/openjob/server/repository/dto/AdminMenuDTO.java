@@ -1,26 +1,26 @@
 package io.openjob.server.repository.dto;
 
-import lombok.Data;
-
 import io.openjob.server.repository.entity.json.MenuMeta;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:34:57
  * @since 1.0.0
  */
 @Data
-public class AdminMenuDTO {
+@EqualsAndHashCode(callSuper = true)
+public class AdminMenuDTO extends BaseFieldsDTO {
 
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Parent ID
      */
-    private Integer pid;
+    private Long pid;
 
     /**
      * Type. 1=menu 2=perm
@@ -60,16 +60,16 @@ public class AdminMenuDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 }
 

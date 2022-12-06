@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * @author inhere <in.798@qq.com>
- * @date 2022/11/13 21:23
  */
 @Data
 public class PageDTO<T> {
@@ -15,5 +14,5 @@ public class PageDTO<T> {
     private List<T> list;
 
     @ApiModelProperty(value = "total count")
-    private Integer total;
+    private Long total;
 }

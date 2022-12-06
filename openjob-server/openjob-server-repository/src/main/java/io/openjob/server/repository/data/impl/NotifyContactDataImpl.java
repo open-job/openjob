@@ -1,9 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyContactDAO;
 import io.openjob.server.repository.data.NotifyContactData;
 import io.openjob.server.repository.dto.NotifyContactDTO;
 import io.openjob.server.repository.entity.NotifyContact;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,6 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 21:00:56
  * @since 1.0.0
  */
 @Component
@@ -31,7 +32,7 @@ public class NotifyContactDataImpl implements NotifyContactData {
     @Override
     public Long add(NotifyContactDTO dto) {
         NotifyContact entity = new NotifyContact();
-        BeanUtils.copyProperties(dto, entity);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return notifyContactDAO.add(entity);
     }
@@ -46,11 +47,7 @@ public class NotifyContactDataImpl implements NotifyContactData {
 
     @Override
     public NotifyContactDTO getById(Long id) {
-        NotifyContact entity = notifyContactDAO.getById(id);
-        NotifyContactDTO entDTO = new NotifyContactDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyContactDAO.getById(id), NotifyContactDTO.class);
     }
 
     @Override

@@ -4,17 +4,20 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:58
  * @since 1.0.0
  */
 @Data
 @ApiModel(value = "NotifyGroupUpdateRequest", description = "NotifyGroup update request")
 public class NotifyGroupUpdateRequest {
 
+    @NotNull
+    @Min(1)
     @ApiModelProperty(value = "PK")
     private Long id;
 

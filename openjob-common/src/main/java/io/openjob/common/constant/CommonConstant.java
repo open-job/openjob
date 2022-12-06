@@ -20,4 +20,19 @@ public class CommonConstant {
      * Bool int: false
      */
     public static final Integer NO = 2;
+
+    /**
+     * int zero 0
+     */
+    public static final Integer INT_ZERO = 0;
+
+    /**
+     * long zero 0
+     */
+    public static final Long LONG_ZERO = 0L;
+
+    /**
+     * int zero 0
+     */
+    public static final Float FLOAT_ZERO = 0F;
 }

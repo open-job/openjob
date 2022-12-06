@@ -1,7 +1,8 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -17,9 +18,9 @@ import java.util.List;
  * Job system users
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "admin_user")
 @TypeDef(name = "json", typeClass = JsonType.class)
@@ -57,11 +58,11 @@ public class AdminUser {
     private String token;
 
     /**
-     * Rule IDs. JSON: [1,2]
+     * Role IDs. JSON: [1,2]
      */
     @Type(type = "json")
-    @Column(name = "rule_ids", columnDefinition = "json")
-    private List<Long> ruleIds;
+    @Column(name = "role_ids", columnDefinition = "json")
+    private List<Long> roleIds;
 
     /**
      * Delete status. 1=yes 2=no

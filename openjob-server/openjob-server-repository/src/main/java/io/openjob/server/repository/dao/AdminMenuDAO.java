@@ -1,12 +1,12 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminMenu;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:34:58
  * @since 1.0.0
  */
 public interface AdminMenuDAO {
@@ -42,5 +42,21 @@ public interface AdminMenuDAO {
      */
     Integer updateById(AdminMenu entity);
 
+    /**
+     * get AdminMenu list by ID
+     *
+     * @param ids ids
+     * @return AdminMenu list
+     */
+    List<AdminMenu> getByIds(List<Long> ids);
+
+    /**
+     * get AdminMenu list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminMenu list
+     */
+    Page<AdminMenu> getPageList(Integer page, Integer size);
 }
 

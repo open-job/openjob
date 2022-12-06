@@ -1,16 +1,19 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:35:45
  * @since 1.0.0
  */
 @Component
@@ -34,13 +37,31 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public AdminUser getById(Long id) {
-        return adminUserRepository.getById(id);
+        return adminUserRepository.findById(id).orElse(null);
     }
 
     @Override
     public Integer updateById(AdminUser entity) {
-        // return adminUserRepository.updateById(entity); // TODO
-        return 0;
+        adminUserRepository.save(entity);
+        return 1;
+    }
+
+    @Override
+    public AdminUser getByUsername(String username) {
+        return adminUserRepository.findByUsername(username);
+    }
+
+    @Override
+    public AdminUser getByToken(String token) {
+        return adminUserRepository.findByTokenAndDeleted(token, CommonConstant.NO);
+    }
+
+    @Override
+    public Page<AdminUser> getPageList(Integer page, Integer size) {
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+
+        return adminUserRepository.findAll(pageReq);
     }
 }
 

@@ -5,9 +5,10 @@ import lombok.Data;
 
 /**
  * @author inhere
+ * @since 1.0.0
  */
 @Data
-public class MenuMeta {
+public class MenuMetaVO {
     @ApiModelProperty(value = "icon name")
     private String icon;
 
