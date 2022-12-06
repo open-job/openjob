@@ -26,7 +26,7 @@ public class ClusterFactoryBean implements DisposableBean {
     @Override
     public void destroy() {
         Node currentNode = ClusterContext.getCurrentNode();
-        this.failManager.fail(currentNode);
+        this.failManager.fail(currentNode, true);
 
         log.info("Server shutdown {}", currentNode.getAkkaAddress());
     }

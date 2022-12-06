@@ -12,7 +12,7 @@ import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.JobSlots;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.scheduler.Scheduler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Component
-@Log4j2
+@Slf4j
 public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
@@ -51,7 +51,7 @@ public class FailManager {
      * @param stopNode stopNode
      */
     @Transactional(rollbackFor = Exception.class)
-    public void fail(Node stopNode) {
+    public void fail(Node stopNode, Boolean isShutDown) {
         // Update server status.
         this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus());
         log.info("Update server to fail status {}", stopNode.getServerId());
@@ -59,17 +59,20 @@ public class FailManager {
         // Migrate slots.
         this.migrateSlots(stopNode);
 
-        // Refresh nodes.
-        this.refreshManager.refreshClusterNodes();
-
-        // Refresh slots.
-        this.refreshManager.refreshCurrentSlots();
-
         // Refresh system.
         this.refreshManager.refreshSystem(true);
 
-        // Refresh scheduler.
-        this.scheduler.refresh(Collections.emptySet());
+        // Not shutdown.
+        if (!isShutDown) {
+            // Refresh nodes.
+            this.refreshManager.refreshClusterNodes();
+
+            // Refresh slots.
+            this.refreshManager.refreshCurrentSlots();
+
+            // Refresh scheduler.
+            this.scheduler.refresh(Collections.emptySet());
+        }
 
         // Akka message for stop.
         this.sendClusterStopMessage(stopNode);
@@ -143,6 +146,9 @@ public class FailManager {
 
         HashSet<Long> excludes = new HashSet<>();
         excludes.add(stopNode.getServerId());
-        ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludes);
+        Boolean result = ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludes);
+        if (!result) {
+            throw new RuntimeException("Send node fail message error!");
+        }
     }
 }

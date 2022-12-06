@@ -8,12 +8,15 @@ import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -108,16 +111,28 @@ public class ClusterUtil {
      * @param message     message
      * @param currentNode currentNode
      * @param spreadSize  spreadSize
+     * @return Boolean
      */
-    public static void sendMessage(Object message, Node currentNode, Integer spreadSize, Set<Long> excludeNodes) {
+    public static Boolean sendMessage(Object message, Node currentNode, Integer spreadSize, Set<Long> excludeNodes) {
         Map<Long, Node> nodesList = ClusterContext.getNodesMap();
         List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode, spreadSize);
-        knowServers.forEach(knowId -> {
+        List<Long> sendServers = knowServers.stream().filter(i -> !excludeNodes.contains(i)).collect(Collectors.toList());
+
+        // Empty send servers.
+        AtomicBoolean sendResult = new AtomicBoolean(false);
+        if (CollectionUtils.isEmpty(sendServers)) {
+            return true;
+        }
+
+        // Loop to send message.
+        sendServers.forEach(knowId -> {
             try {
                 ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender());
+                sendResult.set(true);
             } catch (Throwable e) {
                 log.warn("Akka cluster message error!", e);
             }
         });
+        return sendResult.get();
     }
 }
