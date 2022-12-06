@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -108,9 +107,10 @@ public class ClusterUtil {
     /**
      * Send message
      *
-     * @param message     message
-     * @param currentNode currentNode
-     * @param spreadSize  spreadSize
+     * @param message      message
+     * @param currentNode  currentNode
+     * @param spreadSize   spreadSize
+     * @param excludeNodes exclude nodes.
      * @return Boolean
      */
     public static Boolean sendMessage(Object message, Node currentNode, Integer spreadSize, Set<Long> excludeNodes) {
@@ -127,8 +127,11 @@ public class ClusterUtil {
         // Loop to send message.
         sendServers.forEach(knowId -> {
             try {
-                ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender());
+                String akkaAddress = nodesList.get(knowId).getAkkaAddress();
+                ServerUtil.getServerClusterActor(akkaAddress).tell(message, ActorRef.noSender());
                 sendResult.set(true);
+
+                log.info("Cluster message success! {} {}", akkaAddress, message);
             } catch (Throwable e) {
                 log.warn("Akka cluster message error!", e);
             }

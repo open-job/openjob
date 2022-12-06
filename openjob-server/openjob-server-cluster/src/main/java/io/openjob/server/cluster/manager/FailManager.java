@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -75,7 +76,7 @@ public class FailManager {
         }
 
         // Akka message for stop.
-        this.sendClusterStopMessage(stopNode);
+        this.sendClusterStopMessage(stopNode, isShutDown);
     }
 
     /**
@@ -135,18 +136,23 @@ public class FailManager {
     /**
      * Send cluster stop message.
      *
-     * @param stopNode stopNode
+     * @param stopNode   stopNode
+     * @param isShutDown is shutdown
      */
-    private void sendClusterStopMessage(Node stopNode) {
+    private void sendClusterStopMessage(Node stopNode, Boolean isShutDown) {
         NodeFailDTO failDTO = new NodeFailDTO();
         failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         failDTO.setIp(stopNode.getIp());
         failDTO.setServerId(stopNode.getServerId());
         failDTO.setAkkaAddress(stopNode.getAkkaAddress());
 
-        HashSet<Long> excludes = new HashSet<>();
-        excludes.add(stopNode.getServerId());
-        Boolean result = ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludes);
+        // Exclude current node.
+        Set<Long> excludeNodes = new HashSet<>();
+        if (!isShutDown) {
+            excludeNodes.add(ClusterContext.getCurrentNode().getServerId());
+        }
+
+        Boolean result = ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludeNodes);
         if (!result) {
             throw new RuntimeException("Send node fail message error!");
         }

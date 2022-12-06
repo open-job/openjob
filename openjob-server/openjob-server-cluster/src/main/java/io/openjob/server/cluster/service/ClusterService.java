@@ -83,7 +83,7 @@ public class ClusterService {
     public void receiveNodeJoin(NodeJoinDTO join) {
         // Ignore
         if (this.isIgnore(join.getClusterVersion())) {
-            log.info("Node join ignore!{}", join);
+            log.info("Node join ignore! {}", join);
             return;
         }
 
@@ -115,7 +115,7 @@ public class ClusterService {
     public void receiveNodeFail(NodeFailDTO fail) {
         // Ignore
         if (this.isIgnore(fail.getClusterVersion())) {
-            log.info("Node fail ignore!{}", fail);
+            log.info("Node fail ignore! {}", fail);
             return;
         }
 
@@ -146,7 +146,7 @@ public class ClusterService {
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
         // Ignore
         if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
-            log.info("Worker join ignore!{}", workerJoinDTO);
+            log.info("Worker join ignore! {}", workerJoinDTO);
 
             return;
         }
@@ -169,7 +169,7 @@ public class ClusterService {
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
         // Ignore
         if (this.isIgnore(workerFailDTO.getClusterVersion())) {
-            log.info("Worker fail ignore!{}", workerFailDTO);
+            log.info("Worker fail ignore! {}", workerFailDTO);
             return;
         }
 
