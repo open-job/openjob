@@ -1,13 +1,15 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author inhere
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class NotifyContactDTO {
+public class NotifyContactDTO extends BaseFieldsDTO {
 
     /**
      * PK

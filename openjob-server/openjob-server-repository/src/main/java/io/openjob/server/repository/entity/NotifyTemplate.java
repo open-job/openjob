@@ -1,9 +1,9 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.entity.json.TemplateExtra;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -20,7 +20,8 @@ import java.util.List;
  *
  * @author inhere
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "notify_template")
 @TypeDef(name = "json", typeClass = JsonType.class)
@@ -100,13 +101,13 @@ public class NotifyTemplate {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted = CommonConstant.NO;
+    private Integer deleted;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime = 0L;
+    private Long deleteTime;
 
     /**
      * Update time

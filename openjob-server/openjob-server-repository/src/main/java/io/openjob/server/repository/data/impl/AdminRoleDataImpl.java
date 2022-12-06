@@ -1,11 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminRoleDAO;
 import io.openjob.server.repository.data.AdminRoleData;
 import io.openjob.server.repository.dto.AdminRoleDTO;
 import io.openjob.server.repository.entity.AdminRole;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,11 +34,7 @@ public class AdminRoleDataImpl implements AdminRoleData {
     @Override
     public Long add(AdminRoleDTO dto) {
         AdminRole entity = new AdminRole();
-        BeanUtils.copyProperties(dto, entity);
-
-        long curTime = DateUtil.timestamp();
-        entity.setCreateTime(curTime);
-        entity.setUpdateTime(curTime);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return adminRoleDAO.add(entity);
     }

@@ -1,9 +1,9 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.entity.json.MenuMeta;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -19,7 +19,8 @@ import javax.persistence.Table;
  *
  * @author inhere
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "admin_menu")
 @TypeDef(name = "json", typeClass = JsonType.class)
@@ -79,13 +80,13 @@ public class AdminMenu {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted = CommonConstant.NO;
+    private Integer deleted;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime = 0L;
+    private Long deleteTime;
 
     /**
      * Update time

@@ -1,30 +1,12 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * @author inhere
- * @since 1.0.0
+ * @author inhere <in.798@qq.com>
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class AdminConfigDTO extends BaseFieldsDTO {
-
-    /**
-     * PK
-     */
-    private Long id;
-
-    /**
-     * Config name
-     */
-    private String name;
-
-    /**
-     * Config value
-     */
-    private String value;
+abstract public class BaseFieldsDTO {
 
     /**
      * Delete status. 1=yes 2=no
@@ -46,4 +28,3 @@ public class AdminConfigDTO extends BaseFieldsDTO {
      */
     private Long createTime;
 }
-

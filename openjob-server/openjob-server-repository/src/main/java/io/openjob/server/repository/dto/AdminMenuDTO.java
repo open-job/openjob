@@ -2,13 +2,15 @@ package io.openjob.server.repository.dto;
 
 import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author inhere
  * @since 1.0.0
  */
 @Data
-public class AdminMenuDTO {
+@EqualsAndHashCode(callSuper = true)
+public class AdminMenuDTO extends BaseFieldsDTO {
 
     /**
      * PK

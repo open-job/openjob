@@ -2,6 +2,7 @@ package io.openjob.server.repository.dto;
 
 import io.openjob.server.repository.dto.json.TemplateExtraDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -9,8 +10,9 @@ import java.util.List;
  * @author inhere
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class NotifyTemplateDTO {
+public class NotifyTemplateDTO extends BaseFieldsDTO {
 
     /**
      * PK

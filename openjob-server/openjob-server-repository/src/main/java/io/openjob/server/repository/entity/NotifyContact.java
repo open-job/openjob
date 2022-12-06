@@ -1,7 +1,7 @@
 package io.openjob.server.repository.entity;
 
-import io.openjob.common.constant.CommonConstant;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +15,8 @@ import javax.persistence.Table;
  *
  * @author inhere
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "notify_contact")
 public class NotifyContact {
@@ -55,13 +56,13 @@ public class NotifyContact {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Integer deleted = CommonConstant.NO;
+    private Integer deleted;
 
     /**
      * Delete time
      */
     @Column(name = "delete_time")
-    private Long deleteTime = 0L;
+    private Long deleteTime;
 
     /**
      * Update time

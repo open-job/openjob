@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -8,8 +9,9 @@ import java.util.List;
  * @author inhere
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AdminUserDTO {
+public class AdminUserDTO extends BaseFieldsDTO {
 
     /**
      * PK

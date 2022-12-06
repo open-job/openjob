@@ -1,11 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyGroupDAO;
 import io.openjob.server.repository.data.NotifyGroupData;
 import io.openjob.server.repository.dto.NotifyGroupDTO;
 import io.openjob.server.repository.entity.NotifyGroup;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import java.util.List;
 public class NotifyGroupDataImpl implements NotifyGroupData {
 
     private final NotifyGroupDAO notifyGroupDAO;
-    // private final RedisOperation redisOperation;
 
     @Autowired
     public NotifyGroupDataImpl(NotifyGroupDAO notifyGroupDAO) {
@@ -32,11 +31,7 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
     @Override
     public Long add(NotifyGroupDTO dto) {
         NotifyGroup entity = new NotifyGroup();
-        BeanUtils.copyProperties(dto, entity);
-
-        long curTime = DateUtil.timestamp();
-        entity.setCreateTime(curTime);
-        entity.setUpdateTime(curTime);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return notifyGroupDAO.add(entity);
     }

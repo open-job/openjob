@@ -1,11 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
 import io.openjob.server.repository.entity.AdminMenu;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,11 +32,7 @@ public class AdminMenuDataImpl implements AdminMenuData {
     @Override
     public Long add(AdminMenuDTO dto) {
         AdminMenu entity = new AdminMenu();
-        BeanUtils.copyProperties(dto, entity);
-
-        long curTime = DateUtil.timestamp();
-        entity.setCreateTime(curTime);
-        entity.setUpdateTime(curTime);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return adminMenuDAO.add(entity);
     }
