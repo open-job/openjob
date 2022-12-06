@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.NotifyContact;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -41,5 +42,13 @@ public interface NotifyContactDAO {
      */
     Integer updateById(NotifyContact entity);
 
+    /**
+     * get NotifyContact list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return NotifyContact list
+     */
+    Page<NotifyContact> getPageList(Integer page, Integer size);
 }
 

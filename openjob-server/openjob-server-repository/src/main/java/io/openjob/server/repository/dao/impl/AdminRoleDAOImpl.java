@@ -3,10 +3,10 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.server.repository.dao.AdminRoleDAO;
 import io.openjob.server.repository.entity.AdminRole;
 import io.openjob.server.repository.repository.AdminRoleRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,8 +41,8 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 
     @Override
     public Integer updateById(AdminRole entity) {
-        // return adminRoleRepository.updateById(entity); // TODO
-        return 0;
+        adminRoleRepository.save(entity);
+        return 1;
     }
 
     @Override
@@ -52,7 +52,8 @@ public class AdminRoleDAOImpl implements AdminRoleDAO {
 
     @Override
     public Page<AdminRole> getPageList(Integer page, Integer size) {
-        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
 
         return adminRoleRepository.findAll(pageReq);
     }

@@ -3,10 +3,10 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.entity.AdminMenu;
 import io.openjob.server.repository.repository.AdminMenuRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,8 +41,8 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
 
     @Override
     public Integer updateById(AdminMenu entity) {
-        // return adminMenuRepository.updateById(entity); // TODO
-        return 0;
+        adminMenuRepository.save(entity);
+        return 1;
     }
 
     @Override
@@ -52,7 +52,8 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
 
     @Override
     public Page<AdminMenu> getPageList(Integer page, Integer size) {
-        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
 
         return adminMenuRepository.findAll(pageReq);
     }

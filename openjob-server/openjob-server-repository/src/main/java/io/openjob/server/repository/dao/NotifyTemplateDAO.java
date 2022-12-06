@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.NotifyTemplate;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -41,5 +42,13 @@ public interface NotifyTemplateDAO {
      */
     Integer updateById(NotifyTemplate entity);
 
+    /**
+     * get NotifyTemplate list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return NotifyTemplate list
+     */
+    Page<NotifyTemplate> getPageList(Integer page, Integer size);
 }
 

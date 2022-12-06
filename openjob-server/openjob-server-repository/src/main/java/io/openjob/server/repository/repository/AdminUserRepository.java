@@ -24,5 +24,6 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
      * @return AdminUser
      */
     AdminUser findByTokenAndDeleted(String token, Integer deleted);
+
 }
 

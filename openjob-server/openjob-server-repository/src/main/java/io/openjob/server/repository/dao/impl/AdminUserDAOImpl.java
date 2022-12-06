@@ -4,10 +4,10 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -42,8 +42,8 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public Integer updateById(AdminUser entity) {
-        // return adminUserRepository.updateById(entity); // TODO
-        return 0;
+        adminUserRepository.save(entity);
+        return 1;
     }
 
     @Override
@@ -58,7 +58,8 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public Page<AdminUser> getPageList(Integer page, Integer size) {
-        PageRequest pageReq = PageRequest.of(page, size, Sort.by("create_time"));
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
 
         return adminUserRepository.findAll(pageReq);
     }

@@ -3,7 +3,10 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.server.repository.dao.NotifyContactDAO;
 import io.openjob.server.repository.entity.NotifyContact;
 import io.openjob.server.repository.repository.NotifyContactRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -38,8 +41,16 @@ public class NotifyContactDAOImpl implements NotifyContactDAO {
 
     @Override
     public Integer updateById(NotifyContact entity) {
-        // return notifyContactRepository.updateById(entity); // TODO
-        return 0;
+        notifyContactRepository.save(entity);
+        return 1;
+    }
+
+    @Override
+    public Page<NotifyContact> getPageList(Integer page, Integer size) {
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+
+        return notifyContactRepository.findAll(pageReq);
     }
 }
 
