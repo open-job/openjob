@@ -18,7 +18,7 @@ public class HealthScheduling {
         this.healthService = healthService;
     }
 
-    @Scheduled(initialDelay = 3000L, fixedDelay = 2000L)
+    @Scheduled(initialDelay = 3000L, fixedDelay = 3000L)
     public void healthCheck() {
         healthService.check();
     }

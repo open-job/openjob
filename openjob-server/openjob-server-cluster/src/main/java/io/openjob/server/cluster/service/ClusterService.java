@@ -1,18 +1,21 @@
 package io.openjob.server.cluster.service;
 
+import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.manager.RefreshManager;
+import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.scheduler.Scheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -20,13 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 @Service
 public class ClusterService {
 
     private final WheelManager wheelManager;
     private final RefreshManager refreshManager;
     private final Scheduler scheduler;
+    private final ClusterProperties clusterProperties;
 
     /**
      * Refresh status.
@@ -34,10 +38,11 @@ public class ClusterService {
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
 
     @Autowired
-    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager, Scheduler scheduler) {
+    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager, Scheduler scheduler, ClusterProperties clusterProperties) {
         this.wheelManager = wheelManager;
         this.refreshManager = refreshManager;
         this.scheduler = scheduler;
+        this.clusterProperties = clusterProperties;
     }
 
     /**
@@ -78,6 +83,7 @@ public class ClusterService {
     public void receiveNodeJoin(NodeJoinDTO join) {
         // Ignore
         if (this.isIgnore(join.getClusterVersion())) {
+            log.info("Node join ignore!{}", join);
             return;
         }
 
@@ -95,6 +101,8 @@ public class ClusterService {
         // Refresh system.
         this.refreshManager.refreshSystem(false);
 
+        // Forward message.
+        this.forwardMessage(join);
         this.refreshing.set(false);
         log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
     }
@@ -107,6 +115,7 @@ public class ClusterService {
     public void receiveNodeFail(NodeFailDTO fail) {
         // Ignore
         if (this.isIgnore(fail.getClusterVersion())) {
+            log.info("Node fail ignore!{}", fail);
             return;
         }
 
@@ -120,6 +129,9 @@ public class ClusterService {
 
         // Refresh system.
         this.refreshManager.refreshSystem(false);
+
+        // Forward message.
+        this.forwardMessage(fail);
         this.refreshing.set(false);
 
         // Add job instance to timing wheel.
@@ -134,6 +146,8 @@ public class ClusterService {
     public void receiveWorkerJoin(WorkerJoinDTO workerJoinDTO) {
         // Ignore
         if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
+            log.info("Worker join ignore!{}", workerJoinDTO);
+
             return;
         }
 
@@ -155,6 +169,7 @@ public class ClusterService {
     public void receiveWorkerFail(WorkerFailDTO workerFailDTO) {
         // Ignore
         if (this.isIgnore(workerFailDTO.getClusterVersion())) {
+            log.info("Worker fail ignore!{}", workerFailDTO);
             return;
         }
 
@@ -180,5 +195,14 @@ public class ClusterService {
         }
 
         return !this.refreshing.compareAndSet(false, true);
+    }
+
+    /**
+     * Forward message.
+     *
+     * @param message akka message.
+     */
+    private void forwardMessage(Object message) {
+        ClusterUtil.sendMessage(message, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 }
