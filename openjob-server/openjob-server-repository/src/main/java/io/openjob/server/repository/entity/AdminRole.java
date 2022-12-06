@@ -1,7 +1,8 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -14,16 +15,16 @@ import javax.persistence.Table;
 import java.util.List;
 
 /**
- * Job admin rules
+ * Job admin roles
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "admin_rule")
+@Table(name = "admin_role")
 @TypeDef(name = "json", typeClass = JsonType.class)
-public class AdminRule {
+public class AdminRole {
 
     /**
      * PK
@@ -33,7 +34,7 @@ public class AdminRule {
     private Long id;
 
     /**
-     * Rule name
+     * Role name
      */
     @Column(name = "name")
     private String name;
@@ -45,14 +46,14 @@ public class AdminRule {
     private String desc;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     @Type(type = "json")
     @Column(name = "menus", columnDefinition = "json")
     private List<Long> menus;
 
     /**
-     * Menu ids for rule. JSON array
+     * Menu ids for role. JSON array
      */
     @Type(type = "json")
     @Column(name = "perms", columnDefinition = "json")

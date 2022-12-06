@@ -1,20 +1,20 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
-import java.util.List;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:15:35
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AdminConfigDTO {
+public class AdminConfigDTO extends BaseFieldsDTO {
 
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Config name
@@ -34,16 +34,16 @@ public class AdminConfigDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 }
 

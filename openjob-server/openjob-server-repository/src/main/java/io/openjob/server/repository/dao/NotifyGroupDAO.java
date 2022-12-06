@@ -1,12 +1,12 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.NotifyGroup;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:21:31
  * @since 1.0.0
  */
 public interface NotifyGroupDAO {
@@ -41,6 +41,15 @@ public interface NotifyGroupDAO {
      * @return number
      */
     Integer updateById(NotifyGroup entity);
+
+    /**
+     * get NotifyGroup list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return NotifyGroup list
+     */
+    Page<NotifyGroup> getPageList(Integer page, Integer size);
 
 }
 

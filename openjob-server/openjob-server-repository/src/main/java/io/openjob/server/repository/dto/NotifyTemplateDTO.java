@@ -2,20 +2,22 @@ package io.openjob.server.repository.dto;
 
 import io.openjob.server.repository.dto.json.TemplateExtraDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:34:24
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class NotifyTemplateDTO {
+public class NotifyTemplateDTO extends BaseFieldsDTO {
 
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Template name. eg: Wechat, DingTalk, Wecom, Feishu
@@ -75,17 +77,17 @@ public class NotifyTemplateDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 
 }
 

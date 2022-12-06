@@ -1,13 +1,12 @@
 package io.openjob.server.admin.vo.menu;
 
-import io.openjob.server.admin.vo.part.MenuMeta;
+import io.openjob.server.admin.vo.part.MenuMetaVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * @author inhere
- * @date 2022-11-13 23:24:42
  * @since 1.0.0
  */
 @Data
@@ -30,7 +29,7 @@ public class AdminMenuQueryVO {
     private String path;
 
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
-    private MenuMeta meta;
+    private MenuMetaVO meta;
 
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;

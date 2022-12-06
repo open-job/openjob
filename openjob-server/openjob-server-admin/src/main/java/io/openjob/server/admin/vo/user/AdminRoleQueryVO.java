@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.user;
+package io.openjob.server.admin.vo.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,26 +8,25 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:16:53
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminRuleUpdateRequest", description = "AdminRule update request")
-public class AdminRuleUpdateRequest {
+@ApiModel(value = "AdminRoleQueryVO", description = "AdminRole query VO")
+public class AdminRoleQueryVO {
 
     @ApiModelProperty(value = "PK")
     private Long id;
 
-    @ApiModelProperty(value = "Rule name")
+    @ApiModelProperty(value = "Role name")
     private String name;
 
     @ApiModelProperty(value = "Description")
     private String desc;
 
-    @ApiModelProperty(value = "Menu ids for rule. JSON array")
+    @ApiModelProperty(value = "Menu ids for role. JSON array")
     private List<Long> menus;
 
-    @ApiModelProperty(value = "Permissions ids for rule. JSON array")
+    @ApiModelProperty(value = "Permissions ids for role. JSON array")
     private List<Long> perms;
 
     @ApiModelProperty(value = "Is Admin. 1=yes 2=no")

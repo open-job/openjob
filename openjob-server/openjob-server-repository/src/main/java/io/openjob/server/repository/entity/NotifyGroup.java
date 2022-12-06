@@ -1,6 +1,7 @@
 package io.openjob.server.repository.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,9 +14,9 @@ import javax.persistence.Table;
  * Notify contact group
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "notify_group")
 public class NotifyGroup {
@@ -34,10 +35,10 @@ public class NotifyGroup {
     private String name;
 
     /**
-     * [12, 34]
+     * contact ids [12, 34]
      */
-    @Column(name = "notify_user_ids")
-    private String notifyUserIds;
+    @Column(name = "contact_ids")
+    private String contactIds;
 
     /**
      * Status. 1=OK 2=disabled

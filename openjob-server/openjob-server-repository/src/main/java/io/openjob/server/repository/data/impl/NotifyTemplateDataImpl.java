@@ -1,9 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyTemplateDAO;
 import io.openjob.server.repository.data.NotifyTemplateData;
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
 import io.openjob.server.repository.entity.NotifyTemplate;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,6 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:39:14
  * @since 1.0.0
  */
 @Component
@@ -31,7 +32,7 @@ public class NotifyTemplateDataImpl implements NotifyTemplateData {
     @Override
     public Long add(NotifyTemplateDTO dto) {
         NotifyTemplate entity = new NotifyTemplate();
-        BeanUtils.copyProperties(dto, entity);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return notifyTemplateDAO.add(entity);
     }
@@ -46,11 +47,7 @@ public class NotifyTemplateDataImpl implements NotifyTemplateData {
 
     @Override
     public NotifyTemplateDTO getById(Long id) {
-        NotifyTemplate entity = notifyTemplateDAO.getById(id);
-        NotifyTemplateDTO entDTO = new NotifyTemplateDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyTemplateDAO.getById(id), NotifyTemplateDTO.class);
     }
 
     @Override

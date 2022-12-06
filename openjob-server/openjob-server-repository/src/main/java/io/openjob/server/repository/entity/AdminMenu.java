@@ -2,7 +2,8 @@ package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import io.openjob.server.repository.entity.json.MenuMeta;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -17,9 +18,9 @@ import javax.persistence.Table;
  * Job admin menu and perms
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "admin_menu")
 @TypeDef(name = "json", typeClass = JsonType.class)
@@ -36,7 +37,7 @@ public class AdminMenu {
      * Parent ID
      */
     @Column(name = "pid")
-    private Integer pid;
+    private Long pid;
 
     /**
      * Type. 1=menu 2=perm
@@ -79,7 +80,7 @@ public class AdminMenu {
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")
-    private Long deleted;
+    private Integer deleted;
 
     /**
      * Delete time

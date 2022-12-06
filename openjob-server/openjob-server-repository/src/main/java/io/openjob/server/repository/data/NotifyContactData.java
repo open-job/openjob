@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.NotifyContactDTO;
-import io.openjob.server.repository.entity.NotifyContact;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 21:00:55
  * @since 1.0.0
  */
 public interface NotifyContactData {

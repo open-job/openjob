@@ -1,13 +1,12 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminUserDTO;
-import io.openjob.server.repository.entity.AdminUser;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:35:46
  * @since 1.0.0
  */
 public interface AdminUserData {
@@ -36,6 +35,22 @@ public interface AdminUserData {
     AdminUserDTO getById(Long id);
 
     /**
+     * get AdminUser by username
+     *
+     * @param username username
+     * @return AdminUser
+     */
+    AdminUserDTO getByUsername(String username);
+
+    /**
+     * get AdminUser by token
+     *
+     * @param token token
+     * @return AdminUserDTO or null
+     */
+    AdminUserDTO getByToken(String token);
+
+    /**
      * update AdminUser by ID
      *
      * @param dto dto
@@ -43,5 +58,13 @@ public interface AdminUserData {
      */
     Integer updateById(AdminUserDTO dto);
 
+    /**
+     * get AdminUser list by page
+     *
+     * @param page page
+     * @param size size
+     * @return AdminUser list
+     */
+    Page<AdminUserDTO> getPageList(Integer page, Integer size);
 }
 
