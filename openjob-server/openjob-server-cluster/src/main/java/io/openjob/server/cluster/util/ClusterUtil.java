@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import io.openjob.common.context.Node;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.cluster.dto.NodeResponseDTO;
+import io.openjob.server.cluster.exception.ClusterNodeOperatingException;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
@@ -17,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -145,5 +146,25 @@ public class ClusterUtil {
 
         int half = (int) Math.ceil((double) sendServers.size() / 2);
         return successCounter.get() >= half;
+    }
+
+    /**
+     * Cluster node operate.
+     *
+     * @param supplier supplier
+     * @param <T>      type
+     * @return Boolean
+     * @throws InterruptedException exception
+     */
+    public static <T> Boolean clusterNodeOperate(Supplier<Boolean> supplier) throws InterruptedException {
+        for (int i = 0; i < 3; i++) {
+            try {
+                return supplier.get();
+            } catch (ClusterNodeOperatingException exception) {
+                log.info("Cluster node is operating! {}", exception.getMessage());
+                Thread.sleep((i + 1) * 1000L);
+            }
+        }
+        return false;
     }
 }

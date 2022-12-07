@@ -3,6 +3,7 @@ package io.openjob.server.cluster.manager;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
+import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
@@ -50,8 +51,32 @@ public class JoinManager {
      * @param hostname hostname
      * @param port     port
      */
-    @Transactional(rollbackFor = Exception.class)
     public void join(String hostname, Integer port) {
+        try {
+            // Do node join.
+            boolean result = ClusterUtil.clusterNodeOperate(() -> this.doJoin(hostname, port));
+
+            // Success to send cluster message.
+            if (result) {
+                // Akka message for join.
+                this.sendClusterStartMessage();
+            }
+        } catch (InterruptedException interruptedException) {
+            log.info("Node fail error!", interruptedException);
+        }
+    }
+
+    /**
+     * Cluster node  do join.
+     *
+     * @param hostname hostname
+     * @param port     port
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean doJoin(String hostname, Integer port) {
+        // Refresh system.
+        this.refreshManager.refreshSystem(true);
+
         // Register server.
         Server currentServer = this.registerOrUpdateServer(hostname, port);
 
@@ -61,17 +86,12 @@ public class JoinManager {
         // Set current node.
         this.setCurrentNode(currentServer);
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(true);
-
         // Refresh nodes.
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
         this.refreshManager.refreshCurrentSlots();
-
-        // Akka message for join.
-        this.sendClusterStartMessage();
+        return true;
     }
 
     /**

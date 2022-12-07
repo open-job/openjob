@@ -53,18 +53,24 @@ public class FailManager {
      * @param stopNode stopNode
      */
     public void fail(Node stopNode) {
-        // Do node fail.
-        Boolean result = this.doFail(stopNode);
+        try {
+            // Do node fail.
+            boolean result = ClusterUtil.clusterNodeOperate(() -> this.doFail(stopNode));
 
-        // Success to send cluster message.
-        if (result) {
-            // Akka message for stop.
-            NodeFailDTO failDTO = new NodeFailDTO();
-            failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-            failDTO.setIp(stopNode.getIp());
-            failDTO.setServerId(stopNode.getServerId());
-            failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-            this.sendClusterStopMessage(failDTO, stopNode);
+            // Success to send cluster message.
+            if (result) {
+                // Akka message for stop.
+                NodeFailDTO failDTO = new NodeFailDTO();
+                failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+                failDTO.setIp(stopNode.getIp());
+                failDTO.setServerId(stopNode.getServerId());
+                failDTO.setAkkaAddress(stopNode.getAkkaAddress());
+
+                // Akka message for join.
+                this.sendClusterStopMessage(failDTO, stopNode);
+            }
+        } catch (InterruptedException interruptedException) {
+            log.info("Node fail error!", interruptedException);
         }
     }
 
@@ -75,19 +81,21 @@ public class FailManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public Boolean doFail(Node stopNode) {
+        // Refresh system.
+        // Lock system cluster version.
+        this.refreshManager.refreshSystem(true);
+
         // Update server status.
         Integer effectRows = this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus(), ServerStatusEnum.OK.getStatus());
         if (effectRows <= 0) {
             log.info("Node has failed! {}", stopNode);
+            return false;
         }
 
         log.info("Update server to fail status {}", stopNode.getServerId());
 
         // Migrate slots.
         this.migrateSlots(stopNode);
-
-        // Refresh system.
-        this.refreshManager.refreshSystem(true);
 
         // Not shutdown.
         // Refresh nodes.

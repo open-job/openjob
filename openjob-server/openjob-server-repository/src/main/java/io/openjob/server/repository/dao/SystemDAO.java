@@ -18,5 +18,5 @@ public interface SystemDAO {
     /**
      * Update by id
      */
-    void updateClusterVersion();
+    Integer updateClusterVersion(Long clusterVersion);
 }
