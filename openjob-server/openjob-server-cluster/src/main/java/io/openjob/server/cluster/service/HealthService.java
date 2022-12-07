@@ -126,7 +126,7 @@ public class HealthService {
 
         // Offline
         if (reportsCount > this.clusterProperties.getNodeFailTimes()) {
-            this.failManager.fail(failNode, false);
+            this.failManager.fail(failNode);
         }
     }
 

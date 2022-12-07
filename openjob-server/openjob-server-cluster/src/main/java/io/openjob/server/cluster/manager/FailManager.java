@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
+import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.repository.constant.ServerStatusEnum;
@@ -47,14 +48,39 @@ public class FailManager {
     }
 
     /**
-     * Node fail.
+     * Do fail.
+     *
+     * @param stopNode stopNode
+     */
+    public void fail(Node stopNode) {
+        // Do node fail.
+        Boolean result = this.doFail(stopNode);
+
+        // Success to send cluster message.
+        if (result) {
+            // Akka message for stop.
+            NodeFailDTO failDTO = new NodeFailDTO();
+            failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+            failDTO.setIp(stopNode.getIp());
+            failDTO.setServerId(stopNode.getServerId());
+            failDTO.setAkkaAddress(stopNode.getAkkaAddress());
+            this.sendClusterStopMessage(failDTO, stopNode);
+        }
+    }
+
+    /**
+     * Do node fail.
      *
      * @param stopNode stopNode
      */
     @Transactional(rollbackFor = Exception.class)
-    public void fail(Node stopNode, Boolean isShutDown) {
+    public Boolean doFail(Node stopNode) {
         // Update server status.
-        this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus());
+        Integer effectRows = this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus(), ServerStatusEnum.OK.getStatus());
+        if (effectRows <= 0) {
+            log.info("Node has failed! {}", stopNode);
+        }
+
         log.info("Update server to fail status {}", stopNode.getServerId());
 
         // Migrate slots.
@@ -64,19 +90,31 @@ public class FailManager {
         this.refreshManager.refreshSystem(true);
 
         // Not shutdown.
-        if (!isShutDown) {
-            // Refresh nodes.
-            this.refreshManager.refreshClusterNodes();
+        // Refresh nodes.
+        this.refreshManager.refreshClusterNodes();
 
-            // Refresh slots.
-            this.refreshManager.refreshCurrentSlots();
+        // Refresh slots.
+        this.refreshManager.refreshCurrentSlots();
 
-            // Refresh scheduler.
-            this.scheduler.refresh(Collections.emptySet());
-        }
+        // Refresh scheduler.
+        this.scheduler.refresh(Collections.emptySet());
+        return true;
+    }
+
+    /**
+     * Shutdown node.
+     *
+     * @param stopNode stop node.
+     */
+    public void shutdown(Node stopNode) {
+        NodeShutdownDTO shutdown = new NodeShutdownDTO();
+        shutdown.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        shutdown.setIp(stopNode.getIp());
+        shutdown.setServerId(stopNode.getServerId());
+        shutdown.setAkkaAddress(stopNode.getAkkaAddress());
 
         // Akka message for stop.
-        this.sendClusterStopMessage(stopNode, isShutDown);
+        this.sendClusterStopMessage(shutdown, stopNode);
     }
 
     /**
@@ -136,25 +174,17 @@ public class FailManager {
     /**
      * Send cluster stop message.
      *
-     * @param stopNode   stopNode
-     * @param isShutDown is shutdown
+     * @param message  message
+     * @param stopNode stop node.
      */
-    private void sendClusterStopMessage(Node stopNode, Boolean isShutDown) {
-        NodeFailDTO failDTO = new NodeFailDTO();
-        failDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        failDTO.setIp(stopNode.getIp());
-        failDTO.setServerId(stopNode.getServerId());
-        failDTO.setAkkaAddress(stopNode.getAkkaAddress());
-
+    private void sendClusterStopMessage(Object message, Node stopNode) {
         // Exclude current node.
         Set<Long> excludeNodes = new HashSet<>();
-        if (!isShutDown) {
-            excludeNodes.add(ClusterContext.getCurrentNode().getServerId());
-        }
+        excludeNodes.add(stopNode.getServerId());
 
-        Boolean result = ClusterUtil.sendMessage(failDTO, stopNode, this.clusterProperties.getSpreadSize(), excludeNodes);
+        Boolean result = ClusterUtil.sendMessage(message, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), excludeNodes);
         if (!result) {
-            throw new RuntimeException("Send node fail message error!");
+            log.info("Send message result is success! {} {}", message, stopNode);
         }
     }
 }

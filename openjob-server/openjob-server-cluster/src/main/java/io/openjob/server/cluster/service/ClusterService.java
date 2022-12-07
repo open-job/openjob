@@ -1,16 +1,18 @@
 package io.openjob.server.cluster.service;
 
+import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
+import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
+import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.server.cluster.manager.RefreshManager;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.scheduler.Scheduler;
-import io.openjob.server.scheduler.wheel.WheelManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class ClusterService {
 
-    private final WheelManager wheelManager;
     private final RefreshManager refreshManager;
     private final Scheduler scheduler;
     private final ClusterProperties clusterProperties;
+    private final FailManager failManager;
 
     /**
      * Refresh status.
@@ -38,11 +40,11 @@ public class ClusterService {
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
 
     @Autowired
-    public ClusterService(WheelManager wheelManager, RefreshManager refreshManager, Scheduler scheduler, ClusterProperties clusterProperties) {
-        this.wheelManager = wheelManager;
+    public ClusterService(RefreshManager refreshManager, Scheduler scheduler, ClusterProperties clusterProperties, FailManager failManager) {
         this.refreshManager = refreshManager;
         this.scheduler = scheduler;
         this.clusterProperties = clusterProperties;
+        this.failManager = failManager;
     }
 
     /**
@@ -136,6 +138,19 @@ public class ClusterService {
 
         // Add job instance to timing wheel.
         log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
+    }
+
+    /**
+     * Receive node shutdown request.
+     *
+     * @param shutdown shutdown node.
+     */
+    public void receiveNodeShutdown(NodeShutdownDTO shutdown) {
+        Node stopNode = new Node();
+        stopNode.setAkkaAddress(shutdown.getAkkaAddress());
+        stopNode.setIp(shutdown.getIp());
+        stopNode.setServerId(shutdown.getServerId());
+        this.failManager.fail(stopNode);
     }
 
     /**

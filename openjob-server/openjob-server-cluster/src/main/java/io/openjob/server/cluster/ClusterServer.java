@@ -1,19 +1,23 @@
 package io.openjob.server.cluster;
 
+import akka.Done;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.CoordinatedShutdown;
 import akka.actor.Props;
 import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.server.cluster.manager.FailManager;
 import io.openjob.server.cluster.service.JoinService;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
-import io.openjob.server.common.constant.ServerActorConstant;
 import io.openjob.server.common.constant.AkkaConfigConstant;
+import io.openjob.server.common.constant.ServerActorConstant;
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import scala.concurrent.Future;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -24,12 +28,15 @@ public class ClusterServer {
     private final ActorSystem actorSystem;
     private final SchedulerProperties schedulerProperties;
     private final JoinService joinService;
+    private final FailManager failManager;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService) {
+    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService, FailManager failManager) {
         this.actorSystem = actorSystem;
         this.schedulerProperties = schedulerProperties;
         this.joinService = joinService;
+
+        this.failManager = failManager;
     }
 
     /**
@@ -44,6 +51,9 @@ public class ClusterServer {
         Integer port = config.getInt(AkkaConfigConstant.AKKA_REMOTE_PORT);
         String hostname = config.getString(AkkaConfigConstant.AKKA_REMOTE_HOSTNAME);
         this.joinService.join(hostname, port);
+
+        // Register coordinated shutdown.
+        this.registerCoordinatedShutdown();
     }
 
     /**
@@ -97,5 +107,18 @@ public class ClusterServer {
 
     public void createDelayActor() {
 
+    }
+
+    /**
+     * Register coordinated shutdown.
+     */
+    private void registerCoordinatedShutdown() {
+        CoordinatedShutdown.get(this.actorSystem)
+                .addTask(CoordinatedShutdown.PhaseServiceUnbind(),
+                        "coordinated-shutdown-hook",
+                        () -> {
+                            this.failManager.shutdown(ClusterContext.getCurrentNode());
+                            return Future.successful(Done.done());
+                        });
     }
 }
