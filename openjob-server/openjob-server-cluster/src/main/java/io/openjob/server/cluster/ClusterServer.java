@@ -9,6 +9,7 @@ import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.server.cluster.manager.FailManager;
+import io.openjob.server.cluster.service.ClusterService;
 import io.openjob.server.cluster.service.JoinService;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.actor.PropsFactoryManager;
@@ -29,14 +30,16 @@ public class ClusterServer {
     private final SchedulerProperties schedulerProperties;
     private final JoinService joinService;
     private final FailManager failManager;
+    private final ClusterService clusterService;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService, FailManager failManager) {
+    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService, FailManager failManager, ClusterService clusterService) {
         this.actorSystem = actorSystem;
         this.schedulerProperties = schedulerProperties;
         this.joinService = joinService;
 
         this.failManager = failManager;
+        this.clusterService = clusterService;
     }
 
     /**
@@ -54,6 +57,9 @@ public class ClusterServer {
 
         // Register coordinated shutdown.
         this.registerCoordinatedShutdown();
+
+        // Start success to set running.
+        this.clusterService.setRunning();
     }
 
     /**

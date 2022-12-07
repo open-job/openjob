@@ -38,6 +38,7 @@ public class ClusterService {
      * Refresh status.
      */
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
+    private final AtomicBoolean nodeRunning = new AtomicBoolean(false);
 
     @Autowired
     public ClusterService(RefreshManager refreshManager, Scheduler scheduler, ClusterProperties clusterProperties, FailManager failManager) {
@@ -58,23 +59,27 @@ public class ClusterService {
             return;
         }
 
-        // Refresh nodes.
-        this.refreshManager.refreshClusterNodes();
+        try {
+            log.info("Node ping refresh beginning!");
 
-        // Refresh current slots.
-        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+            // Refresh nodes.
+            this.refreshManager.refreshClusterNodes();
 
-        // Refresh scheduler.
-        this.scheduler.refresh(removeSlots);
+            // Refresh current slots.
+            Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
 
-        // Refresh app workers.
-        this.refreshManager.refreshAppWorkers();
+            // Refresh scheduler.
+            this.scheduler.refresh(removeSlots);
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(false);
+            // Refresh app workers.
+            this.refreshManager.refreshAppWorkers();
 
-        log.info("Begin to refreshing");
-        this.refreshing.set(false);
+            // Refresh system.
+            this.refreshManager.refreshSystem(false);
+        } finally {
+            log.info("Node ping refresh completed!");
+            this.refreshing.set(false);
+        }
     }
 
     /**
@@ -89,24 +94,27 @@ public class ClusterService {
             return;
         }
 
-        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
+        try {
+            log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
 
-        // Refresh nodes.
-        this.refreshManager.refreshClusterNodes();
+            // Refresh nodes.
+            this.refreshManager.refreshClusterNodes();
 
-        // Refresh slots.
-        Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+            // Refresh slots.
+            Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
 
-        // Refresh scheduler.
-        this.scheduler.refresh(removeSlots);
+            // Refresh scheduler.
+            this.scheduler.refresh(removeSlots);
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(false);
+            // Refresh system.
+            this.refreshManager.refreshSystem(false);
 
-        // Forward message.
-        this.forwardMessage(join);
-        this.refreshing.set(false);
-        log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
+            // Forward message.
+            this.forwardMessage(join);
+        } finally {
+            this.refreshing.set(false);
+            log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
+        }
     }
 
     /**
@@ -121,23 +129,26 @@ public class ClusterService {
             return;
         }
 
-        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
+        try {
+            log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
 
-        // Refresh nodes.
-        this.refreshManager.refreshClusterNodes();
+            // Refresh nodes.
+            this.refreshManager.refreshClusterNodes();
 
-        // Refresh slots.
-        this.refreshManager.refreshCurrentSlots();
+            // Refresh slots.
+            this.refreshManager.refreshCurrentSlots();
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(false);
+            // Refresh system.
+            this.refreshManager.refreshSystem(false);
 
-        // Forward message.
-        this.forwardMessage(fail);
-        this.refreshing.set(false);
+            // Forward message.
+            this.forwardMessage(fail);
+        } finally {
+            this.refreshing.set(false);
 
-        // Add job instance to timing wheel.
-        log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
+            // Add job instance to timing wheel.
+            log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
+        }
     }
 
     /**
@@ -166,17 +177,19 @@ public class ClusterService {
             return;
         }
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(false);
+        try {
+            // Refresh system.
+            this.refreshManager.refreshSystem(false);
 
-        // Refresh app workers.
-        this.refreshManager.refreshAppWorkers();
+            // Refresh app workers.
+            this.refreshManager.refreshAppWorkers();
 
-        // Forward message.
-        this.forwardMessage(workerJoinDTO);
-
-        this.refreshing.set(false);
-        log.info("Worker join! {}", workerJoinDTO);
+            // Forward message.
+            this.forwardMessage(workerJoinDTO);
+        } finally {
+            this.refreshing.set(false);
+            log.info("Worker join! {}", workerJoinDTO);
+        }
     }
 
     /**
@@ -191,17 +204,23 @@ public class ClusterService {
             return;
         }
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(false);
+        try {
+            // Refresh system.
+            this.refreshManager.refreshSystem(false);
 
-        // Refresh app workers.
-        this.refreshManager.refreshAppWorkers();
+            // Refresh app workers.
+            this.refreshManager.refreshAppWorkers();
 
-        // Forward message.
-        this.forwardMessage(workerFailDTO);
+            // Forward message.
+            this.forwardMessage(workerFailDTO);
+        } finally {
+            this.refreshing.set(false);
+            log.info("Worker fail! {}", workerFailDTO);
+        }
+    }
 
-        this.refreshing.set(false);
-        log.info("Worker fail! {}", workerFailDTO);
+    public void setRunning() {
+        this.nodeRunning.set(true);
     }
 
     /**
@@ -211,12 +230,19 @@ public class ClusterService {
      * @return Boolean
      */
     private Boolean isIgnore(Long clusterVersion) {
+        if (!this.nodeRunning.get()) {
+            log.info("Cluster node is not running! Ignore cluster message.");
+            return true;
+        }
+
         if (clusterVersion <= ClusterContext.getSystem().getClusterVersion()) {
+            log.info("Cluster version is old! Ignore cluster message.");
             return true;
         }
 
         return !this.refreshing.compareAndSet(false, true);
     }
+
 
     /**
      * Forward message.
