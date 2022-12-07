@@ -56,5 +56,12 @@ public interface AdminMenuData {
      * @return AdminMenu list
      */
     List<AdminMenuDTO> getByIds(List<Long> ids);
+
+    /**
+     * get all valid AdminMenu list
+     *
+     * @return AdminMenu list
+     */
+    List<AdminMenuDTO> getAllMenus();
 }
 

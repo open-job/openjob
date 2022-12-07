@@ -58,5 +58,12 @@ public interface AdminMenuDAO {
      * @return AdminMenu list
      */
     Page<AdminMenu> getPageList(Integer page, Integer size);
+
+    /**
+     * get all AdminMenu list
+     *
+     * @return list
+     */
+    List<AdminMenu> getAllMenus();
 }
 

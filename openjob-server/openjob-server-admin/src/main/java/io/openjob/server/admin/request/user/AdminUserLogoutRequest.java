@@ -12,4 +12,3 @@ import lombok.Data;
 public class AdminUserLogoutRequest {
 
 }
-
