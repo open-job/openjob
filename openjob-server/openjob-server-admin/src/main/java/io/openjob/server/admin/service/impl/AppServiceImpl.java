@@ -34,6 +34,8 @@ public class AppServiceImpl implements AppService {
         app.setNamespaceId(addRequest.getNamespaceId());
         app.setName(addRequest.getName());
         app.setDesc(addRequest.getDesc());
+        app.setDeleteTime(0L);
+        app.setDeleted(2);
 
         long id = appDAO.save(app);
 

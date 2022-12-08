@@ -24,5 +24,5 @@ public interface ServerReportsDAO {
      * @param status    status.
      * @return Long
      */
-    Long countServerReports(Integer startTime, Long serverId, Integer status);
+    Long countServerReports(Long startTime, Long serverId, Integer status);
 }

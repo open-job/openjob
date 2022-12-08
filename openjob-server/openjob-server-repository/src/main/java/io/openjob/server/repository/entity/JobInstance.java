@@ -49,7 +49,7 @@ public class JobInstance {
     private Long slotsId;
 
     @Column(name = "execute_time")
-    private Integer executeTime;
+    private Long executeTime;
 
     @Column(name = "complete_time")
     private Integer completeTime;
@@ -57,15 +57,24 @@ public class JobInstance {
     @Column(name = "last_report_time")
     private Integer lastReportTime;
 
+    @Column(name = "deleted")
+    private Integer deleted;
+
+    /**
+     * Delete time
+     */
+    @Column(name = "delete_time")
+    private Long deleteTime;
+
     /**
      * Create time
      */
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 
     /**
      * Update time
      */
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 }

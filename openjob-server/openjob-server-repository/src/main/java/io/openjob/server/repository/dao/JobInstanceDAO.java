@@ -31,5 +31,5 @@ public interface JobInstanceDAO {
      * @param lastReportTime lastReportTime
      * @return Integer
      */
-    Integer updateLastReportTimeById(Long id, Integer lastReportTime);
+    Integer updateLastReportTimeById(Long id, Long lastReportTime);
 }

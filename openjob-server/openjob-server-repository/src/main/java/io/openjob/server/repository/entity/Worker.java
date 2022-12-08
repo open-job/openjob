@@ -88,6 +88,15 @@ public class Worker {
     @Column(name = "metric")
     private String metric;
 
+    @Column(name = "deleted")
+    private Integer deleted;
+
+    /**
+     * Delete time
+     */
+    @Column(name = "delete_time")
+    private Long deleteTime;
+
     /**
      * Create time
      */

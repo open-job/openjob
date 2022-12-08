@@ -42,9 +42,9 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
                 + "  `id` bigint(20) unsigned NOT NULL PRIMARY KEY,"
                 + "  `topic` varchar(128) NOT NULL DEFAULT '',"
                 + "  `pull_size` int(11) unsigned NOT NULL DEFAULT '0',"
-                + "  `pull_time` int(11) unsigned NOT NULL DEFAULT '0',"
-                + "  `create_time` int(11) NOT NULL,"
-                + "  `update_time` int(11) NOT NULL,"
+                + "  `pull_time` bigint(16) unsigned NOT NULL DEFAULT '0',"
+                + "  `create_time` bigint(12) unsigned NOT NULL,"
+                + "  `update_time` bigint(12) unsigned NOT NULL,"
                 + "  PRIMARY KEY (`id`)"
                 + ")";
 
@@ -72,8 +72,9 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
                 ps.setLong(1, delay.getId());
                 ps.setString(2, delay.getTopic());
                 ps.setInt(3, delay.getPullSize());
-                ps.setInt(4, delay.getCreateTime());
-                ps.setInt(5, delay.getUpdateTime());
+                ps.setLong(4, delay.getPullTime());
+                ps.setLong(5, delay.getCreateTime());
+                ps.setLong(6, delay.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -89,7 +90,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     }
 
     @Override
-    public Integer updatePullSizeById(Long id, Integer size, Integer updateTime) throws SQLException {
+    public Integer updatePullSizeById(Long id, Integer size, Long updateTime) throws SQLException {
         String sql = "UPDATE delay_worker SET pull_size=pull_size+?, update_time=? WHERE id=?";
 
         PreparedStatement ps = null;
@@ -97,7 +98,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
             connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
             ps.setInt(1, size);
-            ps.setInt(2, updateTime);
+            ps.setLong(2, updateTime);
             ps.setLong(3, id);
             ps.addBatch();
 
@@ -121,7 +122,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
             ps = connection.prepareStatement(sql);
             for (Delay delay : delays) {
                 ps.setLong(1, delay.getPullTime());
-                ps.setInt(1, delay.getUpdateTime());
+                ps.setLong(1, delay.getUpdateTime());
                 ps.setLong(1, delay.getId());
                 ps.addBatch();
             }
@@ -142,7 +143,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
         ResultSet rs = null;
         String sql = "SELECT id,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0 AND pull_time <?";
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, DateUtil.now());
+            ps.setLong(1, DateUtil.milliLongTime());
             rs = ps.executeQuery();
 
             List<Delay> delayList = new ArrayList<>();

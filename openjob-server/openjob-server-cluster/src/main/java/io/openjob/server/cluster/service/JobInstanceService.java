@@ -3,6 +3,7 @@ package io.openjob.server.cluster.service;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
@@ -63,6 +64,8 @@ public class JobInstanceService {
             jobInstanceTask.setStatus(t.getStatus());
             jobInstanceTask.setResult(t.getResult());
             jobInstanceTask.setWorkerAddress(t.getWorkerAddress());
+            jobInstanceTask.setDeleted(CommonConstant.NO);
+            jobInstanceTask.setDeleteTime(0L);
             jobInstanceTask.setCreateTime(t.getCreateTime());
             jobInstanceTask.setUpdateTime(t.getUpdateTime());
             taskList.add(jobInstanceTask);
@@ -89,6 +92,8 @@ public class JobInstanceService {
         jobInstanceLog.setJobId(logRequest.getJobId());
         jobInstanceLog.setJobInstanceId(logRequest.getJobInstanceId());
         jobInstanceLog.setMessage(logRequest.getMessage());
+        jobInstanceLog.setDeleted(CommonConstant.NO);
+        jobInstanceLog.setDeleteTime(DateUtil.timestamp());
         jobInstanceLog.setCreateTime(logRequest.getTime());
         jobInstanceLog.setUpdateTime(logRequest.getTime());
         this.jobInstanceLogDAO.save(jobInstanceLog);

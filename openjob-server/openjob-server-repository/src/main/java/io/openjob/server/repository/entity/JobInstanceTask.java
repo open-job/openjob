@@ -49,9 +49,18 @@ public class JobInstanceTask {
     @Column(name = "worker_address")
     private String workerAddress;
 
+    @Column(name = "deleted")
+    private Integer deleted;
+
+    /**
+     * Delete time
+     */
+    @Column(name = "delete_time")
+    private Long deleteTime;
+
     @Column(name = "create_time")
-    private Integer createTime;
+    private Long createTime;
 
     @Column(name = "update_time")
-    private Integer updateTime;
+    private Long updateTime;
 }

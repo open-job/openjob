@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.RepositoryTest;
 import io.openjob.server.repository.entity.JobInstance;
@@ -34,9 +35,11 @@ public class JobInstanceDAOTest extends RepositoryTest {
         jobInstance.setSlotsId(1L);
         jobInstance.setNamespaceId(1L);
         jobInstance.setAppId(1L);
-        jobInstance.setExecuteTime(DateUtil.now());
-        jobInstance.setUpdateTime(DateUtil.now());
-        jobInstance.setCreateTime(DateUtil.now());
+        jobInstance.setExecuteTime(DateUtil.timestamp());
+        jobInstance.setDeleted(CommonConstant.NO);
+        jobInstance.setDeleteTime(0L);
+        jobInstance.setUpdateTime(DateUtil.timestamp());
+        jobInstance.setCreateTime(DateUtil.timestamp());
 
         Long id = jobInstanceDAO.save(jobInstance);
 
@@ -46,7 +49,7 @@ public class JobInstanceDAOTest extends RepositoryTest {
         optionalJobInstance.ifPresent(j -> Assertions.assertEquals(j.getJobId(), 1L));
 
         Thread.sleep(3000L);
-        Integer now = DateUtil.now();
+        Long now = DateUtil.timestamp();
         JobInstance updateJobInstance = new JobInstance();
         updateJobInstance.setId(id);
         updateJobInstance.setJobId(2L);
