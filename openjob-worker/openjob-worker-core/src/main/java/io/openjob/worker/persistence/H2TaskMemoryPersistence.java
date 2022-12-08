@@ -43,7 +43,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         String createSql = "CREATE TABLE IF NOT EXISTS `task` ("
                 + "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 + "  `job_id` bigint(20) unsigned NOT NULL,"
-                + "  `instance_id` bigint(20)  unsignedNOT NULL,"
+                + "  `instance_id` bigint(20)  unsigned NOT NULL,"
                 + "  `circle_id` bigint(20) unsigned NOT NULL DEFAULT '0',"
                 + "  `task_id` varchar(64) NOT NULL DEFAULT '',"
                 + "  `task_name` varchar(128) NOT NULL DEFAULT '',"
