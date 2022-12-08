@@ -157,7 +157,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 delayInstance.setDelayExtra(d.getExtra());
                 delayInstance.setDeleted(CommonConstant.NO);
                 delayInstance.setDeleteTime(0L);
-                delayInstance.setExecuteTime(Long.valueOf(d.getExecuteTime()));
+                delayInstance.setExecuteTime(d.getExecuteTime());
                 delayInstance.setCreateTime(timestamp);
                 delayInstance.setUpdateTime(timestamp);
                 delayInstanceList.add(delayInstance);

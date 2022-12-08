@@ -45,5 +45,5 @@ public class WorkerDelayAddRequest implements Serializable {
     /**
      * Delay task execute time.
      */
-    private Integer executeTime;
+    private Long executeTime;
 }

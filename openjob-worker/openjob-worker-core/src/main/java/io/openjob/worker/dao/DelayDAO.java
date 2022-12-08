@@ -32,7 +32,7 @@ public class DelayDAO {
      */
     public Integer batchSave(List<Delay> delays) {
         try {
-            int now = DateUtil.now();
+            Long now = DateUtil.timestamp();
             delays.forEach(d -> {
                 d.setCreateTime(now);
                 d.setUpdateTime(now);
@@ -54,7 +54,7 @@ public class DelayDAO {
      */
     public Integer updatePullSizeById(Long id, Integer size) {
         try {
-            return this.delayPersistence.updatePullSizeById(id, size, DateUtil.now());
+            return this.delayPersistence.updatePullSizeById(id, size, DateUtil.timestamp());
         } catch (SQLException e) {
             log.error("Delay update pull size failed!", e);
             return 0;

@@ -585,7 +585,7 @@ CREATE TABLE `task` (
                         `task_name` varchar(128) NOT NULL,
                         `task_parent_id` varchar(64) NOT NULL DEFAULT '0',
                         `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
-                        `worker_address` varchar(32) NOT NULL DEFAULT '',
+                        `worker_address` varchar(64) NOT NULL DEFAULT '',
                         `result` longtext,
                         `task_body` blob,
                         `create_time` bigint(12) unsigned NOT NULL,
