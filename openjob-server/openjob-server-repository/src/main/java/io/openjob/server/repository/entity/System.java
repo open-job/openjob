@@ -49,13 +49,13 @@ public class System {
      * Delay zset slot.
      */
     @Column(name = "delay_zset_slot")
-    private Integer DelayZsetSlot;
+    private Integer delayZsetSlot;
 
     /**
      * Delay list slot.
      */
     @Column(name = "delay_list_slot")
-    private Integer DelayListSlot;
+    private Integer delayListSlot;
 
     /**
      * Max slot

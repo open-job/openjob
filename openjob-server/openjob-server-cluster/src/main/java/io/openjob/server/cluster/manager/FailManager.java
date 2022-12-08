@@ -55,7 +55,7 @@ public class FailManager {
     public void fail(Node stopNode) {
         try {
             // Do node fail.
-            boolean result = ClusterUtil.clusterNodeOperate(() -> this.doFail(stopNode));
+            boolean result = ClusterUtil.clusterNodeOperate(this.clusterProperties.getSpreadRetryTimes(), () -> this.doFail(stopNode));
 
             // Success to send cluster message.
             if (result) {

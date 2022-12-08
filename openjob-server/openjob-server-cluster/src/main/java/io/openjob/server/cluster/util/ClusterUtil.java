@@ -156,8 +156,8 @@ public class ClusterUtil {
      * @return Boolean
      * @throws InterruptedException exception
      */
-    public static <T> Boolean clusterNodeOperate(Supplier<Boolean> supplier) throws InterruptedException {
-        for (int i = 0; i < 3; i++) {
+    public static <T> Boolean clusterNodeOperate(Integer retryTimes, Supplier<Boolean> supplier) throws InterruptedException {
+        for (int i = 0; i < retryTimes; i++) {
             try {
                 return supplier.get();
             } catch (ClusterNodeOperatingException exception) {

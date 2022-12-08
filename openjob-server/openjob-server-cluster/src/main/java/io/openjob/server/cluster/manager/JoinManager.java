@@ -3,7 +3,6 @@ package io.openjob.server.cluster.manager;
 import com.google.common.collect.Maps;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
-import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
@@ -54,7 +53,7 @@ public class JoinManager {
     public void join(String hostname, Integer port) {
         try {
             // Do node join.
-            boolean result = ClusterUtil.clusterNodeOperate(() -> this.doJoin(hostname, port));
+            boolean result = ClusterUtil.clusterNodeOperate(this.clusterProperties.getSpreadRetryTimes(), () -> this.doJoin(hostname, port));
 
             // Success to send cluster message.
             if (result) {
