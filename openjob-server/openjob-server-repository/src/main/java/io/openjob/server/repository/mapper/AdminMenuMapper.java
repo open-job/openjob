@@ -33,7 +33,7 @@ public interface AdminMenuMapper {
      * partial update entity from dto
      *
      * @param adminMenuDTO dto
-     * @param adminMenu entity
+     * @param adminMenu    entity
      * @return entity
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

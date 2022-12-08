@@ -131,6 +131,8 @@
                     <failsOnError>false</failsOnError>
                     <linkXRef>true</linkXRef>
                     <violationSeverity>warning</violationSeverity>
+                    <excludes>**/target/generated-sources/annotations/io/openjob/server/repository/mapper/*.java</excludes>
+                    <suppressionsLocation>config/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
                 </configuration>
                 <executions>
                     <execution>

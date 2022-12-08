@@ -33,7 +33,7 @@ public interface AdminUserMapper {
      * partial update entity from dto
      *
      * @param adminUserDTO dto
-     * @param adminUser entity
+     * @param adminUser    entity
      * @return entity
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
