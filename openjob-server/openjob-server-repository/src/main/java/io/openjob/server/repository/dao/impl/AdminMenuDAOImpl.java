@@ -1,12 +1,15 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.entity.AdminMenu;
 import io.openjob.server.repository.repository.AdminMenuRepository;
 import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -56,6 +59,16 @@ public class AdminMenuDAOImpl implements AdminMenuDAO {
         PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
 
         return adminMenuRepository.findAll(pageReq);
+    }
+
+    @Override
+    public List<AdminMenu> getAllMenus() {
+        AdminMenu cond = new AdminMenu();
+        cond.setDeleted(CommonConstant.NO);
+
+        Example<AdminMenu> ex = Example.of(cond);
+
+        return adminMenuRepository.findAll(ex, Sort.by(Sort.Direction.ASC, "sort"));
     }
 }
 

@@ -5,6 +5,7 @@ import io.openjob.server.repository.dao.AdminMenuDAO;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.dto.AdminMenuDTO;
 import io.openjob.server.repository.entity.AdminMenu;
+import io.openjob.server.repository.mapper.AdminMenuMapper;
 import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ import java.util.List;
 public class AdminMenuDataImpl implements AdminMenuData {
 
     private final AdminMenuDAO adminMenuDAO;
-    // private final RedisOperation redisOperation;
+
+    private final AdminMenuMapper adminMenuMapper;
 
     @Autowired
-    public AdminMenuDataImpl(AdminMenuDAO adminMenuDAO) {
+    public AdminMenuDataImpl(AdminMenuDAO adminMenuDAO, AdminMenuMapper adminMenuMapper) {
         this.adminMenuDAO = adminMenuDAO;
+        this.adminMenuMapper = adminMenuMapper;
     }
 
     @Override
@@ -54,8 +57,7 @@ public class AdminMenuDataImpl implements AdminMenuData {
 
     @Override
     public Integer updateById(AdminMenuDTO dto) {
-        AdminMenu entity = new AdminMenu();
-        BeanUtils.copyProperties(dto, entity);
+        AdminMenu entity = adminMenuMapper.partialUpdate(dto, new AdminMenu());
 
         return adminMenuDAO.updateById(entity);
     }
@@ -70,11 +72,17 @@ public class AdminMenuDataImpl implements AdminMenuData {
         List<AdminMenu> entList = adminMenuDAO.getByIds(ids);
         List<AdminMenuDTO> dtoList = new ArrayList<>();
 
-        entList.forEach(entity -> {
-            AdminMenuDTO entDTO = new AdminMenuDTO();
-            BeanUtils.copyProperties(entity, entDTO);
-            dtoList.add(entDTO);
-        });
+        entList.forEach(entity -> dtoList.add(adminMenuMapper.toDto(entity)));
+
+        return dtoList;
+    }
+
+    @Override
+    public List<AdminMenuDTO> getAllMenus() {
+        List<AdminMenu> entList = adminMenuDAO.getAllMenus();
+        List<AdminMenuDTO> dtoList = new ArrayList<>();
+
+        entList.forEach(entity -> dtoList.add(adminMenuMapper.toDto(entity)));
 
         return dtoList;
     }

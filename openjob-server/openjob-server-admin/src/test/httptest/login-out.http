@@ -1,0 +1,38 @@
+### Login normal user
+POST http://127.0.0.1:8080/admin/login
+accept: */*
+Content-Type: application/json
+
+{
+  "username": "openjob",
+  "passwd": "openjob123"
+}
+
+> {%
+    client.global.set("sess_token", response.body.data.sessionKey);
+%}
+
+### Login supper admin
+POST http://127.0.0.1:8080/admin/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "passwd": "admin123"
+}
+
+> {%
+    client.global.set("sess_token", response.body.data.sessionKey);
+%}
+
+### Logout
+POST http://127.0.0.1:8080/admin/logout
+accept: */*
+Content-Type: application/json
+Session: {{sess_token}}
+
+{}
+
+> {%
+    client.global.clear("sess_token");
+%}
