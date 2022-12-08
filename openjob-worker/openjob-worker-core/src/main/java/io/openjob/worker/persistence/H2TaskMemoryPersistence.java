@@ -96,8 +96,8 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 ps.setString(8, task.getWorkerAddress());
                 ps.setString(9, task.getResult());
                 ps.setBytes(10, task.getTaskBody());
-                ps.setInt(11, task.getCreateTime());
-                ps.setInt(12, task.getUpdateTime());
+                ps.setLong(11, task.getCreateTime());
+                ps.setLong(12, task.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -256,8 +256,8 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         task.setResult(rs.getString("result"));
         task.setWorkerAddress(rs.getString("worker_address"));
         task.setTaskBody(rs.getBytes("task_body"));
-        task.setCreateTime(rs.getInt("create_time"));
-        task.setUpdateTime(rs.getInt("update_time"));
+        task.setCreateTime(rs.getLong("create_time"));
+        task.setUpdateTime(rs.getLong("update_time"));
         return task;
     }
 }

@@ -31,7 +31,7 @@ public class TaskDAO {
      */
     public Boolean add(Task task) {
         try {
-            Integer now = DateUtil.now();
+            Long now = DateUtil.timestamp();
             task.setUpdateTime(now);
             task.setCreateTime(now);
             int rows = taskPersistence.batchSave(Collections.singletonList(task));
@@ -50,7 +50,7 @@ public class TaskDAO {
      */
     public Integer batchAdd(List<Task> taskList) {
         try {
-            int now = DateUtil.now();
+            Long now = DateUtil.timestamp();
             taskList.forEach(t -> {
                 t.setUpdateTime(now);
                 t.setCreateTime(now);

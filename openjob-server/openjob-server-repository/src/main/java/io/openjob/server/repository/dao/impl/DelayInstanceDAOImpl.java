@@ -47,9 +47,10 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 + "`status`, "
                 + "`execute_time`, "
                 + "`deleted`, "
+                + "`delete_time`, "
                 + "`create_time`, "
                 + "`update_time`) "
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -65,8 +66,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 ps.setInt(8, d.getStatus());
                 ps.setLong(9, d.getExecuteTime());
                 ps.setInt(10, d.getDeleted());
-                ps.setLong(11, d.getCreateTime());
-                ps.setLong(12, d.getUpdateTime());
+                ps.setLong(11, d.getDeleteTime());
+                ps.setLong(12, d.getCreateTime());
+                ps.setLong(13, d.getUpdateTime());
             }
 
             @Override
@@ -86,7 +88,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     @Override
     public Integer batchUpdateStatus(List<Long> ids, Integer status) {
-        return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.now());
+        return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.timestamp());
     }
 
     @Override

@@ -25,7 +25,7 @@ public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
     @Modifying
     @Transactional(rollbackFor = Exception.class)
     @Query("update JobSlots set serverId=:serverId,updateTime=:updateTime where id in (:ids)")
-    Integer updateByServerId(@Param("ids") List<Long> ids, @Param("serverId") Long serverId, @Param("updateTime") Integer updateTime);
+    Integer updateByServerId(@Param("ids") List<Long> ids, @Param("serverId") Long serverId, @Param("updateTime") Long updateTime);
 
     /**
      * Update all slots.
@@ -37,5 +37,5 @@ public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
     @Modifying
     @Transactional(rollbackFor = Exception.class)
     @Query("update JobSlots set serverId=?1,updateTime=?2")
-    Integer updateByServerId(Long serverId, Integer updateTime);
+    Integer updateByServerId(Long serverId, Long updateTime);
 }

@@ -24,7 +24,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update JobInstance as j set j.status=?2,j.completeTime=?3,j.updateTime=?4 where j.id=?1")
-    Integer update(Long id, Integer status, Integer completeTime, Integer updateTime);
+    Integer update(Long id, Integer status, Long completeTime, Long updateTime);
 
     /**
      * Update for last report time.
@@ -37,5 +37,5 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update JobInstance as j set j.lastReportTime=?2,j.updateTime=?3 where j.id=?1")
-    Integer update(Long id, Integer lastReportTime, Integer updateTime);
+    Integer update(Long id, Long lastReportTime, Long updateTime);
 }

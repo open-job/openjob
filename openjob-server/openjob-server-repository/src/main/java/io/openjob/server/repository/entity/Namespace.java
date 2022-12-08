@@ -34,6 +34,15 @@ public class Namespace {
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "deleted")
+    private Integer deleted;
+
+    /**
+     * Delete time
+     */
+    @Column(name = "delete_time")
+    private Long deleteTime;
+
     @Column(name = "create_time")
     private Long createTime;
 

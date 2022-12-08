@@ -23,7 +23,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update Server as s set s.status=?2,s.updateTime=?4 where s.id=?1 and s.status=?3")
-    Integer updateByStatus(Long id, Integer status, Integer conditionStatus, Integer updateTime);
+    Integer updateByStatus(Long id, Integer status, Integer conditionStatus, Long updateTime);
 
     /**
      * Update server by id.
@@ -36,5 +36,5 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update Server as s set s.status=?2,s.updateTime=?3 where s.id=?1")
-    Integer update(Long id, Integer status, Integer updateTime);
+    Integer update(Long id, Integer status, Long updateTime);
 }

@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
@@ -29,6 +30,8 @@ public class NamespaceDAOImpl implements NamespaceDAO {
     @Override
     public Long save(Namespace namespace) {
         Long timestamp = DateUtil.timestamp();
+        namespace.setDeleted(CommonConstant.NO);
+        namespace.setDeleteTime(0L);
         namespace.setCreateTime(timestamp);
         namespace.setUpdateTime(timestamp);
         return this.namespaceRepository.save(namespace).getId();
