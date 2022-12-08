@@ -1,0 +1,13 @@
+### users/list
+GET http://127.0.0.1:8080/admin/users/list
+accept: */*
+Content-Type: application/json
+Session: {{sess_token}}
+
+### users/get
+GET http://127.0.0.1:8080/admin/users/get?id=2
+accept: */*
+Content-Type: application/json
+Session: {{sess_token}}
+
+

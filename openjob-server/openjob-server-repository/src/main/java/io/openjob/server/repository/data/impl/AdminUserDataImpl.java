@@ -5,6 +5,7 @@ import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import io.openjob.server.repository.entity.AdminUser;
+import io.openjob.server.repository.mapper.AdminUserMapper;
 import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,12 @@ public class AdminUserDataImpl implements AdminUserData {
 
     private final AdminUserDAO adminUserDAO;
 
+    private final AdminUserMapper adminUserMapper;
+
     @Autowired
-    public AdminUserDataImpl(AdminUserDAO adminUserDAO) {
+    public AdminUserDataImpl(AdminUserDAO adminUserDAO, AdminUserMapper adminUserMapper) {
         this.adminUserDAO = adminUserDAO;
+        this.adminUserMapper = adminUserMapper;
     }
 
     @Override
@@ -63,8 +67,7 @@ public class AdminUserDataImpl implements AdminUserData {
 
     @Override
     public Integer updateById(AdminUserDTO dto) {
-        AdminUser entity = new AdminUser();
-        BeanUtils.copyProperties(dto, entity);
+        AdminUser entity = adminUserMapper.partialUpdate(dto, new AdminUser());
 
         return adminUserDAO.updateById(entity);
     }
@@ -74,9 +77,7 @@ public class AdminUserDataImpl implements AdminUserData {
         Page<AdminUser> entPage = adminUserDAO.getPageList(page, size);
         List<AdminUserDTO> dtoList = new ArrayList<>();
 
-        entPage.forEach(entity -> {
-            dtoList.add(ObjectUtil.copyObject(entity, new AdminUserDTO()));
-        });
+        entPage.forEach(entity -> dtoList.add(ObjectUtil.copyObject(entity, new AdminUserDTO())));
 
         return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());
     }

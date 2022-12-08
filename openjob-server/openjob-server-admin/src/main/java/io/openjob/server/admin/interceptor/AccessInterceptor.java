@@ -40,6 +40,12 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     private final List<String> noLoginPrefixes;
 
+    /**
+     * not need auth perms after login.
+     * - eg: logout
+     */
+    private final List<String> notAuthRoutes;
+
     @Autowired
     public AccessInterceptor(AdminLoginService adminLoginService, Cache<String, AdminUserLoginVO> loginCache) {
         this.adminLoginService = adminLoginService;
@@ -57,6 +63,9 @@ public class AccessInterceptor implements HandlerInterceptor {
         noLoginPrefixes.add("/webjars/");
         noLoginPrefixes.add("/swagger-resources");
         noLoginPrefixes.add("/null/swagger-resources");
+
+        notAuthRoutes = new ArrayList<>();
+        notAuthRoutes.add("/admin/logout");
     }
 
     /**
@@ -135,7 +144,7 @@ public class AccessInterceptor implements HandlerInterceptor {
             throw new BusinessException("invalid login information");
         }
 
-        if (user.getSupperAdmin()) {
+        if (user.getSupperAdmin() || notAuthRoutes.contains(route)) {
             return true;
         }
 

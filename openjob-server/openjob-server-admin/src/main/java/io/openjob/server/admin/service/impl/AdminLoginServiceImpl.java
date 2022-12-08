@@ -153,8 +153,14 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
         List<PermItemVO> userPerms = new ArrayList<>();
 
-        // query perms and menus
-        List<AdminMenuDTO> dbMenuDtos = adminMenuData.getByIds(menuIds.stream().distinct().collect(Collectors.toList()));
+        // query perms and menus. if is admin, query all valid menus.
+        List<AdminMenuDTO> dbMenuDtos;
+        if (isAdmin) {
+            dbMenuDtos = adminMenuData.getAllMenus();
+        } else {
+            dbMenuDtos = adminMenuData.getByIds(menuIds.stream().distinct().collect(Collectors.toList()));
+        }
+
         List<AdminMenuDTO> menuDtos = new ArrayList<>();
 
         for (AdminMenuDTO menuDto : dbMenuDtos) {

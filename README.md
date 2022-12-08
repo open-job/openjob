@@ -35,10 +35,10 @@ cd openjob-ui & git pull
 
 ### Default accounts
 
-| user | password |
-|--|---------------|
-| admin | `admin123456` |
-| openjob | `openjob123456` |
+| username | password     |
+|----------|--------------|
+| admin    | `admin123`   |
+| openjob  | `openjob123` |
 
 ## License
 

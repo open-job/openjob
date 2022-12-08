@@ -43,7 +43,7 @@ public class AdminController {
     @ApiOperation("admin user logout")
     @PostMapping("/logout")
     public Result<AdminUserLogoutVO> logout(
-            @Valid @RequestBody AdminUserLogoutRequest request,
+            @RequestBody AdminUserLogoutRequest request,
             @RequestHeader(name = AdminConstant.HEADER_SESSION_KEY) String sessKey
     ) {
         return Result.success(this.adminLoginService.logout(request, sessKey));

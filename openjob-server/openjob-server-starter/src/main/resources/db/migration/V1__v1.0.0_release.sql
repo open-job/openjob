@@ -671,8 +671,8 @@ CREATE TABLE `admin_user` (
 
 INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    ('admin', 'Administrator', 'fa1ed17dd70b536168522136eab8cdd70203586d35c8dc5b78d531ca04c1ebca', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
-    ('openjob', 'OpenJob User', 'c20d5129757d5a04f0b99f31fd337dfe323f60862adbe857868c04eab00284dd', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_role`;
 CREATE TABLE `admin_role` (
@@ -714,28 +714,38 @@ CREATE TABLE `admin_menu` (
                               INDEX  `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
 
+
+/** menus **/
 INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    /** menus **/
     (1, 0, 1, 'Dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
     (2, 0, 1, 'Manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
     (5, 2, 1, 'Users', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (6, 3, 1, 'Users Add', '/users/add', '{"title": "users.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (7, 3, 1, 'Users View', '/users/view', '{"title": "users.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (6, 5, 1, 'Users Add', '/users/add', '{"title": "users.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (7, 5, 1, 'Users View', '/users/view', '{"title": "users.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (8, 5, 1, 'Users Edit', '/users/edit', '{"title": "users.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
     (10, 2, 1, 'Roles', '/roles', '{"icon": "fa-list", "title": "roles.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (11, 6, 1, 'Roles Add', '/roles/add', '{"title": "roles.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (12, 6, 1, 'Roles View', '/roles/view', '{"title": "roles.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (11, 10, 1, 'Roles Add', '/roles/add', '{"title": "roles.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (12, 10, 1, 'Roles View', '/roles/view', '{"title": "roles.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (13, 10, 1, 'Roles Edit', '/roles/edit', '{"title": "roles.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
     (15, 2, 1, 'Menus', '/menus', '{"icon": "fa-list", "title": "menus.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (16, 15, 1, 'Menus Add', '/menus/add', '{"icon": "fa-add", "title": "menus.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (17, 15, 1, 'Menus Edit', '/menus/edit', '{"icon": "fa-edit", "title": "menus.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
     (20, 2, 1, 'Perms', '/perms', '{"icon": "fa-list", "title": "perms.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
     (25, 2, 1, 'Jobs', '/jobs', '{"icon": "fa-list", "title": "jobs.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (26, 25, 1, 'Jobs Add', '/jobs/add', '{"icon": "fa-edit", "title": "jobs.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (27, 25, 1, 'Jobs View', '/jobs/view', '{"icon": "fa-edit", "title": "jobs.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (28, 25, 1, 'Jobs Edit', '/jobs/edit', '{"icon": "fa-edit", "title": "jobs.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
     (30, 2, 1, 'Executors', '/executors', '{"icon": "fa-list", "title": "executors.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (40, 2, 1, 'Notify Manage', '/notify/manage', '{"icon": "fa-list", "title": "notify.template.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    /** permissions **/
-    (55, 0, 2, 'Users Add', '/admin/users/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (56, 0, 2, 'Users Get', '/admin/users/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (57, 0, 2, 'Users List', '/admin/users/list', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (58, 0, 2, 'Rule Get', '/admin/rules/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
+    (40, 2, 1, 'Notify Manage', '/notify/manage', '{"icon": "fa-list", "title": "notify.template.list"}', 2, 0, 2, 0, 1669972320, 1669972320);
 
+/** permissions **/
+INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    (60, 0, 2, 'Users Add', '/admin/users/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (61, 0, 2, 'Users Get', '/admin/users/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (62, 0, 2, 'Users List', '/admin/users/list', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (63, 0, 2, 'Rule Get', '/admin/rules/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
 
 DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (
