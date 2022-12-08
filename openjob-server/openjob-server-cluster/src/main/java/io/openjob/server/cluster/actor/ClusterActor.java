@@ -6,6 +6,8 @@ import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.NodePongDTO;
+import io.openjob.server.cluster.dto.NodeResponseDTO;
+import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.service.ClusterService;
@@ -37,6 +39,7 @@ public class ClusterActor extends AbstractActor {
                 .match(NodePingDTO.class, this::handleNodePing)
                 .match(NodeJoinDTO.class, this::handleNodeJoin)
                 .match(NodeFailDTO.class, this::handleNodeFail)
+                .match(NodeShutdownDTO.class, this::handleNodeShutdown)
                 .match(WorkerJoinDTO.class, this::handleWorkerJoin)
                 .match(WorkerFailDTO.class, this::handleWorkerFail)
                 .matchAny(obj -> System.out.println("akk mesage tst"))
@@ -69,6 +72,7 @@ public class ClusterActor extends AbstractActor {
      */
     public void handleNodeJoin(NodeJoinDTO nodeJoinDTO) {
         this.clusterService.receiveNodeJoin(nodeJoinDTO);
+        getSender().tell(Result.success(this.getNodeResponse()), getSelf());
     }
 
     /**
@@ -78,13 +82,35 @@ public class ClusterActor extends AbstractActor {
      */
     public void handleNodeFail(NodeFailDTO nodeFailDTO) {
         this.clusterService.receiveNodeFail(nodeFailDTO);
+        getSender().tell(Result.success(this.getNodeResponse()), getSelf());
+    }
+
+    public void handleNodeShutdown(NodeShutdownDTO shutdownDTO) {
+        this.clusterService.receiveNodeShutdown(shutdownDTO);
+        getSender().tell(Result.success(this.getNodeResponse()), getSelf());
     }
 
     public void handleWorkerJoin(WorkerJoinDTO workerJoinDTO) {
         this.clusterService.receiveWorkerJoin(workerJoinDTO);
+        getSender().tell(Result.success(this.getNodeResponse()), getSelf());
     }
 
     public void handleWorkerFail(WorkerFailDTO workerFailDTO) {
         this.clusterService.receiveWorkerFail(workerFailDTO);
+        getSender().tell(Result.success(this.getNodeResponse()), getSelf());
+    }
+
+
+    /**
+     * Get node response.
+     *
+     * @return NodeResponseDTO
+     */
+    private NodeResponseDTO getNodeResponse() {
+        NodeResponseDTO nodeResponse = new NodeResponseDTO();
+        nodeResponse.setServerId(ClusterContext.getCurrentNode().getServerId());
+        nodeResponse.setIp(ClusterContext.getCurrentNode().getIp());
+        nodeResponse.setAkkaAddress(ClusterContext.getCurrentNode().getAkkaAddress());
+        return nodeResponse;
     }
 }

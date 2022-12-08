@@ -41,9 +41,11 @@ public class WheelManager {
     public void removeBySlotsId(Set<Long> slotsIds) {
         // Scheduler wheel
         this.schedulerWheel.removeBySlotsId(slotsIds);
+        log.info("Remove slots{} from wheel", slotsIds);
 
         // Workflow wheel
         this.workflowWheel.removeBySlotsId(slotsIds);
+        log.info("Remove slots{} from workflow wheel", slotsIds);
     }
 
     /**

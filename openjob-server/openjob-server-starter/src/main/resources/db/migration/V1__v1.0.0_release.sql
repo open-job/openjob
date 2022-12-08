@@ -615,16 +615,18 @@ CREATE TABLE `system` (
                           `cluster_version` bigint(12) unsigned NOT NULL DEFAULT '0',
                           `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
-                          `max_slot` int(11) unsigned DEFAULT '256',
+                          `delay_zset_slot` int(11) NOT NULL DEFAULT '4',
+                          `delay_list_slot` int(11) NOT NULL DEFAULT '2',
+                          `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `system` WRITE;
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `max_slot`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_list_slot`, `max_slot`)
 VALUES
-    (1,'1.0.0',0,1,256,256);
+    (1,'1.0.0',59,1,256,2,2,256);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;

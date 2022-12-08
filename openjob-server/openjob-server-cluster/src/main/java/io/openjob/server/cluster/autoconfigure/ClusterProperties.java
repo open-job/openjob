@@ -17,9 +17,14 @@ public class ClusterProperties {
     private Long pingTimeout = 3000L;
 
     /**
-     * Ping node size.
+     * Spread node size.
      */
-    private Integer spreadSize = 5;
+    private Integer spreadSize = 3;
+
+    /**
+     * Spread retry times.
+     */
+    private Integer spreadRetryTimes = 3;
 
     /**
      * Node fail times.

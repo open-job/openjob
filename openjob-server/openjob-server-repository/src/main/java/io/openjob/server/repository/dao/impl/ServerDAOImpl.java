@@ -53,6 +53,11 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
+    public Integer update(Long id, Integer status, Integer conditionStatus) {
+        return this.serverRepository.updateByStatus(id, status, conditionStatus, DateUtil.now());
+    }
+
+    @Override
     public List<Server> listServers(Integer status) {
         Server server = new Server();
         server.setStatus(status);
