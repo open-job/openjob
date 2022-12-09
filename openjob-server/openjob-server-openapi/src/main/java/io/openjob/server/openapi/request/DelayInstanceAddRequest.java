@@ -29,5 +29,5 @@ public class DelayInstanceAddRequest {
 
     @NotNull
     @ApiModelProperty("Delay task execute timestamp.")
-    private Integer executeTime;
+    private Long executeTime;
 }

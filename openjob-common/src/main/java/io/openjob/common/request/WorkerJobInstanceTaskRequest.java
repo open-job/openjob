@@ -62,10 +62,10 @@ public class WorkerJobInstanceTaskRequest implements Serializable {
     /**
      * Task create time.
      */
-    private Integer createTime;
+    private Long createTime;
 
     /**
      * Task update time.
      */
-    private Integer updateTime;
+    private Long updateTime;
 }

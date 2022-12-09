@@ -62,4 +62,25 @@ public class System {
      */
     @Column(name = "max_slot")
     private Integer maxSlot;
+
+    @Column(name = "deleted")
+    private Integer deleted;
+
+    /**
+     * Delete time
+     */
+    @Column(name = "delete_time")
+    private Long deleteTime;
+
+    /**
+     * Create time
+     */
+    @Column(name = "create_time")
+    private Long createTime;
+
+    /**
+     * Update time
+     */
+    @Column(name = "update_time")
+    private Long updateTime;
 }

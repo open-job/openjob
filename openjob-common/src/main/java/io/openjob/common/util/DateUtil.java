@@ -19,13 +19,6 @@ public class DateUtil {
     }
 
     /**
-     * 当前时间戳(s)
-     */
-    public static Integer now() {
-        return (int) instant().getEpochSecond();
-    }
-
-    /**
      * current timestamp long value.
      *
      * @return long

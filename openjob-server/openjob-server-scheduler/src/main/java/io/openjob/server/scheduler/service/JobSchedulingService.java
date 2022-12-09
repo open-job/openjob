@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
@@ -10,10 +11,9 @@ import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
-import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.timer.AbstractTimerTask;
+import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.wheel.SchedulerWheel;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +60,7 @@ public class JobSchedulingService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void scheduleCronJob(List<Long> currentSlots) {
-        int maxExecuteTime = DateUtil.now() + (int) (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
+        long maxExecuteTime = DateUtil.timestamp() + (SchedulerConstant.JOB_FIXED_DELAY / 1000L);
         List<Job> jobs = jobDAO.listScheduledJobs(currentSlots, maxExecuteTime);
 
         // Create job instance.
@@ -69,10 +69,10 @@ public class JobSchedulingService {
         // Update job next execute time.
         jobs.forEach(j -> {
             try {
-                Integer now = DateUtil.now();
+                Long now = DateUtil.timestamp();
 
                 // Calculate next execute time.
-                int nextExecuteTime = this.calculateNextExecuteTime(j, now);
+                long nextExecuteTime = this.calculateNextExecuteTime(j, now);
 
                 // Update next execute time.
                 j.setNextExecuteTime(nextExecuteTime);
@@ -101,7 +101,7 @@ public class JobSchedulingService {
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
 
         jobs.forEach(j -> {
-            int now = DateUtil.now();
+            long now = DateUtil.timestamp();
             JobInstance jobInstance = new JobInstance();
             jobInstance.setJobId(j.getId());
             jobInstance.setAppId(j.getAppId());
@@ -109,6 +109,8 @@ public class JobSchedulingService {
             jobInstance.setJobParams(j.getParams());
             jobInstance.setSlotsId(j.getSlotsId());
             jobInstance.setExecuteTime(j.getNextExecuteTime());
+            jobInstance.setDeleteTime(0L);
+            jobInstance.setDeleted(CommonConstant.NO);
             jobInstance.setCreateTime(now);
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
@@ -116,7 +118,7 @@ public class JobSchedulingService {
             jobInstance.setLastReportTime(0);
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
-            SchedulerTimerTask schedulerTask = new SchedulerTimerTask(instanceId, j.getSlotsId(), (long) j.getNextExecuteTime());
+            SchedulerTimerTask schedulerTask = new SchedulerTimerTask(instanceId, j.getSlotsId(), j.getNextExecuteTime());
             schedulerTask.setJobId(j.getId());
             schedulerTask.setJobParams(j.getParams());
             schedulerTask.setAppid(j.getAppId());
@@ -135,7 +137,7 @@ public class JobSchedulingService {
         this.schedulerWheel.addTimerTask(timerTasks);
     }
 
-    private Integer calculateNextExecuteTime(Job job, Integer now) throws ParseException {
+    private Long calculateNextExecuteTime(Job job, Long now) throws ParseException {
         // Cron type job.
         if (TimeExpressionTypeEnum.CRON_TYPES.contains(job.getTimeExpressionType())) {
             CronExpression cronExpression = new CronExpression(job.getTimeExpression());
@@ -144,10 +146,10 @@ public class JobSchedulingService {
                 afterTime = now;
             }
             Date date = new Date(afterTime * 1000L);
-            return (int) cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
+            return cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
         }
 
         // Fixed rate job.
-        return job.getNextExecuteTime() + Integer.parseInt(job.getTimeExpression());
+        return job.getNextExecuteTime() + Long.parseLong(job.getTimeExpression());
     }
 }

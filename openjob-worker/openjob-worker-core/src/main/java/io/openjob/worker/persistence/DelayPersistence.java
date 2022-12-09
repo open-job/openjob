@@ -35,7 +35,7 @@ public interface DelayPersistence {
      * @return Effect rows
      * @throws SQLException SQLException
      */
-    Integer updatePullSizeById(Long id, Integer size, Integer updateTime) throws SQLException;
+    Integer updatePullSizeById(Long id, Integer size, Long updateTime) throws SQLException;
 
     /**
      * Batch upadte.

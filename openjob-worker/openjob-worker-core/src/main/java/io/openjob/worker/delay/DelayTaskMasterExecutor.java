@@ -95,7 +95,7 @@ public class DelayTaskMasterExecutor implements Runnable {
     }
 
     private void updatePullTime(Set<Long> pullTopicIds, Set<Long> responseTopicIds) {
-        int now = DateUtil.now();
+        Long now = DateUtil.timestamp();
         long nowMill = DateUtil.milliLongTime();
         List<Delay> updateDelays = Lists.newArrayList();
         pullTopicIds.forEach(id -> {
@@ -122,7 +122,7 @@ public class DelayTaskMasterExecutor implements Runnable {
         topicIdMap.forEach((t, instanceResponses) -> {
             ServerDelayInstanceResponse firstDelay = instanceResponses.get(0);
             DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(firstDelay.getDelayId(), id -> {
-                int now = DateUtil.now();
+                Long now = DateUtil.timestamp();
                 Delay delay = new Delay();
                 delay.setId(id);
                 delay.setPullSize(10);

@@ -42,18 +42,18 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     public void initTable() throws Exception {
         String createSql = "CREATE TABLE IF NOT EXISTS `task` ("
                 + "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                + "  `job_id` bigint(20) NOT NULL,"
-                + "  `instance_id` bigint(20) NOT NULL,"
-                + "  `circle_id` bigint(20) NOT NULL DEFAULT '0',"
+                + "  `job_id` bigint(20) unsigned NOT NULL,"
+                + "  `instance_id` bigint(20)  unsigned NOT NULL,"
+                + "  `circle_id` bigint(20) unsigned NOT NULL DEFAULT '0',"
                 + "  `task_id` varchar(64) NOT NULL DEFAULT '',"
                 + "  `task_name` varchar(128) NOT NULL DEFAULT '',"
                 + "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0',"
-                + "  `status` tinyint(2) NOT NULL DEFAULT '1',"
+                + "  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',"
                 + "  `worker_address` varchar(64) NOT NULL DEFAULT '',"
                 + "  `result` longtext,"
                 + "  `task_body` blob,"
-                + "  `create_time` int(11) NOT NULL,"
-                + "  `update_time` int(11) NOT NULL,"
+                + "  `create_time` bigint(12) unsigned NOT NULL,"
+                + "  `update_time` bigint(12) unsigned NOT NULL,"
                 + "  PRIMARY KEY (`id`),"
                 + "  UNIQUE KEY `udx_task_id` (`task_id`),"
                 + "  KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)"
@@ -96,8 +96,8 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 ps.setString(8, task.getWorkerAddress());
                 ps.setString(9, task.getResult());
                 ps.setBytes(10, task.getTaskBody());
-                ps.setInt(11, task.getCreateTime());
-                ps.setInt(12, task.getUpdateTime());
+                ps.setLong(11, task.getCreateTime());
+                ps.setLong(12, task.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -256,8 +256,8 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         task.setResult(rs.getString("result"));
         task.setWorkerAddress(rs.getString("worker_address"));
         task.setTaskBody(rs.getBytes("task_body"));
-        task.setCreateTime(rs.getInt("create_time"));
-        task.setUpdateTime(rs.getInt("update_time"));
+        task.setCreateTime(rs.getLong("create_time"));
+        task.setUpdateTime(rs.getLong("update_time"));
         return task;
     }
 }

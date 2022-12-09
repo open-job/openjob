@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.ServerDAO;
@@ -27,7 +28,9 @@ public class ServerDAOImpl implements ServerDAO {
 
     @Override
     public Long save(Server server) {
-        Integer now = DateUtil.now();
+        Long now = DateUtil.timestamp();
+        server.setDeleted(CommonConstant.NO);
+        server.setDeleteTime(0L);
         server.setCreateTime(now);
         server.setUpdateTime(now);
         server.setStatus(ServerStatusEnum.OK.getStatus());
@@ -49,12 +52,12 @@ public class ServerDAOImpl implements ServerDAO {
 
     @Override
     public Integer update(Long id, Integer status) {
-        return serverRepository.update(id, status, DateUtil.now());
+        return serverRepository.update(id, status, DateUtil.timestamp());
     }
 
     @Override
     public Integer update(Long id, Integer status, Integer conditionStatus) {
-        return this.serverRepository.updateByStatus(id, status, conditionStatus, DateUtil.now());
+        return this.serverRepository.updateByStatus(id, status, conditionStatus, DateUtil.timestamp());
     }
 
     @Override

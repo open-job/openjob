@@ -15,5 +15,5 @@ public class WorkerJobInstanceLogRequest implements Serializable {
     private Long deliveryId;
     private Integer status;
     private String message;
-    private Integer time;
+    private Long time;
 }

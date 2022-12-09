@@ -124,7 +124,7 @@ public class TimerTaskList implements Delayed {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        return unit.convert(this.getExpiration() - DateUtil.now(), TimeUnit.SECONDS);
+        return unit.convert(this.getExpiration() - DateUtil.timestamp(), TimeUnit.SECONDS);
     }
 
     @Override

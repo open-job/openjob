@@ -19,8 +19,8 @@ public class Task {
     private String workerAddress;
     private String result;
     private byte[] taskBody;
-    private Integer createTime;
-    private Integer updateTime;
+    private Long createTime;
+    private Long updateTime;
 
     public Task() {
     }
