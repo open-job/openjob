@@ -1,8 +1,9 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.repository.constant.ServerReportStatusEnum;
 import io.openjob.server.repository.dao.ServerReportsDAO;
+import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.ServerReports;
 import io.openjob.server.repository.repository.ServerReportsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,16 @@ public class ServerReportsImpl implements ServerReportsDAO {
 
     @Override
     public Long save(ServerReports serverFailReports) {
-        serverFailReports.setCreateTime(DateUtil.now());
+        Long now = DateUtil.timestamp();
+        serverFailReports.setDeleted(CommonConstant.NO);
+        serverFailReports.setDeleteTime(0L);
+        serverFailReports.setUpdateTime(now);
+        serverFailReports.setCreateTime(now);
         return serverReportsRepository.saveAndFlush(serverFailReports).getId();
     }
 
     @Override
-    public Long countServerReports(Integer startTime, Long serverId, Integer status) {
-        return serverReportsRepository.countByCreateTimeAndServerIdAndStatus(startTime, serverId, status);
+    public Long countServerReports(Long startTime, Long serverId, Integer status) {
+        return serverReportsRepository.countByCreateTimeGreaterThanEqualAndServerIdAndStatus(startTime, serverId, status);
     }
 }

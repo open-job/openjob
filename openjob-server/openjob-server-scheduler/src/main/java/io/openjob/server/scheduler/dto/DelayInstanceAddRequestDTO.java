@@ -33,5 +33,5 @@ public class DelayInstanceAddRequestDTO {
     /**
      * Delay task execute time.
      */
-    private Integer executeTime;
+    private Long executeTime;
 }

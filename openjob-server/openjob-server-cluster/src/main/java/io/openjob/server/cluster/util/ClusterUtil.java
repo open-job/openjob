@@ -2,17 +2,24 @@ package io.openjob.server.cluster.util;
 
 import akka.actor.ActorRef;
 import io.openjob.common.context.Node;
+import io.openjob.common.util.FutureUtil;
+import io.openjob.server.cluster.dto.NodeResponseDTO;
+import io.openjob.server.cluster.exception.ClusterNodeOperatingException;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.entity.Worker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -75,37 +82,89 @@ public class ClusterUtil {
         Collections.sort(serverIds);
         int serverSize = serverIds.size();
 
-        int currentIndex = serverIds.indexOf(currentNode.getServerId());
+        // Server size is less than spread size.
+        if (serverSize <= spreadSize) {
+            return serverIds.stream().filter(c -> !c.equals(currentNode.getServerId())).collect(Collectors.toList());
+        }
 
+        // Current index and sub size from tail
+        int currentIndex = serverIds.indexOf(currentNode.getServerId());
         int subSize = serverSize - currentIndex - 1;
         if (subSize > spreadSize) {
             subSize = spreadSize;
         }
 
-        List<Long> pingList = serverIds.subList(currentIndex, subSize);
-        int pingSize = pingList.size();
-        int remainPingSize = spreadSize - pingSize;
-        int needPingSize = remainPingSize;
-        if (spreadSize > serverSize - 1) {
-            needPingSize = serverSize - 1 - remainPingSize;
+        // Sub from tail by size.
+        List<Long> fixedList = new ArrayList<>(serverIds.subList(currentIndex + 1, currentIndex + 1 + subSize));
+        int pingSize = fixedList.size();
+        int needPingSize = spreadSize - pingSize;
+
+        // Sub from head by size.
+        if (needPingSize > 0) {
+            fixedList.addAll(serverIds.subList(0, needPingSize));
         }
 
-        if (needPingSize > 0) {
-            pingList.addAll(serverIds.subList(0, needPingSize));
-        }
-        return pingList;
+        Collections.sort(fixedList);
+        return fixedList;
     }
 
     /**
      * Send message
      *
-     * @param message     message
-     * @param currentNode currentNode
-     * @param spreadSize  spreadSize
+     * @param message      message
+     * @param currentNode  currentNode
+     * @param spreadSize   spreadSize
+     * @param excludeNodes exclude nodes.
+     * @return Boolean
      */
-    public static void sendMessage(Object message, Node currentNode, Integer spreadSize) {
+    public static Boolean sendMessage(Object message, Node currentNode, Integer spreadSize, Set<Long> excludeNodes) {
         Map<Long, Node> nodesList = ClusterContext.getNodesMap();
         List<Long> knowServers = ClusterUtil.getKnowServers(nodesList, currentNode, spreadSize);
-        knowServers.forEach(knowId -> ServerUtil.getServerClusterActor(nodesList.get(knowId).getAkkaAddress()).tell(message, ActorRef.noSender()));
+        List<Long> sendServers = knowServers.stream().filter(i -> !excludeNodes.contains(i)).collect(Collectors.toList());
+
+        // Empty send servers.
+        if (CollectionUtils.isEmpty(sendServers)) {
+            return true;
+        }
+
+        // Loop to send message.
+        AtomicInteger successCounter = new AtomicInteger(0);
+        sendServers.forEach(knowId -> {
+            try {
+                String akkaAddress = nodesList.get(knowId).getAkkaAddress();
+                ServerUtil.getServerClusterActor(akkaAddress).tell(message, ActorRef.noSender());
+                NodeResponseDTO nodeResponse = FutureUtil.mustAsk(ServerUtil.getServerClusterActor(akkaAddress), message, NodeResponseDTO.class, 3000L);
+
+                // Counter
+                successCounter.incrementAndGet();
+
+                log.info("Cluster message success! akkaAddress={}, message={} response={}", akkaAddress, message, nodeResponse);
+            } catch (Throwable e) {
+                log.warn("Akka cluster message error!", e);
+            }
+        });
+
+        int half = (int) Math.ceil((double) sendServers.size() / 2);
+        return successCounter.get() >= half;
+    }
+
+    /**
+     * Cluster node operate.
+     *
+     * @param supplier supplier
+     * @param <T>      type
+     * @return Boolean
+     * @throws InterruptedException exception
+     */
+    public static <T> Boolean clusterNodeOperate(Integer retryTimes, Supplier<Boolean> supplier) throws InterruptedException {
+        for (int i = 0; i < retryTimes; i++) {
+            try {
+                return supplier.get();
+            } catch (ClusterNodeOperatingException exception) {
+                log.info("Cluster node is operating! {}", exception.getMessage());
+                Thread.sleep((i + 1) * 1000L);
+            }
+        }
+        return false;
     }
 }

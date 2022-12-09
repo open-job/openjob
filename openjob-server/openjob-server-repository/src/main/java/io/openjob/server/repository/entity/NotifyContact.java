@@ -1,6 +1,7 @@
 package io.openjob.server.repository.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,9 +14,9 @@ import javax.persistence.Table;
  * Job notify contact
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "notify_contact")
 public class NotifyContact {

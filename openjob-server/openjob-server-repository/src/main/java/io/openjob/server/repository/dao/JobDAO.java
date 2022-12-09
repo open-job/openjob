@@ -24,7 +24,7 @@ public interface JobDAO {
      * @param time    time
      * @return List
      */
-    List<Job> listScheduledJobs(List<Long> slotIds, Integer time);
+    List<Job> listScheduledJobs(List<Long> slotIds, Long time);
 
     /**
      * List seconds scheduled jobs.

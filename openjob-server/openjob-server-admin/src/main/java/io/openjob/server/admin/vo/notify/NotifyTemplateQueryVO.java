@@ -1,6 +1,6 @@
 package io.openjob.server.admin.vo.notify;
 
-import io.openjob.server.admin.vo.part.TemplateExtra;
+import io.openjob.server.admin.vo.part.TemplateExtraVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,7 +9,6 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-14 20:20:41
  * @since 1.0.0
  */
 @Data
@@ -44,7 +43,7 @@ public class NotifyTemplateQueryVO {
     private String content;
 
     @ApiModelProperty(value = "Extra info. eg: third platform token")
-    private TemplateExtra extra;
+    private TemplateExtraVO extra;
 
     @ApiModelProperty(value = "Creator user ID")
     private Integer userId;

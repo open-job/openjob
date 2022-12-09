@@ -25,7 +25,7 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
 
     @Override
     public Long save(JobSlots taskSlots) {
-        Integer now = DateUtil.now();
+        Long now = DateUtil.timestamp();
         taskSlots.setCreateTime(now);
         taskSlots.setUpdateTime(now);
         return this.jobSlotsRepository.saveAndFlush(taskSlots).getId();
@@ -45,11 +45,11 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
 
     @Override
     public Integer updateByServerId(Long serverId, List<Long> slots) {
-        return jobSlotsRepository.updateByServerId(slots, serverId, DateUtil.now());
+        return jobSlotsRepository.updateByServerId(slots, serverId, DateUtil.timestamp());
     }
 
     @Override
     public Integer updateByServerId(Long serverId) {
-        return jobSlotsRepository.updateByServerId(serverId, DateUtil.now());
+        return jobSlotsRepository.updateByServerId(serverId, DateUtil.timestamp());
     }
 }

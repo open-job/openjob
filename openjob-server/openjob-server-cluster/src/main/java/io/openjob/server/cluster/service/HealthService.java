@@ -98,7 +98,7 @@ public class HealthService {
                 this.checkOnline(node);
             }
         } catch (Exception e) {
-            log.error("Node ping failed!", e);
+            log.info("Node{} ping failed!", node);
 
             // Node failed.
             // Record node fail message.
@@ -118,10 +118,10 @@ public class HealthService {
         ServerReports serverReports = new ServerReports();
         serverReports.setServerId(failNode.getServerId());
         serverReports.setReportServerId(failServerId);
-        serverReports.setStatus(ServerReportStatusEnum.SUCCESS.getStatus());
+        serverReports.setStatus(ServerReportStatusEnum.FAIL.getStatus());
         serverReportsDAO.save(serverReports);
 
-        Integer startTime = DateUtil.now() - this.clusterProperties.getNodeFailPeriodTime() / 1000 * 2;
+        Long startTime = DateUtil.timestamp() - this.clusterProperties.getNodeFailPeriodTime() / 1000 * 2;
         Long reportsCount = serverReportsDAO.countServerReports(startTime, failServerId, ServerReportStatusEnum.FAIL.getStatus());
 
         // Offline
@@ -149,7 +149,7 @@ public class HealthService {
         serverReports.setStatus(ServerReportStatusEnum.FAIL.getStatus());
         serverReportsDAO.save(serverReports);
 
-        Integer startTime = DateUtil.now() - this.clusterProperties.getNodeSuccessPeriodTime() / 1000 * 2;
+        Long startTime = DateUtil.timestamp() - this.clusterProperties.getNodeSuccessPeriodTime() / 1000 * 2;
         Long reportsCount = serverReportsDAO.countServerReports(startTime, currentServerId, ServerReportStatusEnum.FAIL.getStatus());
 
         // Online

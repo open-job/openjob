@@ -14,7 +14,7 @@ public class SchedulerTest {
     @Test
     public void testSchedulerByTaskId() {
         SystemTimer systemTimer = new SystemTimer("timer");
-        Integer now = DateUtil.now();
+        long now = DateUtil.timestamp();
 
         systemTimer.add(new SchedulerTimerTask(2L, 1L, now + 5L));
         systemTimer.add(new SchedulerTimerTask(3L, 1L, now + 10L));
@@ -39,7 +39,7 @@ public class SchedulerTest {
 
     @Test
     public void testSchedulerBySlotsId() {
-        Integer now = DateUtil.now();
+        long now = DateUtil.timestamp();
 
 
         SystemTimer systemTimer = new SystemTimer("timer");

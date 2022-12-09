@@ -1,13 +1,11 @@
 package io.openjob.server.repository.data;
 
 import io.openjob.server.repository.dto.AdminMenuDTO;
-import io.openjob.server.repository.entity.AdminMenu;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-13 23:10:22
  * @since 1.0.0
  */
 public interface AdminMenuData {
@@ -51,5 +49,19 @@ public interface AdminMenuData {
      */
     List<AdminMenuDTO> getPageList(Long id);
 
+    /**
+     * get AdminMenu list by IDs
+     *
+     * @param ids ids
+     * @return AdminMenu list
+     */
+    List<AdminMenuDTO> getByIds(List<Long> ids);
+
+    /**
+     * get all valid AdminMenu list
+     *
+     * @return AdminMenu list
+     */
+    List<AdminMenuDTO> getAllMenus();
 }
 

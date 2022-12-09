@@ -30,8 +30,10 @@ public class AppDAOTest extends RepositoryTest {
         app.setNamespaceId(1L);
         app.setName("xxx-service");
         app.setDesc("xxx-desc");
-        app.setUpdateTime(DateUtil.now());
-        app.setCreateTime(DateUtil.now());
+        app.setUpdateTime(DateUtil.timestamp());
+        app.setCreateTime(DateUtil.timestamp());
+        app.setDeleted(2);
+        app.setDeleteTime(0L);
         appDAO.save(app);
     }
 

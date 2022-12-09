@@ -14,11 +14,12 @@ public interface SystemRepository extends JpaRepository<System, Integer> {
     /**
      * Update cluster version
      *
-     * @param id id
+     * @param id             id
+     * @param clusterVersion clusterVersion
      * @return effect rows.
      */
     @Modifying
     @Transactional(rollbackFor = Exception.class)
-    @Query("update System set clusterVersion=clusterVersion+1 where id=?1")
-    Integer updateClusterVersion(Integer id);
+    @Query("update System set clusterVersion=clusterVersion + 1 where id=?1 and clusterVersion=?2")
+    Integer updateClusterVersion(Integer id, Long clusterVersion);
 }

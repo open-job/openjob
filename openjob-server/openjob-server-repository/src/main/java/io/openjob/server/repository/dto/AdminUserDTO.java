@@ -1,15 +1,17 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:35:44
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AdminUserDTO {
+public class AdminUserDTO extends BaseFieldsDTO {
 
     /**
      * PK
@@ -37,9 +39,9 @@ public class AdminUserDTO {
     private String token;
 
     /**
-     * Rule IDs. JSON: [1,2]
+     * Role IDs. JSON: [1,2]
      */
-    private List<Long> ruleIds;
+    private List<Long> roleIds;
 
     /**
      * Delete status. 1=yes 2=no
@@ -49,16 +51,16 @@ public class AdminUserDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 }
 

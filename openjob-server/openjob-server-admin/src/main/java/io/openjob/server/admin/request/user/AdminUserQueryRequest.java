@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
- * @date 2022-11-07 20:29:02
  * @since 1.0.0
  */
 @Data

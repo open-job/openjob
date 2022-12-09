@@ -1,12 +1,12 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.AdminUser;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:35:45
  * @since 1.0.0
  */
 public interface AdminUserDAO {
@@ -42,5 +42,29 @@ public interface AdminUserDAO {
      */
     Integer updateById(AdminUser entity);
 
+    /**
+     * get AdminUser by username
+     *
+     * @param username username
+     * @return AdminUser
+     */
+    AdminUser getByUsername(String username);
+
+    /**
+     * get AdminUser list by page, size
+     *
+     * @param page page
+     * @param size size
+     * @return AdminUser list
+     */
+    Page<AdminUser> getPageList(Integer page, Integer size);
+
+    /**
+     * get AdminUser by token
+     *
+     * @param token token
+     * @return AdminUser or null
+     */
+    AdminUser getByToken(String token);
 }
 

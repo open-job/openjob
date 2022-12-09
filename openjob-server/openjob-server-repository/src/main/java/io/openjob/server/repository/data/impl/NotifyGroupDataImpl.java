@@ -1,9 +1,11 @@
 package io.openjob.server.repository.data.impl;
 
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.NotifyGroupDAO;
 import io.openjob.server.repository.data.NotifyGroupData;
 import io.openjob.server.repository.dto.NotifyGroupDTO;
 import io.openjob.server.repository.entity.NotifyGroup;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,14 +16,12 @@ import java.util.List;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:51
  * @since 1.0.0
  */
 @Component
 public class NotifyGroupDataImpl implements NotifyGroupData {
 
     private final NotifyGroupDAO notifyGroupDAO;
-    // private final RedisOperation redisOperation;
 
     @Autowired
     public NotifyGroupDataImpl(NotifyGroupDAO notifyGroupDAO) {
@@ -31,7 +31,7 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
     @Override
     public Long add(NotifyGroupDTO dto) {
         NotifyGroup entity = new NotifyGroup();
-        BeanUtils.copyProperties(dto, entity);
+        BeanUtils.copyProperties(EntityUtil.initDefaults(dto), entity);
 
         return notifyGroupDAO.add(entity);
     }
@@ -46,11 +46,7 @@ public class NotifyGroupDataImpl implements NotifyGroupData {
 
     @Override
     public NotifyGroupDTO getById(Long id) {
-        NotifyGroup entity = notifyGroupDAO.getById(id);
-        NotifyGroupDTO entDTO = new NotifyGroupDTO();
-        BeanUtils.copyProperties(entity, entDTO);
-
-        return entDTO;
+        return ObjectUtil.mapObject(notifyGroupDAO.getById(id), NotifyGroupDTO.class);
     }
 
     @Override

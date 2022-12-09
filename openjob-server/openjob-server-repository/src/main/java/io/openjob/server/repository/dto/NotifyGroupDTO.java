@@ -1,19 +1,20 @@
 package io.openjob.server.repository.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author inhere
- * @date 2022-11-07 21:21:30
  * @since 1.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class NotifyGroupDTO {
+public class NotifyGroupDTO extends BaseFieldsDTO {
 
     /**
      * PK
      */
-    private Integer id;
+    private Long id;
 
     /**
      * Group name
@@ -38,16 +39,16 @@ public class NotifyGroupDTO {
     /**
      * Delete time
      */
-    private Integer deleteTime;
+    private Long deleteTime;
 
     /**
      * Update time
      */
-    private Integer updateTime;
+    private Long updateTime;
 
     /**
      * Create time
      */
-    private Integer createTime;
+    private Long createTime;
 }
 

@@ -8,13 +8,14 @@ CREATE TABLE `app` (
                        `namespace_id` bigint(20) NOT NULL,
                        `name` varchar(256) NOT NULL DEFAULT '',
                        `desc` varchar(256) NOT NULL DEFAULT '',
+                       `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                       `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                        `create_time` bigint(12) unsigned NOT NULL,
                        `update_time` bigint(12) unsigned NOT NULL,
                        PRIMARY KEY (`id`),
                        UNIQUE KEY `udx_app_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-LOCK TABLES `app` WRITE;
 /*!40000 ALTER TABLE `app` DISABLE KEYS */;
 
 INSERT INTO `app` (`id`, `namespace_id`, `name`, `desc`, `create_time`, `update_time`)
@@ -22,7 +23,6 @@ VALUES
     (1,1,'openjob','openjob',1658473199,1658473199);
 
 /*!40000 ALTER TABLE `app` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 
@@ -45,6 +45,8 @@ CREATE TABLE `delay` (
                          `concurrency` int(11) unsigned NOT NULL DEFAULT '2',
                          `blocking_size` int(11) unsigned NOT NULL DEFAULT '20',
                          `topic` varchar(128) NOT NULL DEFAULT '',
+                         `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                         `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                          `create_time` bigint(12) NOT NULL,
                          `update_time` bigint(12) NOT NULL,
                          PRIMARY KEY (`id`),
@@ -71,6 +73,7 @@ CREATE TABLE `delay_instance` (
                                   `slots_id` bigint(20) NOT NULL,
                                   `execute_time` bigint(12) NOT NULL,
                                   `deleted` tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                  `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                   `create_time` bigint(12) NOT NULL,
                                   `update_time` bigint(12) NOT NULL,
                                   PRIMARY KEY (`id`),
@@ -119,12 +122,13 @@ CREATE TABLE `job` (
                        `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1=running 2=stop',
                        `next_execute_time` bigint(12) unsigned NOT NULL,
                        `slots_id` int(11) unsigned NOT NULL,
+                       `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                       `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                        `create_time` bigint(12) unsigned NOT NULL,
                        `update_time` bigint(12) unsigned NOT NULL,
                        PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-LOCK TABLES `job` WRITE;
 /*!40000 ALTER TABLE `job` DISABLE KEYS */;
 
 INSERT INTO `job` (`id`, `namespace_id`, `app_id`, `workflow_id`, `name`, `description`, `processor_type`, `processor_info`, `execute_type`, `params`, `fail_retry_times`, `fail_retry_interval`, `concurrency`, `time_expression_type`, `time_expression`, `status`, `next_execute_time`, `slots_id`, `create_time`, `update_time`)
@@ -136,7 +140,6 @@ VALUES
     (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,2321,1657528102,1666099995);
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table job_instance
@@ -155,6 +158,8 @@ CREATE TABLE `job_instance` (
                                 `execute_time` bigint(12) unsigned NOT NULL,
                                 `complete_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                 `last_report_time` bigint(12) unsigned NOT NULL DEFAULT '0',
+                                `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                 `update_time` bigint(12) unsigned NOT NULL,
                                 `create_time` bigint(12) unsigned NOT NULL,
                                 PRIMARY KEY (`id`)
@@ -172,6 +177,8 @@ CREATE TABLE `job_instance_log` (
                                     `job_id` bigint(20) unsigned NOT NULL,
                                     `job_instance_id` bigint(20) unsigned NOT NULL,
                                     `message` longtext,
+                                    `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                    `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                     `create_time` bigint(12) unsigned NOT NULL,
                                     `update_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                     PRIMARY KEY (`id`)
@@ -193,6 +200,8 @@ CREATE TABLE `job_instance_task` (
                                      `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                                      `result` longtext,
                                      `worker_address` varchar(128) NOT NULL DEFAULT '',
+                                     `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                     `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                      `create_time` bigint(12) unsigned DEFAULT NULL,
                                      `update_time` bigint(12) unsigned DEFAULT NULL,
                                      PRIMARY KEY (`id`),
@@ -230,13 +239,14 @@ DROP TABLE IF EXISTS `job_slots`;
 CREATE TABLE `job_slots` (
                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                              `server_id` bigint(20) unsigned NOT NULL,
+                             `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                             `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                              `create_time` bigint(12) unsigned NOT NULL,
                              `update_time` bigint(12) unsigned NOT NULL,
                              PRIMARY KEY (`id`),
                              KEY `idx_server_id` (`server_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-LOCK TABLES `job_slots` WRITE;
 /*!40000 ALTER TABLE `job_slots` DISABLE KEYS */;
 
 INSERT INTO `job_slots` (`id`, `server_id`, `create_time`, `update_time`)
@@ -499,7 +509,6 @@ VALUES
     (256,0,1655782000,1666100014);
 
 /*!40000 ALTER TABLE `job_slots` ENABLE KEYS */;
-UNLOCK TABLES;
 
 # Dump of table namespace
 # ------------------------------------------------------------
@@ -512,6 +521,8 @@ CREATE TABLE `namespace` (
                              `desc` varchar(64) NOT NULL DEFAULT '',
                              `secret` varchar(64) NOT NULL DEFAULT '',
                              `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                             `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                             `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                              `create_time` bigint(12) unsigned NOT NULL,
                              `update_time` bigint(12) unsigned NOT NULL,
                              PRIMARY KEY (`id`),
@@ -530,6 +541,8 @@ CREATE TABLE `server` (
                           `ip` varchar(32) NOT NULL DEFAULT '' COMMENT 'Server ip',
                           `akka_address` varchar(32) NOT NULL DEFAULT '' COMMENT 'Akka address like `127.0.0.1:25520`',
                           `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Server status 1=ok 2=fail',
+                          `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                          `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                           `create_time` bigint(12) unsigned NOT NULL COMMENT 'Create time',
                           `update_time` bigint(12) unsigned NOT NULL COMMENT 'Update time',
                           PRIMARY KEY (`id`),
@@ -548,7 +561,10 @@ CREATE TABLE `server_reports` (
                                   `server_id` bigint(20) unsigned NOT NULL,
                                   `report_server_id` bigint(20) unsigned NOT NULL,
                                   `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+                                  `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                  `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                   `create_time` bigint(12) unsigned NOT NULL,
+                                  `update_time` bigint(12) unsigned NOT NULL COMMENT 'Update time',
                                   PRIMARY KEY (`id`),
                                   KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -569,7 +585,7 @@ CREATE TABLE `task` (
                         `task_name` varchar(128) NOT NULL,
                         `task_parent_id` varchar(64) NOT NULL DEFAULT '0',
                         `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
-                        `worker_address` varchar(32) NOT NULL DEFAULT '',
+                        `worker_address` varchar(64) NOT NULL DEFAULT '',
                         `result` longtext,
                         `task_body` blob,
                         `create_time` bigint(12) unsigned NOT NULL,
@@ -598,6 +614,8 @@ CREATE TABLE `worker` (
                           `last_heartbeat_time` bigint(12) unsigned NOT NULL,
                           `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                           `metric` varchar(1024) NOT NULL DEFAULT '',
+                          `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                          `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                           `create_time` bigint(12) unsigned NOT NULL,
                           `update_time` bigint(12) unsigned NOT NULL,
                           PRIMARY KEY (`id`),
@@ -615,26 +633,90 @@ CREATE TABLE `system` (
                           `cluster_version` bigint(12) unsigned NOT NULL DEFAULT '0',
                           `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
-                          `max_slot` int(11) unsigned DEFAULT '256',
+                          `delay_zset_slot` int(11) NOT NULL DEFAULT '4',
+                          `delay_list_slot` int(11) NOT NULL DEFAULT '2',
+                          `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
+                          `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                          `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                          `create_time` bigint(12) unsigned NOT NULL,
+                          `update_time` bigint(12) unsigned NOT NULL COMMENT 'Update time',
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
-LOCK TABLES `system` WRITE;
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `max_slot`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_list_slot`, `max_slot`, `create_time`, `update_time`)
 VALUES
-    (1,'1.0.0',0,1,256,256);
+    (1,'1.0.0',59,1,256,2,2,256,1663590330,1663590330);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
-UNLOCK TABLES;
 
-/*
-    ------------------------------------
-            admin manage tables
-    ------------------------------------
-*/;
 
+
+DROP TABLE IF EXISTS `admin_config`;
+CREATE TABLE `admin_config` (
+                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
+                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                                PRIMARY KEY (`id`),
+                                INDEX `idx_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
+
+
+
+INSERT INTO `admin_config` (`name`, `value`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('system_name', 'OpenJob Admin', 2, 0, 1670255999, 1670255999);
+
+
+DROP TABLE IF EXISTS `admin_user`;
+CREATE TABLE `admin_user` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
+                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
+                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
+                              `role_ids` JSON COMMENT 'role IDs. JSON: [1,2]',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`username`),
+                              UNIQUE `uni_token` (`token`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
+
+INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+
+DROP TABLE IF EXISTS `admin_role`;
+CREATE TABLE `admin_role` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'role name',
+                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
+                              `menus` JSON COMMENT 'Menu ids for role. JSON array',
+                              `perms` JSON COMMENT 'Permissions ids for role. JSON array',
+                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is supper admin. 1=yes 2=no',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_name` (`name`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin roles';
+
+INSERT INTO `admin_role` (`name`, `desc`, `menus`, `perms`, `admin`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    ('Admin', 'Administrator role', '[1, 2, 3]', '[4, 5, 6, 7]', 1, 2, 0, 1670255999, 1670255999),
+    ('Developer', 'Developer role', '[1, 2, 3]', '[4, 5, 6, 7]', 2, 2, 0, 1670255999, 1670255999);
+
+DROP TABLE IF EXISTS `admin_menu`;
 CREATE TABLE `admin_menu` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent ID',
@@ -653,53 +735,40 @@ CREATE TABLE `admin_menu` (
                               INDEX  `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
 
-DROP TABLE IF EXISTS `admin_config`;
-CREATE TABLE `admin_config` (
-                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
-                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
-                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                PRIMARY KEY (`id`),
-                                INDEX `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
 
+/** menus **/
+INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    (1, 0, 1, 'Dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (2, 0, 1, 'Manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (5, 2, 1, 'Users', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (6, 5, 1, 'Users Add', '/users/add', '{"title": "users.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (7, 5, 1, 'Users View', '/users/view', '{"title": "users.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (8, 5, 1, 'Users Edit', '/users/edit', '{"title": "users.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (10, 2, 1, 'Roles', '/roles', '{"icon": "fa-list", "title": "roles.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (11, 10, 1, 'Roles Add', '/roles/add', '{"title": "roles.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (12, 10, 1, 'Roles View', '/roles/view', '{"title": "roles.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (13, 10, 1, 'Roles Edit', '/roles/edit', '{"title": "roles.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (15, 2, 1, 'Menus', '/menus', '{"icon": "fa-list", "title": "menus.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (16, 15, 1, 'Menus Add', '/menus/add', '{"icon": "fa-add", "title": "menus.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (17, 15, 1, 'Menus Edit', '/menus/edit', '{"icon": "fa-edit", "title": "menus.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (20, 2, 1, 'Perms', '/perms', '{"icon": "fa-list", "title": "perms.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (25, 2, 1, 'Jobs', '/jobs', '{"icon": "fa-list", "title": "jobs.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (26, 25, 1, 'Jobs Add', '/jobs/add', '{"icon": "fa-edit", "title": "jobs.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (27, 25, 1, 'Jobs View', '/jobs/view', '{"icon": "fa-edit", "title": "jobs.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (28, 25, 1, 'Jobs Edit', '/jobs/edit', '{"icon": "fa-edit", "title": "jobs.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (30, 2, 1, 'Executors', '/executors', '{"icon": "fa-list", "title": "executors.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (40, 2, 1, 'Notify Manage', '/notify/manage', '{"icon": "fa-list", "title": "notify.template.list"}', 2, 0, 2, 0, 1669972320, 1669972320);
 
-CREATE TABLE `admin_user` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
-                              `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
-                              `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
-                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
-                              `rule_ids` JSON COMMENT 'Rule IDs. JSON: [1,2]',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_name` (`username`),
-                              UNIQUE `uni_token` (`token`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
+/** permissions **/
+INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES
+    (60, 0, 2, 'Users Add', '/admin/users/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (61, 0, 2, 'Users Get', '/admin/users/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (62, 0, 2, 'Users List', '/admin/users/list', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (63, 0, 2, 'Rule Get', '/admin/rules/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
 
-
-DROP TABLE IF EXISTS `admin_rule`;
-CREATE TABLE `admin_rule` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'Rule name',
-                              `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
-                              `menus` JSON COMMENT 'Menu ids for rule. JSON array',
-                              `perms` JSON COMMENT 'Permissions ids for rule. JSON array',
-                              `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is Admin. 1=yes 2=no',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_name` (`name`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin rules';
-
+DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (
                                    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                    `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Template name. eg: Wechat, DingTalk, Wecom, Feishu',
@@ -720,7 +789,7 @@ CREATE TABLE `notify_template` (
                                    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify template table';
 
-
+DROP TABLE IF EXISTS `notify_contact`;
 CREATE TABLE `notify_contact` (
                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                   `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'User name',
@@ -736,6 +805,7 @@ CREATE TABLE `notify_contact` (
                                   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify contact';
 
+DROP TABLE IF EXISTS `notify_group`;
 CREATE TABLE `notify_group` (
                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                                 `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Group name',

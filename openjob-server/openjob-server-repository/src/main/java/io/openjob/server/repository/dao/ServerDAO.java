@@ -28,6 +28,16 @@ public interface ServerDAO {
     Integer update(Long id, Integer status);
 
     /**
+     * Update server by id and status
+     *
+     * @param id              id
+     * @param status          status
+     * @param conditionStatus condition status.
+     * @return Effected rows.
+     */
+    Integer update(Long id, Integer status, Integer conditionStatus);
+
+    /**
      * Get by id.
      *
      * @param id id

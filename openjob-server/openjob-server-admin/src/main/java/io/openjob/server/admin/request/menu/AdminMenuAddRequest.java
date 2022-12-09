@@ -5,29 +5,31 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
- * @date 2022-11-13 23:27:24
  * @since 1.0.0
  */
 @Data
 @ApiModel(value = "AdminMenuAddRequest", description = "Add AdminMenu")
 public class AdminMenuAddRequest {
 
+    @NotNull
+    @Min(0)
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
 
+    @NotNull
     @ApiModelProperty(value = "Type. 1=menu 2=perm")
     private Integer type;
 
+    @NotNull
     @ApiModelProperty(value = "Menu name")
     private String name;
 
+    @NotNull
     @ApiModelProperty(value = "Route path or API path")
     private String path;
 
@@ -37,11 +39,9 @@ public class AdminMenuAddRequest {
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;
 
+    @NotNull
     @ApiModelProperty(value = "Sort value")
     private Integer sort;
-
-    @ApiModelProperty(value = "Delete status. 1=yes 2=no")
-    private Integer deleted;
 
 }
 

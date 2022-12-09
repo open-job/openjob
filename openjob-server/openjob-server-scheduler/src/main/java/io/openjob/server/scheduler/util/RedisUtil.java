@@ -47,7 +47,8 @@ public class RedisUtil {
      */
     @SuppressWarnings("unchecked")
     public static List<Object> popAndRemoveFromList(String key, Integer count) {
-        final List<Object> txResults = RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
+        // Update to lua script.
+        final List<Object> txResults = RedisUtil.getTemplate().execute(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                 operations.multi();

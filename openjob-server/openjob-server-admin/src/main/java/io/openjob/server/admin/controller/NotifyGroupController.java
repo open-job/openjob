@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.notify.NotifyGroupAddRequest;
+import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupListRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupQueryRequest;
 import io.openjob.server.admin.request.notify.NotifyGroupUpdateRequest;
-import io.openjob.server.admin.request.notify.NotifyGroupDeleteRequest;
 import io.openjob.server.admin.service.NotifyGroupService;
 import io.openjob.server.admin.vo.notify.NotifyGroupAddVO;
 import io.openjob.server.admin.vo.notify.NotifyGroupQueryVO;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 /**
  * @author inhere
- * @date 2022-11-15 14:19:59
  * @since 1.0.0
  */
 @Api(value = "NotifyGroup", tags = "NotifyGroup")
@@ -59,13 +58,13 @@ public class NotifyGroupController {
 
     @ApiOperation("Get a notifyGroup")
     @GetMapping("/get")
-    public Result<NotifyGroupQueryVO> query(@Valid @RequestBody NotifyGroupQueryRequest getRequest) {
+    public Result<NotifyGroupQueryVO> query(@Valid NotifyGroupQueryRequest getRequest) {
         return Result.success(this.notifyGroupService.query(getRequest));
     }
 
     @ApiOperation("List notifyGroup by page")
     @GetMapping("/list")
-    public Result<PageDTO<NotifyGroupQueryVO>> list(@Valid @RequestBody NotifyGroupListRequest listRequest) {
+    public Result<PageDTO<NotifyGroupQueryVO>> list(@Valid NotifyGroupListRequest listRequest) {
         return Result.success(this.notifyGroupService.getPageList(listRequest));
     }
 }

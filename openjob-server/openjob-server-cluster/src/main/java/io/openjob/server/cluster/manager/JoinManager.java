@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,8 +50,32 @@ public class JoinManager {
      * @param hostname hostname
      * @param port     port
      */
-    @Transactional(rollbackFor = Exception.class)
     public void join(String hostname, Integer port) {
+        try {
+            // Do node join.
+            boolean result = ClusterUtil.clusterNodeOperate(this.clusterProperties.getSpreadRetryTimes(), () -> this.doJoin(hostname, port));
+
+            // Success to send cluster message.
+            if (result) {
+                // Akka message for join.
+                this.sendClusterStartMessage();
+            }
+        } catch (InterruptedException interruptedException) {
+            log.info("Node fail error!", interruptedException);
+        }
+    }
+
+    /**
+     * Cluster node  do join.
+     *
+     * @param hostname hostname
+     * @param port     port
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean doJoin(String hostname, Integer port) {
+        // Refresh system.
+        this.refreshManager.refreshSystem(true);
+
         // Register server.
         Server currentServer = this.registerOrUpdateServer(hostname, port);
 
@@ -60,17 +85,12 @@ public class JoinManager {
         // Set current node.
         this.setCurrentNode(currentServer);
 
-        // Refresh system.
-        this.refreshManager.refreshSystem(true);
-
         // Refresh nodes.
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
         this.refreshManager.refreshCurrentSlots();
-
-        // Akka message for join.
-        this.sendClusterStartMessage();
+        return true;
     }
 
     /**
@@ -123,7 +143,7 @@ public class JoinManager {
         List<Long> migratedList = new ArrayList<>();
         serverIdToSlots.forEach((id, slots) -> {
             int migratedSize = (int) Math.floor(slots.size() * (1.0 / (slotsServerCount + 1)));
-            List<Long> migratedIds = slots.subList(0, migratedSize - 1);
+            List<Long> migratedIds = slots.subList(0, migratedSize);
             migratedList.addAll(migratedIds);
         });
 
@@ -165,6 +185,6 @@ public class JoinManager {
         nodeJoinDTO.setServerId(currentNode.getServerId());
         nodeJoinDTO.setAkkaAddress(currentNode.getAkkaAddress());
 
-        ClusterUtil.sendMessage(nodeJoinDTO, currentNode, this.clusterProperties.getSpreadSize());
+        ClusterUtil.sendMessage(nodeJoinDTO, currentNode, this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 }

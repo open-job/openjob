@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.manager;
 
 import io.openjob.common.context.Node;
+import io.openjob.server.cluster.exception.ClusterNodeOperatingException;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.SystemDTO;
@@ -62,7 +63,13 @@ public class RefreshManager {
     public void refreshSystem(Boolean isUpdateClusterVersion) {
         // Update cluster version.
         if (isUpdateClusterVersion) {
-            this.systemDAO.updateClusterVersion();
+            System currentSystem = this.systemDAO.getOne();
+            Integer effectRows = this.systemDAO.updateClusterVersion(currentSystem.getClusterVersion());
+
+            // Lock cluster version fail.
+            if (effectRows <= 0) {
+                throw new ClusterNodeOperatingException("Node join or fail is running!");
+            }
         }
 
         // Refresh system.
@@ -72,7 +79,8 @@ public class RefreshManager {
         systemDTO.setClusterVersion(system.getClusterVersion());
         systemDTO.setClusterSupervisorSlot(system.getClusterSupervisorSlot());
         systemDTO.setWorkerSupervisorSlot(system.getWorkerSupervisorSlot());
-        systemDTO.setDelayZsetMaxSlot(2);
+        systemDTO.setDelayZsetMaxSlot(system.getDelayZsetSlot());
+        systemDTO.setDelayListMaxSlot(system.getDelayListSlot());
 
         ClusterContext.refreshSystem(systemDTO);
         log.info(String.format("Refresh %s", system));

@@ -2,7 +2,8 @@ package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import io.openjob.server.repository.entity.json.TemplateExtra;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -18,9 +19,9 @@ import java.util.List;
  * Job notify template table
  *
  * @author inhere
- * @date 2022-11-07
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "notify_template")
 @TypeDef(name = "json", typeClass = JsonType.class)
