@@ -21,12 +21,15 @@ public class AdminMenuUpdateRequest {
     @ApiModelProperty(value = "PK")
     private Long id;
 
+    @NotNull
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
 
+    @NotNull
     @ApiModelProperty(value = "Type. 1=menu 2=perm")
     private Integer type;
 
+    @NotNull
     @ApiModelProperty(value = "Menu name")
     private String name;
 
@@ -36,12 +39,15 @@ public class AdminMenuUpdateRequest {
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
     private MenuMeta meta;
 
+    @NotNull
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;
 
+    @NotNull
     @ApiModelProperty(value = "Sort value")
     private Integer sort;
 
+    @NotNull
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;
 
