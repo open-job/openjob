@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -39,5 +41,11 @@ public class AppDAOTest extends RepositoryTest {
         Assertions.assertNotNull(app);
 
         Assertions.assertEquals(app.getName(), "xxx-service");
+    }
+
+    @Test
+    public void testList() {
+        List<App> app = appDAO.list(1, 10);
+        Assertions.assertTrue(app.size() > 0);
     }
 }
