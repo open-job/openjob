@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Lists;
+import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
@@ -22,6 +23,7 @@ import io.openjob.server.repository.entity.Worker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,6 +61,16 @@ public class WorkerService {
      * @param workerStartRequest start request.
      */
     public void workerStart(WorkerStartRequest workerStartRequest) {
+        // Do worker start.
+        SpringContext.getBean(this.getClass()).doWorkerStart(workerStartRequest);
+
+        // Akka message for worker start.
+        WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
+        workerJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
+    }
+
+    public void doWorkerStart(WorkerStartRequest workerStartRequest) {
         // Update worker status.
         this.updateWorkerForStart(workerStartRequest);
 
@@ -67,11 +79,6 @@ public class WorkerService {
 
         // Refresh cluster context.
         refreshClusterContext();
-
-        // Akka message for worker start.
-        WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
-        workerJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
     /**
@@ -80,6 +87,17 @@ public class WorkerService {
      * @param stopReq stop request.
      */
     public void workerStop(WorkerStopRequest stopReq) {
+        // Do worker stop.
+        SpringContext.getBean(this.getClass()).doWorkerStop(stopReq);
+
+        // Akka message for worker start.
+        WorkerFailDTO workerFailDTO = new WorkerFailDTO();
+        workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
+    }
+
+    @Transactional
+    public void doWorkerStop(WorkerStopRequest stopReq) {
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());
         if (Objects.isNull(worker)) {
             log.error("worker({}) do not exist!", stopReq.getAddress());
@@ -89,18 +107,15 @@ public class WorkerService {
         // Update worker
         worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
         worker.setUpdateTime(DateUtil.timestamp());
+        workerDAO.save(worker);
 
         // Refresh system
         this.refreshManager.refreshSystem(true);
 
         // Refresh cluster context.
         this.refreshClusterContext();
-
-        // Akka message for worker start.
-        WorkerFailDTO workerFailDTO = new WorkerFailDTO();
-        workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
+
 
     /**
      * Worker check
