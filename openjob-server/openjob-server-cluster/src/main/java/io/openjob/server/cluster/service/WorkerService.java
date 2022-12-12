@@ -1,8 +1,10 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Lists;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
+import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.constant.ClusterConstant;
@@ -187,6 +189,8 @@ public class WorkerService {
         saveWorker.setMetric("");
         saveWorker.setVersion("");
         saveWorker.setWorkerKey("");
+        saveWorker.setDeleteTime(0L);
+        saveWorker.setDeleted(CommonConstant.NO);
         workerDAO.save(saveWorker);
     }
 }
