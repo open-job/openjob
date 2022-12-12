@@ -5,7 +5,6 @@ import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
-import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.constant.ClusterConstant;
@@ -122,7 +121,7 @@ public class WorkerService {
      */
     public void workerCheck() {
         // Query all workers.
-        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_DELAY;
+        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_PERIOD;
         Set<Long> currentSlots = ClusterContext.getCurrentSlots();
 
         // Query slot ids.

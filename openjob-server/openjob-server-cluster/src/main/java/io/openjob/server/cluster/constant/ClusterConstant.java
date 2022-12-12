@@ -6,7 +6,12 @@ package io.openjob.server.cluster.constant;
  */
 public class ClusterConstant {
     /**
-     * Worker check delay.
+     * Worker check delay(ms)
      */
     public static final long WORKER_CHECK_DELAY = 20000L;
+
+    /**
+     * Worker check period(s).
+     */
+    public static final Integer WORKER_CHECK_PERIOD = 15;
 }

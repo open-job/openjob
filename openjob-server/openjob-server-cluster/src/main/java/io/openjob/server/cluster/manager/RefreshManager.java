@@ -101,6 +101,7 @@ public class RefreshManager {
     public void refreshAppWorkers() {
         List<Worker> workers = workerDAO.listOnlineWorkers();
         ClusterUtil.refreshAppWorkers(workers);
+        log.info("Refresh workers {}", workers.stream().map(Worker::getAddress).collect(Collectors.toList()));
     }
 
     /**

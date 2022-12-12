@@ -122,6 +122,13 @@ public class OpenjobWorker implements InitializingBean {
      * Shutdown
      */
     public void shutdown() {
+        Boolean delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
+
+        // Delay job is disable.
+        if (!delayEnable) {
+            return;
+        }
+
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
 
