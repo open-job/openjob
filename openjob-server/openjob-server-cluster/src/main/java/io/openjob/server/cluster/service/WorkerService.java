@@ -69,6 +69,7 @@ public class WorkerService {
         ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
+    @Transactional
     public void doWorkerStart(WorkerStartRequest workerStartRequest) {
         // Update worker status.
         this.updateWorkerForStart(workerStartRequest);
@@ -167,6 +168,8 @@ public class WorkerService {
     private void refreshClusterContext() {
         List<Worker> workers = workerDAO.listOnlineWorkers();
         ClusterUtil.refreshAppWorkers(workers);
+
+        log.info("Refresh app workers={}", workers.stream().map(Worker::getAddress).collect(Collectors.toList()));
     }
 
     private void updateWorkerForStart(WorkerStartRequest startReq) {
