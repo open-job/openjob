@@ -91,7 +91,7 @@ public class HealthService {
             NodePongDTO nodePongDTO = FutureUtil.mustAsk(actor, nodePingDTO, NodePongDTO.class, clusterProperties.getPingTimeout());
 
             // Node ping success.
-            log.info("Ping success version{}", nodePongDTO.getClusterVersion());
+            log.info("Ping success version({})", nodePongDTO.getClusterVersion());
 
             // Current server is unknow.
             if (!nodePongDTO.getKnowServer()) {

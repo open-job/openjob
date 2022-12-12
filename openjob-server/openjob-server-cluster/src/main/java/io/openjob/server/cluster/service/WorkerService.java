@@ -71,11 +71,12 @@ public class WorkerService {
 
     @Transactional
     public void doWorkerStart(WorkerStartRequest workerStartRequest) {
+        // Refresh system.
+        // Lock system cluster version.
+        this.refreshManager.refreshSystem(true);
+
         // Update worker status.
         this.updateWorkerForStart(workerStartRequest);
-
-        // Refresh system
-        this.refreshManager.refreshSystem(true);
 
         // Refresh cluster context.
         refreshClusterContext();
@@ -98,6 +99,10 @@ public class WorkerService {
 
     @Transactional
     public void doWorkerStop(WorkerStopRequest stopReq) {
+        // Refresh system.
+        // Lock system cluster version.
+        this.refreshManager.refreshSystem(true);
+
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());
         if (Objects.isNull(worker)) {
             log.error("worker({}) do not exist!", stopReq.getAddress());
@@ -108,9 +113,6 @@ public class WorkerService {
         worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
         worker.setUpdateTime(DateUtil.timestamp());
         workerDAO.save(worker);
-
-        // Refresh system
-        this.refreshManager.refreshSystem(true);
 
         // Refresh cluster context.
         this.refreshClusterContext();
