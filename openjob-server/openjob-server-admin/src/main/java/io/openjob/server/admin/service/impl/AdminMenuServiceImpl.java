@@ -56,6 +56,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     @Override
     public AdminMenuUpdateVO delete(AdminMenuDeleteRequest reqDTO) {
         AdminMenuDTO entDTO = new AdminMenuDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         AdminMenuUpdateVO retVo = new AdminMenuUpdateVO();

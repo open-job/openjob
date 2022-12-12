@@ -56,6 +56,7 @@ public class NotifyContactServiceImpl implements NotifyContactService {
     @Override
     public NotifyContactUpdateVO delete(NotifyContactDeleteRequest reqDTO) {
         NotifyContactDTO entDTO = new NotifyContactDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         NotifyContactUpdateVO retVo = new NotifyContactUpdateVO();

@@ -20,6 +20,7 @@ public class NotifyContactUpdateRequest {
     @ApiModelProperty(value = "PK")
     private Long id;
 
+    @NotNull
     @ApiModelProperty(value = "User name")
     private String name;
 

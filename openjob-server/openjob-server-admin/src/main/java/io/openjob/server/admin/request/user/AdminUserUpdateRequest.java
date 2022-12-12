@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -36,7 +37,8 @@ public class AdminUserUpdateRequest {
     @ApiModelProperty(value = "Api auth token")
     private String token;
 
-    @Min(1)
+    @NotNull
+    @Size(min = 1)
     @ApiModelProperty(value = "Role IDs. JSON: [1,2]")
     private List<Long> roleIds;
 

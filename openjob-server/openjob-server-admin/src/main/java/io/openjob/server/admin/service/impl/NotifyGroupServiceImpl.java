@@ -56,6 +56,7 @@ public class NotifyGroupServiceImpl implements NotifyGroupService {
     @Override
     public NotifyGroupUpdateVO delete(NotifyGroupDeleteRequest reqDTO) {
         NotifyGroupDTO entDTO = new NotifyGroupDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         NotifyGroupUpdateVO retVo = new NotifyGroupUpdateVO();
