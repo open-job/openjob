@@ -50,5 +50,8 @@ public class WorkerActor extends BaseActor {
 
     public void workerStop(WorkerStopRequest workerStopRequest) {
         this.workerService.workerStop(workerStopRequest);
+
+        log.info("Worker stop success! address={}", workerStopRequest.getAddress());
+        getSender().tell(Result.success(new ServerResponse()), getSelf());
     }
 }

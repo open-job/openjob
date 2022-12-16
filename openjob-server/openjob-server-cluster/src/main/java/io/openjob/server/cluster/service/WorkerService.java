@@ -149,6 +149,8 @@ public class WorkerService {
                 workerStartRequest.setAddress(w.getAddress());
                 workerStartRequest.setAppName(w.getAppName());
                 workerStartRequest.setWorkerKey(w.getWorkerKey());
+
+                log.info("Scheduling worker start begin!");
                 this.workerStart(workerStartRequest);
             }
         });
@@ -162,6 +164,8 @@ public class WorkerService {
                 workerStopRequest.setWorkerKey(w.getWorkerKey());
                 workerStopRequest.setAddress(w.getAddress());
                 workerStopRequest.setAppName(w.getAppName());
+
+                log.info("Scheduling worker stop begin!");
                 this.workerStop(workerStopRequest);
             }
         });
@@ -187,6 +191,9 @@ public class WorkerService {
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
             worker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
+
+            //Must update last heartbeat time.
+            worker.setLastHeartbeatTime(now);
             workerDAO.save(worker);
             return;
         }
