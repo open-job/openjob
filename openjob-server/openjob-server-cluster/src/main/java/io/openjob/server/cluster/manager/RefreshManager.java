@@ -61,14 +61,13 @@ public class RefreshManager {
                 throw new ClusterNodeOperatingException("Node join or fail is running!");
             }
 
+            // Not query db to fix repeatable read.
             currentVersion++;
         }
 
         // Refresh system.
         SystemDTO systemDTO = new SystemDTO();
         systemDTO.setMaxSlot(currentSystem.getMaxSlot());
-
-        // Fixed repeatable read.
         systemDTO.setClusterVersion(currentVersion);
         systemDTO.setClusterSupervisorSlot(currentSystem.getClusterSupervisorSlot());
         systemDTO.setWorkerSupervisorSlot(currentSystem.getWorkerSupervisorSlot());

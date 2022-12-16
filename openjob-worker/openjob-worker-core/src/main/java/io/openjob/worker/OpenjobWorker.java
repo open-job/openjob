@@ -11,6 +11,7 @@ import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.ProtocolTypeEnum;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.request.WorkerStartRequest;
+import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
@@ -43,6 +44,31 @@ import java.util.concurrent.TimeUnit;
 public class OpenjobWorker implements InitializingBean {
 
     /**
+     * Worker host name.
+     */
+    private static final String workerHostName;
+
+    /**
+     * Worker port.
+     */
+    private static final Integer workerPort;
+
+    /**
+     * Worker address.
+     */
+    private static final String workerAddress;
+
+    /**
+     * Register app name.
+     */
+    private static final String appName;
+
+    /**
+     * Delay enable.
+     */
+    private static final Boolean delayEnable;
+
+    /**
      * Worker heartbeat
      */
     private static final ScheduledExecutorService heartbeatService;
@@ -58,11 +84,19 @@ public class OpenjobWorker implements InitializingBean {
     private static ActorRef persistentRoutingRef;
 
     static {
+        // Heartbeat service
         heartbeatService = new ScheduledThreadPoolExecutor(
                 1,
                 new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
                 new ThreadPoolExecutor.AbortPolicy()
         );
+
+        // Config params.
+        appName = OpenjobConfig.getString(WorkerConstant.WORKER_APPID);
+        workerHostName = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
+        workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
+        workerAddress = String.format("%s:%d", workerHostName, workerPort);
+        delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
     }
 
     @Override
@@ -95,13 +129,12 @@ public class OpenjobWorker implements InitializingBean {
      *
      * @throws Exception Exception
      */
-    public void start() throws Exception {
-        String workerAddress = this.getWorkerAddress();
+    private void start() throws Exception {
         String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
 
         WorkerStartRequest startReq = new WorkerStartRequest();
-        startReq.setAddress(workerAddress);
-        startReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
+        startReq.setAddress(OpenjobWorker.workerAddress);
+        startReq.setAppName(OpenjobWorker.appName);
         startReq.setProtocolType(ProtocolTypeEnum.AKKA.getType());
 
         try {
@@ -118,40 +151,52 @@ public class OpenjobWorker implements InitializingBean {
         }
     }
 
+    public void stop() throws Exception {
+        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+        String workerAddress = OpenjobWorker.workerAddress;
+        String appName = OpenjobWorker.appName;
+
+        WorkerStopRequest stopRequest = new WorkerStopRequest();
+        stopRequest.setAppName(appName);
+        stopRequest.setAddress(workerAddress);
+
+        Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerWorkerActor(), stopRequest, 3L);
+        if (!ResultUtil.isSuccess(result)) {
+            log.error("Stop worker fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, result.getMessage());
+        }
+    }
+
     /**
      * Shutdown
      */
-    public void shutdown() {
-        Boolean delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
-
-        // Delay job is disable.
-        if (!delayEnable) {
-            return;
-        }
-
+    private void shutdown() {
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
 
         // Stop delay job.
-        DelayStarter.INSTANCE.stop();
+        if (OpenjobWorker.delayEnable) {
+            DelayStarter.INSTANCE.stop();
+        }
+
+        // Stop worker.
+        try {
+            this.stop();
+        } catch (Throwable e) {
+            log.error("Worker stop failed", e);
+        }
     }
 
     private void startDelayJob() {
-        Boolean delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
-
-        // Delay job is disable.
-        if (!delayEnable) {
-            return;
-        }
-
         // Start delay job.
-        DelayStarter.INSTANCE.init();
+        if (OpenjobWorker.delayEnable) {
+            DelayStarter.INSTANCE.init();
+        }
     }
 
     private void doHeartbeat() {
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
-            String workerAddress = this.getWorkerAddress();
+            String workerAddress = OpenjobWorker.workerAddress;
             String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
 
             WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
@@ -189,8 +234,8 @@ public class OpenjobWorker implements InitializingBean {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
-        newConfig.put("akka.remote.artery.canonical.hostname", this.getWorkerHostname());
-        newConfig.put("akka.remote.artery.canonical.port", String.valueOf(this.getWorkerPort()));
+        newConfig.put("akka.remote.artery.canonical.hostname", workerHostName);
+        newConfig.put("akka.remote.artery.canonical.port", String.valueOf(workerPort));
 
 
         Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
@@ -227,17 +272,6 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     /**
-     * Get worker address.
-     *
-     * @return String
-     */
-    public String getWorkerAddress() {
-        String hostname = this.getWorkerHostname();
-        int port = this.getWorkerPort();
-        return String.format("%s:%d", hostname, port);
-    }
-
-    /**
      * Get actor system.
      *
      * @return ActorSystem
@@ -254,13 +288,5 @@ public class OpenjobWorker implements InitializingBean {
      */
     public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
         persistentRoutingRef.tell(msg, sender);
-    }
-
-    private String getWorkerHostname() {
-        return OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
-    }
-
-    private Integer getWorkerPort() {
-        return OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
     }
 }
