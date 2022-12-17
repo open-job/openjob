@@ -144,7 +144,8 @@ public class WorkerService {
         List<Worker> offlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.OFFLINE.getStatus())).orElseGet(ArrayList::new);
         offlineWorkers.forEach(w -> {
             // Join worker
-            if (w.getLastHeartbeatTime() > timePos) {
+            // Ignore just off the line
+            if (w.getUpdateTime() < timePos && w.getLastHeartbeatTime() > timePos) {
                 WorkerStartRequest workerStartRequest = new WorkerStartRequest();
                 workerStartRequest.setAddress(w.getAddress());
                 workerStartRequest.setAppName(w.getAppName());
@@ -194,6 +195,7 @@ public class WorkerService {
 
             //Must update last heartbeat time.
             worker.setLastHeartbeatTime(now);
+            worker.setUpdateTime(now);
             workerDAO.save(worker);
             return;
         }
