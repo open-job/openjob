@@ -2,7 +2,7 @@ package io.openjob.worker.delay;
 
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
-import io.openjob.common.request.WorkerDelayPullItemRequest;
+import io.openjob.common.request.WorkerDelayItemPullRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
@@ -51,7 +51,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
     private void start() throws InterruptedException {
         // Pull topic items.
-        List<WorkerDelayPullItemRequest> pullTopicItems = Lists.newArrayList();
+        List<WorkerDelayItemPullRequest> pullTopicItems = Lists.newArrayList();
         Set<Long> pullTopicIds = new HashSet<>();
 
         // Find pull topic.
@@ -59,7 +59,7 @@ public class DelayTaskMasterExecutor implements Runnable {
                 .forEach(d -> {
                     int size = OpenjobConfigUtil.getDelayPullSize();
                     int pullSize = d.getPullSize() > size ? size : d.getPullSize();
-                    pullTopicItems.add(new WorkerDelayPullItemRequest(d.getTopic(), pullSize));
+                    pullTopicItems.add(new WorkerDelayItemPullRequest(d.getTopic(), pullSize));
                     pullTopicIds.add(d.getId());
                 });
 

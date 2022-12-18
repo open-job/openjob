@@ -1,15 +1,13 @@
-package io.openjob.common.response;
+package io.openjob.server.scheduler.dto;
 
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class ServerDelayTopicResponse implements Serializable {
+public class DelayTopicPullDTO {
     private String topic;
     private String processorInfo;
     private Integer failRetryTimes;

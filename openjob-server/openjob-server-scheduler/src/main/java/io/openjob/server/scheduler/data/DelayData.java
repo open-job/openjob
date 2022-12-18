@@ -59,4 +59,8 @@ public class DelayData {
                 Duration.ofDays(1)
         );
     }
+
+    public List<Delay> getListByAppId(Long appId) {
+        return this.delayDAO.findByAppId(appId);
+    }
 }

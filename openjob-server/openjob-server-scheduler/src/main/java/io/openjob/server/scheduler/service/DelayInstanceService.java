@@ -1,30 +1,28 @@
 package io.openjob.server.scheduler.service;
 
 import io.openjob.common.request.WorkerDelayAddRequest;
-import io.openjob.common.request.WorkerDelayPullItemRequest;
+import io.openjob.common.request.WorkerDelayItemPullRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
+import io.openjob.common.request.WorkerDelayTopicPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
+import io.openjob.common.response.ServerDelayTopicPullResponse;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
+import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
+import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.RedisUtil;
 import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import io.openjob.server.scheduler.util.CacheUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -76,7 +74,15 @@ public class DelayInstanceService {
         return serverDelayAddResponse;
     }
 
-    private List<ServerDelayInstanceResponse> pullByTopic(WorkerDelayPullItemRequest item) {
+    public ServerDelayTopicPullResponse pullTopicList(WorkerDelayTopicPullRequest pullRequest) {
+        DelayTopicPullRequestDTO delayTopicPullRequestDTO = SchedulerMapper.INSTANCE.toDelayTopicPullRequestDTO(pullRequest);
+        DelayTopicPullResponseDTO topicListDTO = this.delayInstanceScheduler.pullTopicList(delayTopicPullRequestDTO);
+        ServerDelayTopicPullResponse response = new ServerDelayTopicPullResponse();
+        response.setTopicList(SchedulerMapper.INSTANCE.toServerDelayTopicResponseList(topicListDTO.getTopicList()));
+        return response;
+    }
+
+    private List<ServerDelayInstanceResponse> pullByTopic(WorkerDelayItemPullRequest item) {
         List<ServerDelayInstanceResponse> responses = new ArrayList<>();
 
         // Pull from redis.

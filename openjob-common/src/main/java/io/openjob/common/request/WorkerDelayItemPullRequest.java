@@ -9,11 +9,11 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Data
-public class WorkerDelayPullItemRequest implements Serializable {
+public class WorkerDelayItemPullRequest implements Serializable {
     private String topic;
     private Integer size;
 
-    public WorkerDelayPullItemRequest(String topic, Integer size) {
+    public WorkerDelayItemPullRequest(String topic, Integer size) {
         this.topic = topic;
         this.size = size;
     }

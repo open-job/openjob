@@ -93,7 +93,7 @@ public class OpenjobWorker implements InitializingBean {
         );
 
         // Config params.
-        appName = OpenjobConfig.getString(WorkerConstant.WORKER_APPID);
+        appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         workerHostName = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
         workerAddress = String.format("%s:%d", workerHostName, workerPort);
@@ -234,7 +234,7 @@ public class OpenjobWorker implements InitializingBean {
 
             WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
             heartbeatReq.setAddress(workerAddress);
-            heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
+            heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME));
             heartbeatReq.setVersion("1.0");
             try {
                 ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
@@ -255,9 +255,9 @@ public class OpenjobWorker implements InitializingBean {
             throw new RuntimeException(String.format("%s must be config", WorkerConstant.SERVER_HOST));
         }
 
-        String appid = OpenjobConfig.getString(WorkerConstant.WORKER_APPID);
-        if (Objects.isNull(appid)) {
-            throw new RuntimeException(String.format("%s must be config", WorkerConstant.WORKER_APPID));
+        String appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
+        if (Objects.isNull(appName)) {
+            throw new RuntimeException(String.format("%s must be config", WorkerConstant.WORKER_APP_NAME));
         }
     }
 
