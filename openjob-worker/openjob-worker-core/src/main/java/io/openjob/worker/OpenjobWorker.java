@@ -243,7 +243,7 @@ public class OpenjobWorker implements InitializingBean {
                 // Refresh worker.
                 this.refresh(heartbeatResponse);
             } catch (Throwable e) {
-                log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, workerAddress);
+                log.error("Worker heartbeat fail. serverAddress={} workerAddress={}", serverAddress, workerAddress, e);
             }
 
         }, 5, heartbeatInterval, TimeUnit.SECONDS);

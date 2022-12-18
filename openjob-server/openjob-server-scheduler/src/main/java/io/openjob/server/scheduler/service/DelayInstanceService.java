@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -83,6 +84,10 @@ public class DelayInstanceService {
     }
 
     private List<ServerDelayInstanceResponse> pullByTopic(WorkerDelayItemPullRequest item) {
+        if (Objects.isNull(item)) {
+            throw new RuntimeException("Pull topic cant not be null.");
+        }
+
         List<ServerDelayInstanceResponse> responses = new ArrayList<>();
 
         // Pull from redis.

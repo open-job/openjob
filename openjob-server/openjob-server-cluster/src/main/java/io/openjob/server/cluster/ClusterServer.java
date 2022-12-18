@@ -112,7 +112,21 @@ public class ClusterServer {
     }
 
     public void createDelayActor() {
+        // Worker delay instance actor.
+        Props instanceProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_DELAY_INSTANCE)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_DELAY_INSTANCE);
+        actorSystem.actorOf(instanceProps, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE);
 
+        // Worker delay instance pull actor.
+        Props instancePullProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_DELAY_INSTANCE_PULL)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_DELAY_INSTANCE_PULL);
+        actorSystem.actorOf(instancePullProps, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL);
     }
 
     /**

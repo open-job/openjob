@@ -5,6 +5,7 @@ import io.openjob.common.response.ServerDelayTopicResponse;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Mapper
 public interface SchedulerMapper {
     SchedulerMapper INSTANCE = Mappers.getMapper(SchedulerMapper.class);
 

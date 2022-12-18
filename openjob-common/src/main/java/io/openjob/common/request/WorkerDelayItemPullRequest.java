@@ -13,6 +13,9 @@ public class WorkerDelayItemPullRequest implements Serializable {
     private String topic;
     private Integer size;
 
+    public WorkerDelayItemPullRequest() {
+    }
+
     public WorkerDelayItemPullRequest(String topic, Integer size) {
         this.topic = topic;
         this.size = size;

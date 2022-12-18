@@ -141,7 +141,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     @Override
     public List<Delay> findPullList() throws SQLException {
         ResultSet rs = null;
-        String sql = "SELECT id,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0 AND pull_time <?";
+        String sql = "SELECT id,topic,pull_size FROM delay_worker WHERE delay_worker.pull_size > 0 AND pull_time <?";
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, DateUtil.milliLongTime());
             rs = ps.executeQuery();
@@ -189,6 +189,7 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     private Delay convert(ResultSet rs) throws SQLException {
         Delay delay = new Delay();
         delay.setId(rs.getLong("id"));
+        delay.setTopic(rs.getString("topic"));
         delay.setPullSize(rs.getInt("pull_size"));
         return delay;
     }

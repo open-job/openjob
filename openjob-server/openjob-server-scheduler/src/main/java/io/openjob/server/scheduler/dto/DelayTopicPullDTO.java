@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class DelayTopicPullDTO {
+    private Long id;
     private String topic;
     private String processorInfo;
     private Integer failRetryTimes;

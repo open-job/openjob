@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 @Data
 public class ServerDelayTopicResponse implements Serializable {
+    private Long id;
     private String topic;
     private String processorInfo;
     private Integer failRetryTimes;
