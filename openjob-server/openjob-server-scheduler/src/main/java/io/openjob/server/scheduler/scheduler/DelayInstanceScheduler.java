@@ -112,7 +112,8 @@ public class DelayInstanceScheduler {
                 operations.opsForValue().set(detailKey, addRequest);
                 operations.opsForZSet().add(zsetKey, taskId, addRequest.getExecuteTime());
                 operations.opsForList().rightPush(listKey, taskId);
-                return operations.exec();
+                operations.exec();
+                return null;
             }
         });
     }

@@ -34,6 +34,12 @@ public class System {
     private Long clusterVersion;
 
     /**
+     * Cluster delay version
+     */
+    @Column(name = "cluster_delay_version")
+    private Long clusterDelayVersion;
+
+    /**
      * Cluster supervisor slot.
      */
     @Column(name = "cluster_supervisor_slot")

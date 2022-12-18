@@ -21,11 +21,15 @@ public class DelayTaskMaster {
                 1,
                 30,
                 TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(0),
+                new LinkedBlockingDeque<>(1),
                 r -> new Thread(r, "Openjob-delay-master")
         );
 
         this.executorService.submit(new DelayTaskMasterExecutor());
+    }
+
+    public void refresh() {
+
     }
 
     /**

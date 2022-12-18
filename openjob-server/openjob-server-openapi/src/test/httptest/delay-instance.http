@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
   "task_id": "",
-  "topic": "openjob123",
-  "params": "openjob123",
-  "extra": "openjob123",
-  "executeTime": "openjob123"
+  "topic": "openjob.delay.test",
+  "params": "{params}",
+  "extra": "{extra}",
+  "executeTime": 1671331098
 }

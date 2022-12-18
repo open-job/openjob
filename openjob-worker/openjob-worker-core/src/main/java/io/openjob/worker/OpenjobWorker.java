@@ -13,6 +13,7 @@ import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
+import io.openjob.common.response.ServerHeartbeatResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.IpUtil;
 import io.openjob.common.util.ResultUtil;
@@ -118,10 +119,29 @@ public class OpenjobWorker implements InitializingBean {
 
         this.doHeartbeat();
 
-        this.startDelayJob();
+        this.startDelay();
 
         // Shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    }
+
+    /**
+     * Get actor system.
+     *
+     * @return ActorSystem
+     */
+    public static ActorSystem getActorSystem() {
+        return actorSystem;
+    }
+
+    /**
+     * At least once delivery.
+     *
+     * @param msg    msg
+     * @param sender sender
+     */
+    public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
+        persistentRoutingRef.tell(msg, sender);
     }
 
     /**
@@ -173,7 +193,7 @@ public class OpenjobWorker implements InitializingBean {
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
 
-        // Stop delay job.
+        // Stop delay.
         if (OpenjobWorker.delayEnable) {
             DelayStarter.INSTANCE.stop();
         }
@@ -186,10 +206,23 @@ public class OpenjobWorker implements InitializingBean {
         }
     }
 
-    private void startDelayJob() {
+    /**
+     * Start delay.
+     */
+    private void startDelay() {
         // Start delay job.
         if (OpenjobWorker.delayEnable) {
             DelayStarter.INSTANCE.init();
+        }
+    }
+
+    /**
+     * Refresh worker.
+     */
+    private void refresh(ServerHeartbeatResponse heartbeatResponse) {
+        // Refresh delay.
+        if (OpenjobWorker.delayEnable) {
+            DelayStarter.INSTANCE.refresh(heartbeatResponse.getSystemResponse());
         }
     }
 
@@ -204,13 +237,11 @@ public class OpenjobWorker implements InitializingBean {
             heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APPID));
             heartbeatReq.setVersion("1.0");
             try {
-                Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, 3L);
-                if (!ResultUtil.isSuccess(result)) {
-                    log.error("Worker heartbeat fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, result.getMessage());
-                    throw new RuntimeException(String.format("Register worker fail! message=%s", result.getMessage()));
-                }
-
+                ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
                 log.info("Worker heartbeat success. serverAddress={} workerAddress={}", serverAddress, workerAddress);
+
+                // Refresh worker.
+                this.refresh(heartbeatResponse);
             } catch (Throwable e) {
                 log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, workerAddress);
             }
@@ -269,24 +300,5 @@ public class OpenjobWorker implements InitializingBean {
                 .withRouter(new RoundRobinPool(taskContainerNum))
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
         actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
-    }
-
-    /**
-     * Get actor system.
-     *
-     * @return ActorSystem
-     */
-    public static ActorSystem getActorSystem() {
-        return actorSystem;
-    }
-
-    /**
-     * At least once delivery.
-     *
-     * @param msg    msg
-     * @param sender sender
-     */
-    public static void atLeastOnceDelivery(Object msg, ActorRef sender) {
-        persistentRoutingRef.tell(msg, sender);
     }
 }

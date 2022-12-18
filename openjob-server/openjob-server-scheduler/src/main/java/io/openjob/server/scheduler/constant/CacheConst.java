@@ -25,5 +25,5 @@ public class CacheConst {
     /**
      * Delay set prefix.
      */
-    public static final String DELAY_ZSET_PREFIX = "delay:set:";
+    public static final String DELAY_ZSET_PREFIX = "delay:zset:";
 }
