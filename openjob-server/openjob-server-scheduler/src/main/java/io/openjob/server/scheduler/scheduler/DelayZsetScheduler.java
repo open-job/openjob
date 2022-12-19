@@ -107,7 +107,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
          */
         private void rangeDelayInstance(String key) throws InterruptedException {
             // Range delay instance from zset.
-            Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, DateUtil.timestamp(), -1, 0, 50);
+            Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, 0, DateUtil.timestamp(), 0, 50);
 
             // Delay instance is empty.
             if (CollectionUtils.isEmpty(rangeObjects)) {
@@ -128,16 +128,12 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
         @SuppressWarnings("unchecked")
         private void pushAndRemoveDelayInstance(String key, Set<Object> rangeObjects) {
             // Remove zset members.
-            List<String> removeMembers = Lists.newArrayList();
-            for (Object rangeObject : rangeObjects) {
-                ZSetOperations.TypedTuple<Object> typedTuple = (ZSetOperations.TypedTuple<Object>) rangeObject;
-                Object value = typedTuple.getValue();
-                removeMembers.add(String.valueOf(value));
-            }
+            List<String> removeMembers = rangeObjects.stream().map(String::valueOf)
+                    .collect(Collectors.toList());
 
             // Delay detail keys.
-            List<String> cacheKeys = Lists.newArrayList();
-            removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDelayDetailTaskIdKey(rm)));
+            List<String> cacheKeys = removeMembers.stream().map(CacheUtil::getDelayDetailTaskIdKey)
+                    .collect(Collectors.toList());
 
             // Get delay instance detail list
             List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
@@ -160,7 +156,8 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
                     // Remove from zset.
                     RedisUtil.getTemplate().opsForZSet().remove(key, removeMembers.toArray());
-                    return operations.exec();
+                    operations.exec();
+                    return null;
                 }
             });
         }
