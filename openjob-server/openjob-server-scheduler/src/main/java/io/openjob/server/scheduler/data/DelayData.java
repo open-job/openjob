@@ -1,14 +1,18 @@
 package io.openjob.server.scheduler.data;
 
+import com.google.common.collect.Lists;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.constant.CacheConst;
+import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.RedisUtil;
 import io.openjob.server.scheduler.util.CacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -62,5 +66,29 @@ public class DelayData {
 
     public List<Delay> getListByAppId(Long appId) {
         return this.delayDAO.findByAppId(appId);
+    }
+
+    public List<DelayInstanceAddRequestDTO> getDelayInstanceList(List<String> taskIds) {
+        List<String> cacheKeys = taskIds.stream().map(CacheUtil::getDelayDetailTaskIdKey)
+                .collect(Collectors.toList());
+
+        // Multi to get detail.
+        List<Object> cacheList = RedisUtil.getTemplate().opsForValue().multiGet(cacheKeys);
+        if (CollectionUtils.isEmpty(cacheList)) {
+            return Collections.emptyList();
+        }
+
+        // Delay detail list.
+        List<DelayInstanceAddRequestDTO> detailList = Lists.newArrayList();
+        for (Object detail : cacheList) {
+            if (Objects.isNull(detail)) {
+                continue;
+            }
+
+            if (detail instanceof DelayInstanceAddRequestDTO) {
+                detailList.add((DelayInstanceAddRequestDTO) detail);
+            }
+        }
+        return detailList;
     }
 }

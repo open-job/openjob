@@ -52,6 +52,9 @@ public class Delay {
     @Column(name = "concurrency")
     private Integer concurrency;
 
+    @Column(name = "blocking_size")
+    private Integer blockingSize;
+
     @Column(name = "topic")
     private String topic;
 

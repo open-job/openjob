@@ -11,6 +11,8 @@ import io.openjob.common.response.ServerDelayTopicPullResponse;
 import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
+import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
@@ -50,7 +52,11 @@ public class DelayInstanceService {
         List<ServerDelayInstanceResponse> responses = new ArrayList<>();
 
         // Pull delay instance.
-        pullRequest.getPullItems().forEach(item -> responses.addAll(this.pullByTopic(item)));
+        pullRequest.getPullItems().forEach(item -> {
+            DelayItemPullRequestDTO delayItemPullRequestDTO = SchedulerMapper.INSTANCE.toDelayItemPullRequestDTO(item);
+            List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(delayItemPullRequestDTO);
+            responses.addAll(SchedulerMapper.INSTANCE.toServerDelayPullResponseList(responseList));
+        });
 
         ServerDelayPullResponse delayPullResponse = new ServerDelayPullResponse();
         delayPullResponse.setDelayInstanceResponses(responses);
@@ -82,38 +88,5 @@ public class DelayInstanceService {
         ServerDelayTopicPullResponse response = new ServerDelayTopicPullResponse();
         response.setTopicList(SchedulerMapper.INSTANCE.toServerDelayTopicResponseList(topicListDTO.getTopicList()));
         return response;
-    }
-
-    private List<ServerDelayInstanceResponse> pullByTopic(WorkerDelayItemPullRequest item) {
-        if (Objects.isNull(item)) {
-            throw new RuntimeException("Pull topic cant not be null.");
-        }
-
-        List<ServerDelayInstanceResponse> responses = new ArrayList<>();
-
-        // Pull from redis.
-        String topicKey = CacheUtil.getTopicListKey(item.getTopic());
-        List<Object> delayList = RedisUtil.popAndRemoveFromList(topicKey, item.getSize());
-        List<String> taskIds = delayList.stream().map(String::valueOf).collect(Collectors.toList());
-
-        // Not empty
-        delayList.forEach(d -> {
-            if (d instanceof DelayDTO) {
-                DelayDTO delayDTO = (DelayDTO) d;
-                ServerDelayInstanceResponse delayInstanceResponse = new ServerDelayInstanceResponse();
-                delayInstanceResponse.setDelayId(delayDTO.getDelayId());
-                delayInstanceResponse.setDelayParams(delayDTO.getDelayParams());
-                delayInstanceResponse.setDelayExtra(delayDTO.getDelayExtra());
-                delayInstanceResponse.setTopic(delayDTO.getTopic());
-                delayInstanceResponse.setProcessorInfo(delayDTO.getProcessorInfo());
-                delayInstanceResponse.setFailRetryTimes(delayDTO.getFailRetryTimes());
-                delayInstanceResponse.setFailRetryInterval(delayDTO.getFailRetryInterval());
-                delayInstanceResponse.setExecuteTimeout(delayDTO.getExecuteTimeout());
-                delayInstanceResponse.setBlockingSize(delayDTO.getBlockingSize());
-                delayInstanceResponse.setConcurrency(delayDTO.getConcurrency());
-                responses.add(delayInstanceResponse);
-            }
-        });
-        return responses;
     }
 }
