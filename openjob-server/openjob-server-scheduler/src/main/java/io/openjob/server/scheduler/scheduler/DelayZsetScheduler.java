@@ -1,6 +1,5 @@
 package io.openjob.server.scheduler.scheduler;
 
-import com.google.common.collect.Lists;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -151,7 +149,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                     // Push by topic
                     detailListMap.forEach((t, list) -> {
                         String cacheListKey = CacheUtil.getTopicListKey(t);
-                        operations.opsForList().rightPushAll(cacheListKey, list.toArray());
+                        operations.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
                     });
 
                     // Remove from zset.
