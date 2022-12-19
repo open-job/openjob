@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.util;
 
 import io.openjob.server.common.ClusterContext;
-import io.swagger.models.auth.In;
+import io.openjob.server.common.util.CrcUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +34,24 @@ public class DelaySlotUtil {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayListMaxSlot = ClusterContext.getSystem().getDelayListMaxSlot();
         return getCurrentSlots(maxSlot, delayListMaxSlot);
+    }
+
+    public static Long getListSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayListMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
+        return slots.get(index);
+    }
+
+    public static Long getZsetSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayZsetMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayZsetMaxSlot);
+        return slots.get(index);
     }
 
     /**

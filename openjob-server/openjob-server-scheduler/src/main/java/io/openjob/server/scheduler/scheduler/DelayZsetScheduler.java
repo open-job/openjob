@@ -137,7 +137,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
             // Delay detail keys.
             List<String> cacheKeys = Lists.newArrayList();
-            removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDetailKey(rm)));
+            removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDelayDetailTaskIdKey(rm)));
 
             // Get delay instance detail list
             List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
@@ -154,7 +154,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
                     // Push by topic
                     detailListMap.forEach((t, list) -> {
-                        String cacheListKey = CacheUtil.getTopicKey(t);
+                        String cacheListKey = CacheUtil.getTopicListKey(t);
                         operations.opsForList().rightPushAll(cacheListKey, list.toArray());
                     });
 

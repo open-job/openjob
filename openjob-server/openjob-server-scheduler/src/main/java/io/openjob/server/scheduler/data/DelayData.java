@@ -33,7 +33,7 @@ public class DelayData {
      * @return Delay
      */
     public Delay getDelay(String topic) {
-        String delayKey = CacheUtil.getDelayKey(topic);
+        String delayKey = CacheUtil.getDelayDetailTopicKey(topic);
         return RedisUtil.orElseGet(delayKey, () -> {
             Delay delay = this.delayDAO.findByTopic(topic);
             if (Objects.isNull(delay)) {
@@ -51,7 +51,7 @@ public class DelayData {
      */
     public List<Delay> getDelayList(List<String> topics) {
         return RedisUtil.multiOrElseGet(
-                CacheConst.DELAY_PREFIX,
+                CacheConst.DELAY_DETAIL_TOPIC_PREFIX,
                 topics,
                 t -> this.delayDAO.findByTopics(t)
                         .stream()

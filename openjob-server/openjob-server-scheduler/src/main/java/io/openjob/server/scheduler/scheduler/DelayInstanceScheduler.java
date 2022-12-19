@@ -18,6 +18,7 @@ import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
+import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,9 +127,9 @@ public class DelayInstanceScheduler {
     @SuppressWarnings("unchecked")
     private void addDelay(DelayInstanceAddRequestDTO addRequest) {
         String taskId = addRequest.getTaskId();
-        String detailKey = CacheUtil.getDetailKey(taskId);
-        String zsetKey = CacheUtil.getZsetKey(SlotsUtil.getDelayMaxZsetSlotsId(taskId));
-        String listKey = CacheUtil.getListKey(SlotsUtil.getDelayMaxListSlotsId(taskId));
+        String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
+        String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
+        String listKey = CacheUtil.getListKey(DelaySlotUtil.getListSlotId(taskId));
 
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
@@ -151,9 +152,9 @@ public class DelayInstanceScheduler {
     @SuppressWarnings("unchecked")
     private void deleteDelay(DelayInstanceDeleteRequestDTO deleteRequest) {
         String taskId = deleteRequest.getTaskId();
-        String detailKey = CacheUtil.getDetailKey(taskId);
-        String zsetKey = CacheUtil.getZsetKey(SlotsUtil.getDelayMaxZsetSlotsId(taskId));
-        String listKey = CacheUtil.getListKey(SlotsUtil.getDelayMaxListSlotsId(taskId));
+        String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
+        String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
+        String listKey = CacheUtil.getListKey(DelaySlotUtil.getListSlotId(taskId));
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {

@@ -70,7 +70,6 @@ CREATE TABLE `delay_instance` (
                                   `delay_params` longtext NOT NULL,
                                   `delay_extra` text NOT NULL,
                                   `status` tinyint(2) NOT NULL,
-                                  `slots_id` bigint(20) NOT NULL,
                                   `execute_time` bigint(12) NOT NULL,
                                   `deleted` tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',

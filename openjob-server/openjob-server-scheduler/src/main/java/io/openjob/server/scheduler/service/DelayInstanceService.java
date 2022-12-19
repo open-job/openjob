@@ -91,7 +91,7 @@ public class DelayInstanceService {
         List<ServerDelayInstanceResponse> responses = new ArrayList<>();
 
         // Pull from redis.
-        String topicKey = CacheUtil.getTopicKey(item.getTopic());
+        String topicKey = CacheUtil.getTopicListKey(item.getTopic());
         List<Object> delayList = RedisUtil.popAndRemoveFromList(topicKey, item.getSize());
 
         // Not empty

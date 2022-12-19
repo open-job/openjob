@@ -121,7 +121,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
             popObjects.forEach(o -> {
                 if (o instanceof String) {
                     String taskId = (String) o;
-                    cacheKeys.add(CacheUtil.getDetailKey(taskId));
+                    cacheKeys.add(CacheUtil.getDelayDetailTaskIdKey(taskId));
                 }
             });
 
@@ -153,6 +153,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 delayInstance.setDelayId(topicDelay.getId());
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
+                delayInstance.setStatus(1);
                 delayInstance.setDelayParams(d.getParams());
                 delayInstance.setDelayExtra(d.getExtra());
                 delayInstance.setDeleted(CommonConstant.NO);

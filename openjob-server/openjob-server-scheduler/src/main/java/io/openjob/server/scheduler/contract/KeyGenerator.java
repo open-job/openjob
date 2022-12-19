@@ -23,6 +23,6 @@ public interface KeyGenerator<T> {
      * @return KeyGenerator
      */
     static <T> KeyGenerator<T> defGenerator(String keyPrefix) {
-        return key -> keyPrefix + key.toString();
+        return key -> String.format("%s:%s", keyPrefix, key.toString());
     }
 }
