@@ -133,6 +133,7 @@ public class DelayInstanceScheduler {
             responseDTO.setExecuteTimeout(delay.getExecuteTimeout());
             responseDTO.setConcurrency(delay.getConcurrency());
             responseDTO.setBlockingSize(delay.getBlockingSize());
+            responseDTO.setTaskId(di.getTaskId());
             return responseDTO;
         }).collect(Collectors.toList());
     }

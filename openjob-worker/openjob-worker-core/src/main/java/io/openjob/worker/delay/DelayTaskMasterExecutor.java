@@ -134,8 +134,7 @@ public class DelayTaskMasterExecutor implements Runnable {
                 return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency());
             });
 
-            List<DelayInstanceDTO> instanceList = Lists.newArrayList();
-            instanceResponses.forEach(i -> {
+            List<DelayInstanceDTO> instanceList = instanceResponses.stream().map(i -> {
                 DelayInstanceDTO delayInstanceDTO = new DelayInstanceDTO();
                 delayInstanceDTO.setTopic(i.getTopic());
                 delayInstanceDTO.setDelayId(i.getDelayId());
@@ -146,8 +145,10 @@ public class DelayTaskMasterExecutor implements Runnable {
                 delayInstanceDTO.setFailRetryTimes(i.getFailRetryTimes());
                 delayInstanceDTO.setExecuteTimeout(i.getExecuteTimeout());
                 delayInstanceDTO.setConcurrency(i.getConcurrency());
-                instanceList.add(delayInstanceDTO);
-            });
+                delayInstanceDTO.setTaskId(i.getTaskId());
+                return delayInstanceDTO;
+            }).collect(Collectors.toList());
+
             delayTaskContainer.execute(instanceList);
         });
     }

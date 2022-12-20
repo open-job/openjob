@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class DelayInstancePullResponseDTO {
     private String topic;
+    private String taskId;
     private Long delayId;
     private String delayParams;
     private String delayExtra;

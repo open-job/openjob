@@ -58,6 +58,11 @@ public class DelayTaskContainer {
             jobContext.setDelayId(i.getDelayId());
             jobContext.setDelayParams(i.getDelayParams());
             jobContext.setDelayExtra(i.getDelayExtra());
+            jobContext.setProcessorInfo(i.getProcessorInfo());
+            jobContext.setFailRetryInterval(i.getFailRetryInterval());
+            jobContext.setFailRetryTimes(i.getFailRetryTimes());
+            jobContext.setDelayTaskId(i.getTaskId());
+            jobContext.setDelayTopic(i.getTopic());
             this.executorService.submit(new DelayThreadTaskProcessor(jobContext));
         });
     }
