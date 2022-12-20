@@ -121,18 +121,10 @@ public class DelayTaskMasterExecutor implements Runnable {
     private void execute(Map<Long, List<ServerDelayInstanceResponse>> topicIdMap) {
         topicIdMap.forEach((t, instanceResponses) -> {
             ServerDelayInstanceResponse firstDelay = instanceResponses.get(0);
-            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(firstDelay.getDelayId(), id -> {
-                Long now = DateUtil.timestamp();
-                Delay delay = new Delay();
-                delay.setId(id);
-                delay.setPullSize(10);
-                delay.setPullTime(0L);
-                delay.setTopic(firstDelay.getTopic());
-                delay.setUpdateTime(now);
-                delay.setCreateTime(now);
-                DelayDAO.INSTANCE.batchSave(Collections.singletonList(delay));
-                return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency());
-            });
+            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
+                    firstDelay.getDelayId(),
+                    id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency())
+            );
 
             List<DelayInstanceDTO> instanceList = instanceResponses.stream().map(i -> {
                 DelayInstanceDTO delayInstanceDTO = new DelayInstanceDTO();
