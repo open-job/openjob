@@ -1,11 +1,13 @@
 package io.openjob.server.scheduler.mapper;
 
 import io.openjob.common.request.WorkerDelayItemPullRequest;
+import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.common.request.WorkerDelayTopicPullRequest;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayTopicResponse;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
@@ -61,4 +63,12 @@ public interface SchedulerMapper {
      * @return List
      */
     List<ServerDelayInstanceResponse> toServerDelayPullResponseList(List<DelayInstancePullResponseDTO> pullList);
+
+    /**
+     * To DelayInstanceStatus list.
+     *
+     * @param delayTaskList delayTaskList
+     * @return List
+     */
+    List<DelayInstanceStatusRequestDTO> toDelayInstanceStatusList(List<WorkerDelayTaskRequest> delayTaskList);
 }

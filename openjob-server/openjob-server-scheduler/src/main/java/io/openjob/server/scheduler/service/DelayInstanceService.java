@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.request.WorkerDelayItemPullRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
+import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.request.WorkerDelayTopicPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
@@ -12,6 +13,7 @@ import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
@@ -94,5 +96,15 @@ public class DelayInstanceService {
         ServerDelayTopicPullResponse response = new ServerDelayTopicPullResponse();
         response.setTopicList(SchedulerMapper.INSTANCE.toServerDelayTopicResponseList(topicListDTO.getTopicList()));
         return response;
+    }
+
+    /**
+     * Handle delay status.
+     *
+     * @param workerDelayStatusRequest workerDelayStatusRequest
+     */
+    public void handleDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
+        List<DelayInstanceStatusRequestDTO> statusList = SchedulerMapper.INSTANCE.toDelayInstanceStatusList(workerDelayStatusRequest.getTaskList());
+        this.delayInstanceScheduler.report(statusList);
     }
 }

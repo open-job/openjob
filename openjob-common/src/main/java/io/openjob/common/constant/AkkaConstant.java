@@ -21,6 +21,7 @@ public class AkkaConstant {
     public static final String SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG = "worker-instance-task-log";
     public static final String SERVER_ACTOR_WORKER_DELAY_INSTANCE = "worker-delay-instance";
     public static final String SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL = "worker-delay-instance-pull";
+    public static final String SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS = "worker-delay-instance-status";
 
     /**
      * Worker

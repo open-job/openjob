@@ -10,6 +10,7 @@ import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopResponseDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
@@ -44,7 +45,6 @@ import java.util.stream.Stream;
 public class DelayInstanceScheduler {
     private final DelayData delayData;
     private final DelayInstanceDAO delayInstanceDAO;
-
     private final AppDAO appDAO;
 
     @Autowired
@@ -151,6 +151,17 @@ public class DelayInstanceScheduler {
     }
 
     /**
+     * Report delay status.
+     *
+     * @param statusList statusList
+     */
+    public void report(List<DelayInstanceStatusRequestDTO> statusList) {
+        // Remove from zset and delete delay detail
+
+        // Add delay status list to batch update status form storage.
+    }
+
+    /**
      * Delete delay task.
      *
      * @param deleteRequest deleteRequest
@@ -164,7 +175,6 @@ public class DelayInstanceScheduler {
         this.delayInstanceDAO.deleteByTaskId(deleteRequest.getTaskId());
         return new DelayInstanceDeleteResponseDTO();
     }
-
 
     /**
      * Add delay task.
