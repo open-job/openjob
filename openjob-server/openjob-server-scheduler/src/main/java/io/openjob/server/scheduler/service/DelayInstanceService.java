@@ -82,6 +82,12 @@ public class DelayInstanceService {
         return serverDelayAddResponse;
     }
 
+    /**
+     * Pull topic list.
+     *
+     * @param pullRequest pullRequest
+     * @return ServerDelayTopicPullResponse
+     */
     public ServerDelayTopicPullResponse pullTopicList(WorkerDelayTopicPullRequest pullRequest) {
         DelayTopicPullRequestDTO delayTopicPullRequestDTO = SchedulerMapper.INSTANCE.toDelayTopicPullRequestDTO(pullRequest);
         DelayTopicPullResponseDTO topicListDTO = this.delayInstanceScheduler.pullTopicList(delayTopicPullRequestDTO);

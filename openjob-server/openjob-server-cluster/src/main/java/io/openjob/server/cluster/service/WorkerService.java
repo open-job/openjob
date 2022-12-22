@@ -69,7 +69,12 @@ public class WorkerService {
         ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
-    @Transactional
+    /**
+     * Do worker start.
+     *
+     * @param workerStartRequest workerStartRequest
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void doWorkerStart(WorkerStartRequest workerStartRequest) {
         // Refresh system.
         // Lock system cluster version.
@@ -97,7 +102,12 @@ public class WorkerService {
         ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
 
-    @Transactional
+    /**
+     * Do worker stop.
+     *
+     * @param stopReq stopReq
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void doWorkerStop(WorkerStopRequest stopReq) {
         // Refresh system.
         // Lock system cluster version.

@@ -111,6 +111,9 @@ public class ClusterServer {
         }
     }
 
+    /**
+     * Create delay actor.
+     */
     public void createDelayActor() {
         // Worker delay instance actor.
         Props instanceProps = PropsFactoryManager.getFactory()

@@ -74,6 +74,12 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
     static class ZsetRunnable extends AbstractRunnable {
         private final DelayData delayData;
+
+        /**
+         * New ZsetRunnable.
+         *
+         * @param currentSlotId current slot id.
+         */
         public ZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
             this.delayData = SpringContext.getBean(DelayData.class);

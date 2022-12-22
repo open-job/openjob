@@ -64,10 +64,22 @@ public class DelayData {
         );
     }
 
+    /**
+     * Get list by appid.
+     *
+     * @param appId appid.
+     * @return list.
+     */
     public List<Delay> getListByAppId(Long appId) {
         return this.delayDAO.findByAppId(appId);
     }
 
+    /**
+     * Get delay instance list.
+     *
+     * @param taskIds task ids.
+     * @return list.
+     */
     public List<DelayInstanceAddRequestDTO> getDelayInstanceList(List<String> taskIds) {
         List<String> cacheKeys = taskIds.stream().map(CacheUtil::getDelayDetailTaskIdKey)
                 .collect(Collectors.toList());

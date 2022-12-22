@@ -91,6 +91,12 @@ public class DelayInstanceScheduler {
         return new DelayInstanceStopResponseDTO();
     }
 
+    /**
+     * Pull topic list.
+     *
+     * @param pullRequestDTO pullRequest
+     * @return DelayTopicPullResponseDTO
+     */
     public DelayTopicPullResponseDTO pullTopicList(DelayTopicPullRequestDTO pullRequestDTO) {
         App app = this.appDAO.getAppByName(pullRequestDTO.getAppName());
         if (Objects.isNull(app)) {
@@ -106,6 +112,12 @@ public class DelayInstanceScheduler {
         return response;
     }
 
+    /**
+     * Pull task by topic.
+     *
+     * @param pullRequestDTO pullRequest
+     * @return list
+     */
     public List<DelayInstancePullResponseDTO> pullByTopic(DelayItemPullRequestDTO pullRequestDTO) {
         if (Objects.isNull(pullRequestDTO.getTopic())) {
             throw new RuntimeException("Pull topic cant not be null.");

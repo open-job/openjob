@@ -40,6 +40,9 @@ public class DelayTaskMaster {
         this.executorService.submit(new DelayTaskMasterExecutor());
     }
 
+    /**
+     * Refresh delay task master.
+     */
     public void refresh() {
         String appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         WorkerDelayTopicPullRequest pullRequest = new WorkerDelayTopicPullRequest();

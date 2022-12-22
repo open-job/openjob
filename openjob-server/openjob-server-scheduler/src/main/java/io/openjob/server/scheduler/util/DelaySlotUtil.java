@@ -36,6 +36,12 @@ public class DelaySlotUtil {
         return getCurrentSlots(maxSlot, delayListMaxSlot);
     }
 
+    /**
+     * Get list slot id.
+     *
+     * @param key key
+     * @return Long
+     */
     public static Long getListSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayListMaxSlot = ClusterContext.getSystem().getDelayListMaxSlot();
@@ -45,6 +51,12 @@ public class DelaySlotUtil {
         return slots.get(index);
     }
 
+    /**
+     * Get zset slot id.
+     *
+     * @param key key
+     * @return Long
+     */
     public static Long getZsetSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetMaxSlot();
