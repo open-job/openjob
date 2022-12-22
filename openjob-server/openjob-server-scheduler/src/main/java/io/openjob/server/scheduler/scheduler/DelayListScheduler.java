@@ -14,6 +14,7 @@ import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -35,7 +36,6 @@ import java.util.stream.Collectors;
 @Log4j2
 @Component
 public class DelayListScheduler extends AbstractDelayScheduler {
-
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentListSlots();
@@ -117,16 +117,9 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 return;
             }
 
-            List<String> cacheKeys = Lists.newArrayList();
-            popObjects.forEach(o -> {
-                if (o instanceof String) {
-                    String taskId = (String) o;
-                    cacheKeys.add(CacheUtil.getDetailKey(taskId));
-                }
-            });
-
             // Get delay instance detail list
-            List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
+            List<String> taskIds = popObjects.stream().map(String::valueOf).collect(Collectors.toList());
+            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(taskIds);
             if (CollectionUtils.isEmpty(detailList)) {
                 return;
             }
@@ -153,6 +146,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 delayInstance.setDelayId(topicDelay.getId());
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
+                delayInstance.setStatus(1);
                 delayInstance.setDelayParams(d.getParams());
                 delayInstance.setDelayExtra(d.getExtra());
                 delayInstance.setDeleted(CommonConstant.NO);

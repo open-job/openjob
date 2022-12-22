@@ -1,6 +1,7 @@
 package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
+import io.openjob.common.SpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeFailDTO;
@@ -55,7 +56,9 @@ public class FailManager {
     public void fail(Node stopNode) {
         try {
             // Do node fail.
-            boolean result = ClusterUtil.clusterNodeOperate(this.clusterProperties.getSpreadRetryTimes(), () -> this.doFail(stopNode));
+            boolean result = ClusterUtil.clusterNodeOperate(
+                    this.clusterProperties.getSpreadRetryTimes(),
+                    () -> SpringContext.getBean(this.getClass()).doFail(stopNode));
 
             // Success to send cluster message.
             if (result) {

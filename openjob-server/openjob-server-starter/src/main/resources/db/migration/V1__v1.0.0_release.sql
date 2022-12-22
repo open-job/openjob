@@ -53,6 +53,9 @@ CREATE TABLE `delay` (
                          KEY `udx_topic` (`topic`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `status`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
+VALUES
+    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,1,0,2,20,'openjob.delay.test',2,0,0,0);
 
 
 # Dump of table delay_instance
@@ -70,7 +73,6 @@ CREATE TABLE `delay_instance` (
                                   `delay_params` longtext NOT NULL,
                                   `delay_extra` text NOT NULL,
                                   `status` tinyint(2) NOT NULL,
-                                  `slots_id` bigint(20) NOT NULL,
                                   `execute_time` bigint(12) NOT NULL,
                                   `deleted` tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
@@ -630,11 +632,12 @@ DROP TABLE IF EXISTS `system`;
 CREATE TABLE `system` (
                           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                           `version` varchar(16) NOT NULL DEFAULT '0',
-                          `cluster_version` bigint(12) unsigned NOT NULL DEFAULT '0',
+                          `cluster_version` bigint(20) unsigned NOT NULL DEFAULT '1',
+                          `cluster_delay_version` bigint(20) unsigned NOT NULL DEFAULT '1',
                           `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
-                          `delay_zset_slot` int(11) NOT NULL DEFAULT '4',
-                          `delay_list_slot` int(11) NOT NULL DEFAULT '2',
+                          `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
+                          `delay_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
                           `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
                           `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                           `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
@@ -645,9 +648,9 @@ CREATE TABLE `system` (
 
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_list_slot`, `max_slot`, `create_time`, `update_time`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_list_slot`, `max_slot`, `create_time`, `update_time`)
 VALUES
-    (1,'1.0.0',59,1,256,2,2,256,1663590330,1663590330);
+    (1,'1.0.0',1,1,1,256,2,2,256,1663590330,1663590330);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 

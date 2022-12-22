@@ -38,6 +38,9 @@ public class Result<T> implements Serializable {
      */
     private Long serverTime = DateUtil.milliLongTime();
 
+    public Result() {
+    }
+
     /**
      * init
      */

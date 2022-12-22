@@ -173,7 +173,6 @@ public class ClusterService {
         // Ignore
         if (this.isIgnore(workerJoinDTO.getClusterVersion())) {
             log.info("Worker join ignore! {}", workerJoinDTO);
-
             return;
         }
 
@@ -236,7 +235,6 @@ public class ClusterService {
         }
 
         if (clusterVersion <= ClusterContext.getSystem().getClusterVersion()) {
-            log.info("Cluster version is old! Ignore cluster message.");
             return true;
         }
 

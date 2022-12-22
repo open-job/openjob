@@ -1,7 +1,11 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.common.request.WorkerHeartbeatRequest;
+import io.openjob.common.response.ServerHeartbeatResponse;
+import io.openjob.common.response.ServerHeartbeatSystemResponse;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.ClusterContext;
+import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.common.util.LogUtil;
 import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.Worker;
@@ -30,7 +34,7 @@ public class WorkerHeartbeatService {
      *
      * @param workerHeartbeatReq heartbeat request.
      */
-    public void workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatReq) {
+    public ServerHeartbeatResponse workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatReq) {
         Worker worker = workerDAO.getByAddress(workerHeartbeatReq.getAddress());
         if (Objects.isNull(worker)) {
             LogUtil.logAndThrow(String.format("worker(%s) do not exist!", workerHeartbeatReq.getAddress()));
@@ -38,5 +42,14 @@ public class WorkerHeartbeatService {
 
         worker.setLastHeartbeatTime(DateUtil.timestamp());
         workerDAO.save(worker);
+
+        ServerHeartbeatResponse response = new ServerHeartbeatResponse();
+        ServerHeartbeatSystemResponse systemResponse = new ServerHeartbeatSystemResponse();
+
+        SystemDTO system = ClusterContext.getSystem();
+        systemResponse.setClusterVersion(system.getClusterVersion());
+        systemResponse.setClusterDelayVersion(system.getClusterDelayVersion());
+        response.setSystemResponse(systemResponse);
+        return response;
     }
 }

@@ -22,9 +22,10 @@ public class KryoUtil {
     });
 
     /**
+     * Serialize
      *
-     * @param object
-     * @return
+     * @param object object
+     * @return byte
      */
     public static byte[] serialize(Object object) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -38,9 +39,10 @@ public class KryoUtil {
     }
 
     /**
+     * Deserialize
      *
-     * @param byteArray
-     * @return
+     * @param byteArray byte array
+     * @return Object
      */
     public static Object deserialize(byte[] byteArray) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
@@ -48,9 +50,5 @@ public class KryoUtil {
 
         Kryo kryo = KRYO_LOCAL.get();
         return kryo.readClassAndObject(input);
-    }
-
-    public static void remove() {
-        KRYO_LOCAL.remove();
     }
 }

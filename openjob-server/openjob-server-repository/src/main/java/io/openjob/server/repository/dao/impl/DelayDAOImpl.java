@@ -35,4 +35,9 @@ public class DelayDAOImpl implements DelayDAO {
     public List<Delay> findByTopics(List<String> topics) {
         return this.delayRepository.findByTopicIn(topics);
     }
+
+    @Override
+    public List<Delay> findByAppId(Long appId) {
+        return this.delayRepository.findByAppId(appId);
+    }
 }

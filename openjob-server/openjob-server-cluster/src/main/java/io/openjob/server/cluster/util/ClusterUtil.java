@@ -140,7 +140,7 @@ public class ClusterUtil {
 
                 log.info("Cluster message success! akkaAddress={}, message={} response={}", akkaAddress, message, nodeResponse);
             } catch (Throwable e) {
-                log.warn("Akka cluster message error!", e);
+                log.warn("Akka cluster message error({})!", e.getMessage());
             }
         });
 
@@ -152,11 +152,10 @@ public class ClusterUtil {
      * Cluster node operate.
      *
      * @param supplier supplier
-     * @param <T>      type
      * @return Boolean
      * @throws InterruptedException exception
      */
-    public static <T> Boolean clusterNodeOperate(Integer retryTimes, Supplier<Boolean> supplier) throws InterruptedException {
+    public static Boolean clusterNodeOperate(Integer retryTimes, Supplier<Boolean> supplier) throws InterruptedException {
         for (int i = 0; i < retryTimes; i++) {
             try {
                 return supplier.get();

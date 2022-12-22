@@ -33,4 +33,12 @@ public interface DelayDAO {
      * @return list
      */
     List<Delay> findByTopics(List<String> topics);
+
+    /**
+     * Find by app id.
+     *
+     * @param appId app id.
+     * @return list
+     */
+    List<Delay> findByAppId(Long appId);
 }

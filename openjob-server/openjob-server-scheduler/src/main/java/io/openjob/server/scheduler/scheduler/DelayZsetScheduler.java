@@ -1,17 +1,18 @@
 package io.openjob.server.scheduler.scheduler;
 
-import com.google.common.collect.Lists;
+import io.openjob.common.SpringContext;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -72,8 +73,16 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
     }
 
     static class ZsetRunnable extends AbstractRunnable {
+        private final DelayData delayData;
+
+        /**
+         * New ZsetRunnable.
+         *
+         * @param currentSlotId current slot id.
+         */
         public ZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
+            this.delayData = SpringContext.getBean(DelayData.class);
         }
 
         @Override
@@ -107,7 +116,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
          */
         private void rangeDelayInstance(String key) throws InterruptedException {
             // Range delay instance from zset.
-            Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, DateUtil.timestamp(), -1, 0, 50);
+            Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, 0, DateUtil.timestamp(), 0, 50);
 
             // Delay instance is empty.
             if (CollectionUtils.isEmpty(rangeObjects)) {
@@ -128,19 +137,11 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
         @SuppressWarnings("unchecked")
         private void pushAndRemoveDelayInstance(String key, Set<Object> rangeObjects) {
             // Remove zset members.
-            List<String> removeMembers = Lists.newArrayList();
-            for (Object rangeObject : rangeObjects) {
-                ZSetOperations.TypedTuple<Object> typedTuple = (ZSetOperations.TypedTuple<Object>) rangeObject;
-                Object value = typedTuple.getValue();
-                removeMembers.add(String.valueOf(value));
-            }
-
-            // Delay detail keys.
-            List<String> cacheKeys = Lists.newArrayList();
-            removeMembers.forEach(rm -> cacheKeys.add(CacheUtil.getDetailKey(rm)));
+            List<String> removeMembers = rangeObjects.stream().map(String::valueOf)
+                    .collect(Collectors.toList());
 
             // Get delay instance detail list
-            List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
+            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(removeMembers);
 
             // Group by topic.
             Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()
@@ -154,13 +155,14 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
                     // Push by topic
                     detailListMap.forEach((t, list) -> {
-                        String cacheListKey = CacheUtil.getTopicKey(t);
-                        operations.opsForList().rightPushAll(cacheListKey, list.toArray());
+                        String cacheListKey = CacheUtil.getTopicListKey(t);
+                        operations.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
                     });
 
                     // Remove from zset.
                     RedisUtil.getTemplate().opsForZSet().remove(key, removeMembers.toArray());
-                    return operations.exec();
+                    operations.exec();
+                    return null;
                 }
             });
         }
