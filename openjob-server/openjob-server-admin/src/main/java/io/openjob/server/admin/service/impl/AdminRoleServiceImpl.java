@@ -59,6 +59,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
     @Override
     public AdminRoleUpdateVO delete(AdminRoleDeleteRequest reqDTO) {
         AdminRoleDTO entDTO = new AdminRoleDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         AdminRoleUpdateVO retVo = new AdminRoleUpdateVO();

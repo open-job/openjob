@@ -56,6 +56,7 @@ public class NotifyTemplateServiceImpl implements NotifyTemplateService {
     @Override
     public NotifyTemplateUpdateVO delete(NotifyTemplateDeleteRequest reqDTO) {
         NotifyTemplateDTO entDTO = new NotifyTemplateDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         NotifyTemplateUpdateVO retVo = new NotifyTemplateUpdateVO();

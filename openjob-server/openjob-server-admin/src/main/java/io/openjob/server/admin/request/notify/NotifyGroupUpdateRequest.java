@@ -21,6 +21,7 @@ public class NotifyGroupUpdateRequest {
     @ApiModelProperty(value = "PK")
     private Long id;
 
+    @NotNull
     @ApiModelProperty(value = "Group name")
     private String name;
 
