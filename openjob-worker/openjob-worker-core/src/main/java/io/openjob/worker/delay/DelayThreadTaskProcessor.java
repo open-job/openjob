@@ -1,5 +1,6 @@
 package io.openjob.worker.delay;
 
+import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.processor.BaseProcessor;
@@ -57,6 +58,12 @@ public class DelayThreadTaskProcessor implements Runnable {
     }
 
     private void reportTaskStatus(ProcessResult result, String workerAddress) {
-
+        WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
+        workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
+        workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
+        workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
+        workerDelayTaskRequest.setStatus(result.getStatus().getStatus());
+        workerDelayTaskRequest.setResult(result.getResult());
+        DelayStatusReporter.report(workerDelayTaskRequest);
     }
 }
