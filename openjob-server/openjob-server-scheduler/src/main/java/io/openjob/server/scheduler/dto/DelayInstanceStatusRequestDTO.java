@@ -33,4 +33,9 @@ public class DelayInstanceStatusRequestDTO {
      * Task result.
      */
     private String result;
+
+    /**
+     * Zset cache key
+     */
+    private String zsetKey;
 }

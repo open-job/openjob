@@ -24,7 +24,17 @@ public class CacheConst {
     /**
      * Delay list prefix.
      */
-    public static final String DELAY_LIST_PREFIX = "delay:list";
+    public static final String DELAY_ADD_LIST_PREFIX = "delay:list:add";
+
+    /**
+     * Delay status list prefix.
+     */
+    public static final String DELAY_STATUS_LIST_PREFIX = "delay:list:status";
+
+    /**
+     * Delay delete list prefix.
+     */
+    public static final String DELAY_DELETE_LIST_PREFIX = "delay:list:delete";
 
     /**
      * Delay zset prefix.

@@ -637,20 +637,22 @@ CREATE TABLE `system` (
                           `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
-                          `delay_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
+                          `delay_add_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
+                          `delay_status_list_slot` int(10) unsigned NOT NULL DEFAULT '2',
+                          `delay_delete_list_slot` int(10) unsigned NOT NULL DEFAULT '1',
                           `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
                           `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                           `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                           `create_time` bigint(12) unsigned NOT NULL,
                           `update_time` bigint(12) unsigned NOT NULL COMMENT 'Update time',
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_list_slot`, `max_slot`, `create_time`, `update_time`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_add_list_slot`, `delay_status_list_slot`, `delay_delete_list_slot`, `max_slot`, `create_time`, `update_time`)
 VALUES
-    (1,'1.0.0',1,1,1,256,2,2,256,1663590330,1663590330);
+    (1,'1.0.0',1,1,1,256,2,2,2,1,256,1663590330,1663590330);
 
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
