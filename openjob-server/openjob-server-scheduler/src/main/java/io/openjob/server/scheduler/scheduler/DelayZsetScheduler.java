@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.scheduler;
 
 import io.openjob.common.SpringContext;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -136,16 +139,19 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
          */
         @SuppressWarnings("unchecked")
         private void pushAndRemoveDelayInstance(String key, Set<Object> rangeObjects) {
-            // Remove zset members.
-            List<String> removeMembers = rangeObjects.stream().map(String::valueOf)
+            // Timing zset members.
+            List<String> timingMembers = rangeObjects.stream().map(String::valueOf)
                     .collect(Collectors.toList());
 
             // Get delay instance detail list
-            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(removeMembers);
+            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(timingMembers);
 
             // Group by topic.
             Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()
                     .collect(Collectors.groupingBy(DelayInstanceAddRequestDTO::getTopic));
+
+            Map<String, List<Delay>> delayMap = this.delayData.getDelayList(new ArrayList<>(detailListMap.keySet())).stream()
+                    .collect(Collectors.groupingBy(Delay::getTopic));
 
             // Execute by pipelined.
             RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
@@ -157,10 +163,14 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                     detailListMap.forEach((t, list) -> {
                         String cacheListKey = CacheUtil.getTopicListKey(t);
                         operations.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
+
+                        // Update score(score=score+timeout)
+                        Delay topicDelay = delayMap.get(t).get(0);
+                        if (Objects.nonNull(topicDelay)) {
+                            list.forEach(d -> RedisUtil.getTemplate().opsForZSet().incrementScore(key, d.getTaskId(), topicDelay.getExecuteTimeout()));
+                        }
                     });
 
-                    // Remove from zset.
-                    RedisUtil.getTemplate().opsForZSet().remove(key, removeMembers.toArray());
                     operations.exec();
                     return null;
                 }

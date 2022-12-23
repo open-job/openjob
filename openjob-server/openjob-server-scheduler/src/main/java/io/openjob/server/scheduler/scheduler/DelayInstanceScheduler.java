@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
@@ -213,6 +214,10 @@ public class DelayInstanceScheduler {
      */
     @SuppressWarnings("unchecked")
     private void addDelay(DelayInstanceAddRequestDTO addRequest) {
+        if (addRequest.getExecuteTime() < DateUtil.timestamp()) {
+            throw new RuntimeException("Execute time is expire!");
+        }
+
         String taskId = addRequest.getTaskId();
         String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));

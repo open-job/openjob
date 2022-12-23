@@ -73,12 +73,7 @@ public class DelayInstanceService {
      */
     public ServerDelayAddResponse addDelayInstance(WorkerDelayAddRequest addRequest) {
         ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse(addRequest.getDeliveryId());
-        DelayInstanceAddRequestDTO addRequestDTO = new DelayInstanceAddRequestDTO();
-        addRequestDTO.setTaskId(addRequest.getTaskId());
-        addRequestDTO.setTopic(addRequest.getTopic());
-        addRequestDTO.setParams(addRequest.getParams());
-        addRequestDTO.setExtra(addRequest.getExtra());
-        addRequestDTO.setExecuteTime(addRequest.getExecuteTime());
+        DelayInstanceAddRequestDTO addRequestDTO = SchedulerMapper.INSTANCE.toDelayInstanceAddRequestDTO(addRequest);
         DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceScheduler.add(addRequestDTO);
         serverDelayAddResponse.setTaskId(addResponseDTO.getTaskId());
         return serverDelayAddResponse;
