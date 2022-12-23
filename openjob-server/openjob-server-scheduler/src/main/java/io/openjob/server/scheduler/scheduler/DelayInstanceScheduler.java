@@ -203,9 +203,6 @@ public class DelayInstanceScheduler {
     public DelayInstanceDeleteResponseDTO delete(DelayInstanceDeleteRequestDTO deleteRequest) {
         // Delete from redis.
         this.deleteDelay(deleteRequest);
-
-        // Delete from storage.
-        this.delayInstanceDAO.deleteByTaskId(deleteRequest.getTaskId());
         return new DelayInstanceDeleteResponseDTO();
     }
 

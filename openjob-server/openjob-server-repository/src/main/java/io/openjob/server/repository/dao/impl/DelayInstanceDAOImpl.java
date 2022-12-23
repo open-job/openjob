@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.DelayInstance;
@@ -87,12 +88,18 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public Integer batchUpdateStatus(List<Long> ids, Integer status) {
-        return this.delayInstanceRepository.batchUpdateStatus(ids, status, DateUtil.timestamp());
+    public Integer batchUpdateStatus(List<DelayInstance> updateList) {
+        // When then sql.
+        StringBuilder whenThen = new StringBuilder();
+        updateList.forEach(d -> whenThen.append(String.format(" when %s then %d ", d.getTaskId(), d.getStatus())));
+
+        // Update sql.
+        String sql = String.format("update `delay_instance` set `update_time`=%d, status=(case `task_id` %s END)", DateUtil.timestamp(), whenThen);
+        return this.jdbcTemplate.update(sql);
     }
 
     @Override
-    public void deleteByTaskId(String taskId) {
-        this.delayInstanceRepository.deleteByTaskId(taskId);
+    public Integer deleteByTaskIds(List<String> taskIds) {
+        return this.delayInstanceRepository.batchDeleteByTaskIds(taskIds, CommonConstant.YES, DateUtil.timestamp());
     }
 }
