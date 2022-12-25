@@ -21,6 +21,8 @@ public class AdminRoleUpdateRequest {
     @ApiModelProperty(value = "PK")
     private Long id;
 
+    @Min(1)
+    @NotNull
     @ApiModelProperty(value = "Role name")
     private String name;
 
@@ -33,19 +35,12 @@ public class AdminRoleUpdateRequest {
     @ApiModelProperty(value = "Permissions ids for role. JSON array")
     private List<Long> perms;
 
+    @NotNull
     @ApiModelProperty(value = "Is Admin. 1=yes 2=no")
     private Integer admin;
 
     @ApiModelProperty(value = "Delete status. 1=yes 2=no")
     private Integer deleted;
 
-    @ApiModelProperty(value = "Delete time")
-    private Long deleteTime;
-
-    @ApiModelProperty(value = "Update time")
-    private Long updateTime;
-
-    @ApiModelProperty(value = "Create time")
-    private Long createTime;
 }
 

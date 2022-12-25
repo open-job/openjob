@@ -34,6 +34,12 @@ public class System {
     private Long clusterVersion;
 
     /**
+     * Cluster delay version
+     */
+    @Column(name = "cluster_delay_version")
+    private Long clusterDelayVersion;
+
+    /**
      * Cluster supervisor slot.
      */
     @Column(name = "cluster_supervisor_slot")
@@ -54,8 +60,20 @@ public class System {
     /**
      * Delay list slot.
      */
-    @Column(name = "delay_list_slot")
-    private Integer delayListSlot;
+    @Column(name = "delay_add_list_slot")
+    private Integer delayAddListSlot;
+
+    /**
+     * Delay list slot.
+     */
+    @Column(name = "delay_status_list_slot")
+    private Integer delayStatusListSlot;
+
+    /**
+     * Delay list slot.
+     */
+    @Column(name = "delay_delete_list_slot")
+    private Integer delayDeleteListSlot;
 
     /**
      * Max slot

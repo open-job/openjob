@@ -15,6 +15,11 @@ public class SystemDTO {
     private Long clusterVersion;
 
     /**
+     * Cluster delay version
+     */
+    private Long clusterDelayVersion;
+
+    /**
      * Cluster supervisor slot.
      */
     private Integer clusterSupervisorSlot;
@@ -35,7 +40,17 @@ public class SystemDTO {
     private Integer delayZsetMaxSlot;
 
     /**
-     * Delay list max slot.
+     * Delay add list max slot.
      */
-    private Integer delayListMaxSlot;
+    private Integer delayAddListMaxSlot;
+
+    /**
+     * Delay status list max slot.
+     */
+    private Integer delayStatusListMaxSlot;
+
+    /**
+     * Delay delete list max slot.
+     */
+    private Integer delayDeleteListMaxSlot;
 }

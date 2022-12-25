@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class ServerDelayInstanceResponse implements Serializable {
     private String topic;
     private Long delayId;
+    private String taskId;
     private String delayParams;
     private String delayExtra;
     private String processorInfo;

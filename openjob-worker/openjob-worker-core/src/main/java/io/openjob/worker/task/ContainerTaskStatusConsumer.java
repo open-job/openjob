@@ -25,12 +25,13 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void consume(Long id, List<T> tasks) {
         consumerExecutor.submit(new TaskStatusConsumerRunnable((List<ContainerTaskStatusRequest>) tasks));
     }
 
     private static class TaskStatusConsumerRunnable implements Runnable {
-        private List<ContainerTaskStatusRequest> taskList;
+        private final List<ContainerTaskStatusRequest> taskList;
 
         public TaskStatusConsumerRunnable(List<ContainerTaskStatusRequest> taskList) {
             this.taskList = taskList;

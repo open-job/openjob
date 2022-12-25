@@ -12,7 +12,7 @@ import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -32,13 +32,12 @@ import java.util.stream.Collectors;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 @Component
-public class DelayListScheduler extends AbstractDelayScheduler {
-
+public class DelayAddListScheduler extends AbstractDelayScheduler {
     @Override
     public void start() {
-        List<Long> slots = DelaySlotUtil.getCurrentListSlots();
+        List<Long> slots = DelaySlotUtil.getCurrentAddListSlots();
         int maxSize = slots.size() > 0 ? slots.size() : 1;
 
         AtomicInteger threadId = new AtomicInteger(1);
@@ -48,38 +47,38 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 30,
                 TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(maxSize),
-                r -> new Thread(r, String.format("delay-list-%s", threadId.getAndIncrement()))
+                r -> new Thread(r, String.format("delay-add-list-%s", threadId.getAndIncrement()))
         );
 
         slots.forEach(s -> {
-            ListRunnable listRunnable = new ListRunnable(s);
+            AddListRunnable listRunnable = new AddListRunnable(s);
             runnableList.put(s, listRunnable);
             executorService.submit(listRunnable);
         });
 
         executorService.allowCoreThreadTimeOut(true);
-        log.info("List Delay instance slots{}", slots);
+        log.info("Add List Delay instance slots{}", slots);
     }
 
     @Override
     public void stop() {
         this.executorService.shutdownNow();
-        log.info("List delay instance shutdown now!");
+        log.info("Add List delay instance shutdown now!");
     }
 
     @Override
     public void refresh() {
-        List<Long> slots = DelaySlotUtil.getCurrentListSlots();
-        this.refreshSlots(slots, ListRunnable::new);
+        List<Long> slots = DelaySlotUtil.getCurrentAddListSlots();
+        this.refreshSlots(slots, AddListRunnable::new);
 
-        log.info("Refresh list delay instance slots{}", slots);
+        log.info("Refresh add list delay instance slots{}", slots);
     }
 
-    static class ListRunnable extends AbstractRunnable {
+    static class AddListRunnable extends AbstractRunnable {
         protected final DelayInstanceDAO delayInstanceDAO;
         protected final DelayData delayData;
 
-        public ListRunnable(Long currentSlotId) {
+        public AddListRunnable(Long currentSlotId) {
             super(currentSlotId);
             this.delayData = SpringContext.getBean(DelayData.class);
             this.delayInstanceDAO = SpringContext.getBean(DelayInstanceDAO.class);
@@ -88,7 +87,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
         @Override
         public void run() {
             // Cache key.
-            String key = CacheUtil.getListKey(this.currentSlotId);
+            String key = CacheUtil.getAddListKey(this.currentSlotId);
             log.info("List delay instance begin！slotId={}", this.currentSlotId);
 
             while (!finish.get()) {
@@ -117,16 +116,9 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 return;
             }
 
-            List<String> cacheKeys = Lists.newArrayList();
-            popObjects.forEach(o -> {
-                if (o instanceof String) {
-                    String taskId = (String) o;
-                    cacheKeys.add(CacheUtil.getDetailKey(taskId));
-                }
-            });
-
             // Get delay instance detail list
-            List<DelayInstanceAddRequestDTO> detailList = this.getDelayInstanceList(cacheKeys);
+            List<String> taskIds = popObjects.stream().map(String::valueOf).collect(Collectors.toList());
+            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(taskIds);
             if (CollectionUtils.isEmpty(detailList)) {
                 return;
             }
@@ -153,6 +145,7 @@ public class DelayListScheduler extends AbstractDelayScheduler {
                 delayInstance.setDelayId(topicDelay.getId());
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
+                delayInstance.setStatus(1);
                 delayInstance.setDelayParams(d.getParams());
                 delayInstance.setDelayExtra(d.getExtra());
                 delayInstance.setDeleted(CommonConstant.NO);

@@ -1,0 +1,11 @@
+### Add delay instance
+POST http://127.0.0.1:8080/openapi/delay-instance/add
+Content-Type: application/json
+
+{
+  "task_id": "",
+  "topic": "openjob.delay.test",
+  "params": "{params}",
+  "extra": "{extra}",
+  "executeTime": 1671800666
+}

@@ -11,5 +11,5 @@ import java.util.List;
  */
 @Data
 public class WorkerDelayPullRequest implements Serializable {
-    private List<WorkerDelayPullItemRequest> pullItems;
+    private List<WorkerDelayItemPullRequest> pullItems;
 }

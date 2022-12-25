@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.scheduler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.server.scheduler.contract.DelayScheduler;
+import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.RedisUtil;
 import org.springframework.util.CollectionUtils;
@@ -79,33 +80,6 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
          */
         public AbstractRunnable(Long currentSlotId) {
             this.currentSlotId = currentSlotId;
-        }
-
-        /**
-         * Get delay instance list.
-         *
-         * @param cacheKeys cache keys.
-         * @return List
-         */
-        protected List<DelayInstanceAddRequestDTO> getDelayInstanceList(List<String> cacheKeys) {
-            // Multi to get detail.
-            List<Object> cacheList = RedisUtil.getTemplate().opsForValue().multiGet(cacheKeys);
-            if (CollectionUtils.isEmpty(cacheList)) {
-                return Collections.emptyList();
-            }
-
-            // Delay detail list.
-            List<DelayInstanceAddRequestDTO> detailList = Lists.newArrayList();
-            for (Object detail : cacheList) {
-                if (Objects.isNull(detail)) {
-                    continue;
-                }
-
-                if (detail instanceof DelayInstanceAddRequestDTO) {
-                    detailList.add((DelayInstanceAddRequestDTO) detail);
-                }
-            }
-            return detailList;
         }
 
         /**

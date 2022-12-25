@@ -14,6 +14,8 @@ import java.util.List;
 @Data
 public class JobContext {
     private Long delayId;
+    private String delayTopic;
+    private String delayTaskId;
     private String delayParams;
     private String delayExtra;
     private Long jobId;

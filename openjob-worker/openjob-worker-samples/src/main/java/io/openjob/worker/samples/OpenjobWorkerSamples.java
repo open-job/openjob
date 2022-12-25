@@ -2,11 +2,13 @@ package io.openjob.worker.samples;
 
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.samples.processor.JavaProcessorSample;
+import io.openjob.worker.samples.processor.DelayProcessorSample;
 import io.openjob.worker.samples.processor.MapReduceProcessorSample;
 
 /**
  * @author stelin <swoft@qq.com>
  * @see JavaProcessorSample
+ * @see DelayProcessorSample
  * @see MapReduceProcessorSample
  * @since 1.0.0
  */

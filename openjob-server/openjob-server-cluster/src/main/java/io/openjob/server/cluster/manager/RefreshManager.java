@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,44 +45,40 @@ public class RefreshManager {
     }
 
     /**
-     * Whether to refresh server.
-     *
-     * @return Boolean
-     */
-    public Boolean isRefreshServer() {
-        Server server = this.serverDAO.getById(ClusterContext.getCurrentNode().getServerId());
-        return Objects.nonNull(server) && ServerStatusEnum.OK.getStatus().equals(server.getStatus());
-    }
-
-    /**
      * Refresh system.
      *
      * @param isUpdateClusterVersion whether to update cluster version.
      */
     public void refreshSystem(Boolean isUpdateClusterVersion) {
+        System currentSystem = this.systemDAO.getOne();
+        Long currentVersion = currentSystem.getClusterVersion();
+
         // Update cluster version.
         if (isUpdateClusterVersion) {
-            System currentSystem = this.systemDAO.getOne();
             Integer effectRows = this.systemDAO.updateClusterVersion(currentSystem.getClusterVersion());
-
             // Lock cluster version fail.
             if (effectRows <= 0) {
                 throw new ClusterNodeOperatingException("Node join or fail is running!");
             }
+
+            // Not query db to fix repeatable read.
+            currentVersion++;
         }
 
         // Refresh system.
-        System system = this.systemDAO.getOne();
         SystemDTO systemDTO = new SystemDTO();
-        systemDTO.setMaxSlot(system.getMaxSlot());
-        systemDTO.setClusterVersion(system.getClusterVersion());
-        systemDTO.setClusterSupervisorSlot(system.getClusterSupervisorSlot());
-        systemDTO.setWorkerSupervisorSlot(system.getWorkerSupervisorSlot());
-        systemDTO.setDelayZsetMaxSlot(system.getDelayZsetSlot());
-        systemDTO.setDelayListMaxSlot(system.getDelayListSlot());
+        systemDTO.setMaxSlot(currentSystem.getMaxSlot());
+        systemDTO.setClusterVersion(currentVersion);
+        systemDTO.setClusterSupervisorSlot(currentSystem.getClusterSupervisorSlot());
+        systemDTO.setWorkerSupervisorSlot(currentSystem.getWorkerSupervisorSlot());
+        systemDTO.setDelayZsetMaxSlot(currentSystem.getDelayZsetSlot());
+        systemDTO.setDelayAddListMaxSlot(currentSystem.getDelayAddListSlot());
+        systemDTO.setDelayStatusListMaxSlot(currentSystem.getDelayStatusListSlot());
+        systemDTO.setDelayDeleteListMaxSlot(currentSystem.getDelayDeleteListSlot());
+        systemDTO.setClusterDelayVersion(currentSystem.getClusterDelayVersion());
 
         ClusterContext.refreshSystem(systemDTO);
-        log.info(String.format("Refresh %s", system));
+        log.info("Refresh cluster version({}) {} ", currentSystem.getClusterVersion(), systemDTO);
     }
 
     /**
@@ -101,6 +96,7 @@ public class RefreshManager {
     public void refreshAppWorkers() {
         List<Worker> workers = workerDAO.listOnlineWorkers();
         ClusterUtil.refreshAppWorkers(workers);
+        log.info("Refresh workers {}", workers.stream().map(Worker::getAddress).collect(Collectors.toList()));
     }
 
     /**

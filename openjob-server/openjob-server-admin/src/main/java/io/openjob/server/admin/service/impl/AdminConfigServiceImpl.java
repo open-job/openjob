@@ -56,6 +56,7 @@ public class AdminConfigServiceImpl implements AdminConfigService {
     @Override
     public AdminConfigUpdateVO delete(AdminConfigDeleteRequest reqDTO) {
         AdminConfigDTO entDTO = new AdminConfigDTO();
+        entDTO.setId(reqDTO.getId());
         entDTO.setDeleted(CommonConstant.YES);
 
         AdminConfigUpdateVO retVo = new AdminConfigUpdateVO();

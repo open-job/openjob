@@ -46,21 +46,22 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         // hash input passwd
         entDto.setPasswd(HmacUtil.hashPasswd(reqDTO.getPasswd(), userProperties.getPasswdSalt()));
-        adminUserData.add(entDto);
 
         AdminUserAddVO retVo = new AdminUserAddVO();
-        retVo.setId(entDto.getId());
+        retVo.setId(adminUserData.add(entDto));
 
         return retVo;
     }
 
     @Override
     public AdminUserUpdateVO update(AdminUserUpdateRequest reqDTO) {
-        AdminUserUpdateVO retVo = new AdminUserUpdateVO();
         AdminUserDTO entDto = new AdminUserDTO();
         BeanUtils.copyProperties(reqDTO, entDto);
 
         adminUserData.updateById(entDto);
+
+        AdminUserUpdateVO retVo = new AdminUserUpdateVO();
+        retVo.setId(reqDTO.getId());
 
         return retVo;
     }
@@ -70,6 +71,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         AdminUserUpdateVO retVo = new AdminUserUpdateVO();
 
         AdminUserDTO entDto = new AdminUserDTO();
+        entDto.setId(reqDTO.getId());
         entDto.setDeleted(CommonConstant.YES);
 
         adminUserData.updateById(entDto);

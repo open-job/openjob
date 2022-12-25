@@ -2,7 +2,7 @@ package io.openjob.worker.delay;
 
 import akka.actor.ActorSelection;
 import com.google.common.collect.Lists;
-import io.openjob.common.request.WorkerDelayPullItemRequest;
+import io.openjob.common.request.WorkerDelayItemPullRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
@@ -51,7 +51,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
     private void start() throws InterruptedException {
         // Pull topic items.
-        List<WorkerDelayPullItemRequest> pullTopicItems = Lists.newArrayList();
+        List<WorkerDelayItemPullRequest> pullTopicItems = Lists.newArrayList();
         Set<Long> pullTopicIds = new HashSet<>();
 
         // Find pull topic.
@@ -59,7 +59,7 @@ public class DelayTaskMasterExecutor implements Runnable {
                 .forEach(d -> {
                     int size = OpenjobConfigUtil.getDelayPullSize();
                     int pullSize = d.getPullSize() > size ? size : d.getPullSize();
-                    pullTopicItems.add(new WorkerDelayPullItemRequest(d.getTopic(), pullSize));
+                    pullTopicItems.add(new WorkerDelayItemPullRequest(d.getTopic(), pullSize));
                     pullTopicIds.add(d.getId());
                 });
 
@@ -74,7 +74,7 @@ public class DelayTaskMasterExecutor implements Runnable {
         delayPullRequest.setPullItems(pullTopicItems);
 
         // Pull delay instance by akka.
-        ActorSelection instanceActor = WorkerUtil.getServerDelayInstanceActor();
+        ActorSelection instanceActor = WorkerUtil.getServerDelayInstancePullActor();
         ServerDelayPullResponse delayPullResponse = FutureUtil.mustAsk(instanceActor, delayPullRequest, ServerDelayPullResponse.class, 3000L);
 
         //  All topic empty.
@@ -121,21 +121,12 @@ public class DelayTaskMasterExecutor implements Runnable {
     private void execute(Map<Long, List<ServerDelayInstanceResponse>> topicIdMap) {
         topicIdMap.forEach((t, instanceResponses) -> {
             ServerDelayInstanceResponse firstDelay = instanceResponses.get(0);
-            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(firstDelay.getDelayId(), id -> {
-                Long now = DateUtil.timestamp();
-                Delay delay = new Delay();
-                delay.setId(id);
-                delay.setPullSize(10);
-                delay.setPullTime(0L);
-                delay.setTopic(firstDelay.getTopic());
-                delay.setUpdateTime(now);
-                delay.setCreateTime(now);
-                DelayDAO.INSTANCE.batchSave(Collections.singletonList(delay));
-                return new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency());
-            });
+            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
+                    firstDelay.getDelayId(),
+                    id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency())
+            );
 
-            List<DelayInstanceDTO> instanceList = Lists.newArrayList();
-            instanceResponses.forEach(i -> {
+            List<DelayInstanceDTO> instanceList = instanceResponses.stream().map(i -> {
                 DelayInstanceDTO delayInstanceDTO = new DelayInstanceDTO();
                 delayInstanceDTO.setTopic(i.getTopic());
                 delayInstanceDTO.setDelayId(i.getDelayId());
@@ -146,8 +137,10 @@ public class DelayTaskMasterExecutor implements Runnable {
                 delayInstanceDTO.setFailRetryTimes(i.getFailRetryTimes());
                 delayInstanceDTO.setExecuteTimeout(i.getExecuteTimeout());
                 delayInstanceDTO.setConcurrency(i.getConcurrency());
-                instanceList.add(delayInstanceDTO);
-            });
+                delayInstanceDTO.setTaskId(i.getTaskId());
+                return delayInstanceDTO;
+            }).collect(Collectors.toList());
+
             delayTaskContainer.execute(instanceList);
         });
     }

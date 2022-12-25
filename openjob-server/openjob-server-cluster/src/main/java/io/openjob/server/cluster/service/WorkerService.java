@@ -1,6 +1,8 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Lists;
+import io.openjob.common.SpringContext;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.util.DateUtil;
@@ -20,6 +22,7 @@ import io.openjob.server.repository.entity.Worker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,14 +60,8 @@ public class WorkerService {
      * @param workerStartRequest start request.
      */
     public void workerStart(WorkerStartRequest workerStartRequest) {
-        // Update worker status.
-        this.updateWorkerForStart(workerStartRequest);
-
-        // Refresh system
-        this.refreshManager.refreshSystem(true);
-
-        // Refresh cluster context.
-        refreshClusterContext();
+        // Do worker start.
+        SpringContext.getBean(this.getClass()).doWorkerStart(workerStartRequest);
 
         // Akka message for worker start.
         WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
@@ -73,11 +70,49 @@ public class WorkerService {
     }
 
     /**
+     * Do worker start.
+     *
+     * @param workerStartRequest workerStartRequest
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void doWorkerStart(WorkerStartRequest workerStartRequest) {
+        // Refresh system.
+        // Lock system cluster version.
+        this.refreshManager.refreshSystem(true);
+
+        // Update worker status.
+        this.updateWorkerForStart(workerStartRequest);
+
+        // Refresh cluster context.
+        refreshClusterContext();
+    }
+
+    /**
      * Worker stop
      *
      * @param stopReq stop request.
      */
     public void workerStop(WorkerStopRequest stopReq) {
+        // Do worker stop.
+        SpringContext.getBean(this.getClass()).doWorkerStop(stopReq);
+
+        // Akka message for worker start.
+        WorkerFailDTO workerFailDTO = new WorkerFailDTO();
+        workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
+        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
+    }
+
+    /**
+     * Do worker stop.
+     *
+     * @param stopReq stopReq
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void doWorkerStop(WorkerStopRequest stopReq) {
+        // Refresh system.
+        // Lock system cluster version.
+        this.refreshManager.refreshSystem(true);
+
         Worker worker = workerDAO.getByAddress(stopReq.getAddress());
         if (Objects.isNull(worker)) {
             log.error("worker({}) do not exist!", stopReq.getAddress());
@@ -87,25 +122,19 @@ public class WorkerService {
         // Update worker
         worker.setStatus(WorkerStatusEnum.OFFLINE.getStatus());
         worker.setUpdateTime(DateUtil.timestamp());
-
-        // Refresh system
-        this.refreshManager.refreshSystem(true);
+        workerDAO.save(worker);
 
         // Refresh cluster context.
         this.refreshClusterContext();
-
-        // Akka message for worker start.
-        WorkerFailDTO workerFailDTO = new WorkerFailDTO();
-        workerFailDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
-        ClusterUtil.sendMessage(workerFailDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
     }
+
 
     /**
      * Worker check
      */
     public void workerCheck() {
         // Query all workers.
-        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_DELAY;
+        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_PERIOD;
         Set<Long> currentSlots = ClusterContext.getCurrentSlots();
 
         // Query slot ids.
@@ -125,11 +154,14 @@ public class WorkerService {
         List<Worker> offlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.OFFLINE.getStatus())).orElseGet(ArrayList::new);
         offlineWorkers.forEach(w -> {
             // Join worker
-            if (w.getLastHeartbeatTime() > timePos) {
+            // Ignore just off the line
+            if (w.getUpdateTime() < timePos && w.getLastHeartbeatTime() > timePos) {
                 WorkerStartRequest workerStartRequest = new WorkerStartRequest();
                 workerStartRequest.setAddress(w.getAddress());
                 workerStartRequest.setAppName(w.getAppName());
                 workerStartRequest.setWorkerKey(w.getWorkerKey());
+
+                log.info("Scheduling worker start begin!");
                 this.workerStart(workerStartRequest);
             }
         });
@@ -143,6 +175,8 @@ public class WorkerService {
                 workerStopRequest.setWorkerKey(w.getWorkerKey());
                 workerStopRequest.setAddress(w.getAddress());
                 workerStopRequest.setAppName(w.getAppName());
+
+                log.info("Scheduling worker stop begin!");
                 this.workerStop(workerStopRequest);
             }
         });
@@ -151,6 +185,8 @@ public class WorkerService {
     private void refreshClusterContext() {
         List<Worker> workers = workerDAO.listOnlineWorkers();
         ClusterUtil.refreshAppWorkers(workers);
+
+        log.info("Refresh app workers={}", workers.stream().map(Worker::getAddress).collect(Collectors.toList()));
     }
 
     private void updateWorkerForStart(WorkerStartRequest startReq) {
@@ -166,6 +202,10 @@ public class WorkerService {
         if (Objects.nonNull(worker)) {
             worker.setWorkerKey(worker.getWorkerKey());
             worker.setStatus(WorkerStatusEnum.ONLINE.getStatus());
+
+            //Must update last heartbeat time.
+            worker.setLastHeartbeatTime(now);
+            worker.setUpdateTime(now);
             workerDAO.save(worker);
             return;
         }
@@ -187,6 +227,8 @@ public class WorkerService {
         saveWorker.setMetric("");
         saveWorker.setVersion("");
         saveWorker.setWorkerKey("");
+        saveWorker.setDeleteTime(0L);
+        saveWorker.setDeleted(CommonConstant.NO);
         workerDAO.save(saveWorker);
     }
 }

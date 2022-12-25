@@ -38,9 +38,14 @@ public class WorkerUtil {
         return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE));
     }
 
+    public static ActorSelection getServerDelayInstancePullActor() {
+        String address = getServerAddress();
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL));
+    }
+
     public static ActorSelection getServerDelayStatusActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_STATUS));
+        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS));
     }
 
     /**
