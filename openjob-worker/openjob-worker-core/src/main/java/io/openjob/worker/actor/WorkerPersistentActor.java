@@ -69,6 +69,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         });
     }
 
+    /**
+     * Handle delay status.
+     *
+     * @param workerDelayStatusRequest workerDelayStatusRequest
+     */
     public void handleDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
         ActorSelection serverDelayStatusActor = WorkerUtil.getServerDelayStatusActor();
         deliver(serverDelayStatusActor, deliveryId -> {

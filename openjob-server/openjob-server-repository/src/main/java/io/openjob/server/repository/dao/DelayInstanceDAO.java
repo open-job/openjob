@@ -40,6 +40,7 @@ public interface DelayInstanceDAO {
      * Delete by task id.
      *
      * @param taskIds task id.
+     * @return Integer
      */
     Integer deleteByTaskIds(List<String> taskIds);
 }

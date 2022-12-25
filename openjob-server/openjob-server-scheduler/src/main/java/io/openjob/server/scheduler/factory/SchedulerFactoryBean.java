@@ -24,7 +24,11 @@ public class SchedulerFactoryBean implements DisposableBean {
     private final DelayDeleteListScheduler delayDeleteListScheduler;
 
     @Autowired
-    public SchedulerFactoryBean(WheelManager wheelManager, DelayZsetScheduler delayZsetScheduler, DelayAddListScheduler delayAddListScheduler, DelayStatusListScheduler delayStatusListScheduler, DelayDeleteListScheduler delayDeleteListScheduler) {
+    public SchedulerFactoryBean(WheelManager wheelManager,
+                                DelayZsetScheduler delayZsetScheduler,
+                                DelayAddListScheduler delayAddListScheduler,
+                                DelayStatusListScheduler delayStatusListScheduler,
+                                DelayDeleteListScheduler delayDeleteListScheduler) {
         this.wheelManager = wheelManager;
         this.delayZsetScheduler = delayZsetScheduler;
         this.delayAddListScheduler = delayAddListScheduler;

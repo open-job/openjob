@@ -25,7 +25,12 @@ public class Scheduler {
     private final SchedulerProperties schedulerProperties;
 
     @Autowired
-    public Scheduler(WheelManager wheelManager, DelayZsetScheduler delayZsetScheduler, DelayAddListScheduler delayAddListScheduler, DelayStatusListScheduler delayStatusListScheduler, DelayDeleteListScheduler delayDeleteListScheduler, SchedulerProperties schedulerProperties) {
+    public Scheduler(WheelManager wheelManager,
+                     DelayZsetScheduler delayZsetScheduler,
+                     DelayAddListScheduler delayAddListScheduler,
+                     DelayStatusListScheduler delayStatusListScheduler,
+                     DelayDeleteListScheduler delayDeleteListScheduler,
+                     SchedulerProperties schedulerProperties) {
         this.wheelManager = wheelManager;
         this.delayZsetScheduler = delayZsetScheduler;
         this.delayAddListScheduler = delayAddListScheduler;

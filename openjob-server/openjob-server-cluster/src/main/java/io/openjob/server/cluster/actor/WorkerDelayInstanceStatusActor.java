@@ -34,6 +34,11 @@ public class WorkerDelayInstanceStatusActor extends BaseActor {
                 .build();
     }
 
+    /**
+     * Handle delay status.
+     *
+     * @param statusRequest statusRequest
+     */
     public void handleDelayStatus(WorkerDelayStatusRequest statusRequest) {
         this.delayInstanceService.handleDelayStatus(statusRequest);
 

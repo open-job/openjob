@@ -55,7 +55,7 @@ CREATE TABLE `delay` (
 
 INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `status`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
 VALUES
-    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,1,0,2,20,'openjob.delay.test',2,0,0,0);
+    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,1,30,2,20,'openjob.delay.test',2,0,0,0);
 
 
 # Dump of table delay_instance
