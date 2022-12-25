@@ -60,8 +60,20 @@ public class System {
     /**
      * Delay list slot.
      */
-    @Column(name = "delay_list_slot")
-    private Integer delayListSlot;
+    @Column(name = "delay_add_list_slot")
+    private Integer delayAddListSlot;
+
+    /**
+     * Delay list slot.
+     */
+    @Column(name = "delay_status_list_slot")
+    private Integer delayStatusListSlot;
+
+    /**
+     * Delay list slot.
+     */
+    @Column(name = "delay_delete_list_slot")
+    private Integer delayDeleteListSlot;
 
     /**
      * Max slot

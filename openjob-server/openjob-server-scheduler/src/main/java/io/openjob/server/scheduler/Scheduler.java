@@ -1,7 +1,9 @@
 package io.openjob.server.scheduler;
 
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
-import io.openjob.server.scheduler.scheduler.DelayListScheduler;
+import io.openjob.server.scheduler.scheduler.DelayAddListScheduler;
+import io.openjob.server.scheduler.scheduler.DelayDeleteListScheduler;
+import io.openjob.server.scheduler.scheduler.DelayStatusListScheduler;
 import io.openjob.server.scheduler.scheduler.DelayZsetScheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +19,23 @@ import java.util.Set;
 public class Scheduler {
     private final WheelManager wheelManager;
     private final DelayZsetScheduler delayZsetScheduler;
-    private final DelayListScheduler delayListScheduler;
+    private final DelayAddListScheduler delayAddListScheduler;
+    private final DelayStatusListScheduler delayStatusListScheduler;
+    private final DelayDeleteListScheduler delayDeleteListScheduler;
     private final SchedulerProperties schedulerProperties;
 
     @Autowired
-    public Scheduler(WheelManager wheelManager, DelayZsetScheduler delayZsetScheduler, DelayListScheduler delayListScheduler, SchedulerProperties schedulerProperties) {
+    public Scheduler(WheelManager wheelManager,
+                     DelayZsetScheduler delayZsetScheduler,
+                     DelayAddListScheduler delayAddListScheduler,
+                     DelayStatusListScheduler delayStatusListScheduler,
+                     DelayDeleteListScheduler delayDeleteListScheduler,
+                     SchedulerProperties schedulerProperties) {
         this.wheelManager = wheelManager;
         this.delayZsetScheduler = delayZsetScheduler;
-        this.delayListScheduler = delayListScheduler;
+        this.delayAddListScheduler = delayAddListScheduler;
+        this.delayStatusListScheduler = delayStatusListScheduler;
+        this.delayDeleteListScheduler = delayDeleteListScheduler;
         this.schedulerProperties = schedulerProperties;
     }
 
@@ -40,8 +51,14 @@ public class Scheduler {
             // Delay zset scheduler.
             this.delayZsetScheduler.start();
 
-            // Delay list scheduler.
-            this.delayListScheduler.start();
+            // Delay add list scheduler.
+            this.delayAddListScheduler.start();
+
+            // Delay status list scheduler.
+            this.delayStatusListScheduler.start();
+
+            // Delay delete list scheduler.
+            this.delayDeleteListScheduler.start();
         }
     }
 
@@ -61,8 +78,14 @@ public class Scheduler {
             // Delay zset scheduler.
             this.delayZsetScheduler.refresh();
 
-            // Delay list scheduler.
-            this.delayListScheduler.refresh();
+            // Delay add list scheduler.
+            this.delayAddListScheduler.refresh();
+
+            // Delay status list scheduler.
+            this.delayStatusListScheduler.refresh();
+
+            // Delay delete list scheduler.
+            this.delayDeleteListScheduler.refresh();
         }
     }
 }

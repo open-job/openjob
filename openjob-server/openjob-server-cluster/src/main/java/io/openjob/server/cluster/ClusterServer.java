@@ -130,6 +130,14 @@ public class ClusterServer {
                 .withRouter(new RoundRobinPool(2))
                 .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_DELAY_INSTANCE_PULL);
         actorSystem.actorOf(instancePullProps, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL);
+
+        // Worker delay instance status actor.
+        Props instanceStatusProps = PropsFactoryManager.getFactory()
+                .get(actorSystem)
+                .create(ServerActorConstant.BEAN_ACTOR_WORKER_DELAY_INSTANCE_STATUS)
+                .withRouter(new RoundRobinPool(2))
+                .withDispatcher(ServerActorConstant.DISPATCHER_WORKER_DELAY_INSTANCE_STATUS);
+        actorSystem.actorOf(instanceStatusProps, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS);
     }
 
     /**

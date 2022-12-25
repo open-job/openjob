@@ -3,6 +3,7 @@ package io.openjob.worker.actor;
 import akka.actor.ActorSelection;
 import akka.persistence.AbstractPersistentActorWithAtLeastOnceDelivery;
 import io.openjob.common.constant.StatusEnum;
+import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
@@ -37,6 +38,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         return receiveBuilder()
                 .match(ContainerBatchTaskStatusRequest.class, this::handleBatchTaskStatus)
                 .match(WorkerJobInstanceStatusRequest.class, this::handleJobInstanceStatus)
+                .match(WorkerDelayStatusRequest.class, this::handleDelayStatus)
                 .match(Result.class, this::handleResult)
                 .build();
     }
@@ -64,6 +66,19 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         deliver(serverWorkerActor, deliveryId -> {
             jobInstanceStatusReq.setDeliveryId(deliveryId);
             return jobInstanceStatusReq;
+        });
+    }
+
+    /**
+     * Handle delay status.
+     *
+     * @param workerDelayStatusRequest workerDelayStatusRequest
+     */
+    public void handleDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
+        ActorSelection serverDelayStatusActor = WorkerUtil.getServerDelayStatusActor();
+        deliver(serverDelayStatusActor, deliveryId -> {
+            workerDelayStatusRequest.setDeliveryId(deliveryId);
+            return workerDelayStatusRequest;
         });
     }
 

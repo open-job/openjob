@@ -38,7 +38,7 @@ public class TaskStatusReporter {
         try {
             TASK_QUEUE.submit(statusRequest);
         } catch (InterruptedException e) {
-            log.error("Status report failed!", e);
+            log.error("Task Status report failed!", e);
         }
     }
 }

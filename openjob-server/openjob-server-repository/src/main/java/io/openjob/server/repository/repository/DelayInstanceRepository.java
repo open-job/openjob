@@ -18,22 +18,15 @@ import java.util.List;
 public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Long> {
 
     /**
-     * Batch update status.
+     * Batch delete by task ids.
      *
-     * @param ids        ids
-     * @param status     status
-     * @param updateTime updateTime
-     * @return Integer
+     * @param taskIds    taskIds
+     * @param deleted    deleted
+     * @param deleteTime deleteTime
+     * @return deleteTime
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update DelayInstance as d set d.status=?2, d.updateTime=?3 where d.id in(?1)")
-    Integer batchUpdateStatus(List<Long> ids, Integer status, Long updateTime);
-
-    /**
-     * Delete by task id.
-     *
-     * @param taskId taskId
-     */
-    void deleteByTaskId(String taskId);
+    @Query(value = "update DelayInstance as d set d.deleted=?2, d.deleteTime=?3 where d.taskId in(?1)")
+    Integer batchDeleteByTaskIds(List<String> taskIds, Integer deleted, Long deleteTime);
 }
