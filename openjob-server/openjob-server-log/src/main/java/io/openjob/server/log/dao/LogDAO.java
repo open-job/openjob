@@ -1,6 +1,6 @@
 package io.openjob.server.log.dao;
 
-import io.openjob.server.log.entity.JobInstanceTaskLog;
+import io.openjob.server.log.dto.ProcessorLog;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,7 +17,7 @@ public interface LogDAO {
      * @param jobInstanceTaskLogs jobInstanceTaskLogs
      * @throws SQLException SQLException
      */
-    void batchAdd(List<JobInstanceTaskLog> jobInstanceTaskLogs) throws SQLException;
+    void batchAdd(List<ProcessorLog> jobInstanceTaskLogs) throws SQLException;
 
     /**
      * Query by page.
@@ -28,5 +28,5 @@ public interface LogDAO {
      * @return List
      * @throws SQLException SQLException
      */
-    List<JobInstanceTaskLog> queryByPage(String taskUniqueId, Long time, Long size) throws SQLException;
+    List<ProcessorLog> queryByPage(String taskUniqueId, Long time, Long size) throws SQLException;
 }

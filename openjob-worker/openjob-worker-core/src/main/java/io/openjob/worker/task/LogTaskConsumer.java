@@ -7,7 +7,6 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,29 +40,17 @@ public class LogTaskConsumer extends BaseConsumer<LogContentDTO> {
 
         @Override
         public void run() {
-            Map<String, List<LogContentDTO>> logContentMap = this.contentList.stream()
-                    .collect(Collectors.groupingBy(LogContentDTO::getUniqueId));
+            WorkerJobInstanceTaskLogRequest logRequest = new WorkerJobInstanceTaskLogRequest();
 
-            for (Map.Entry<String, List<LogContentDTO>> entry : logContentMap.entrySet()) {
-                WorkerJobInstanceTaskLogRequest logRequest = new WorkerJobInstanceTaskLogRequest();
-                List<LogContentDTO> logList = entry.getValue();
-                LogContentDTO first = logList.get(0);
+            //Field list.
+            List<List<WorkerJobInstanceTaskLogFieldRequest>> fieldList = this.contentList.stream()
+                    .map(LogContentDTO::getFieldList).collect(Collectors.toList());
+            logRequest.setFieldList(fieldList);
 
-                logRequest.setJobId(first.getJobId());
-                logRequest.setJobInstanceId(first.getJobInstanceId());
-                logRequest.setCircleId(first.getCircleId());
-                logRequest.setTaskId(first.getTaskId());
-                logRequest.setWorkerAddress(first.getWorkerAddress());
-
-                List<List<WorkerJobInstanceTaskLogFieldRequest>> fieldList = logList.stream()
-                        .map(LogContentDTO::getFieldList)
-                        .collect(Collectors.toList());
-                logRequest.setFieldList(fieldList);
-                try {
-                    WorkerUtil.getServerWorkerJobInstanceTaskLogActor().tell(logRequest, null);
-                } catch (Throwable throwable) {
-                    log.error("Log appender error", throwable);
-                }
+            try {
+                WorkerUtil.getServerWorkerJobInstanceTaskLogActor().tell(logRequest, null);
+            } catch (Throwable throwable) {
+                log.error("Log appender error", throwable);
             }
         }
     }
