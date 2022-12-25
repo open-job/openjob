@@ -5,10 +5,11 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.repository.NamespaceRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -38,8 +39,11 @@ public class NamespaceDAOImpl implements NamespaceDAO {
     }
 
     @Override
-    public List<Namespace> list(Integer page, Integer size) {
-        return this.namespaceRepository.findAll(PageRequest.of(page, size, Sort.by("create_time"))).toList();
+    public Page<Namespace> list(Integer page, Integer size) {
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+
+        return this.namespaceRepository.findAll(pageReq);
     }
 
     @Override

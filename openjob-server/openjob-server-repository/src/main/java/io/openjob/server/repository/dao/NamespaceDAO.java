@@ -1,8 +1,8 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.Namespace;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,7 +26,7 @@ public interface NamespaceDAO {
      * @param size size
      * @return List
      */
-    List<Namespace> list(Integer page, Integer size);
+    Page<Namespace> list(Integer page, Integer size);
 
     /**
      * Get by id.

@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.Job;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -33,4 +34,13 @@ public interface JobDAO {
      * @return List
      */
     List<Job> listScheduledSecondJobs(List<Long> slotIds);
+
+    /**
+     * job list
+     *
+     * @param page page
+     * @param size size
+     * @return Page<job>
+     */
+    Page<Job> list(Integer page, Integer size);
 }
