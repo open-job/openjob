@@ -67,6 +67,7 @@ public class JobServiceImpl implements JobService {
         List<ListJobVO.JobVO> jobList = new ArrayList<>();
 
         this.jobDAO.list(listJobRequest.getPage(), listJobRequest.getSize()).forEach(n -> {
+            // TODO 👋 wait select app,namespace name
             ListJobVO.JobVO jobVO = new ListJobVO.JobVO();
 
             BeanUtils.copyProperties(jobVO, n);
