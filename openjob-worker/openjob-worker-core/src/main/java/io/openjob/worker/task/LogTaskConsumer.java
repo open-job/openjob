@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Slf4j
-public class LogTaskConsumer<T> extends BaseConsumer<T> {
+public class LogTaskConsumer extends BaseConsumer<LogContentDTO> {
 
     public LogTaskConsumer(Long id,
                            Integer consumerCoreThreadNum,
@@ -23,13 +23,13 @@ public class LogTaskConsumer<T> extends BaseConsumer<T> {
                            String consumerThreadName,
                            Integer pollSize,
                            String pollThreadName,
-                           TaskQueue<T> queues) {
+                           TaskQueue<LogContentDTO> queues) {
         super(id, consumerCoreThreadNum, consumerMaxThreadNum, consumerThreadName, pollSize, pollThreadName, queues);
     }
 
     @Override
-    public void consume(Long id, List<T> tasks) {
-        this.consumerExecutor.submit(new LogTaskRunnable((List<LogContentDTO>) tasks));
+    public void consume(Long id, List<LogContentDTO> tasks) {
+        this.consumerExecutor.submit(new LogTaskRunnable(tasks));
     }
 
     private static class LogTaskRunnable implements Runnable {

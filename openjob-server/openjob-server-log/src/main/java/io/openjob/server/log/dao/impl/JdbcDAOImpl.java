@@ -96,7 +96,7 @@ public class JdbcDAOImpl implements LogDAO {
             if (isFirst) {
                 isFirst = false;
             } else {
-                sb.append(System.getProperty(" "));
+                sb.append(" ");
             }
 
             sb.append(f.getName());

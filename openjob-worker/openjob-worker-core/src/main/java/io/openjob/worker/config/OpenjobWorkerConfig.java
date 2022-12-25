@@ -36,6 +36,11 @@ public class OpenjobWorkerConfig {
     private final Boolean delayEnable;
 
     /**
+     * Server host.
+     */
+    private final String serverHost;
+
+    /**
      * New openjob worker config.
      */
     public OpenjobWorkerConfig() {
@@ -45,5 +50,6 @@ public class OpenjobWorkerConfig {
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
         workerAddress = String.format("%s:%d", workerHostName, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
+        serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
     }
 }

@@ -58,7 +58,7 @@ public class WorkerUtil {
     }
 
     public static String getServerAddress() {
-        return String.format("%s:%d", OpenjobConfig.getString(WorkerConstant.SERVER_HOST), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
+        return String.format("%s:%d", OpenjobWorker.getConfig().getServerHost(), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 
     public static String getWorkerMasterActorPath(String address) {
