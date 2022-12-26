@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.Server;
 
 import java.util.List;
@@ -60,4 +61,13 @@ public interface ServerDAO {
      * @return List
      */
     List<Server> listServers(Integer status);
+
+    /**
+     * page list servers
+     *
+     * @param page page
+     * @param size size
+     * @return page result
+     */
+    PageDTO<Server> getPageList(Integer page, Integer size);
 }
