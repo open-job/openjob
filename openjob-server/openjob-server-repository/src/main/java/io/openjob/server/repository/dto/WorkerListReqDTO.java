@@ -11,12 +11,12 @@ public class WorkerListReqDTO {
     /**
      * List page
      */
-    private Integer page = 1;
+    private Integer page;
 
     /**
      * List size. default 10
      */
-    private Integer size = 10;
+    private Integer size;
 
 
     /**
