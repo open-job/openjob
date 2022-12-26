@@ -134,7 +134,7 @@ public class OpenjobWorker implements InitializingBean {
      * @throws Exception Exception
      */
     private void start() throws Exception {
-        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+        String serverAddress = CONFIG.getServerHost();
 
         WorkerStartRequest startReq = new WorkerStartRequest();
         startReq.setAddress(CONFIG.getWorkerAddress());
@@ -161,7 +161,7 @@ public class OpenjobWorker implements InitializingBean {
      * @throws Exception exception
      */
     private void stop() throws Exception {
-        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+        String serverAddress = CONFIG.getServerHost();
         String workerAddress = CONFIG.getWorkerAddress();
         String appName = CONFIG.getAppName();
 
@@ -219,7 +219,7 @@ public class OpenjobWorker implements InitializingBean {
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
             String workerAddress = CONFIG.getWorkerAddress();
-            String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+            String serverAddress = CONFIG.getServerHost();
 
             WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
             heartbeatReq.setAddress(workerAddress);
@@ -239,9 +239,9 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     private void checkConfig() {
-        String serverAddress = OpenjobConfig.getString(WorkerConstant.SERVER_HOST);
+        String serverAddress = CONFIG.getServerHost();
         if (Objects.isNull(serverAddress)) {
-            throw new RuntimeException(String.format("%s must be config", WorkerConstant.SERVER_HOST));
+            throw new RuntimeException(String.format("%s must be config", CONFIG.getServerHost()));
         }
 
         String appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);

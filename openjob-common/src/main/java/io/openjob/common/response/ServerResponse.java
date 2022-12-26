@@ -12,6 +12,10 @@ import java.io.Serializable;
 public class ServerResponse implements Serializable {
     private Long deliveryId;
 
+    /**
+     * Non arg constructor for Serializable.
+     */
+    @SuppressWarnings("unused")
     public ServerResponse() {
     }
 

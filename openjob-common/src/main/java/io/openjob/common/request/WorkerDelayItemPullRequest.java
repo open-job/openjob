@@ -13,6 +13,10 @@ public class WorkerDelayItemPullRequest implements Serializable {
     private String topic;
     private Integer size;
 
+    /**
+     * Non arg constructor for Serializable.
+     */
+    @SuppressWarnings("unused")
     public WorkerDelayItemPullRequest() {
     }
 

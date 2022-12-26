@@ -52,10 +52,10 @@ public class JobInstance {
     private Long executeTime;
 
     @Column(name = "complete_time")
-    private Integer completeTime;
+    private Long completeTime;
 
     @Column(name = "last_report_time")
-    private Integer lastReportTime;
+    private Long lastReportTime;
 
     @Column(name = "deleted")
     private Integer deleted;

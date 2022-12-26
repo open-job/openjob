@@ -15,11 +15,11 @@ public class LogAppender {
 
     protected TaskQueue<LogContentDTO> logQueue;
 
-    protected LogTaskConsumer<LogContentDTO> logTaskConsumer;
+    protected LogTaskConsumer logTaskConsumer;
 
     private LogAppender() {
         logQueue = new TaskQueue<>(0L, 10240);
-        logTaskConsumer = new LogTaskConsumer<>(
+        logTaskConsumer = new LogTaskConsumer(
                 0L,
                 1,
                 1,

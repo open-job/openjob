@@ -212,26 +212,21 @@ CREATE TABLE `job_instance_task` (
 
 
 
-# Dump of table job_instance_task_log
+# Dump of table processor_log
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `job_instance_task_log`;
+DROP TABLE IF EXISTS `processor_log`;
 
-CREATE TABLE `job_instance_task_log` (
-                                         `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                                         `job_id` bigint(20) unsigned NOT NULL,
-                                         `job_instance_id` bigint(20) unsigned NOT NULL,
-                                         `circle_id` bigint(20) unsigned NOT NULL,
-                                         `task_id` bigint(20) unsigned NOT NULL,
-                                         `task_unique_id` varchar(64) NOT NULL DEFAULT '',
-                                         `worker_address` varchar(128) NOT NULL DEFAULT '',
-                                         `content` longtext NOT NULL,
-                                         `time` bigint(16) unsigned NOT NULL,
-                                         PRIMARY KEY (`id`),
-                                         KEY `idx_task_unique_id_time` (`task_unique_id`,`time`)
+CREATE TABLE `processor_log` (
+                                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                                 `task_id` varchar(128) NOT NULL DEFAULT '',
+                                 `worker_address` varchar(128) NOT NULL DEFAULT '',
+                                 `content` longtext NOT NULL,
+                                 `time` bigint(16) unsigned NOT NULL,
+                                 PRIMARY KEY (`id`),
+                                 KEY `idx_task_unique_id_time` (`time`),
+                                 KEY `idx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
 
 # Dump of table job_slots
 # ------------------------------------------------------------

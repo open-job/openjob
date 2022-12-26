@@ -114,8 +114,8 @@ public class JobSchedulingService {
             jobInstance.setCreateTime(now);
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
-            jobInstance.setCompleteTime(0);
-            jobInstance.setLastReportTime(0);
+            jobInstance.setCompleteTime(0L);
+            jobInstance.setLastReportTime(0L);
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             SchedulerTimerTask schedulerTask = new SchedulerTimerTask(instanceId, j.getSlotsId(), j.getNextExecuteTime());
