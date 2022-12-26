@@ -22,4 +22,6 @@ public interface SystemRepository extends JpaRepository<System, Integer> {
     @Transactional(rollbackFor = Exception.class)
     @Query("update System set clusterVersion=clusterVersion + 1 where id=?1 and clusterVersion=?2")
     Integer updateClusterVersion(Integer id, Long clusterVersion);
+
+
 }

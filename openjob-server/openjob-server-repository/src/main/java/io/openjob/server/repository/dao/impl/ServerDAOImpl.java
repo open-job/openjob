@@ -2,12 +2,17 @@ package io.openjob.server.repository.dao.impl;
 
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -65,5 +70,15 @@ public class ServerDAOImpl implements ServerDAO {
         Server server = new Server();
         server.setStatus(status);
         return serverRepository.findAll(Example.of(server));
+    }
+
+    @Override
+    public PageDTO<Server> getPageList(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Server> pageResult = serverRepository.findAll(pageable);
+        PageDTO<Server> paging = new PageDTO<>();
+        paging.setList(pageResult.getContent());
+        paging.setTotal(pageResult.getTotalElements());
+        return paging;
     }
 }

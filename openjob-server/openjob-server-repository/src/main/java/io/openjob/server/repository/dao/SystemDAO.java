@@ -22,4 +22,11 @@ public interface SystemDAO {
      * @return effect rows.
      */
     Integer updateClusterVersion(Long clusterVersion);
+
+
+    /**
+     * update by id
+     * @param system update Params
+     */
+    void updateById(System system);
 }
