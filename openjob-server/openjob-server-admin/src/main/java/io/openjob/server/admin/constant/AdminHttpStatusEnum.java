@@ -1,6 +1,5 @@
-package io.openjob.server.common.constant;
+package io.openjob.server.admin.constant;
 
-import io.openjob.server.common.exception.CodeExceptionAssert;
 import io.openjob.server.common.exception.HttpStatusExceptionAssert;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +10,20 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum HttpStatusTestEnum implements HttpStatusExceptionAssert {
-    ONE(1, "http status message");
+public enum AdminHttpStatusEnum implements HttpStatusExceptionAssert {
 
+    /**
+     * Test
+     */
+    TEST(1, "TEST");
+
+    /**
+     * Value
+     */
     private final Integer value;
+
+    /**
+     * Message
+     */
     private final String message;
 }
