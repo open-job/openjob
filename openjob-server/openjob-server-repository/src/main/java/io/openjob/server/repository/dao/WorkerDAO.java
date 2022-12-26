@@ -1,5 +1,7 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.WorkerListReqDTO;
 import io.openjob.server.repository.entity.Worker;
 
 import java.util.List;
@@ -40,4 +42,12 @@ public interface WorkerDAO {
      * @return List
      */
     List<Worker> listOnlineWorkers();
+
+
+    /**
+     * page result
+     * @param request params
+     * @return result
+     */
+    PageDTO<Worker> getPageList(WorkerListReqDTO request);
 }
