@@ -84,7 +84,6 @@ public class ServerExceptionHandler {
 
     }
 
-
     /**
      * Throwable
      */
@@ -109,7 +108,7 @@ public class ServerExceptionHandler {
      */
     @ExceptionHandler(value = HttpStatusException.class)
     @ResponseBody
-    public Result<Object> HttpStatusErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, HttpStatusException exception) {
+    public Result<Object> httpStatusErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, HttpStatusException exception) {
         // Empty exception.
         if (exception == null) {
             // Http status.
@@ -125,7 +124,6 @@ public class ServerExceptionHandler {
         log.info(exception.getMessage(), exception);
         return Result.success(exception.getMessage());
     }
-
 
     /**
      * Throwable

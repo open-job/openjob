@@ -20,6 +20,13 @@ public class HttpStatusException extends RuntimeException {
      */
     private final Object[] args;
 
+    /**
+     * New exception.
+     *
+     * @param baseEnum baseEnum
+     * @param args     args
+     * @param message  message
+     */
     public HttpStatusException(BaseEnum baseEnum, Object[] args, String message) {
         super(message);
 
@@ -27,6 +34,14 @@ public class HttpStatusException extends RuntimeException {
         this.baseEnum = baseEnum;
     }
 
+    /**
+     * New exception.
+     *
+     * @param baseEnum baseEnum
+     * @param args     args
+     * @param message  message
+     * @param cause    cause
+     */
     public HttpStatusException(BaseEnum baseEnum, Object[] args, String message, Throwable cause) {
         super(message, cause);
 

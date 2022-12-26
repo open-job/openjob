@@ -19,6 +19,13 @@ public class CodeException extends RuntimeException {
      */
     private final Object[] args;
 
+    /**
+     * New exception.
+     *
+     * @param baseEnum baseEnum
+     * @param args     args
+     * @param message  message
+     */
     public CodeException(BaseEnum baseEnum, Object[] args, String message) {
         super(message);
 
@@ -26,6 +33,14 @@ public class CodeException extends RuntimeException {
         this.baseEnum = baseEnum;
     }
 
+    /**
+     * New exception.
+     *
+     * @param baseEnum baseEnum
+     * @param args     args
+     * @param message  message
+     * @param cause    cause
+     */
     public CodeException(BaseEnum baseEnum, Object[] args, String message, Throwable cause) {
         super(message, cause);
 

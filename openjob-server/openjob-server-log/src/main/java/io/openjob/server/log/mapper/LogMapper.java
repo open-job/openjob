@@ -15,5 +15,11 @@ import java.util.List;
 public interface LogMapper {
     LogMapper INSTANCE = Mappers.getMapper(LogMapper.class);
 
+    /**
+     * To ProcessorLogFieldList
+     *
+     * @param list list
+     * @return List
+     */
     List<ProcessorLogField> toProcessorLogFieldList(List<WorkerJobInstanceTaskLogFieldRequest> list);
 }
