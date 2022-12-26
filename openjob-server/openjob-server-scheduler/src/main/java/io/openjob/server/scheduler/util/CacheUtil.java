@@ -24,7 +24,15 @@ public class CacheUtil {
         return String.format("%s:%d", CacheConst.DELAY_ZSET_PREFIX, slotId);
     }
 
-    public static String getListKey(Long slotId) {
-        return String.format("%s:%d", CacheConst.DELAY_LIST_PREFIX, slotId);
+    public static String getAddListKey(Long slotId) {
+        return String.format("%s:%d", CacheConst.DELAY_ADD_LIST_PREFIX, slotId);
+    }
+
+    public static String getStatusListKey(Long slotId) {
+        return String.format("%s:%d", CacheConst.DELAY_STATUS_LIST_PREFIX, slotId);
+    }
+
+    public static String getDeleteListKey(Long slotId) {
+        return String.format("%s:%d", CacheConst.DELAY_DELETE_LIST_PREFIX, slotId);
     }
 }

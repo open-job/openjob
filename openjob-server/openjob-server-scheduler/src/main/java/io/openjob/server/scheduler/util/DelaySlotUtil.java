@@ -26,25 +26,77 @@ public class DelaySlotUtil {
     }
 
     /**
-     * Get current list slots.
+     * Get current add list slots.
      *
      * @return List
      */
-    public static List<Long> getCurrentListSlots() {
+    public static List<Long> getCurrentAddListSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListMaxSlot();
         return getCurrentSlots(maxSlot, delayListMaxSlot);
     }
 
     /**
-     * Get list slot id.
+     * Get current status list slots.
+     *
+     * @return List
+     */
+    public static List<Long> getCurrentStatusListSlots() {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListMaxSlot();
+        return getCurrentSlots(maxSlot, delayListMaxSlot);
+    }
+
+    /**
+     * Get current delete list slots.
+     *
+     * @return List
+     */
+    public static List<Long> getCurrentDeleteListSlots() {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListMaxSlot();
+        return getCurrentSlots(maxSlot, delayListMaxSlot);
+    }
+
+    /**
+     * Get add list slot id.
      *
      * @param key key
      * @return Long
      */
-    public static Long getListSlotId(String key) {
+    public static Long getAddListSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
+        return slots.get(index);
+    }
+
+    /**
+     * Get status list slot id.
+     *
+     * @param key key
+     * @return Long
+     */
+    public static Long getStatusListSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
+        return slots.get(index);
+    }
+
+    /**
+     * Get delete list slot id.
+     *
+     * @param key key
+     * @return Long
+     */
+    public static Long getDeleteListSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListMaxSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);

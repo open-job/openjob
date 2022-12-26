@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
@@ -10,13 +11,14 @@ import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopResponseDTO;
+import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
-import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
-import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
@@ -29,11 +31,11 @@ import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -44,7 +46,6 @@ import java.util.stream.Stream;
 public class DelayInstanceScheduler {
     private final DelayData delayData;
     private final DelayInstanceDAO delayInstanceDAO;
-
     private final AppDAO appDAO;
 
     @Autowired
@@ -151,6 +152,50 @@ public class DelayInstanceScheduler {
     }
 
     /**
+     * Report delay status.
+     *
+     * @param statusList statusList
+     */
+    @SuppressWarnings("unchecked")
+    public void report(List<DelayInstanceStatusRequestDTO> statusList) {
+        // Append zset cache key.
+        statusList.forEach((d) -> d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId()))));
+
+        // Group by zset cache key.
+        Map<String, List<DelayInstanceStatusRequestDTO>> zsetKeyMap = statusList.stream()
+                .collect(Collectors.groupingBy(DelayInstanceStatusRequestDTO::getZsetKey));
+
+        // Detail cache keys.
+        List<String> detailKeys = statusList.stream().map(d -> CacheUtil.getDelayDetailTaskIdKey(d.getTaskId()))
+                .collect(Collectors.toList());
+
+        // Delay status list key.
+        String statusListKey = CacheUtil.getStatusListKey(DelaySlotUtil.getStatusListSlotId(UUID.randomUUID().toString()));
+
+        // Pipeline
+        RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
+                operations.multi();
+
+                // Remove from zset
+                zsetKeyMap.forEach((k, list) -> operations.opsForZSet().remove(
+                        k,
+                        list.stream().map(DelayInstanceStatusRequestDTO::getTaskId).distinct().toArray()
+                ));
+
+                // Delete detail.
+                operations.delete(detailKeys);
+
+                // Push delay status to list
+                operations.opsForList().rightPushAll(statusListKey, statusList.toArray());
+                operations.exec();
+                return null;
+            }
+        });
+    }
+
+    /**
      * Delete delay task.
      *
      * @param deleteRequest deleteRequest
@@ -159,12 +204,8 @@ public class DelayInstanceScheduler {
     public DelayInstanceDeleteResponseDTO delete(DelayInstanceDeleteRequestDTO deleteRequest) {
         // Delete from redis.
         this.deleteDelay(deleteRequest);
-
-        // Delete from storage.
-        this.delayInstanceDAO.deleteByTaskId(deleteRequest.getTaskId());
         return new DelayInstanceDeleteResponseDTO();
     }
-
 
     /**
      * Add delay task.
@@ -173,10 +214,14 @@ public class DelayInstanceScheduler {
      */
     @SuppressWarnings("unchecked")
     private void addDelay(DelayInstanceAddRequestDTO addRequest) {
+        if (addRequest.getExecuteTime() < DateUtil.timestamp()) {
+            throw new RuntimeException("Execute time is expire!");
+        }
+
         String taskId = addRequest.getTaskId();
         String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
-        String listKey = CacheUtil.getListKey(DelaySlotUtil.getListSlotId(taskId));
+        String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
 
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
@@ -201,7 +246,7 @@ public class DelayInstanceScheduler {
         String taskId = deleteRequest.getTaskId();
         String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
-        String listKey = CacheUtil.getListKey(DelaySlotUtil.getListSlotId(taskId));
+        String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {

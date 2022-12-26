@@ -31,16 +31,16 @@ public interface DelayInstanceDAO {
     /**
      * Batch update status.
      *
-     * @param ids    ids
-     * @param status status
+     * @param updateList status
      * @return Integer
      */
-    Integer batchUpdateStatus(List<Long> ids, Integer status);
+    Integer batchUpdateStatus(List<DelayInstance> updateList);
 
     /**
      * Delete by task id.
      *
-     * @param taskId task id.
+     * @param taskIds task id.
+     * @return Integer
      */
-    void deleteByTaskId(String taskId);
+    Integer deleteByTaskIds(List<String> taskIds);
 }

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DelayProcessorSample implements JavaProcessor {
     @Override
     public ProcessResult process(JobContext context) {
-        log.info("Delay run {} {}", context.getDelayParams(), context.getDelayExtra());
+        log.info("Delay run {} {} {}", context.getDelayTaskId(), context.getDelayParams(), context.getDelayExtra());
         return new ProcessResult(true);
     }
 }
