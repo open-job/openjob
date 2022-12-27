@@ -13,9 +13,25 @@ import lombok.Getter;
 public enum AdminHttpStatusEnum implements HttpStatusExceptionAssert {
 
     /**
-     * Test
+     * 401
      */
-    TEST(1, "TEST");
+    UNAUTHORIZED(401, "Unauthorized"),
+
+    /**
+     * 403
+     */
+    FORBIDDEN(403, "Forbidden"),
+
+    /**
+     * 404
+     */
+    NOT_FOUND(404, "Not Found"),
+
+    /**
+     * 500
+     */
+    SERVER_ERROR(500, "'Internal Server Error'"),
+    ;
 
     /**
      * Value

@@ -2,10 +2,10 @@ package io.openjob.server.admin.interceptor;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import io.openjob.server.admin.constant.AdminConstant;
+import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.service.AdminLoginService;
 import io.openjob.server.admin.vo.part.PermItemVO;
 import io.openjob.server.admin.vo.user.AdminUserLoginVO;
-import io.openjob.server.common.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -87,7 +87,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
             // check perms for user
             if (!checkUserPerm(route, user)) {
-                throw new BusinessException("no permission for " + route);
+                throw AdminHttpStatusEnum.FORBIDDEN.newException();
             }
             return true;
         }
@@ -96,13 +96,13 @@ public class AccessInterceptor implements HandlerInterceptor {
         if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
             if (StringUtils.isBlank(sessKey)) {
-                throw new BusinessException("need login for " + route);
+                throw AdminHttpStatusEnum.UNAUTHORIZED.newException();
             }
 
             // check perms for user
             AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
             if (!checkUserPerm(route, user)) {
-                throw new BusinessException("no permission for " + route);
+                throw AdminHttpStatusEnum.FORBIDDEN.newException();
             }
         }
 
@@ -141,7 +141,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     private Boolean checkUserPerm(String route, AdminUserLoginVO user) {
         if (Objects.isNull(user)) {
-            throw new BusinessException("invalid login information");
+            throw AdminHttpStatusEnum.FORBIDDEN.newException();
         }
 
         if (user.getSupperAdmin() || notAuthRoutes.contains(route)) {

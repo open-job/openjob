@@ -6,6 +6,7 @@ import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
 import io.openjob.server.admin.constant.AdminConstant;
+import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.request.user.AdminUserLoginRequest;
 import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
 import io.openjob.server.admin.service.AdminLoginService;
@@ -14,7 +15,6 @@ import io.openjob.server.admin.vo.part.MenuMetaVO;
 import io.openjob.server.admin.vo.part.PermItemVO;
 import io.openjob.server.admin.vo.user.AdminUserLoginVO;
 import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
-import io.openjob.server.common.exception.BusinessException;
 import io.openjob.server.common.util.HmacUtil;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.data.AdminRoleData;
@@ -107,19 +107,19 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private void checkLoginUser(AdminUserDTO entDTO, String passwd) {
         if (Objects.isNull(entDTO)) {
-            throw new BusinessException("input username is not exists");
+            throw AdminHttpStatusEnum.NOT_FOUND.newException();
         }
 
         if (CommonUtil.isTrue(entDTO.getDeleted())) {
-            throw new BusinessException("input username is invalid");
+            throw AdminHttpStatusEnum.NOT_FOUND.newException();
         }
 
         if (!HmacUtil.verifyPasswd(entDTO.getPasswd(), passwd, userProperties.getPasswdSalt())) {
-            throw new BusinessException("input user password is error");
+            throw AdminHttpStatusEnum.FORBIDDEN.newException();
         }
 
         if (CollectionUtils.isEmpty(entDTO.getRoleIds())) {
-            throw new BusinessException("not set role for user, please contact administrator");
+            throw AdminHttpStatusEnum.FORBIDDEN.newException();
         }
     }
 
@@ -131,7 +131,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         // query user role and perms
         List<AdminRoleDTO> roles = adminRoleData.getByIds(entDTO.getRoleIds());
         if (CollectionUtils.isEmpty(roles)) {
-            throw new BusinessException("login user roles not found");
+            throw AdminHttpStatusEnum.NOT_FOUND.newException();
         }
 
         boolean isAdmin = false;
@@ -235,7 +235,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     public AdminUserLogoutVO logout(AdminUserLogoutRequest reqDTO, String sessKey) {
         AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
         if (Objects.isNull(user)) {
-            throw new BusinessException("can not call logout");
+            throw AdminHttpStatusEnum.FORBIDDEN.newException();
         }
 
         // remove session data
