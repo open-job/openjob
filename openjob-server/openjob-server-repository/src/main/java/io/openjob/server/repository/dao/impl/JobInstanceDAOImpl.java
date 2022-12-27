@@ -7,6 +7,8 @@ import io.openjob.server.repository.repository.JobInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -32,7 +34,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateLastReportTimeById(Long id, Long lastReportTime) {
-        return this.jobInstanceRepository.update(id, lastReportTime, DateUtil.timestamp());
+    public Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime) {
+        return this.jobInstanceRepository.updateLastReportTimeByIds(ids, lastReportTime);
     }
 }

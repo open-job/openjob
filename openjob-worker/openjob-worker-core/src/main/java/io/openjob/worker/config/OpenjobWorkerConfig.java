@@ -4,6 +4,8 @@ import io.openjob.common.util.IpUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -44,8 +46,12 @@ public class OpenjobWorkerConfig {
      * New openjob worker config.
      */
     public OpenjobWorkerConfig() {
-        // Config params.
+        // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
+        if (Objects.isNull(appName)) {
+            throw new RuntimeException(String.format("%s can not be null!", WorkerConstant.WORKER_APP_NAME));
+        }
+
         workerHostName = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
         workerAddress = String.format("%s:%d", workerHostName, workerPort);

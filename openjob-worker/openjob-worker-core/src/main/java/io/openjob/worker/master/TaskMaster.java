@@ -14,6 +14,13 @@ public interface TaskMaster {
     void submit();
 
     /**
+     * Get task running status.
+     *
+     * @return Boolean
+     */
+    Boolean getRunning();
+
+    /**
      * Complete task.
      *
      * @throws InterruptedException InterruptedException

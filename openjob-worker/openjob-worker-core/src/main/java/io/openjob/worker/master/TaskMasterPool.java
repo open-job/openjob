@@ -1,7 +1,9 @@
 package io.openjob.worker.master;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -27,5 +29,16 @@ public class TaskMasterPool {
 
     public static void remove(Long jobInstanceId) {
         TASK_MASTER_POOL.remove(jobInstanceId);
+    }
+
+    public static List<Long> getRunningTask() {
+        List<Long> jobInstanceIds = Lists.newArrayList();
+        TASK_MASTER_POOL.forEach((i, t) -> {
+            if (t.getRunning()) {
+                jobInstanceIds.add(i);
+            }
+        });
+
+        return jobInstanceIds;
     }
 }

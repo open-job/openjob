@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected TaskDAO taskDAO = TaskDAO.INSTANCE;
 
     /**
+     * Task running status.
+     */
+    protected AtomicBoolean running = new AtomicBoolean(false);
+
+    /**
      * New AbstractTaskMaster
      *
      * @param jobInstanceDTO job instance context.
@@ -71,6 +77,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected void init() {
 
+    }
+
+    @Override
+    public Boolean getRunning() {
+        return this.running.get();
     }
 
     @Override

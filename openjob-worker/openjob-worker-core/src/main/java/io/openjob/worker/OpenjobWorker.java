@@ -25,13 +25,13 @@ import io.openjob.worker.config.OpenjobWorkerConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.delay.DelayStarter;
+import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -86,8 +86,6 @@ public class OpenjobWorker implements InitializingBean {
      * @throws Exception Exception
      */
     public synchronized void init() throws Exception {
-        this.checkConfig();
-
         this.actorSystem();
 
         this.start();
@@ -225,6 +223,7 @@ public class OpenjobWorker implements InitializingBean {
             heartbeatReq.setAddress(workerAddress);
             heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME));
             heartbeatReq.setVersion("1.0");
+            heartbeatReq.setRunningJobInstanceIds(TaskMasterPool.getRunningTask());
             try {
                 ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
                 log.info("Worker heartbeat success. serverAddress={} workerAddress={}", serverAddress, workerAddress);
@@ -236,18 +235,6 @@ public class OpenjobWorker implements InitializingBean {
             }
 
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
-    }
-
-    private void checkConfig() {
-        String serverAddress = CONFIG.getServerHost();
-        if (Objects.isNull(serverAddress)) {
-            throw new RuntimeException(String.format("%s must be config", CONFIG.getServerHost()));
-        }
-
-        String appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
-        if (Objects.isNull(appName)) {
-            throw new RuntimeException(String.format("%s must be config", WorkerConstant.WORKER_APP_NAME));
-        }
     }
 
     private void actorSystem() {

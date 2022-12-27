@@ -3,6 +3,7 @@ package io.openjob.common.request;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -16,4 +17,9 @@ public class WorkerHeartbeatRequest implements Serializable {
     private String address;
 
     private String version;
+
+    /**
+     * Running job instance ids.
+     */
+    private List<Long> runningJobInstanceIds;
 }
