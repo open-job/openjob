@@ -49,6 +49,7 @@ public class WorkerHeartbeat {
             String serverAddress = WorkerConfig.getServerHost();
 
             WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
+            heartbeatReq.setAppId(WorkerContext.getAppId());
             heartbeatReq.setAddress(workerAddress);
             heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME));
             heartbeatReq.setVersion("1.0");
