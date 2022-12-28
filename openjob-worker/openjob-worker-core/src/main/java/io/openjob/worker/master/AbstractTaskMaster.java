@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -47,8 +48,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected String localContainerPath;
 
-    protected List<String> workerAddresses;
-
     /**
      * Task dao.
      */
@@ -70,8 +69,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().addressString();
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
-        this.workerAddresses = jobInstanceDTO.getWorkerAddresses();
 
+        // Initialize.
         this.init();
     }
 
@@ -82,6 +81,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     @Override
     public Boolean getRunning() {
         return this.running.get();
+    }
+
+    @Override
+    public void offlineWorkers(Set<String> offlineWorkers) {
+        // Ignore not running.
+        if (!this.running.get()) {
+            return;
+        }
     }
 
     @Override
@@ -152,7 +159,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
         startReq.setMasterAkkaPath(this.localContainerPath);
         startReq.setCircleId(circleIdGenerator.get());
-        startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
     }

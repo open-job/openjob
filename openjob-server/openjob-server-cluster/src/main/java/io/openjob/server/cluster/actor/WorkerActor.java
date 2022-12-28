@@ -5,6 +5,7 @@ import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
+import io.openjob.common.response.ServerWorkerStartResponse;
 import io.openjob.server.cluster.service.WorkerService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,10 @@ public class WorkerActor extends BaseActor {
      * @param workerStartRequest start request.
      */
     public void workerStart(WorkerStartRequest workerStartRequest) {
-        this.workerService.workerStart(workerStartRequest);
+        ServerWorkerStartResponse response = this.workerService.workerStart(workerStartRequest);
 
         log.info("Worker register success! address={}", workerStartRequest.getAddress());
-        getSender().tell(Result.success(new ServerResponse()), getSelf());
+        getSender().tell(Result.success(response), getSelf());
     }
 
     /**

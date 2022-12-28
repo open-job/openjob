@@ -1,11 +1,14 @@
 package io.openjob.worker.init;
 
+import com.google.common.collect.Sets;
 import io.openjob.common.util.IpUtil;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -43,13 +46,6 @@ public class WorkerConfig {
      * Server host.
      */
     private static String serverHost;
-
-    /**
-     * New openjob worker config.
-     */
-    public WorkerConfig() {
-
-    }
 
     public void init() {
         // App name.

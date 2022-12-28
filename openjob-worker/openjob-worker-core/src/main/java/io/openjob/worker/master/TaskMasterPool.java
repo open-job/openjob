@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -40,5 +41,14 @@ public class TaskMasterPool {
         });
 
         return jobInstanceIds;
+    }
+
+    /**
+     * Offline workers.
+     *
+     * @param offlineWorkers offline workers.
+     */
+    public static void offlineWorkers(Set<String> offlineWorkers) {
+        TASK_MASTER_POOL.forEach((i, t) -> t.offlineWorkers(offlineWorkers));
     }
 }

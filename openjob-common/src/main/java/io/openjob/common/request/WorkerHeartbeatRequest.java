@@ -11,6 +11,7 @@ import java.util.List;
  */
 @Data
 public class WorkerHeartbeatRequest implements Serializable {
+    private Long appId;
 
     private String appName;
 

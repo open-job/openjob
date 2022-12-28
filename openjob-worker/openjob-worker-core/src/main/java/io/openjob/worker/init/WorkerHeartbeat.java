@@ -10,7 +10,10 @@ import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class WorkerHeartbeat {
 
     private final OpenjobWorker openjobWorker;
+
     /**
      * Worker heartbeat
      */
@@ -74,9 +78,24 @@ public class WorkerHeartbeat {
      * Refresh worker.
      */
     private void refresh(ServerHeartbeatResponse heartbeatResponse) {
+        // Refresh online workers.
+        this.refreshOnlineWorkers(heartbeatResponse);
+
         // Refresh delay.
         if (WorkerConfig.getDelayEnable()) {
             this.openjobWorker.getDelayManager().refresh(heartbeatResponse.getSystemResponse());
+        }
+    }
+
+    /**
+     * Refresh online workers.
+     *
+     * @param heartbeatResponse heartbeatResponse
+     */
+    private void refreshOnlineWorkers(ServerHeartbeatResponse heartbeatResponse) {
+        Set<String> offlineWorkers = this.openjobWorker.getWorkerContext().refreshOnlineWorkers(heartbeatResponse.getWorkerAddressList());
+        if (!CollectionUtils.isEmpty(offlineWorkers)) {
+            TaskMasterPool.offlineWorkers(offlineWorkers);
         }
     }
 }

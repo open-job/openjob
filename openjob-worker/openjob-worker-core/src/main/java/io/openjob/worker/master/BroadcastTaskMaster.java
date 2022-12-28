@@ -6,6 +6,7 @@ import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.JobProcessor;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -46,7 +47,7 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
             e.printStackTrace();
         }
 
-        this.workerAddresses.forEach(workerAddress -> {
+        WorkerContext.getOnlineWorkers().forEach(workerAddress -> {
             String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
             ActorSelection workerSelection = actorContext.actorSelection(workerPath);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();

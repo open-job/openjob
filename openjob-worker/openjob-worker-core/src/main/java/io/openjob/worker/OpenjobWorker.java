@@ -4,6 +4,7 @@ import io.openjob.worker.delay.DelayManager;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerHeartbeat;
+import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.init.WorkerRegister;
 import io.openjob.worker.init.WorkerShutdown;
 import lombok.Getter;
@@ -24,14 +25,16 @@ public class OpenjobWorker implements InitializingBean {
     private final WorkerHeartbeat workerHeartbeat;
     private final DelayManager delayManager;
     private final WorkerShutdown workerShutdown;
+    private final WorkerContext workerContext;
 
     public OpenjobWorker() {
         this.workerConfig = new WorkerConfig();
         this.workerActorSystem = new WorkerActorSystem();
-        this.workerRegister = new WorkerRegister();
+        this.workerRegister = new WorkerRegister(this);
         this.workerHeartbeat = new WorkerHeartbeat(this);
         this.delayManager = new DelayManager();
         this.workerShutdown = new WorkerShutdown(this);
+        this.workerContext = new WorkerContext();
     }
 
     @Override

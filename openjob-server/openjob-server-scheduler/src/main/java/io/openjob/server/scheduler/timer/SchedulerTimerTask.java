@@ -2,16 +2,14 @@ package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.scheduler.util.WorkerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -40,12 +38,6 @@ public class SchedulerTimerTask extends AbstractTimerTask {
 
     @Override
     public void run() {
-        Map<Long, List<WorkerDTO>> appWorkers = ClusterContext.getAppWorkers();
-        if (!appWorkers.containsKey(this.appid)) {
-            log.error("Worker do not exist! appid={}", this.appid);
-            return;
-        }
-
         try {
             ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
             submitReq.setJobId(this.jobId);
@@ -60,12 +52,12 @@ public class SchedulerTimerTask extends AbstractTimerTask {
             submitReq.setConcurrency(this.concurrency);
             submitReq.setTimeExpressionType(this.timeExpressionType);
             submitReq.setTimeExpression(this.timeExpression);
-            WorkerDTO workerDTO = appWorkers.get(this.appid).get(0);
 
-            List<String> workerAddresses = appWorkers.get(this.appid).stream()
-                    .map(WorkerDTO::getAddress)
-                    .collect(Collectors.toList());
-            submitReq.setWorkerAddresses(workerAddresses);
+            WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(this.appid);
+            if (Objects.isNull(workerDTO)) {
+                log.error("Worker do not exist! appid={}", this.appid);
+                return;
+            }
 
             FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 10L);
             log.info("Task dispatch success! taskId={}", this.taskId);

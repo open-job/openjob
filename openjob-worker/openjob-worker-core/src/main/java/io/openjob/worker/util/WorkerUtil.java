@@ -2,18 +2,29 @@ package io.openjob.worker.util;
 
 import akka.actor.ActorSelection;
 import io.openjob.common.constant.AkkaConstant;
-import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
+import io.openjob.worker.init.WorkerContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 public class WorkerUtil {
+
+    public static String selectOneWorker() {
+        List<String> workers = new ArrayList<>(WorkerContext.getOnlineWorkers());
+        int index = ThreadLocalRandom.current().nextInt(workers.size());
+        return workers.get(index);
+    }
+
 
     public static ActorSelection getServerWorkerActor() {
         String address = getServerAddress();

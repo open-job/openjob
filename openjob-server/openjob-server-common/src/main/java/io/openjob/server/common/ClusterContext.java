@@ -6,9 +6,11 @@ import io.openjob.common.context.Node;
 import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.common.dto.WorkerDTO;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -116,6 +118,11 @@ public class ClusterContext {
 
     public static Map<Long, List<WorkerDTO>> getAppWorkers() {
         return APP_WORKERS;
+    }
+
+    public static List<WorkerDTO> getWorkersByAppId(Long appId) {
+        return Optional.ofNullable(APP_WORKERS.get(appId))
+                .orElseGet(ArrayList::new);
     }
 
     /**

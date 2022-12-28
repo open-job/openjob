@@ -17,7 +17,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -54,7 +53,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
      * @param startRequests start requests.
      */
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
-        String workerAddress = this.workerAddresses.get(0);
+        String workerAddress = WorkerUtil.selectOneWorker();
         String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
         ActorSelection workerSelection = actorContext.actorSelection(workerPath);
 
@@ -100,7 +99,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
         jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
         jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-        jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         return jobContext;
     }
 

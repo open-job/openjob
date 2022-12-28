@@ -70,6 +70,20 @@ public class ClusterUtil {
     }
 
     /**
+     * Online workers.
+     *
+     * @param appId         appId
+     * @param workerAddress workerAddress
+     * @return Set
+     */
+    public static Set<String> getOnlineWorkers(Long appId) {
+        return ClusterContext.getWorkersByAppId(appId)
+                .stream()
+                .map(WorkerDTO::getAddress)
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Get know servers.
      *
      * @param nodesMap    nodesMap

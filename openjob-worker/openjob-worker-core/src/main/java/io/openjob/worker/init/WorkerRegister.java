@@ -2,9 +2,9 @@ package io.openjob.worker.init;
 
 import io.openjob.common.constant.ProtocolTypeEnum;
 import io.openjob.common.request.WorkerStartRequest;
-import io.openjob.common.response.Result;
+import io.openjob.common.response.ServerWorkerStartResponse;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.common.util.ResultUtil;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +14,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class WorkerRegister {
-    public WorkerRegister() {
+
+    private final OpenjobWorker openjobWorker;
+
+    public WorkerRegister(OpenjobWorker openjobWorker) {
+        this.openjobWorker = openjobWorker;
     }
 
     public void register() throws Exception {
@@ -26,16 +30,23 @@ public class WorkerRegister {
         startReq.setProtocolType(ProtocolTypeEnum.AKKA.getType());
 
         try {
-            Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerWorkerActor(), startReq, 3L);
-            if (!ResultUtil.isSuccess(result)) {
-                log.error("Register worker fail. serverAddress={} workerAddress={} message={}", serverAddress, WorkerConfig.getWorkerAddress(), result.getMessage());
-                throw new RuntimeException(String.format("Register worker fail! message=%s", result.getMessage()));
-            }
-
+            ServerWorkerStartResponse response = FutureUtil.mustAsk(WorkerUtil.getServerWorkerActor(), startReq, ServerWorkerStartResponse.class, 3L);
             log.info("Register worker success. serverAddress={} workerAddress={}", serverAddress, WorkerConfig.getWorkerAddress());
+
+            // Do register.
+            this.doRegister(response);
         } catch (Throwable e) {
             log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, WorkerConfig.getWorkerAddress());
             throw e;
         }
+    }
+
+    /**
+     * Do register.
+     *
+     * @param response response
+     */
+    private void doRegister(ServerWorkerStartResponse response) {
+        this.openjobWorker.getWorkerContext().init(response.getAppId(), response.getWorkerAddressList());
     }
 }

@@ -3,7 +3,6 @@ package io.openjob.common.response;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,12 +10,8 @@ import java.util.Set;
  * @since 1.0.0
  */
 @Data
-public class ServerHeartbeatResponse implements Serializable {
-
-    /**
-     * Worker address list.
-     */
+public class ServerWorkerStartResponse implements Serializable {
+    private Long appId;
+    private String appName;
     private Set<String> workerAddressList;
-
-    private ServerHeartbeatSystemResponse systemResponse;
 }

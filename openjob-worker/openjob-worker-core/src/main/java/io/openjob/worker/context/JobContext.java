@@ -65,7 +65,6 @@ public class JobContext {
     private Integer shardingNum;
 
     private Integer concurrency;
-    private List<String> workerAddresses;
     private String timeExpressionType;
     private String timeExpression;
 
