@@ -14,9 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class WorkerRegister {
-    public static final WorkerRegister INSTANCE = new WorkerRegister();
-
-    private WorkerRegister() {
+    public WorkerRegister() {
     }
 
     public void register() throws Exception {

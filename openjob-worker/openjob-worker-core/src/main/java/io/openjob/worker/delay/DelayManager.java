@@ -11,8 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @since 1.0.0
  */
 @Slf4j
-public class DelayStarter {
-    public static final DelayStarter INSTANCE = new DelayStarter();
+public class DelayManager {
 
     /**
      * Delay task master.
@@ -27,7 +26,7 @@ public class DelayStarter {
     /**
      * Delay starter.
      */
-    private DelayStarter() {
+    public DelayManager() {
         this.delayTaskMaster = new DelayTaskMaster();
     }
 

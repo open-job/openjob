@@ -4,9 +4,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.ServerHeartbeatResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.delay.DelayStarter;
 import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class WorkerHeartbeat {
 
-    public static final WorkerHeartbeat INSTANCE = new WorkerHeartbeat();
-
+    private final OpenjobWorker openjobWorker;
     /**
      * Worker heartbeat
      */
     private final ScheduledExecutorService heartbeatService;
 
-    private WorkerHeartbeat() {
+    public WorkerHeartbeat(OpenjobWorker openjobWorker) {
+        this.openjobWorker = openjobWorker;
         this.heartbeatService = new ScheduledThreadPoolExecutor(
                 1,
                 new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
@@ -65,7 +65,7 @@ public class WorkerHeartbeat {
     /**
      * Stop heartbeat.
      */
-    public void shutdown(){
+    public void shutdown() {
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
     }
@@ -76,7 +76,7 @@ public class WorkerHeartbeat {
     private void refresh(ServerHeartbeatResponse heartbeatResponse) {
         // Refresh delay.
         if (WorkerConfig.getDelayEnable()) {
-            DelayStarter.INSTANCE.refresh(heartbeatResponse.getSystemResponse());
+            this.openjobWorker.getDelayManager().refresh(heartbeatResponse.getSystemResponse());
         }
     }
 }

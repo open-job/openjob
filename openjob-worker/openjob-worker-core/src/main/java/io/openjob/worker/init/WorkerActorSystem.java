@@ -7,6 +7,7 @@ import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.constant.AkkaConstant;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.actor.TaskContainerActor;
 import io.openjob.worker.actor.TaskMasterActor;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
@@ -26,8 +27,6 @@ import java.util.Map;
 @Slf4j
 public class WorkerActorSystem {
 
-    public static final WorkerActorSystem INSTANCE = new WorkerActorSystem();
-
     /**
      * Actor system.
      */
@@ -38,7 +37,7 @@ public class WorkerActorSystem {
      */
     private static ActorRef persistentRoutingRef;
 
-    private WorkerActorSystem() {
+    public WorkerActorSystem() {
     }
 
     public void init() {

@@ -4,7 +4,7 @@ import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.ResultUtil;
-import io.openjob.worker.delay.DelayStarter;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,10 +14,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class WorkerShutdown {
+    private final OpenjobWorker openjobWorker;
 
-    public static final WorkerShutdown INSTANCE = new WorkerShutdown();
-
-    private WorkerShutdown() {
+    public WorkerShutdown(OpenjobWorker openjobWorker) {
+        this.openjobWorker = openjobWorker;
     }
 
     public void init() {
@@ -49,10 +49,10 @@ public class WorkerShutdown {
      */
     private void shutdown() {
         // Stop worker heartbeat service.
-        WorkerHeartbeat.INSTANCE.shutdown();
+        this.openjobWorker.getWorkerHeartbeat().shutdown();
 
         // Stop delay.
-        DelayStarter.INSTANCE.stop();
+        this.openjobWorker.getDelayManager().stop();
 
         // Stop worker.
         try {

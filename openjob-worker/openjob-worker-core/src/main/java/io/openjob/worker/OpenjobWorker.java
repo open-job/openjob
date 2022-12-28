@@ -1,11 +1,12 @@
 package io.openjob.worker;
 
-import io.openjob.worker.delay.DelayStarter;
+import io.openjob.worker.delay.DelayManager;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerHeartbeat;
 import io.openjob.worker.init.WorkerRegister;
 import io.openjob.worker.init.WorkerShutdown;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -14,7 +15,24 @@ import org.springframework.beans.factory.InitializingBean;
  * @since 1.0.0
  */
 @Slf4j
+@Getter
 public class OpenjobWorker implements InitializingBean {
+
+    private final WorkerConfig workerConfig;
+    private final WorkerActorSystem workerActorSystem;
+    private final WorkerRegister workerRegister;
+    private final WorkerHeartbeat workerHeartbeat;
+    private final DelayManager delayManager;
+    private final WorkerShutdown workerShutdown;
+
+    public OpenjobWorker() {
+        this.workerConfig = new WorkerConfig();
+        this.workerActorSystem = new WorkerActorSystem();
+        this.workerRegister = new WorkerRegister();
+        this.workerHeartbeat = new WorkerHeartbeat(this);
+        this.delayManager = new DelayManager();
+        this.workerShutdown = new WorkerShutdown(this);
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -28,21 +46,21 @@ public class OpenjobWorker implements InitializingBean {
      */
     public synchronized void init() throws Exception {
         // Initialize worker config.
-        WorkerConfig.INSTANCE.init();
+        this.workerConfig.init();
 
         // Initialize actor system.
-        WorkerActorSystem.INSTANCE.init();
+        this.workerActorSystem.init();
 
         // Register worker.
-        WorkerRegister.INSTANCE.register();
+        this.workerRegister.register();
 
         // Initialize worker heartbeat.
-        WorkerHeartbeat.INSTANCE.init();
+        this.workerHeartbeat.init();
 
         // Initialize delay.
-        DelayStarter.INSTANCE.init();
+        this.delayManager.init();
 
         // Initialize shutdown.
-        WorkerShutdown.INSTANCE.init();
+        this.workerShutdown.init();
     }
 }

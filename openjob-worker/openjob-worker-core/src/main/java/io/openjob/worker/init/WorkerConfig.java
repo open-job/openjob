@@ -14,8 +14,6 @@ import java.util.Objects;
 @Getter
 public class WorkerConfig {
 
-    public static final WorkerConfig INSTANCE = new WorkerConfig();
-
     /**
      * Worker host name.
      */
@@ -49,7 +47,7 @@ public class WorkerConfig {
     /**
      * New openjob worker config.
      */
-    private WorkerConfig() {
+    public WorkerConfig() {
 
     }
 
