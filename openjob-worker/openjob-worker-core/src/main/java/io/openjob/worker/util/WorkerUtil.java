@@ -6,6 +6,8 @@ import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.init.WorkerActorSystem;
+import io.openjob.worker.init.WorkerConfig;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -15,37 +17,37 @@ public class WorkerUtil {
 
     public static ActorSelection getServerWorkerActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER));
     }
 
     public static ActorSelection getServerWorkerJobInstanceActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE));
     }
 
     public static ActorSelection getServerWorkerJobInstanceTaskLogActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_INSTANCE_TASK_LOG));
     }
 
     public static ActorSelection getServerHeartbeatActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_HEARTBEAT));
     }
 
     public static ActorSelection getServerDelayInstanceActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE));
     }
 
     public static ActorSelection getServerDelayInstancePullActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_PULL));
     }
 
     public static ActorSelection getServerDelayStatusActor() {
         String address = getServerAddress();
-        return OpenjobWorker.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS));
+        return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS));
     }
 
     /**
@@ -58,7 +60,7 @@ public class WorkerUtil {
     }
 
     public static String getServerAddress() {
-        return String.format("%s:%d", OpenjobWorker.getConfig().getServerHost(), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
+        return String.format("%s:%d", WorkerConfig.getServerHost(), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 
     public static String getWorkerMasterActorPath(String address) {

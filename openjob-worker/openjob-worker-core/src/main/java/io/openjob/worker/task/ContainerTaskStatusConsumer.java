@@ -1,6 +1,7 @@
 package io.openjob.worker.task;
 
 import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 
@@ -53,7 +54,7 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
                 batchRequest.setCircleId(firstTask.getCircleId());
                 batchRequest.setTaskStatusList(entry.getValue());
 
-                OpenjobWorker.atLeastOnceDelivery(batchRequest, null);
+                WorkerActorSystem.atLeastOnceDelivery(batchRequest, null);
             }
         }
     }

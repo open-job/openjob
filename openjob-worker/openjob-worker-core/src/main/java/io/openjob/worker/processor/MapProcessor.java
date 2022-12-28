@@ -8,6 +8,7 @@ import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.KryoUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 import io.openjob.worker.util.ThreadLocalUtil;
 import org.springframework.util.CollectionUtils;
@@ -36,7 +37,7 @@ public interface MapProcessor extends BaseProcessor {
         }
 
         JobContext jobContext = ThreadLocalUtil.getJobContext();
-        ActorSelection masterSelection = OpenjobWorker.getActorSystem().actorSelection(jobContext.getMasterActorPath());
+        ActorSelection masterSelection = WorkerActorSystem.getActorSystem().actorSelection(jobContext.getMasterActorPath());
 
         int batchSize = 100;
         List<List<Object>> splitTasks = Lists.partition((List<Object>) tasks, batchSize);

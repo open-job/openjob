@@ -1,6 +1,7 @@
-package io.openjob.worker.config;
+package io.openjob.worker.init;
 
 import io.openjob.common.util.IpUtil;
+import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
@@ -11,41 +12,48 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @Getter
-public class OpenjobWorkerConfig {
+public class WorkerConfig {
+
+    public static final WorkerConfig INSTANCE = new WorkerConfig();
+
     /**
      * Worker host name.
      */
-    private final String workerHostName;
+    private static String workerHostName;
 
     /**
      * Worker port.
      */
-    private final Integer workerPort;
+    private static Integer workerPort;
 
     /**
      * Worker address.
      */
-    private final String workerAddress;
+    private static String workerAddress;
 
     /**
      * Register app name.
      */
-    private final String appName;
+    private static String appName;
 
     /**
      * Delay enable.
      */
-    private final Boolean delayEnable;
+    private static Boolean delayEnable;
 
     /**
      * Server host.
      */
-    private final String serverHost;
+    private static String serverHost;
 
     /**
      * New openjob worker config.
      */
-    public OpenjobWorkerConfig() {
+    private WorkerConfig() {
+
+    }
+
+    public void init() {
         // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         if (Objects.isNull(appName)) {
@@ -57,5 +65,29 @@ public class OpenjobWorkerConfig {
         workerAddress = String.format("%s:%d", workerHostName, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
         serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+    }
+
+    public static String getWorkerHostName() {
+        return workerHostName;
+    }
+
+    public static Integer getWorkerPort() {
+        return workerPort;
+    }
+
+    public static String getWorkerAddress() {
+        return workerAddress;
+    }
+
+    public static String getAppName() {
+        return appName;
+    }
+
+    public static Boolean getDelayEnable() {
+        return delayEnable;
+    }
+
+    public static String getServerHost() {
+        return serverHost;
     }
 }

@@ -14,6 +14,7 @@ import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -222,7 +223,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             instanceRequest.setTaskRequestList(taskRequestList);
             instanceRequest.setPage(page);
 
-            OpenjobWorker.atLeastOnceDelivery(instanceRequest, null);
+            WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());

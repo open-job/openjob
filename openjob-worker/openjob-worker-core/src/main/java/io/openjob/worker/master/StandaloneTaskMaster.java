@@ -22,6 +22,11 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
         taskDAO.add(this.convertToTask(startRequest));
 
+        // Switch running status.
+        if (!this.running.get()) {
+            this.running.set(true);
+        }
+
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
         FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3000L);
     }
