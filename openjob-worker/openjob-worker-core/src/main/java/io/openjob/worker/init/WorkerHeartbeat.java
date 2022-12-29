@@ -13,6 +13,8 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -96,18 +99,30 @@ public class WorkerHeartbeat {
      * @param heartbeatResponse heartbeatResponse
      */
     private void refreshOnlineWorkers(ServerHeartbeatResponse heartbeatResponse) {
-        // Refresh online workers.
-        Set<String> diffWorkers = new HashSet<>(heartbeatResponse.getWorkerAddressList());
-        diffWorkers.removeAll(WorkerContext.getOnlineWorkers());
-        if (!CollectionUtils.isEmpty(diffWorkers)) {
-            this.openjobWorker.getWorkerContext().refreshOnlineWorkers(heartbeatResponse.getWorkerAddressList());
-        }
-
         // Offline workers.
+        // Must before refresh context online workers.
         Set<String> offlineWorkers = new HashSet<>(WorkerContext.getOnlineWorkers());
         offlineWorkers.removeAll(heartbeatResponse.getWorkerAddressList());
         if (!CollectionUtils.isEmpty(offlineWorkers)) {
+            log.info("Offline workers! workers={}", offlineWorkers);
             TaskMasterPool.offlineWorkers(offlineWorkers);
+        }
+
+        // Online worker unique.
+        String onlineWorkerUnique = heartbeatResponse.getWorkerAddressList()
+                .stream()
+                .sorted(Comparator.comparing(String::hashCode))
+                .collect(Collectors.toList()).toString();
+
+        // Context worker unique.
+        String contextWorkerUnique = WorkerContext.getOnlineWorkers()
+                .stream()
+                .sorted(Comparator.comparing(String::hashCode))
+                .collect(Collectors.toList()).toString();
+
+        // Refresh online workers.
+        if (!onlineWorkerUnique.equals(contextWorkerUnique)) {
+            this.openjobWorker.getWorkerContext().refreshOnlineWorkers(heartbeatResponse.getWorkerAddressList());
         }
     }
 }

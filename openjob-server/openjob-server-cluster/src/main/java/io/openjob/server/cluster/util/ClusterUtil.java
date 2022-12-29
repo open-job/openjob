@@ -73,7 +73,6 @@ public class ClusterUtil {
      * Online workers.
      *
      * @param appId         appId
-     * @param workerAddress workerAddress
      * @return Set
      */
     public static Set<String> getOnlineWorkers(Long appId) {
