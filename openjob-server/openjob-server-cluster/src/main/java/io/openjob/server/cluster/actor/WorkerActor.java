@@ -7,7 +7,7 @@ import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
 import io.openjob.common.response.ServerWorkerStartResponse;
 import io.openjob.server.cluster.service.WorkerService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-@Log4j2
+@Slf4j
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkerActor extends BaseActor {
 

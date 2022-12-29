@@ -30,7 +30,7 @@ public class WorkerRegister {
         startReq.setProtocolType(ProtocolTypeEnum.AKKA.getType());
 
         try {
-            ServerWorkerStartResponse response = FutureUtil.mustAsk(WorkerUtil.getServerWorkerActor(), startReq, ServerWorkerStartResponse.class, 3L);
+            ServerWorkerStartResponse response = FutureUtil.mustAsk(WorkerUtil.getServerWorkerActor(), startReq, ServerWorkerStartResponse.class, 3000L);
             log.info("Register worker success. serverAddress={} workerAddress={}", serverAddress, WorkerConfig.getWorkerAddress());
 
             // Do register.

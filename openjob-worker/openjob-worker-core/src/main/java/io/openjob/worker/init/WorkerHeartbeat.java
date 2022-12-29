@@ -1,5 +1,6 @@
 package io.openjob.worker.init;
 
+import ch.qos.logback.core.util.ContextUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.ServerHeartbeatResponse;
@@ -12,7 +13,8 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -94,7 +96,16 @@ public class WorkerHeartbeat {
      * @param heartbeatResponse heartbeatResponse
      */
     private void refreshOnlineWorkers(ServerHeartbeatResponse heartbeatResponse) {
-        Set<String> offlineWorkers = this.openjobWorker.getWorkerContext().refreshOnlineWorkers(heartbeatResponse.getWorkerAddressList());
+        // Refresh online workers.
+        Set<String> diffWorkers = new HashSet<>(heartbeatResponse.getWorkerAddressList());
+        diffWorkers.removeAll(WorkerContext.getOnlineWorkers());
+        if (!CollectionUtils.isEmpty(diffWorkers)) {
+            this.openjobWorker.getWorkerContext().refreshOnlineWorkers(heartbeatResponse.getWorkerAddressList());
+        }
+
+        // Offline workers.
+        Set<String> offlineWorkers = new HashSet<>(WorkerContext.getOnlineWorkers());
+        offlineWorkers.removeAll(heartbeatResponse.getWorkerAddressList());
         if (!CollectionUtils.isEmpty(offlineWorkers)) {
             TaskMasterPool.offlineWorkers(offlineWorkers);
         }
