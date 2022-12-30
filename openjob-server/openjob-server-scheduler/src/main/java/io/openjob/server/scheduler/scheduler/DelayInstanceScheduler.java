@@ -64,7 +64,7 @@ public class DelayInstanceScheduler {
     public DelayInstanceAddResponseDTO add(DelayInstanceAddRequestDTO addRequest) {
         String taskId = addRequest.getTaskId();
         if (Objects.isNull(taskId)) {
-            taskId = TaskUtil.getRandomUniqueId();
+            taskId = TaskUtil.getRandomTaskId();
         }
 
         Delay delay = this.delayData.getDelay(addRequest.getTopic());

@@ -39,6 +39,6 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
             startContainerRequestList.add(startRequest);
         }
 
-        this.dispatchTasks(startContainerRequestList);
+        this.dispatchTasks(startContainerRequestList, false);
     }
 }

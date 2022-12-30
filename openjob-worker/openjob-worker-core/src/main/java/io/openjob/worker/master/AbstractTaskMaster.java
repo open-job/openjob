@@ -9,6 +9,7 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
@@ -84,14 +85,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     @Override
-    public void offlineWorkers(Set<String> offlineWorkers) {
-        // Ignore not running.
-        if (!this.running.get()) {
-            return;
-        }
-    }
-
-    @Override
     public void completeTask() throws InterruptedException {
         // Do complete task.
         this.doCompleteTask();
@@ -143,27 +136,15 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected MasterStartContainerRequest getMasterStartContainerRequest() {
-        MasterStartContainerRequest startReq = new MasterStartContainerRequest();
+        MasterStartContainerRequest startReq = this.getJobMasterStartContainerRequest();
         startReq.setJobId(this.jobInstanceDTO.getJobId());
         startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         startReq.setTaskId(this.acquireTaskId());
-        startReq.setJobParams(this.jobInstanceDTO.getJobParams());
-        startReq.setExecuteType(this.jobInstanceDTO.getExecuteType());
-        startReq.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
-        startReq.setProcessorType(this.jobInstanceDTO.getProcessorType());
-        startReq.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
-        startReq.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
-        startReq.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
-        startReq.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
-        startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-        startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
-        startReq.setMasterAkkaPath(this.localContainerPath);
         startReq.setCircleId(circleIdGenerator.get());
-        startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
     }
 
-    protected Task convertToTask(MasterStartContainerRequest startRequest) {
+    protected Task convertToTask(MasterStartContainerRequest startRequest, String workerAddress) {
         Task task = new Task();
         task.setJobId(startRequest.getJobId());
         task.setInstanceId(startRequest.getJobInstanceId());
@@ -172,8 +153,35 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         task.setTaskParentId(startRequest.getParentTaskUniqueId());
         task.setTaskName(startRequest.getTaskName());
         task.setStatus(TaskStatusEnum.INIT.getStatus());
-        task.setWorkerAddress(this.localWorkerAddress);
+        task.setWorkerAddress(workerAddress);
         return task;
+    }
+
+    protected MasterStartContainerRequest convertToMasterStartContainerRequest(Task task) {
+        MasterStartContainerRequest containerRequest = this.getJobMasterStartContainerRequest();
+        containerRequest.setJobId(task.getJobId());
+        containerRequest.setJobInstanceId(task.getInstanceId());
+        containerRequest.setTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskId()));
+        containerRequest.setParentTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskParentId()));
+        containerRequest.setCircleId(task.getCircleId());
+        containerRequest.setTaskName(task.getTaskName());
+        return containerRequest;
+    }
+
+    protected MasterStartContainerRequest getJobMasterStartContainerRequest() {
+        MasterStartContainerRequest containerRequest = new MasterStartContainerRequest();
+        containerRequest.setJobParams(this.jobInstanceDTO.getJobParams());
+        containerRequest.setExecuteType(this.jobInstanceDTO.getExecuteType());
+        containerRequest.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
+        containerRequest.setProcessorType(this.jobInstanceDTO.getProcessorType());
+        containerRequest.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+        containerRequest.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+        containerRequest.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+        containerRequest.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+        containerRequest.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+        containerRequest.setConcurrency(this.jobInstanceDTO.getConcurrency());
+        containerRequest.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
+        return containerRequest;
     }
 
     protected WorkerJobInstanceTaskRequest convertToTaskRequest(Task task) {

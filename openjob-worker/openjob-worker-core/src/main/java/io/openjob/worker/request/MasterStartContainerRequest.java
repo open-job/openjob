@@ -50,7 +50,6 @@ public class MasterStartContainerRequest implements Serializable {
     private String taskName;
 
     private byte[] task;
-    private List<String> workerAddresses;
 
     /**
      * New MasterStartContainerRequest

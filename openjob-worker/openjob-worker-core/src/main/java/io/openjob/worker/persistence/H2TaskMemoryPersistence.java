@@ -10,10 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -199,14 +197,39 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public Integer batchUpdateExceptionByWorkerAddress(List<String> workerAddressList) throws SQLException {
+    public Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException {
+        String sql = "UPDATE `task` SET `status`=?,`worker_address`=? WHERE `task_id`=?";
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
+            ps = connection.prepareStatement(sql);
+            for (String taskId : taskIds) {
+                ps.setInt(1, status);
+                ps.setString(2, workerAddress);
+                ps.setString(3, taskId);
+                ps.addBatch();
+            }
+
+            int[] result = ps.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return result.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
+    public Integer batchUpdateFailoverByWorkerAddress(List<String> workerAddressList) throws SQLException {
         String sql = "UPDATE `task` SET `status`=? WHERE `worker_address`=? and `status`=?";
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
             connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
             for (String workerAddress : workerAddressList) {
-                ps.setInt(1, TaskStatusEnum.EXCEPTION.getStatus());
+                ps.setInt(1, TaskStatusEnum.FAILOVER.getStatus());
                 ps.setString(2, workerAddress);
                 ps.setInt(3, TaskStatusEnum.RUNNING.getStatus());
                 ps.addBatch();
@@ -224,12 +247,12 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public List<Task> pullExceptionListBySize(Long instanceId, Long size) throws SQLException {
+    public List<Task> pullFailoverListBySize(Long instanceId, Long size) throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT * FROM `task` WHERE `instance_id`=? AND `status`=? LIMIT ?";
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
-            ps.setInt(2, TaskStatusEnum.EXCEPTION.getStatus());
+            ps.setInt(2, TaskStatusEnum.FAILOVER.getStatus());
             ps.setLong(3, size);
             rs = ps.executeQuery();
 

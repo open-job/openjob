@@ -23,13 +23,6 @@ public interface TaskMaster {
     Boolean getRunning();
 
     /**
-     * Offline workers.
-     *
-     * @param offlineWorkers offline workers.
-     */
-    void offlineWorkers(Set<String> offlineWorkers);
-
-    /**
      * Complete task.
      *
      * @throws InterruptedException InterruptedException

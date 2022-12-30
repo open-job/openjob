@@ -2,6 +2,7 @@ package io.openjob.worker.init;
 
 import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.Result;
+import io.openjob.common.response.ServerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.ResultUtil;
 import io.openjob.worker.OpenjobWorker;
@@ -38,9 +39,10 @@ public class WorkerShutdown {
         stopRequest.setAppName(appName);
         stopRequest.setAddress(workerAddress);
 
-        Result<?> result = (Result<?>) FutureUtil.ask(WorkerUtil.getServerWorkerActor(), stopRequest, 3L);
-        if (!ResultUtil.isSuccess(result)) {
-            log.error("Stop worker fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, result.getMessage());
+        try {
+            FutureUtil.mustAsk(WorkerUtil.getServerWorkerActor(), stopRequest, ServerResponse.class, 3000L);
+        } catch (Throwable e) {
+            log.error("Stop worker fail. serverAddress={} workerAddress={} message={}", serverAddress, workerAddress, e.getMessage());
         }
     }
 

@@ -13,6 +13,7 @@ import io.openjob.worker.processor.MapReduceProcessor;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.request.ProcessorMapTaskRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
 import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
@@ -71,15 +72,15 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     /**
      * Map operation.
      *
-     * @param tasks    tasks
-     * @param taskName task name.
+     * @param mapTaskReq mapTaskReq
      */
-    public void map(List<byte[]> tasks, String taskName) {
+    public void map(ProcessorMapTaskRequest mapTaskReq) {
         try {
-            for (byte[] task : tasks) {
+            for (byte[] task : mapTaskReq.getTasks()) {
                 MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
                 startReq.setTask(task);
-                startReq.setTaskName(taskName);
+                startReq.setTaskName(mapTaskReq.getTaskName());
+                startReq.setParentTaskId(mapTaskReq.getTaskId());
                 childTaskQueue.submit(startReq);
             }
         } catch (Throwable throwable) {
@@ -93,7 +94,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 
-        this.dispatchTasks(startRequests);
+        this.dispatchTasks(startRequests, false);
     }
 
     @Override

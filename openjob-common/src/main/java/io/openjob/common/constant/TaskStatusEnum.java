@@ -26,9 +26,9 @@ public enum TaskStatusEnum {
     INIT(3, "init"),
 
     /**
-     * Exception task will be redispatched!
+     * Failover task will be redispatched!
      */
-    EXCEPTION(3, "exception"),
+    FAILOVER(3, "failover"),
 
     /**
      * running.

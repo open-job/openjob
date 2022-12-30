@@ -106,7 +106,7 @@ public class TaskMasterActor extends BaseActor {
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {
         TaskMaster taskMaster = TaskMasterPool.get(mapTaskReq.getJobInstanceId());
         if (taskMaster instanceof MapReduceTaskMaster) {
-            ((MapReduceTaskMaster) taskMaster).map(mapTaskReq.getTasks(), mapTaskReq.getTaskName());
+            ((MapReduceTaskMaster) taskMaster).map(mapTaskReq);
         }
 
         getSender().tell(Result.success(new WorkerResponse()), getSelf());

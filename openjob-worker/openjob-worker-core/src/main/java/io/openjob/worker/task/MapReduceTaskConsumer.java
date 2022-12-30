@@ -44,7 +44,7 @@ public class MapReduceTaskConsumer<T> extends BaseConsumer<T> {
         @Override
         public void run() {
             MapReduceTaskMaster taskMaster = (MapReduceTaskMaster) TaskMasterPool.get(this.jobInstanceId);
-            taskMaster.dispatchTasks((List<MasterStartContainerRequest>) this.taskList);
+            taskMaster.dispatchTasks((List<MasterStartContainerRequest>) this.taskList, false);
             this.consumer.activePollNum.decrementAndGet();
         }
     }

@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.worker.dao.TaskDAO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.function.Function;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class TaskMasterPool {
 
     private static final Map<Long, TaskMaster> TASK_MASTER_POOL = Maps.newConcurrentMap();
@@ -52,6 +54,7 @@ public class TaskMasterPool {
      */
     public static void offlineWorkers(Set<String> offlineWorkers) {
         // Set all task of offline worker to exception status.
-        TaskDAO.INSTANCE.batchUpdateExceptionByWorkerAddress(new ArrayList<>(offlineWorkers));
+        Integer size = TaskDAO.INSTANCE.batchUpdateFailoverByWorkerAddress(new ArrayList<>(offlineWorkers));
+        log.info("Update by offline workerAddress list success! count={}", size);
     }
 }

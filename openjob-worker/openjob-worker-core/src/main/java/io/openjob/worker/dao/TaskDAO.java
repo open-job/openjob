@@ -110,32 +110,49 @@ public class TaskDAO {
     }
 
     /**
-     * Batch update exception by worker address list.
+     * Batch update status and worker address.
      *
-     * @param workerAddressList worker address list
+     * @param taskIds       task ids
+     * @param status        status
+     * @param workerAddress worker address
      * @return Integer
      */
-    public Integer batchUpdateExceptionByWorkerAddress(List<String> workerAddressList) {
+    public Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) {
         try {
-            return taskPersistence.batchUpdateExceptionByWorkerAddress(workerAddressList);
+            return taskPersistence.batchUpdateStatusAndWorkerAddressByTaskId(taskIds, status, workerAddress);
         } catch (SQLException e) {
-            log.error("Task batchUpdateExceptionByWorkerAddress failed!", e);
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Pull exception list.
+     * Batch update failover by worker address list.
+     *
+     * @param workerAddressList worker address list
+     * @return Integer
+     */
+    public Integer batchUpdateFailoverByWorkerAddress(List<String> workerAddressList) {
+        try {
+            return taskPersistence.batchUpdateFailoverByWorkerAddress(workerAddressList);
+        } catch (SQLException e) {
+            log.error("Task batchUpdateFailoverByWorkerAddress failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Pull failover list.
      *
      * @param instanceId instance id
      * @param size       size
      * @return List
      */
-    public List<Task> pullExceptionListBySize(Long instanceId, Long size) {
+    public List<Task> pullFailoverListBySize(Long instanceId, Long size) {
         try {
-            return taskPersistence.pullExceptionListBySize(instanceId, size);
+            return taskPersistence.pullFailoverListBySize(instanceId, size);
         } catch (SQLException e) {
-            log.error("Task pullExceptionListBySize failed!", e);
+            log.error("Task pullFailoverListBySize failed!", e);
             throw new RuntimeException(e);
         }
     }

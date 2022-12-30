@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
@@ -59,7 +60,7 @@ public class SchedulerTimerTask extends AbstractTimerTask {
                 return;
             }
 
-            FutureUtil.ask(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, 10L);
+            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, WorkerResponse.class, 3000L);
             log.info("Task dispatch success! taskId={}", this.taskId);
         } catch (Throwable ex) {
             log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());

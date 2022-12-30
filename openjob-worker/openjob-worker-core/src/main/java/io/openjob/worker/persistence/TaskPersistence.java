@@ -67,6 +67,16 @@ public interface TaskPersistence {
     Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
 
     /**
+     * Batch update status and worker address.
+     *
+     * @param taskIds       task ids
+     * @param status        status
+     * @param workerAddress worker address
+     * @return Integer
+     */
+    Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException;
+
+    /**
      * Find list by page size
      *
      * @param instanceId instance id
@@ -84,7 +94,7 @@ public interface TaskPersistence {
      * @return Integer
      * @throws SQLException SQLException
      */
-    Integer batchUpdateExceptionByWorkerAddress(List<String> workerAddressList) throws SQLException;
+    Integer batchUpdateFailoverByWorkerAddress(List<String> workerAddressList) throws SQLException;
 
     /**
      * Pull exception list.
@@ -94,5 +104,5 @@ public interface TaskPersistence {
      * @return List
      * @throws SQLException SQLException
      */
-    List<Task> pullExceptionListBySize(Long instanceId, Long size) throws SQLException;
+    List<Task> pullFailoverListBySize(Long instanceId, Long size) throws SQLException;
 }

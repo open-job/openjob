@@ -2,6 +2,7 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
@@ -14,6 +15,7 @@ import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -53,10 +55,10 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
 
             // Persist tasks.
-            this.persistTasks(Collections.singletonList(startRequest));
+            this.persistTasks(workerAddress, Collections.singletonList(startRequest), false);
 
             try {
-                FutureUtil.ask(workerSelection, startRequest, 10L);
+                FutureUtil.mustAsk(workerSelection, startRequest, WorkerResponse.class, 3000L);
             } catch (Exception e) {
                 e.printStackTrace();
             }
