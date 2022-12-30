@@ -5,11 +5,13 @@ import akka.actor.ActorSelection;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.util.WorkerUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -40,11 +43,11 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                 new ThreadPoolExecutor.AbortPolicy()
         );
 
-        // Check task status.
+        // Check task complete status.
         this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
 
-        // Check task container alive
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
+        // Pull exception task to redispatch.
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskExceptionPuller(this), 1, 3L, TimeUnit.SECONDS);
     }
 
     /**
@@ -79,9 +82,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     }
 
     protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
-        List<Task> taskList = new ArrayList<>();
-        startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
-
+        List<Task> taskList = startRequests.stream().map(this::convertToTask).collect(Collectors.toList());
         taskDAO.batchAdd(taskList);
     }
 
@@ -134,10 +135,30 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         }
     }
 
-    protected static class TaskContainerChecker implements Runnable {
+    protected static class TaskExceptionPuller implements Runnable {
+
+        protected TaskDAO taskDAO = TaskDAO.INSTANCE;
+        private final AbstractDistributeTaskMaster taskMaster;
+
+        public TaskExceptionPuller(AbstractDistributeTaskMaster taskMaster) {
+            this.taskMaster = taskMaster;
+        }
+
         @Override
         public void run() {
+            // When task is running to check status.
+            if (!this.taskMaster.running.get()) {
+                return;
+            }
 
+            long size = 100;
+            long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
+            while (true) {
+                List<Task> taskList = this.taskDAO.pullExceptionListBySize(instanceId, size);
+                if (CollectionUtils.isEmpty(taskList)) {
+                    break;
+                }
+            }
         }
     }
 }

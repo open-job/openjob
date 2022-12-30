@@ -110,6 +110,37 @@ public class TaskDAO {
     }
 
     /**
+     * Batch update exception by worker address list.
+     *
+     * @param workerAddressList worker address list
+     * @return Integer
+     */
+    public Integer batchUpdateExceptionByWorkerAddress(List<String> workerAddressList) {
+        try {
+            return taskPersistence.batchUpdateExceptionByWorkerAddress(workerAddressList);
+        } catch (SQLException e) {
+            log.error("Task batchUpdateExceptionByWorkerAddress failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Pull exception list.
+     *
+     * @param instanceId instance id
+     * @param size       size
+     * @return List
+     */
+    public List<Task> pullExceptionListBySize(Long instanceId, Long size) {
+        try {
+            return taskPersistence.pullExceptionListBySize(instanceId, size);
+        } catch (SQLException e) {
+            log.error("Task pullExceptionListBySize failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Get list.
      *
      * @param instanceId instance id.
@@ -119,7 +150,7 @@ public class TaskDAO {
      */
     public List<Task> getList(Long instanceId, Long circleId, Long size) {
         try {
-            return taskPersistence.findListByPageSize(instanceId, circleId, size);
+            return taskPersistence.findListBySize(instanceId, circleId, size);
         } catch (SQLException e) {
             log.error("Task getList failed!", e);
             throw new RuntimeException(e);

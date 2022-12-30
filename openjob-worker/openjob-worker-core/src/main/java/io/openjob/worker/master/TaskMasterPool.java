@@ -2,7 +2,9 @@ package io.openjob.worker.master;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.openjob.worker.dao.TaskDAO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,7 @@ public class TaskMasterPool {
      * @param offlineWorkers offline workers.
      */
     public static void offlineWorkers(Set<String> offlineWorkers) {
-        TASK_MASTER_POOL.forEach((i, t) -> t.offlineWorkers(offlineWorkers));
+        // Set all task of offline worker to exception status.
+        TaskDAO.INSTANCE.batchUpdateExceptionByWorkerAddress(new ArrayList<>(offlineWorkers));
     }
 }

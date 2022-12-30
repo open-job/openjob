@@ -10,8 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -56,6 +58,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "  `update_time` bigint(12) unsigned NOT NULL,"
                 + "  PRIMARY KEY (`id`),"
                 + "  UNIQUE KEY `udx_task_id` (`task_id`),"
+                + "  KEY `idx_worker_address` (`worker_address`),"
                 + "  KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)"
                 + ")";
 
@@ -67,18 +70,18 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     @Override
     public Integer batchSave(List<Task> tasks) throws SQLException {
         String sql = "INSERT INTO task ("
-                + "job_id,"
-                + "instance_id,"
-                + "circle_id,"
-                + "task_id,"
-                + "task_name,"
-                + "task_parent_id,"
-                + "status,"
-                + "worker_address,"
-                + "result,"
-                + "task_body,"
-                + "create_time,"
-                + "update_time"
+                + "`job_id`,"
+                + "`instance_id`,"
+                + "`circle_id`,"
+                + "`task_id`,"
+                + "`task_name`,"
+                + "`task_parent_id`,"
+                + "`status`,"
+                + "`worker_address`,"
+                + "`result`,"
+                + "`task_body`,"
+                + "`create_time`,"
+                + "`update_time`"
                 + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
@@ -115,7 +118,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     @Override
     public Task findByTaskId(String taskId) throws SQLException {
         ResultSet rs = null;
-        String sql = "SELECT * FROM task WHERE task_id=?";
+        String sql = "SELECT * FROM `task` WHERE `task_id`=?";
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, taskId);
             rs = ps.executeQuery();
@@ -134,7 +137,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
 
     @Override
     public Integer batchDeleteByTaskIds(List<String> taskIds) throws SQLException {
-        String sql = "DELETE FROM task WHERE task_id = ?";
+        String sql = "DELETE FROM `task` WHERE `task_id` = ?";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -162,11 +165,11 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         boolean isRunning = TaskStatusEnum.RUNNING.getStatus().equals(currentStatus);
 
         // Running
-        String sql = "UPDATE task SET status=? WHERE task_id=? AND status=?";
+        String sql = "UPDATE `task` SET `status`=? WHERE `task_id`=? AND status=?";
 
         // Not running.
         if (!isRunning) {
-            sql = "UPDATE task SET status=? WHERE task_id=?";
+            sql = "UPDATE `task` SET `status`=? WHERE `task_id`=?";
         }
 
         PreparedStatement ps = null;
@@ -196,9 +199,56 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     }
 
     @Override
+    public Integer batchUpdateExceptionByWorkerAddress(List<String> workerAddressList) throws SQLException {
+        String sql = "UPDATE `task` SET `status`=? WHERE `worker_address`=? and `status`=?";
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
+            ps = connection.prepareStatement(sql);
+            for (String workerAddress : workerAddressList) {
+                ps.setInt(1, TaskStatusEnum.EXCEPTION.getStatus());
+                ps.setString(2, workerAddress);
+                ps.setInt(3, TaskStatusEnum.RUNNING.getStatus());
+                ps.addBatch();
+            }
+
+            int[] result = ps.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return result.length;
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Task> pullExceptionListBySize(Long instanceId, Long size) throws SQLException {
+        ResultSet rs = null;
+        String sql = "SELECT * FROM `task` WHERE `instance_id`=? AND `status`=? LIMIT ?";
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, instanceId);
+            ps.setInt(2, TaskStatusEnum.EXCEPTION.getStatus());
+            ps.setLong(3, size);
+            rs = ps.executeQuery();
+
+            List<Task> taskList = new ArrayList<>();
+            while (rs.next()) {
+                taskList.add(convert(rs));
+            }
+            return taskList;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
+    }
+
+    @Override
     public Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) throws SQLException {
         String statusStr = StringUtils.join(statusList, ",");
-        String sql = String.format("SELECT COUNT(*) FROM task WHERE instance_id=? AND circle_id=? AND status IN (%s)", statusStr);
+        String sql = String.format("SELECT COUNT(*) FROM `task` WHERE `instance_id`=? AND `circle_id`=? AND `status` IN (%s)", statusStr);
 
         ResultSet rs = null;
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -217,9 +267,9 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     }
 
     @Override
-    public List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException {
+    public List<Task> findListBySize(Long instanceId, Long circleId, Long size) throws SQLException {
         ResultSet rs = null;
-        String sql = "SELECT * FROM task WHERE instance_id=? AND circle_id=? LIMIT ?";
+        String sql = "SELECT * FROM `task` WHERE `instance_id`=? AND `circle_id`=? LIMIT ?";
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
             ps.setLong(2, circleId);
