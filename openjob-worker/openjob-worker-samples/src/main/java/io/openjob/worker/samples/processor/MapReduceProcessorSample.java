@@ -22,7 +22,7 @@ import java.util.List;
 public class MapReduceProcessorSample implements MapReduceProcessor {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
-    private static final Integer FIRST_COUNT = 11;
+    private static final Integer FIRST_COUNT = 1001;
 
     private static final Integer SECOND_COUNT = 21;
 
@@ -53,12 +53,25 @@ public class MapReduceProcessorSample implements MapReduceProcessor {
                 tasks.add(new MrTaskTest(i, Lists.newArrayList(String.valueOf(task.getId() * i))));
             }
 
+//            try {
+//                Thread.sleep(1000L);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+
             return this.map(tasks, THREE_NAME);
         }
 
         if (context.isTask(THREE_NAME)) {
             MrTaskTest task = (MrTaskTest) context.getTask();
             System.out.println("three=" + task.getId() + " name=" + task.getNames().get(0));
+
+//            try {
+//                Thread.sleep(1000L);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+
             return new ProcessResult(true, String.valueOf(task.getId() * 2));
         }
 

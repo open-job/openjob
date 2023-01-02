@@ -1,14 +1,19 @@
 package io.openjob.worker.dao;
 
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.exception.BatchUpdateStatusException;
 import io.openjob.worker.persistence.H2TaskMemoryPersistence;
 import io.openjob.worker.persistence.TaskPersistence;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.jdbc.JdbcBatchUpdateException;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -97,13 +102,15 @@ public class TaskDAO {
      * Batch update status by task id.
      *
      * @param tasks         tasks
-     * @param currentStatus update status.
+     * @param currentStatus currentStatus
      * @return effect rows.
      */
     public Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) {
         try {
             return taskPersistence.batchUpdateStatusByTaskId(tasks, currentStatus);
-        } catch (SQLException e) {
+        } catch (JdbcBatchUpdateException exception) {
+            throw new BatchUpdateStatusException(exception);
+        } catch (Throwable e) {
             log.error("Task batchUpdateStatusByTaskId failed!", e);
             throw new RuntimeException(e);
         }

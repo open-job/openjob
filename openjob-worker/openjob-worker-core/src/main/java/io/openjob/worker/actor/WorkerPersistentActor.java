@@ -89,7 +89,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
      */
     public void handleResult(Result<?> result) {
         if (StatusEnum.FAIL.getStatus().equals(result.getStatus()) || Objects.isNull(result.getData())) {
-            log.error("Handle result fail! message={}", result.getMessage());
+            log.warn("Handle result fail! message={}", result.getMessage());
             return;
         }
 

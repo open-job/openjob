@@ -5,18 +5,22 @@ import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.exception.BatchUpdateStatusException;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerContext;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class WorkerUtil {
 
     public static String selectOneWorker() {
@@ -84,5 +88,26 @@ public class WorkerUtil {
 
     public static String getWorkerActorPath(String address, String path) {
         return String.format("akka://%s@%s%s", AkkaConstant.WORKER_SYSTEM_NAME, address, path);
+    }
+
+    /**
+     * Batch update status supplier.
+     *
+     * @param retryTimes retryTimes
+     * @param supplier   supplier
+     * @return Integer
+     * @throws InterruptedException exception
+     */
+    public static Integer batchUpdateStatusSupplier(Integer retryTimes, Supplier<Integer> supplier) throws InterruptedException {
+        for (int i = 0; i < retryTimes; i++) {
+            try {
+                return supplier.get();
+            } catch (BatchUpdateStatusException exception) {
+                int times = (i + 1);
+                log.warn("Batch update supplier failed! times={} {}", times, exception.getMessage());
+                Thread.sleep(times * 1000L);
+            }
+        }
+        return 0;
     }
 }

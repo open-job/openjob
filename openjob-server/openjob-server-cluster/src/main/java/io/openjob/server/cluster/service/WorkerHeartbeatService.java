@@ -79,7 +79,7 @@ public class WorkerHeartbeatService {
         this.workerDAO.save(worker);
 
         List<Long> instanceIds = workerHeartbeatReq.getRunningJobInstanceIds();
-        if (CollectionUtils.isEmpty(instanceIds)) {
+        if (!CollectionUtils.isEmpty(instanceIds)) {
             this.jobInstanceDAO.updateLastReportTimeByIds(instanceIds, DateUtil.timestamp());
         }
     }

@@ -28,7 +28,7 @@ public enum TaskStatusEnum {
     /**
      * Failover task will be redispatched!
      */
-    FAILOVER(3, "failover"),
+    FAILOVER(5, "failover"),
 
     /**
      * running.
@@ -52,6 +52,7 @@ public enum TaskStatusEnum {
     public static final List<Integer> NON_FINISH_LIST = Arrays.asList(
             UNKNOWN.status,
             INIT.status,
+            FAILOVER.status,
             RUNNING.status
     );
 
@@ -61,6 +62,7 @@ public enum TaskStatusEnum {
     public static final List<Integer> ALL = Arrays.asList(
             UNKNOWN.status,
             INIT.status,
+            FAILOVER.status,
             RUNNING.status,
             SUCCESS.status,
             FAILED.status

@@ -148,7 +148,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
 
             // Dispatch fail task.
-
             boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
             if (isComplete) {
                 try {

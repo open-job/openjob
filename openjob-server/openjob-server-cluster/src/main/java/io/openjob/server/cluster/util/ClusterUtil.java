@@ -173,7 +173,7 @@ public class ClusterUtil {
             try {
                 return supplier.get();
             } catch (ClusterNodeOperatingException exception) {
-                log.info("Cluster node is operating! {}", exception.getMessage());
+                log.warn("Cluster node is operating! {}", exception.getMessage());
                 Thread.sleep((i + 1) * 1000L);
             }
         }

@@ -16,16 +16,13 @@ import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
-import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -101,20 +98,23 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
+        // Distribute task
+        if (!(this instanceof StandaloneTaskMaster)) {
+            DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
+            return;
+        }
+
         // Update list
-        List<Task> updateList = new ArrayList<>();
-        for (ContainerTaskStatusRequest statusRequest : batchRequest.getTaskStatusList()) {
-            String taskUniqueId = statusRequest.getTaskUniqueId();
-            updateList.add(new Task(taskUniqueId, statusRequest.getStatus()));
-        }
+        List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
+            String taskUniqueId = s.getTaskUniqueId();
+            return new Task(taskUniqueId, s.getStatus());
+        }).collect(Collectors.toList());
 
-        // Group by status
-        Map<Integer, List<Task>> groupList = updateList.stream().collect(Collectors.groupingBy(Task::getStatus));
+        updateList.stream().collect(Collectors.groupingBy(Task::getStatus))
+                .forEach((status, groupList) -> {
+                    taskDAO.batchUpdateStatusByTaskId(groupList, status);
+                });
 
-        // Update by group
-        for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
-            taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
-        }
         boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
         if (isStandalone && this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
             try {
@@ -202,6 +202,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
         Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
+        log.error("nonFinishCount=" + nonFinishCount);
+
+        System.out.println("non2FinishCount=" + taskDAO.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.RUNNING.getStatus())));
         return nonFinishCount <= 0;
     }
 

@@ -1,5 +1,6 @@
 package io.openjob.worker.task;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -68,7 +69,7 @@ public abstract class BaseConsumer<T> {
                     private final AtomicInteger index = new AtomicInteger(1);
 
                     @Override
-                    public Thread newThread(Runnable r) {
+                    public Thread newThread(@Nonnull Runnable r) {
                         return new Thread(r, String.format("%s-%d-%d", consumerThreadName, id, index.getAndIncrement()));
                     }
                 },

@@ -35,7 +35,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
      */
     protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
 
-    protected MapReduceTaskConsumer<MasterStartContainerRequest> childTaskConsumer;
+    protected MapReduceTaskConsumer childTaskConsumer;
 
 
     public MapReduceTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
@@ -47,7 +47,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         super.init();
 
         childTaskQueue = new TaskQueue<>(this.jobInstanceDTO.getJobInstanceId(), 10240);
-        childTaskConsumer = new MapReduceTaskConsumer<>(
+        childTaskConsumer = new MapReduceTaskConsumer(
                 this.jobInstanceDTO.getJobInstanceId(),
                 1,
                 1,
