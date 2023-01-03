@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.util;
 
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.util.CrcUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class DelaySlotUtil {
 
     /**
@@ -125,15 +127,16 @@ public class DelaySlotUtil {
      * @param currentSlot current slot
      * @return List
      */
-    private static List<Long> getCurrentSlots(Integer maxSlot, Integer currentSlot) {
-        int step = maxSlot / currentSlot;
-
+    public static List<Long> getCurrentSlots(Integer maxSlot, Integer currentSlot) {
         Set<Long> slots = new HashSet<>();
-        for (int i = 1; i < currentSlot + 1; i++) {
-            slots.add((long) i * step);
+        if (currentSlot > maxSlot) {
+            log.error("Current slot must less than max slot.");
+            return new ArrayList<>(slots);
         }
 
-        slots.retainAll(ClusterContext.getCurrentSlots());
+        for (int i = 1; i < currentSlot + 1; i++) {
+            slots.add((long) i);
+        }
         return new ArrayList<>(slots);
     }
 }

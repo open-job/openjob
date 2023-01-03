@@ -2,6 +2,8 @@ package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.JobInstance;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -18,8 +20,8 @@ public interface JobInstanceDAO {
     /**
      * Update
      *
-     * @param id           id
-     * @param status       status
+     * @param id     id
+     * @param status status
      * @return Integer
      */
     Integer updateStatusAndCompleteTimeById(Long id, Integer status);
@@ -27,9 +29,9 @@ public interface JobInstanceDAO {
     /**
      * Update
      *
-     * @param id             id
+     * @param ids            ids
      * @param lastReportTime lastReportTime
      * @return Integer
      */
-    Integer updateLastReportTimeById(Long id, Long lastReportTime);
+    Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
 }

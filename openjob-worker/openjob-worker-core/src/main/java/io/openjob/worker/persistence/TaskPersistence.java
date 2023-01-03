@@ -13,6 +13,7 @@ public interface TaskPersistence {
 
     /**
      * Init table schema.
+     *
      * @throws Exception Exception
      */
     void initTable() throws Exception;
@@ -48,7 +49,7 @@ public interface TaskPersistence {
      * Count task by status list.
      *
      * @param instanceId instanceId
-     * @param circleId circleId
+     * @param circleId   circleId
      * @param statusList statusList
      * @return count
      * @throws SQLException SQLException
@@ -66,6 +67,17 @@ public interface TaskPersistence {
     Integer batchUpdateStatusByTaskId(List<Task> tasks, Integer currentStatus) throws SQLException;
 
     /**
+     * Batch update status and worker address.
+     *
+     * @param taskIds       task ids
+     * @param status        status
+     * @param workerAddress worker address
+     * @return Integer
+     * @throws SQLException SQLException
+     */
+    Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException;
+
+    /**
      * Find list by page size
      *
      * @param instanceId instance id
@@ -74,5 +86,24 @@ public interface TaskPersistence {
      * @return List
      * @throws SQLException SQLException
      */
-    List<Task> findListByPageSize(Long instanceId, Long circleId, Long size) throws SQLException;
+    List<Task> findListBySize(Long instanceId, Long circleId, Long size) throws SQLException;
+
+    /**
+     * Batch update exception by worker address list.
+     *
+     * @param workerAddressList worker address list
+     * @return Integer
+     * @throws SQLException SQLException
+     */
+    Integer batchUpdateFailoverByWorkerAddress(List<String> workerAddressList) throws SQLException;
+
+    /**
+     * Pull exception list.
+     *
+     * @param instanceId instance id
+     * @param size       size
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> pullFailoverListBySize(Long instanceId, Long size) throws SQLException;
 }

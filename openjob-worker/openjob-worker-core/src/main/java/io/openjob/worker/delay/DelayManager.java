@@ -1,6 +1,7 @@
 package io.openjob.worker.delay;
 
 import io.openjob.common.response.ServerHeartbeatSystemResponse;
+import io.openjob.worker.init.WorkerConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,8 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @since 1.0.0
  */
 @Slf4j
-public class DelayStarter {
-    public static final DelayStarter INSTANCE = new DelayStarter();
+public class DelayManager {
 
     /**
      * Delay task master.
@@ -26,7 +26,7 @@ public class DelayStarter {
     /**
      * Delay starter.
      */
-    private DelayStarter() {
+    public DelayManager() {
         this.delayTaskMaster = new DelayTaskMaster();
     }
 
@@ -34,7 +34,9 @@ public class DelayStarter {
      * Init
      */
     public void init() {
-        this.delayTaskMaster.init();
+        if (WorkerConfig.getDelayEnable()) {
+            this.delayTaskMaster.init();
+        }
     }
 
     /**
@@ -60,6 +62,10 @@ public class DelayStarter {
      * Stop
      */
     public void stop() {
+        if (!WorkerConfig.getDelayEnable()) {
+            return;
+        }
+
         // Stop  delay master.
         this.delayTaskMaster.stop();
 

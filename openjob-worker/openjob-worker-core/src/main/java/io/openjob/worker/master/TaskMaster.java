@@ -14,6 +14,18 @@ public interface TaskMaster {
     void submit();
 
     /**
+     * Get task running status.
+     *
+     * @return Boolean
+     */
+    Boolean getRunning();
+
+    /**
+     * Destroy task container.
+     */
+    void destroyTaskContainer();
+
+    /**
      * Complete task.
      *
      * @throws InterruptedException InterruptedException

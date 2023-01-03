@@ -5,6 +5,7 @@ import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
+import io.openjob.common.response.ServerWorkerStartResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.constant.ClusterConstant;
@@ -57,16 +58,29 @@ public class WorkerService {
     /**
      * Worker start
      *
-     * @param workerStartRequest start request.
+     * @param startRequest start request.
      */
-    public void workerStart(WorkerStartRequest workerStartRequest) {
+    public ServerWorkerStartResponse workerStart(WorkerStartRequest startRequest) {
+        // Check app name.
+        App app = this.checkAppName(startRequest.getAppName());
+
         // Do worker start.
-        SpringContext.getBean(this.getClass()).doWorkerStart(workerStartRequest);
+        SpringContext.getBean(this.getClass()).doWorkerStart(startRequest, app);
 
         // Akka message for worker start.
         WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
         workerJoinDTO.setClusterVersion(ClusterContext.getSystem().getClusterVersion());
         ClusterUtil.sendMessage(workerJoinDTO, ClusterContext.getCurrentNode(), this.clusterProperties.getSpreadSize(), new HashSet<>());
+
+        // Online workers  and exclude start worker.
+        Set<String> onlineWorkers = ClusterUtil.getOnlineWorkers(app.getId());
+
+        // Response
+        ServerWorkerStartResponse response = new ServerWorkerStartResponse();
+        response.setAppId(app.getId());
+        response.setAppName(app.getName());
+        response.setWorkerAddressList(onlineWorkers);
+        return response;
     }
 
     /**
@@ -75,13 +89,13 @@ public class WorkerService {
      * @param workerStartRequest workerStartRequest
      */
     @Transactional(rollbackFor = Exception.class)
-    public void doWorkerStart(WorkerStartRequest workerStartRequest) {
+    public void doWorkerStart(WorkerStartRequest workerStartRequest, App app) {
         // Refresh system.
         // Lock system cluster version.
         this.refreshManager.refreshSystem(true);
 
         // Update worker status.
-        this.updateWorkerForStart(workerStartRequest);
+        this.updateWorkerForStart(workerStartRequest, app);
 
         // Refresh cluster context.
         refreshClusterContext();
@@ -93,6 +107,9 @@ public class WorkerService {
      * @param stopReq stop request.
      */
     public void workerStop(WorkerStopRequest stopReq) {
+        // Check app name.
+        this.checkAppName(stopReq.getAppName());
+
         // Do worker stop.
         SpringContext.getBean(this.getClass()).doWorkerStop(stopReq);
 
@@ -189,13 +206,21 @@ public class WorkerService {
         log.info("Refresh app workers={}", workers.stream().map(Worker::getAddress).collect(Collectors.toList()));
     }
 
-    private void updateWorkerForStart(WorkerStartRequest startReq) {
-        // app
-        App app = appDAO.getAppByName(startReq.getAppName());
+    /**
+     * Check app name.
+     *
+     * @param appName app name.
+     * @return App
+     */
+    private App checkAppName(String appName) {
+        App app = appDAO.getAppByName(appName);
         if (Objects.isNull(app)) {
-            throw new RuntimeException(String.format("app(%s) do not exist!", startReq.getAppName()));
+            throw new RuntimeException(String.format("app(%s) do not exist!", appName));
         }
+        return app;
+    }
 
+    private void updateWorkerForStart(WorkerStartRequest startReq, App app) {
         // Update worker.
         long now = DateUtil.timestamp();
         Worker worker = workerDAO.getByAddress(startReq.getAddress());

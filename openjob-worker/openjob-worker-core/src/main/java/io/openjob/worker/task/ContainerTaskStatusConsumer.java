@@ -1,6 +1,6 @@
 package io.openjob.worker.task;
 
-import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
+public class ContainerTaskStatusConsumer extends BaseConsumer<ContainerTaskStatusRequest> {
 
     public ContainerTaskStatusConsumer(Long id,
                                        Integer consumerCoreThreadNum,
@@ -20,14 +20,13 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
                                        String consumerThreadName,
                                        Integer pollSize,
                                        String pollThreadName,
-                                       TaskQueue<T> queues) {
+                                       TaskQueue<ContainerTaskStatusRequest> queues) {
         super(id, consumerCoreThreadNum, consumerMaxThreadNum, consumerThreadName, pollSize, pollThreadName, queues);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void consume(Long id, List<T> tasks) {
-        consumerExecutor.submit(new TaskStatusConsumerRunnable((List<ContainerTaskStatusRequest>) tasks));
+    public void consume(Long id, List<ContainerTaskStatusRequest> tasks) {
+        consumerExecutor.submit(new TaskStatusConsumerRunnable(tasks));
     }
 
     private static class TaskStatusConsumerRunnable implements Runnable {
@@ -40,7 +39,7 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
         @Override
         public void run() {
             Map<Long, List<ContainerTaskStatusRequest>> groupTaskList = taskList.stream()
-                    .collect(Collectors.groupingBy(ContainerTaskStatusRequest::getJobId));
+                    .collect(Collectors.groupingBy(ContainerTaskStatusRequest::getJobInstanceId));
 
 
             for (Map.Entry<Long, List<ContainerTaskStatusRequest>> entry : groupTaskList.entrySet()) {
@@ -53,7 +52,7 @@ public class ContainerTaskStatusConsumer<T> extends BaseConsumer<T> {
                 batchRequest.setCircleId(firstTask.getCircleId());
                 batchRequest.setTaskStatusList(entry.getValue());
 
-                OpenjobWorker.atLeastOnceDelivery(batchRequest, null);
+                WorkerActorSystem.atLeastOnceDelivery(batchRequest, null);
             }
         }
     }

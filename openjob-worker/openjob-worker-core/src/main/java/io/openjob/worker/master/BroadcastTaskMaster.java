@@ -2,10 +2,12 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
+import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.JobProcessor;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -13,6 +15,7 @@ import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -46,16 +49,15 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
             e.printStackTrace();
         }
 
-        this.workerAddresses.forEach(workerAddress -> {
-            String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
-            ActorSelection workerSelection = actorContext.actorSelection(workerPath);
+        WorkerContext.getOnlineWorkers().forEach(workerAddress -> {
+            ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
 
             // Persist tasks.
-            this.persistTasks(Collections.singletonList(startRequest));
+            this.persistTasks(workerAddress, Collections.singletonList(startRequest));
 
             try {
-                FutureUtil.ask(workerSelection, startRequest, 10L);
+                FutureUtil.mustAsk(workerSelection, startRequest, WorkerResponse.class, 3000L);
             } catch (Exception e) {
                 e.printStackTrace();
             }

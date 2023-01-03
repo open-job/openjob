@@ -1,5 +1,8 @@
 package io.openjob.worker.task;
 
+import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -12,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public abstract class BaseConsumer<T> {
     protected final Long id;
     protected final Integer consumerCoreThreadNum;
@@ -56,6 +60,7 @@ public abstract class BaseConsumer<T> {
     /**
      * Start
      */
+    @SuppressWarnings("all")
     public void start() {
         // Handler thread executor.
         consumerExecutor = new ThreadPoolExecutor(
@@ -68,7 +73,7 @@ public abstract class BaseConsumer<T> {
                     private final AtomicInteger index = new AtomicInteger(1);
 
                     @Override
-                    public Thread newThread(Runnable r) {
+                    public Thread newThread(@Nonnull Runnable r) {
                         return new Thread(r, String.format("%s-%d-%d", consumerThreadName, id, index.getAndIncrement()));
                     }
                 },
@@ -95,7 +100,7 @@ public abstract class BaseConsumer<T> {
                     }
                 }
             } catch (Throwable ex) {
-                System.out.println(ex.getMessage());
+                log.warn("Task consumer failed! message={}", ex.getMessage());
             }
         });
     }

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -29,13 +31,12 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
     /**
      * Update for last report time.
      *
-     * @param id             id
+     * @param ids            ids
      * @param lastReportTime lastReportTime
-     * @param updateTime     updateTime
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.lastReportTime=?2,j.updateTime=?3 where j.id=?1")
-    Integer update(Long id, Long lastReportTime, Long updateTime);
+    @Query(value = "update JobInstance as j set j.lastReportTime=?2,j.updateTime=?2 where j.id in (?1)")
+    Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
 }

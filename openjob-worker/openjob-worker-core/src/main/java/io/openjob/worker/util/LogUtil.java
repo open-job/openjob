@@ -4,6 +4,7 @@ import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.LogContentDTO;
+import io.openjob.worker.init.WorkerConfig;
 
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public class LogUtil {
 
         // Cron job.
         LogContentDTO logContent = new LogContentDTO();
-        logContent.addWorkerAddressField(OpenjobWorker.getConfig().getWorkerAddress());
+        logContent.addWorkerAddressField(WorkerConfig.getWorkerAddress());
         if (Objects.isNull(context.getDelayTaskId())) {
             logContent.addJobIdField(context.getJobId());
             logContent.addJobInstanceIdField(context.getJobInstanceId());

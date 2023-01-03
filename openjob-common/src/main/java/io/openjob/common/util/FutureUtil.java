@@ -20,20 +20,6 @@ public class FutureUtil {
     }
 
     /**
-     * @param selection selection
-     * @param msg       msg
-     * @param seconds   seconds
-     * @return Object
-     * @throws Exception Exception
-     */
-    public static Object ask(ActorSelection selection, Object msg, Long seconds) throws Exception {
-        Timeout timeout = new Timeout(Duration.create(seconds, TimeUnit.SECONDS));
-        Future<Object> future = Patterns.ask(selection, msg, timeout);
-        return Await.result(future, timeout.duration());
-    }
-
-
-    /**
      * @param selection   selection
      * @param request     request
      * @param ignoredType ignored type

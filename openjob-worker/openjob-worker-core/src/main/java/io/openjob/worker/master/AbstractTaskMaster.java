@@ -1,29 +1,30 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
+import com.google.common.collect.Sets;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.CommonConstant;
-import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
-import io.openjob.worker.OpenjobWorker;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
-import io.openjob.worker.request.ContainerTaskStatusRequest;
+import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -46,12 +47,20 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected String localContainerPath;
 
-    protected List<String> workerAddresses;
+    /**
+     * Container workers.
+     */
+    protected Set<String> containerWorkers = Sets.newConcurrentHashSet();
 
     /**
      * Task dao.
      */
     protected TaskDAO taskDAO = TaskDAO.INSTANCE;
+
+    /**
+     * Task running status.
+     */
+    protected AtomicBoolean running = new AtomicBoolean(false);
 
     /**
      * New AbstractTaskMaster
@@ -64,8 +73,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.actorContext = actorContext;
         this.localWorkerAddress = actorContext.provider().addressString();
         this.localContainerPath = actorContext.provider().getDefaultAddress().toString() + WorkerAkkaConstant.PATH_TASK_CONTAINER;
-        this.workerAddresses = jobInstanceDTO.getWorkerAddresses();
 
+        // Initialize.
         this.init();
     }
 
@@ -90,34 +99,57 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
+        // Distribute task.
+        // Submit to queue.
+        if (!(this instanceof StandaloneTaskMaster)) {
+            DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
+            return;
+        }
+
         // Update list
-        List<Task> updateList = new ArrayList<>();
-        for (ContainerTaskStatusRequest statusRequest : batchRequest.getTaskStatusList()) {
-            String taskUniqueId = statusRequest.getTaskUniqueId();
-            updateList.add(new Task(taskUniqueId, statusRequest.getStatus()));
-        }
+        List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
+            String taskUniqueId = s.getTaskUniqueId();
+            return new Task(taskUniqueId, s.getStatus());
+        }).collect(Collectors.toList());
 
-        // Group by status
-        Map<Integer, List<Task>> groupList = updateList.stream().collect(Collectors.groupingBy(Task::getStatus));
+        // Update by status.
+        updateList.stream().collect(Collectors.groupingBy(Task::getStatus))
+                .forEach((status, groupList) -> taskDAO.batchUpdateStatusByTaskId(groupList, status));
 
-        // Update by group
-        for (Map.Entry<Integer, List<Task>> entry : groupList.entrySet()) {
-            taskDAO.batchUpdateStatusByTaskId(entry.getValue(), entry.getKey());
-        }
-        boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
-        if (isStandalone && this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
+        // Standalone task.
+        // Do Complete task.
+        if (this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
             try {
                 this.completeTask();
             } catch (InterruptedException exception) {
-                exception.printStackTrace();
+                throw new RuntimeException(exception);
             }
         }
+    }
+
+    @Override
+    public Boolean getRunning() {
+        return this.running.get();
     }
 
     @Override
     public void stop() {
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+
+        // Destroy task container.
+        this.destroyTaskContainer();
+    }
+
+    @Override
+    public void destroyTaskContainer() {
+        this.containerWorkers.forEach(w -> {
+            MasterDestroyContainerRequest destroyRequest = new MasterDestroyContainerRequest();
+            destroyRequest.setJobId(this.jobInstanceDTO.getJobId());
+            destroyRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+            destroyRequest.setWorkerAddress(w);
+            WorkerActorSystem.atLeastOnceDelivery(destroyRequest, null);
+        });
     }
 
     protected Long acquireTaskId() {
@@ -125,28 +157,15 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected MasterStartContainerRequest getMasterStartContainerRequest() {
-        MasterStartContainerRequest startReq = new MasterStartContainerRequest();
+        MasterStartContainerRequest startReq = this.getJobMasterStartContainerRequest();
         startReq.setJobId(this.jobInstanceDTO.getJobId());
         startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         startReq.setTaskId(this.acquireTaskId());
-        startReq.setJobParams(this.jobInstanceDTO.getJobParams());
-        startReq.setExecuteType(this.jobInstanceDTO.getExecuteType());
-        startReq.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
-        startReq.setProcessorType(this.jobInstanceDTO.getProcessorType());
-        startReq.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
-        startReq.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
-        startReq.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
-        startReq.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
-        startReq.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-        startReq.setConcurrency(this.jobInstanceDTO.getConcurrency());
-        startReq.setMasterAkkaPath(this.localContainerPath);
         startReq.setCircleId(circleIdGenerator.get());
-        startReq.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
-        startReq.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
         return startReq;
     }
 
-    protected Task convertToTask(MasterStartContainerRequest startRequest) {
+    protected Task convertToTask(MasterStartContainerRequest startRequest, String workerAddress) {
         Task task = new Task();
         task.setJobId(startRequest.getJobId());
         task.setInstanceId(startRequest.getJobInstanceId());
@@ -155,8 +174,35 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         task.setTaskParentId(startRequest.getParentTaskUniqueId());
         task.setTaskName(startRequest.getTaskName());
         task.setStatus(TaskStatusEnum.INIT.getStatus());
-        task.setWorkerAddress(this.localWorkerAddress);
+        task.setWorkerAddress(workerAddress);
         return task;
+    }
+
+    protected MasterStartContainerRequest convertToMasterStartContainerRequest(Task task) {
+        MasterStartContainerRequest containerRequest = this.getJobMasterStartContainerRequest();
+        containerRequest.setJobId(task.getJobId());
+        containerRequest.setJobInstanceId(task.getInstanceId());
+        containerRequest.setTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskId()));
+        containerRequest.setParentTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskParentId()));
+        containerRequest.setCircleId(task.getCircleId());
+        containerRequest.setTaskName(task.getTaskName());
+        return containerRequest;
+    }
+
+    protected MasterStartContainerRequest getJobMasterStartContainerRequest() {
+        MasterStartContainerRequest containerRequest = new MasterStartContainerRequest();
+        containerRequest.setJobParams(this.jobInstanceDTO.getJobParams());
+        containerRequest.setExecuteType(this.jobInstanceDTO.getExecuteType());
+        containerRequest.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
+        containerRequest.setProcessorType(this.jobInstanceDTO.getProcessorType());
+        containerRequest.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
+        containerRequest.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());
+        containerRequest.setFailRetryTimes(this.jobInstanceDTO.getFailRetryTimes());
+        containerRequest.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
+        containerRequest.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
+        containerRequest.setConcurrency(this.jobInstanceDTO.getConcurrency());
+        containerRequest.setMasterAkkaPath(String.format("%s%s", this.localWorkerAddress, AkkaConstant.WORKER_PATH_TASK_MASTER));
+        return containerRequest;
     }
 
     protected WorkerJobInstanceTaskRequest convertToTaskRequest(Task task) {
@@ -180,6 +226,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         return nonFinishCount <= 0;
     }
 
+    @SuppressWarnings("all")
     protected void doCompleteTask() {
         long circleId = this.circleIdGenerator.get();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
@@ -211,7 +258,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             instanceRequest.setTaskRequestList(taskRequestList);
             instanceRequest.setPage(page);
 
-            OpenjobWorker.atLeastOnceDelivery(instanceRequest, null);
+            WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());

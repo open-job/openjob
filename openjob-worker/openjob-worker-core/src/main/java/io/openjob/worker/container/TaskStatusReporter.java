@@ -12,11 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TaskStatusReporter {
     private static final TaskQueue<ContainerTaskStatusRequest> TASK_QUEUE;
-    private static final ContainerTaskStatusConsumer<ContainerTaskStatusRequest> TASK_CONSUMER;
+    private static final ContainerTaskStatusConsumer TASK_CONSUMER;
 
     static {
         TASK_QUEUE = new TaskQueue<>(0L, 1024);
-        TASK_CONSUMER = new ContainerTaskStatusConsumer<>(
+        TASK_CONSUMER = new ContainerTaskStatusConsumer(
                 0L,
                 1,
                 1,
