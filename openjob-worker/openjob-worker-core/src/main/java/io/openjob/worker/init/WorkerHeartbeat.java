@@ -38,6 +38,11 @@ public class WorkerHeartbeat {
      */
     private final ScheduledExecutorService heartbeatService;
 
+    /**
+     * New WorkerHeartbeat
+     *
+     * @param openjobWorker openjobWorker
+     */
     public WorkerHeartbeat(OpenjobWorker openjobWorker) {
         this.openjobWorker = openjobWorker;
         this.heartbeatService = new ScheduledThreadPoolExecutor(
@@ -47,6 +52,9 @@ public class WorkerHeartbeat {
         );
     }
 
+    /**
+     * Init
+     */
     public void init() {
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {

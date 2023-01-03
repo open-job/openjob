@@ -36,6 +36,11 @@ public class TaskMasterPool {
         TASK_MASTER_POOL.remove(jobInstanceId);
     }
 
+    /**
+     * Get running task.
+     *
+     * @return List
+     */
     public static List<Long> getRunningTask() {
         List<Long> jobInstanceIds = Lists.newArrayList();
         TASK_MASTER_POOL.forEach((i, t) -> {

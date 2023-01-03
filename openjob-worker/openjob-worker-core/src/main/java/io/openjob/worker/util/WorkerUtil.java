@@ -23,7 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class WorkerUtil {
 
-
+    /**
+     * Select one worker.
+     *
+     * @param excludeWorkers exclude workers.
+     * @return String
+     */
     public static String selectOneWorker(Set<String> excludeWorkers) {
         List<String> workers = new ArrayList<>(WorkerContext.getOnlineWorkers());
         workers.removeAll(excludeWorkers);

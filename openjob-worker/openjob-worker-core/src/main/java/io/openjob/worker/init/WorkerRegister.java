@@ -21,7 +21,10 @@ public class WorkerRegister {
         this.openjobWorker = openjobWorker;
     }
 
-    public void register() throws Exception {
+    /**
+     * Register
+     */
+    public void register() {
         String serverAddress = WorkerConfig.getServerHost();
 
         WorkerStartRequest startReq = new WorkerStartRequest();

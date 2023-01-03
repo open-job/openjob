@@ -84,7 +84,7 @@ public class TaskContainerActor extends BaseActor {
      */
     public void handleDestroyContainer(MasterDestroyContainerRequest destroyReq) {
         TaskContainer taskContainer = TaskContainerPool.get(destroyReq.getJobInstanceId());
-        if (Objects.nonNull(taskContainer)){
+        if (Objects.nonNull(taskContainer)) {
             taskContainer.destroy();
         }
 

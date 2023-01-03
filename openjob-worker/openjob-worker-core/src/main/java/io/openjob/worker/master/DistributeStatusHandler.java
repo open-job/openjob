@@ -31,6 +31,11 @@ public class DistributeStatusHandler {
         TASK_CONSUMER.start();
     }
 
+    /**
+     * Handle
+     *
+     * @param statusRequestList statusRequestList
+     */
     public static void handle(List<ContainerTaskStatusRequest> statusRequestList) {
         statusRequestList.forEach(s -> {
             try {

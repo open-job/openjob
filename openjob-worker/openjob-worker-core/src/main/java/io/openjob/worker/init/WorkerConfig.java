@@ -47,6 +47,9 @@ public class WorkerConfig {
      */
     private static String serverHost;
 
+    /**
+     * Init
+     */
     public void init() {
         // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);

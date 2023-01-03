@@ -73,6 +73,7 @@ public interface TaskPersistence {
      * @param status        status
      * @param workerAddress worker address
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException;
 

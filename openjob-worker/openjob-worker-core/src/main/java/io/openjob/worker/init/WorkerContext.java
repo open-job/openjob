@@ -16,31 +16,42 @@ public class WorkerContext {
     /**
      * Online workers.
      */
-    private static final Set<String> onlineWorkers = Sets.newConcurrentHashSet();
+    private static final Set<String> ONLINE_WORKERS = Sets.newConcurrentHashSet();
 
     /**
      * App id.
      */
-    private static final AtomicLong atomicAppId = new AtomicLong(0);
+    private static final AtomicLong ATOMIC_APPID = new AtomicLong(0);
 
+    /**
+     * Init
+     *
+     * @param appId      appId
+     * @param workerList workerList
+     */
     public void init(Long appId, Set<String> workerList) {
-        atomicAppId.set(appId);
-        onlineWorkers.addAll(workerList);
+        ATOMIC_APPID.set(appId);
+        ONLINE_WORKERS.addAll(workerList);
 
         log.info("Worker context initialized! appId={} onlineWorkers={}", appId, workerList);
     }
 
+    /**
+     * Refresh online workers.
+     *
+     * @param onlineWorkers online workers.
+     */
     public synchronized void refreshOnlineWorkers(Set<String> onlineWorkers) {
-        WorkerContext.onlineWorkers.clear();
-        WorkerContext.onlineWorkers.addAll(onlineWorkers);
+        WorkerContext.ONLINE_WORKERS.clear();
+        WorkerContext.ONLINE_WORKERS.addAll(onlineWorkers);
         log.info("Worker context refresh online workers! onlineWorkers={}", onlineWorkers);
     }
 
     public static Set<String> getOnlineWorkers() {
-        return onlineWorkers;
+        return ONLINE_WORKERS;
     }
 
     public static Long getAppId() {
-        return atomicAppId.get();
+        return ATOMIC_APPID.get();
     }
 }

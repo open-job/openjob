@@ -37,6 +37,9 @@ public class WorkerActorSystem {
      */
     private static ActorRef persistentRoutingRef;
 
+    /**
+     * Init
+     */
     public void init() {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);

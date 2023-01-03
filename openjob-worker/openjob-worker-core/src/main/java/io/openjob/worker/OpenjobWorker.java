@@ -27,6 +27,9 @@ public class OpenjobWorker implements InitializingBean {
     private final WorkerShutdown workerShutdown;
     private final WorkerContext workerContext;
 
+    /**
+     * New OpenjobWorker
+     */
     public OpenjobWorker() {
         this.workerConfig = new WorkerConfig();
         this.workerActorSystem = new WorkerActorSystem();

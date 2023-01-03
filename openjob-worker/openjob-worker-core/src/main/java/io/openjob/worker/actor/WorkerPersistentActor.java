@@ -84,6 +84,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         });
     }
 
+    /**
+     * Handle destroy container.
+     *
+     * @param destroyRequest destroyRequest
+     */
     public void handleDestroyContainer(MasterDestroyContainerRequest destroyRequest) {
         ActorSelection workerContainerActor = WorkerUtil.getWorkerContainerActor(destroyRequest.getWorkerAddress());
         deliver(workerContainerActor, deliveryId -> {

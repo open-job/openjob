@@ -21,6 +21,12 @@ public class TaskUtil {
         return String.format("%d_%d_%d_%d", jobId, instanceId, circleId, taskId);
     }
 
+    /**
+     * Get unique last id.
+     *
+     * @param uniqueId uniqueId
+     * @return Long
+     */
     public static Long getRandomUniqueIdLastId(String uniqueId) {
         // Empty unique id.
         if (StringUtils.isEmpty(uniqueId)) {

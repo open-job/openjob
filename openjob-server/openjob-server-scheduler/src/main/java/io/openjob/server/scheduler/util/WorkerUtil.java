@@ -13,6 +13,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class WorkerUtil {
 
+    /**
+     * Select one worker by appid.
+     *
+     * @param appId appId
+     * @return WorkerDTO
+     */
     public static WorkerDTO selectWorkerByAppId(Long appId) {
         List<WorkerDTO> workers = ClusterContext.getWorkersByAppId(appId);
         if (CollectionUtils.isEmpty(workers)) {
