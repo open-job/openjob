@@ -4,6 +4,7 @@ import io.openjob.worker.master.MapReduceTaskMaster;
 import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.request.MasterStartContainerRequest;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class MapReduceTaskConsumer extends BaseConsumer<MasterStartContainerRequ
         @Override
         public void run() {
             MapReduceTaskMaster taskMaster = (MapReduceTaskMaster) TaskMasterPool.get(this.jobInstanceId);
-            taskMaster.dispatchTasks(this.taskList, false);
+            taskMaster.dispatchTasks(this.taskList, false, Collections.emptySet());
             this.consumer.activePollNum.decrementAndGet();
         }
     }

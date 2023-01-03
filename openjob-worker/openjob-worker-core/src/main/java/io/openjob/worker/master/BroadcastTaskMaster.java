@@ -50,12 +50,11 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
         }
 
         WorkerContext.getOnlineWorkers().forEach(workerAddress -> {
-            String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
-            ActorSelection workerSelection = actorContext.actorSelection(workerPath);
+            ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
 
             // Persist tasks.
-            this.persistTasks(workerAddress, Collections.singletonList(startRequest), false);
+            this.persistTasks(workerAddress, Collections.singletonList(startRequest));
 
             try {
                 FutureUtil.mustAsk(workerSelection, startRequest, WorkerResponse.class, 3000L);

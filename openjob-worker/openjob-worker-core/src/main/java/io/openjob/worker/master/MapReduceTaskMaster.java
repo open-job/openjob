@@ -94,7 +94,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 
-        this.dispatchTasks(startRequests, false);
+        this.dispatchTasks(startRequests, false, Collections.emptySet());
     }
 
     @Override

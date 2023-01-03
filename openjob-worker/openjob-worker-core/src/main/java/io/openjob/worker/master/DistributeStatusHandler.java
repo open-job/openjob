@@ -20,7 +20,7 @@ public class DistributeStatusHandler {
         TASK_QUEUE = new TaskQueue<>(0L, 10240);
         TASK_CONSUMER = new DistributeStatusConsumer(
                 0L,
-                4,
+                2,
                 8,
                 "Openjob-distribute-status",
                 50,
@@ -36,7 +36,7 @@ public class DistributeStatusHandler {
             try {
                 TASK_QUEUE.submit(s);
             } catch (InterruptedException e) {
-                log.error("Task Status report failed!", e);
+                log.error("Distribute status handle failed!", e);
             }
         });
     }

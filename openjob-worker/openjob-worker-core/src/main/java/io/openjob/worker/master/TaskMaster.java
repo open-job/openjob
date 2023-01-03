@@ -2,8 +2,6 @@ package io.openjob.worker.master;
 
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 
-import java.util.Set;
-
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -21,6 +19,11 @@ public interface TaskMaster {
      * @return Boolean
      */
     Boolean getRunning();
+
+    /**
+     * Destroy task container.
+     */
+    void destroyTaskContainer();
 
     /**
      * Complete task.

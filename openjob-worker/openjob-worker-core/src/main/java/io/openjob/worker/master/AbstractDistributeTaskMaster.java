@@ -2,6 +2,7 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
@@ -16,7 +17,10 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -64,14 +68,41 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
      * @param startRequests start requests.
      * @param isFailover    is failover
      */
-    public void dispatchTasks(List<MasterStartContainerRequest> startRequests, Boolean isFailover) {
-        String workerAddress = WorkerUtil.selectOneWorker();
-        String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
-        ActorSelection workerSelection = actorContext.actorSelection(workerPath);
+    public void dispatchTasks(List<MasterStartContainerRequest> startRequests, Boolean isFailover, Set<String> failWorkers) {
+        String workerAddress = WorkerUtil.selectOneWorker(failWorkers);
+        if (Objects.isNull(workerAddress)) {
+            log.error("Not available worker to dispatch! tasks={} failover={}", startRequests, isFailover);
+            return;
+        }
 
-        // Persist tasks.
-        // Notice h2 write delay.
-        this.persistTasks(workerAddress, startRequests, isFailover);
+        try {
+            this.doDispatchTasks(workerAddress, startRequests, isFailover);
+        } catch (Throwable e) {
+            // Add fail workers.
+            failWorkers.add(workerAddress);
+
+            // Select worker address.
+            this.dispatchTasks(startRequests, isFailover, failWorkers);
+        }
+    }
+
+    /**
+     * Dispatch tasks.
+     *
+     * @param workerAddress worker dddress
+     * @param startRequests start requests.
+     * @param isFailover    is failover
+     */
+    public void doDispatchTasks(String workerAddress, List<MasterStartContainerRequest> startRequests, Boolean isFailover) {
+        ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
+
+        // Add container workers.
+        this.containerWorkers.add(workerAddress);
+
+        // Not failover to persist tasks.
+        if (!isFailover) {
+            this.persistTasks(workerAddress, startRequests);
+        }
 
         // Switch running status.
         if (!this.running.get()) {
@@ -83,32 +114,17 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         batchRequest.setStartContainerRequests(startRequests);
 
-        try {
-            FutureUtil.mustAsk(workerSelection, batchRequest, WorkerResponse.class, 3000L);
-        } catch (Exception e) {
-            List<Task> updateTaskList = startRequests.stream().map(m -> {
-                Task task = new Task();
-                task.setTaskId(m.getTaskUniqueId());
-                task.setStatus(TaskStatusEnum.FAILOVER.getStatus());
-                return task;
-            }).collect(Collectors.toList());
+        FutureUtil.mustAsk(workerSelection, batchRequest, WorkerResponse.class, 3000L);
 
-            // Update task to failover.
-            this.taskDAO.batchUpdateStatusByTaskId(updateTaskList, TaskStatusEnum.INIT.getStatus());
-
-            log.warn("Dispatch task list failed! taskList={}", updateTaskList);
+        // Failover to update status.
+        if (isFailover) {
+            List<String> taskIds = startRequests.stream().map(MasterStartContainerRequest::getTaskUniqueId).collect(Collectors.toList());
+            this.taskDAO.batchUpdateStatusAndWorkerAddressByTaskId(taskIds, TaskStatusEnum.INIT.getStatus(), workerAddress);
         }
     }
 
-    protected void persistTasks(String workerAddress, List<MasterStartContainerRequest> startRequests, Boolean isFailover) {
+    protected void persistTasks(String workerAddress, List<MasterStartContainerRequest> startRequests) {
         List<Task> taskList = startRequests.stream().map(m -> this.convertToTask(m, workerAddress)).collect(Collectors.toList());
-
-        // Update task.
-        if (isFailover) {
-            List<String> taskIds = taskList.stream().map(Task::getTaskId).collect(Collectors.toList());
-            this.taskDAO.batchUpdateStatusAndWorkerAddressByTaskId(taskIds, TaskStatusEnum.INIT.getStatus(), workerAddress);
-            return;
-        }
 
         // Batch add task.
         taskDAO.batchAdd(taskList);
@@ -190,7 +206,11 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                         .map(this.taskMaster::convertToMasterStartContainerRequest)
                         .collect(Collectors.toList());
 
-                this.taskMaster.dispatchTasks(startRequests, true);
+                try {
+                    this.taskMaster.dispatchTasks(startRequests, true, Collections.emptySet());
+                } catch (Throwable e) {
+                    log.error("Task failover dispatch task failed! message={}", e.getMessage());
+                }
             }
         }
     }

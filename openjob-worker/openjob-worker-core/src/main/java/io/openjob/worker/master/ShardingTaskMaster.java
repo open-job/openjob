@@ -8,6 +8,7 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,6 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
             startContainerRequestList.add(startRequest);
         }
 
-        this.dispatchTasks(startContainerRequestList, false);
+        this.dispatchTasks(startContainerRequestList, false, Collections.emptySet());
     }
 }

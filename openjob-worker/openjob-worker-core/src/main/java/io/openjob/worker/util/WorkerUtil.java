@@ -5,16 +5,16 @@ import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.exception.BatchUpdateStatusException;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -23,8 +23,17 @@ import java.util.function.Supplier;
 @Slf4j
 public class WorkerUtil {
 
-    public static String selectOneWorker() {
+
+    public static String selectOneWorker(Set<String> excludeWorkers) {
         List<String> workers = new ArrayList<>(WorkerContext.getOnlineWorkers());
+        workers.removeAll(excludeWorkers);
+
+        // Not available worker.
+        if (CollectionUtils.isEmpty(workers)) {
+            return null;
+        }
+
+        // Random one worker.
         int index = ThreadLocalRandom.current().nextInt(workers.size());
         return workers.get(index);
     }
@@ -65,6 +74,10 @@ public class WorkerUtil {
         return WorkerActorSystem.getActorSystem().actorSelection(getServerActorPath(address, AkkaConstant.SERVER_ACTOR_WORKER_DELAY_INSTANCE_STATUS));
     }
 
+    public static ActorSelection getWorkerContainerActor(String address) {
+        return WorkerActorSystem.getActorSystem().actorSelection(getWorkerActorPath(address, WorkerAkkaConstant.PATH_TASK_CONTAINER));
+    }
+
     /**
      * @param address address
      * @param name    actor name
@@ -78,36 +91,7 @@ public class WorkerUtil {
         return String.format("%s:%d", WorkerConfig.getServerHost(), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
     }
 
-    public static String getWorkerMasterActorPath(String address) {
-        return getWorkerActorPath(address, AkkaConstant.WORKER_PATH_TASK_MASTER);
-    }
-
-    public static String getWorkerContainerActorPath(String address) {
-        return getWorkerActorPath(address, WorkerAkkaConstant.PATH_TASK_CONTAINER);
-    }
-
     public static String getWorkerActorPath(String address, String path) {
         return String.format("akka://%s@%s%s", AkkaConstant.WORKER_SYSTEM_NAME, address, path);
-    }
-
-    /**
-     * Batch update status supplier.
-     *
-     * @param retryTimes retryTimes
-     * @param supplier   supplier
-     * @return Integer
-     * @throws InterruptedException exception
-     */
-    public static Integer batchUpdateStatusSupplier(Integer retryTimes, Supplier<Integer> supplier) throws InterruptedException {
-        for (int i = 0; i < retryTimes; i++) {
-            try {
-                return supplier.get();
-            } catch (BatchUpdateStatusException exception) {
-                int times = (i + 1);
-                log.warn("Batch update supplier failed! times={} {}", times, exception.getMessage());
-                Thread.sleep(times * 1000L);
-            }
-        }
-        return 0;
     }
 }

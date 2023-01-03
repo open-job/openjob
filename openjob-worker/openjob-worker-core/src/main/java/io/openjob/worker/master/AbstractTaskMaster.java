@@ -1,9 +1,9 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
+import com.google.common.collect.Sets;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.CommonConstant;
-import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
@@ -16,13 +16,14 @@ import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
+import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -45,6 +46,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected String localWorkerAddress;
 
     protected String localContainerPath;
+
+    /**
+     * Container workers.
+     */
+    protected Set<String> containerWorkers = Sets.newConcurrentHashSet();
 
     /**
      * Task dao.
@@ -77,11 +83,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     @Override
-    public Boolean getRunning() {
-        return this.running.get();
-    }
-
-    @Override
     public void completeTask() throws InterruptedException {
         // Do complete task.
         this.doCompleteTask();
@@ -98,7 +99,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
-        // Distribute task
+        // Distribute task.
+        // Submit to queue.
         if (!(this instanceof StandaloneTaskMaster)) {
             DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
             return;
@@ -110,25 +112,44 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             return new Task(taskUniqueId, s.getStatus());
         }).collect(Collectors.toList());
 
+        // Update by status.
         updateList.stream().collect(Collectors.groupingBy(Task::getStatus))
-                .forEach((status, groupList) -> {
-                    taskDAO.batchUpdateStatusByTaskId(groupList, status);
-                });
+                .forEach((status, groupList) -> taskDAO.batchUpdateStatusByTaskId(groupList, status));
 
-        boolean isStandalone = ExecuteTypeEnum.STANDALONE.getType().equals(this.jobInstanceDTO.getExecuteType());
-        if (isStandalone && this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
+        // Standalone task.
+        // Do Complete task.
+        if (this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
             try {
                 this.completeTask();
             } catch (InterruptedException exception) {
-                exception.printStackTrace();
+                throw new RuntimeException(exception);
             }
         }
+    }
+
+    @Override
+    public Boolean getRunning() {
+        return this.running.get();
     }
 
     @Override
     public void stop() {
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+
+        // Destroy task container.
+        this.destroyTaskContainer();
+    }
+
+    @Override
+    public void destroyTaskContainer() {
+        this.containerWorkers.forEach(w -> {
+            MasterDestroyContainerRequest destroyRequest = new MasterDestroyContainerRequest();
+            destroyRequest.setJobId(this.jobInstanceDTO.getJobId());
+            destroyRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+            destroyRequest.setWorkerAddress(w);
+            WorkerActorSystem.atLeastOnceDelivery(destroyRequest, null);
+        });
     }
 
     protected Long acquireTaskId() {
@@ -202,12 +223,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
         Integer nonFinishCount = taskDAO.countTask(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST);
-        log.error("nonFinishCount=" + nonFinishCount);
-
-        System.out.println("non2FinishCount=" + taskDAO.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.RUNNING.getStatus())));
         return nonFinishCount <= 0;
     }
 
+    @SuppressWarnings("all")
     protected void doCompleteTask() {
         long circleId = this.circleIdGenerator.get();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();

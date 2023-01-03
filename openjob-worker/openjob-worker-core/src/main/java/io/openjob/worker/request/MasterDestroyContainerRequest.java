@@ -16,5 +16,5 @@ public class MasterDestroyContainerRequest implements Serializable {
 
     private Long jobInstanceId;
 
-    private Long taskId;
+    private String workerAddress;
 }
