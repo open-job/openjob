@@ -87,7 +87,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
             // check perms for user
             if (!checkUserPerm(route, user)) {
-                throw AdminHttpStatusEnum.FORBIDDEN.newException();
+                AdminHttpStatusEnum.FORBIDDEN.throwException();
             }
             return true;
         }
@@ -96,13 +96,13 @@ public class AccessInterceptor implements HandlerInterceptor {
         if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
             if (StringUtils.isBlank(sessKey)) {
-                throw AdminHttpStatusEnum.UNAUTHORIZED.newException();
+                AdminHttpStatusEnum.UNAUTHORIZED.throwException();
             }
 
             // check perms for user
             AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
             if (!checkUserPerm(route, user)) {
-                throw AdminHttpStatusEnum.FORBIDDEN.newException();
+                AdminHttpStatusEnum.FORBIDDEN.throwException();
             }
         }
 
@@ -141,7 +141,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     private Boolean checkUserPerm(String route, AdminUserLoginVO user) {
         if (Objects.isNull(user)) {
-            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
         if (user.getSupperAdmin() || notAuthRoutes.contains(route)) {

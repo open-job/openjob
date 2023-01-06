@@ -107,19 +107,19 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private void checkLoginUser(AdminUserDTO entDTO, String passwd) {
         if (Objects.isNull(entDTO)) {
-            throw AdminHttpStatusEnum.NOT_FOUND.newException();
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         if (CommonUtil.isTrue(entDTO.getDeleted())) {
-            throw AdminHttpStatusEnum.NOT_FOUND.newException();
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         if (!HmacUtil.verifyPasswd(entDTO.getPasswd(), passwd, userProperties.getPasswdSalt())) {
-            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
         if (CollectionUtils.isEmpty(entDTO.getRoleIds())) {
-            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
     }
 
@@ -131,7 +131,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         // query user role and perms
         List<AdminRoleDTO> roles = adminRoleData.getByIds(entDTO.getRoleIds());
         if (CollectionUtils.isEmpty(roles)) {
-            throw AdminHttpStatusEnum.NOT_FOUND.newException();
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         boolean isAdmin = false;
@@ -235,7 +235,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     public AdminUserLogoutVO logout(AdminUserLogoutRequest reqDTO, String sessKey) {
         AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
         if (Objects.isNull(user)) {
-            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
         // remove session data
