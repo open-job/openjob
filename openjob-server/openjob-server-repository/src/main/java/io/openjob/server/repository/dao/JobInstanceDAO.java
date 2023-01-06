@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.server.repository.entity.JobInstance;
 
 import java.util.List;
@@ -34,4 +35,23 @@ public interface JobInstanceDAO {
      * @return Integer
      */
     Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
+
+    /**
+     * Get failover list.
+     *
+     * @param lastReportTime last report time.
+     * @param instanceStatus instance status.
+     * @return List
+     */
+    List<JobInstance> getFailoverList(Long lastReportTime, InstanceStatusEnum instanceStatus);
+
+    /**
+     * Update to running.
+     *
+     * @param id                 id
+     * @param workerAddress      worker address
+     * @param instanceStatusEnum instance status
+     * @return Integer
+     */
+    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum);
 }

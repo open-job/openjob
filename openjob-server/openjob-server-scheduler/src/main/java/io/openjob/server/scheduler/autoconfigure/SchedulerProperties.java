@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "openjob.scheduler")
 public class SchedulerProperties {
+    private Integer instanceFailPeriodTime = 15;
     private Delay delay;
 
     @Data

@@ -17,39 +17,29 @@ public enum InstanceStatusEnum {
     WAITING(1, "waiting"),
 
     /**
-     * Has dispatch to worker.
-     */
-    DISPATCHED(3, "dispatched"),
-
-    /**
-     * Worker received.
-     */
-    RECEIVED(5, "received"),
-
-    /**
      * Running.
      */
-    RUNNING(7, "running"),
+    RUNNING(5, "running"),
 
     /**
      * Success.
      */
-    SUCCESS(9, "success"),
+    SUCCESS(10, "success"),
 
     /**
      * Fail.
      */
-    FAIL(11, "fail"),
+    FAIL(15, "fail"),
 
     /**
      * Stop.
      */
-    STOP(13, "stop"),
+    STOP(20, "stop"),
 
     /**
      * Cancel.
      */
-    CANCEL(15, "cancel"),
+    CANCEL(25, "cancel"),
     ;
 
     private final Integer status;

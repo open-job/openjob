@@ -1,10 +1,14 @@
 package io.openjob.server.scheduler.timer;
 
+import io.openjob.common.SpringContext;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.scheduler.util.WorkerUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,6 +66,9 @@ public class SchedulerTimerTask extends AbstractTimerTask {
 
             FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, WorkerResponse.class, 3000L);
             log.info("Task dispatch success! taskId={}", this.taskId);
+
+            // Update to running status.
+            SpringContext.getBean(JobInstanceDAO.class).updateByRunning(this.taskId, workerDTO.getAddress(), InstanceStatusEnum.RUNNING);
         } catch (Throwable ex) {
             log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());
         }

@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.JobInstance;
@@ -36,5 +37,15 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime) {
         return this.jobInstanceRepository.updateLastReportTimeByIds(ids, lastReportTime);
+    }
+
+    @Override
+    public List<JobInstance> getFailoverList(Long lastReportTime, InstanceStatusEnum instanceStatus) {
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndStatus(lastReportTime, instanceStatus.getStatus());
+    }
+
+    @Override
+    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance) {
+        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), DateUtil.timestamp());
     }
 }
