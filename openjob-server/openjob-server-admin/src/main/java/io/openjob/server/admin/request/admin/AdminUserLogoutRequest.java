@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.user;
+package io.openjob.server.admin.request.admin;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;

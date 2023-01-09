@@ -3,9 +3,9 @@ package io.openjob.server.admin.interceptor;
 import com.github.benmanes.caffeine.cache.Cache;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
+import io.openjob.server.admin.dto.AdminUserSessionDTO;
 import io.openjob.server.admin.service.AdminLoginService;
 import io.openjob.server.admin.vo.part.PermItemVO;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -34,20 +34,20 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     private final AdminLoginService adminLoginService;
 
-    private final Cache<String, AdminUserLoginVO> loginCache;
+    private final Cache<String, AdminUserSessionDTO> loginCache;
 
     private final List<String> noLoginRoutes;
 
     private final List<String> noLoginPrefixes;
 
     /**
-     * not need auth perms after login.
+     * can access after login, not need config perms.
      * - eg: logout
      */
     private final List<String> notAuthRoutes;
 
     @Autowired
-    public AccessInterceptor(AdminLoginService adminLoginService, Cache<String, AdminUserLoginVO> loginCache) {
+    public AccessInterceptor(AdminLoginService adminLoginService, Cache<String, AdminUserSessionDTO> loginCache) {
         this.adminLoginService = adminLoginService;
         this.loginCache = loginCache;
 
@@ -66,6 +66,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
         notAuthRoutes = new ArrayList<>();
         notAuthRoutes.add("/admin/logout");
+        notAuthRoutes.add("/admin/user-info");
     }
 
     /**
@@ -83,7 +84,7 @@ public class AccessInterceptor implements HandlerInterceptor {
         // api auth
         String token = request.getHeader(AdminConstant.HEADER_TOKEN_KEY);
         if (StringUtils.isNotBlank(token)) {
-            AdminUserLoginVO user = adminLoginService.authByToken(token);
+            AdminUserSessionDTO user = adminLoginService.authByToken(token);
 
             // check perms for user
             if (!checkUserPerm(route, user)) {
@@ -100,7 +101,7 @@ public class AccessInterceptor implements HandlerInterceptor {
             }
 
             // check perms for user
-            AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
+            AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
             if (!checkUserPerm(route, user)) {
                 AdminHttpStatusEnum.FORBIDDEN.throwException();
             }
@@ -139,7 +140,7 @@ public class AccessInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    private Boolean checkUserPerm(String route, AdminUserLoginVO user) {
+    private Boolean checkUserPerm(String route, AdminUserSessionDTO user) {
         if (Objects.isNull(user)) {
             AdminHttpStatusEnum.FORBIDDEN.throwException();
         }

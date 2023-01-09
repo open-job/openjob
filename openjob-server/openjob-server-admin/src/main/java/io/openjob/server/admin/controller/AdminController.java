@@ -2,14 +2,17 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.constant.AdminConstant;
-import io.openjob.server.admin.request.user.AdminUserLoginRequest;
-import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
+import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
+import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
+import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
 import io.openjob.server.admin.service.AdminLoginService;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
-import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
+import io.openjob.server.admin.vo.admin.AdminUserLoginVO;
+import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
+import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -40,12 +43,25 @@ public class AdminController {
         return Result.success(this.adminLoginService.login(request));
     }
 
+    @ApiOperation("login user info, menus, perms")
+    @PostMapping("/user-info")
+    public Result<LoginUserInfoVO> loginUserInfo(
+            @RequestBody LoginUserInfoRequest request,
+            @RequestHeader HttpHeaders headers
+    ) {
+        String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
+
+        return Result.success(this.adminLoginService.loginUserInfo(request, sessKey));
+    }
+
     @ApiOperation("admin user logout")
     @PostMapping("/logout")
     public Result<AdminUserLogoutVO> logout(
             @RequestBody AdminUserLogoutRequest request,
-            @RequestHeader(name = AdminConstant.HEADER_SESSION_KEY) String sessKey
+            @RequestHeader HttpHeaders headers
     ) {
+        String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
+
         return Result.success(this.adminLoginService.logout(request, sessKey));
     }
 

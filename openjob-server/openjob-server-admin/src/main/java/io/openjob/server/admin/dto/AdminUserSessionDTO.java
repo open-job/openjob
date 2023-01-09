@@ -1,6 +1,7 @@
 package io.openjob.server.admin.dto;
 
-import io.openjob.server.repository.dto.json.MenuMetaDTO;
+import io.openjob.server.admin.vo.part.MenuItemVO;
+import io.openjob.server.admin.vo.part.PermItemVO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -39,18 +40,18 @@ public class AdminUserSessionDTO {
     private String token;
 
     /**
+     * Web auth key
+     */
+    private String sessionKey;
+
+    /**
+     * menus for current user.
+     */
+    private List<MenuItemVO> menus;
+
+    /**
      * perms for current user.
      */
-    private List<PermItem> perms;
+    private List<PermItemVO> perms;
 
-    @Data
-    public static class PermItem {
-
-        private String name;
-
-        private String path;
-
-        private MenuMetaDTO meta;
-
-    }
 }

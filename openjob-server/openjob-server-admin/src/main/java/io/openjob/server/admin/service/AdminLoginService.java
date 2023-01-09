@@ -1,9 +1,12 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.user.AdminUserLoginRequest;
-import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
-import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
+import io.openjob.server.admin.dto.AdminUserSessionDTO;
+import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
+import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
+import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
+import io.openjob.server.admin.vo.admin.AdminUserLoginVO;
+import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
+import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
 
 /**
  * @author inhere
@@ -15,7 +18,7 @@ public interface AdminLoginService {
      * @param token token
      * @return user
      */
-    AdminUserLoginVO authByToken(String token);
+    AdminUserSessionDTO authByToken(String token);
 
     /**
      * admin user login
@@ -33,4 +36,13 @@ public interface AdminLoginService {
      * @return vo
      */
     AdminUserLogoutVO logout(AdminUserLogoutRequest request, String sessKey);
+
+    /**
+     * login user info
+     *
+     * @param request request
+     * @param sessKey sessKey
+     * @return vo
+     */
+    LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey);
 }
