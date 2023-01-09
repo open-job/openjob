@@ -43,23 +43,31 @@ public class AdminController {
         return Result.success(this.adminLoginService.login(request));
     }
 
+    /**
+     * login user info, menus, perms
+     *
+     * @param request request
+     * @param headers headers
+     * @return vo
+     */
     @ApiOperation("login user info, menus, perms")
     @PostMapping("/user-info")
-    public Result<LoginUserInfoVO> loginUserInfo(
-            @RequestBody LoginUserInfoRequest request,
-            @RequestHeader HttpHeaders headers
-    ) {
+    public Result<LoginUserInfoVO> loginUserInfo(@RequestBody LoginUserInfoRequest request, @RequestHeader HttpHeaders headers) {
         String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
 
         return Result.success(this.adminLoginService.loginUserInfo(request, sessKey));
     }
 
+    /**
+     * admin user logout
+     *
+     * @param request request
+     * @param headers headers
+     * @return vo
+     */
     @ApiOperation("admin user logout")
     @PostMapping("/logout")
-    public Result<AdminUserLogoutVO> logout(
-            @RequestBody AdminUserLogoutRequest request,
-            @RequestHeader HttpHeaders headers
-    ) {
+    public Result<AdminUserLogoutVO> logout(@RequestBody AdminUserLogoutRequest request, @RequestHeader HttpHeaders headers) {
         String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
 
         return Result.success(this.adminLoginService.logout(request, sessKey));
