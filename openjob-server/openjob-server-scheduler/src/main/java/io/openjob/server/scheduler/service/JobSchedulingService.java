@@ -67,6 +67,9 @@ public class JobSchedulingService {
                 InstanceStatusEnum.WAITING.getStatus(),
                 InstanceStatusEnum.RUNNING.getStatus()
         );
+
+        // Fixed dispatch all fail task.
+        // Add time period to dispatch.
         List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(failoverReportTime, statusList);
 
         // Failover is empty.

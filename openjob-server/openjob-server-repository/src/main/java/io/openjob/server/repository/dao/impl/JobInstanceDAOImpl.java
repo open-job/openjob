@@ -45,8 +45,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance) {
-        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), DateUtil.timestamp());
+    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance, Long lastReportTime) {
+        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), lastReportTime);
     }
 
     @Override

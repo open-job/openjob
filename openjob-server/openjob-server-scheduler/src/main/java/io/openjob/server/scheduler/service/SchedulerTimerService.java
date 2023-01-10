@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -40,10 +42,15 @@ public class SchedulerTimerService {
         this.jobInstanceDAO = jobInstanceDAO;
     }
 
+    /**
+     * Task run.
+     *
+     * @param task task
+     */
     public void run(SchedulerTimerTask task) {
         // Concurrency
         if (ExecuteStrategyEnum.CONCURRENCY.getStatus().equals(task.getExecuteStrategy())) {
-            this.doRun(task);
+            this.doRun(task, Collections.emptySet());
             return;
         }
 
@@ -62,40 +69,58 @@ public class SchedulerTimerService {
         this.doOverlay(task);
     }
 
-    public void doRun(SchedulerTimerTask task) {
+    /**
+     * Do task run.
+     *
+     * @param task task
+     */
+    public void doRun(SchedulerTimerTask task, Set<String> failoverList) {
+        ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
+        submitReq.setJobId(task.getJobId());
+        submitReq.setJobInstanceId(task.getTaskId());
+        submitReq.setJobParams(task.getJobParams());
+        submitReq.setWorkflowId(task.getWorkflowId());
+        submitReq.setProcessorType(task.getProcessorType());
+        submitReq.setProcessorInfo(task.getProcessorInfo());
+        submitReq.setExecuteType(task.getExecuteType());
+        submitReq.setFailRetryTimes(task.getFailRetryTimes());
+        submitReq.setFailRetryInterval(task.getFailRetryInterval());
+        submitReq.setConcurrency(task.getConcurrency());
+        submitReq.setTimeExpressionType(task.getTimeExpressionType());
+        submitReq.setTimeExpression(task.getTimeExpression());
+
+        WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
+        if (Objects.isNull(workerDTO)) {
+            this.addInstanceLog(task.getJobId(), task.getTaskId(), "Do not have available worker node.");
+            log.error("Do not have available worker node! appid={}", task.getAppid());
+            return;
+        }
+
         try {
-            ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
-            submitReq.setJobId(task.getJobId());
-            submitReq.setJobInstanceId(task.getTaskId());
-            submitReq.setJobParams(task.getJobParams());
-            submitReq.setWorkflowId(task.getWorkflowId());
-            submitReq.setProcessorType(task.getProcessorType());
-            submitReq.setProcessorInfo(task.getProcessorInfo());
-            submitReq.setExecuteType(task.getExecuteType());
-            submitReq.setFailRetryTimes(task.getFailRetryTimes());
-            submitReq.setFailRetryInterval(task.getFailRetryInterval());
-            submitReq.setConcurrency(task.getConcurrency());
-            submitReq.setTimeExpressionType(task.getTimeExpressionType());
-            submitReq.setTimeExpression(task.getTimeExpression());
-
-            WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid());
-            if (Objects.isNull(workerDTO)) {
-                log.error("Worker do not exist! appid={}", task.getAppid());
-                return;
-            }
-
             FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, WorkerResponse.class, 3000L);
             log.info("Dispatch task success! taskId={}", task.getTaskId());
 
             // Update by dispatcher.
             SpringContext.getBean(SchedulerTimerService.class).updateByDispatcher(workerDTO.getAddress(), task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING, "Dispatch  task success!");
         } catch (Throwable ex) {
+            // Add failover list.
+            failoverList.add(workerDTO.getAddress());
+
             // Update by dispatcher.
             this.addInstanceLog(task.getJobId(), task.getTaskId(), Arrays.toString(ex.getStackTrace()));
             log.info("Dispatch task fail! taskId={} message={}", task.getTaskId(), ex.getMessage());
         }
     }
 
+    /**
+     * Update by dispatcher.
+     *
+     * @param workerAddress worker addres.
+     * @param jobId         job id.
+     * @param instanceId    instance id.
+     * @param statusEnum    status
+     * @param message       message
+     */
     @Transactional(rollbackFor = Exception.class)
     public void updateByDispatcher(String workerAddress, Long jobId, Long instanceId, InstanceStatusEnum statusEnum, String message) {
         // Add instance log.
@@ -103,12 +128,13 @@ public class SchedulerTimerService {
 
         // Running to update.
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
-            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum);
+            //Fixed update last report time.otherwise repeat dispatch.
+            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
         }
     }
 
     private void doOverlay(SchedulerTimerTask task) {
-
+        System.out.println(task);
     }
 
     private void addInstanceLog(Long jobId, Long instanceId, String message) {

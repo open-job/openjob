@@ -51,9 +51,10 @@ public interface JobInstanceDAO {
      * @param id                 id
      * @param workerAddress      worker address
      * @param instanceStatusEnum instance status
+     * @param lastReportTime last report time.
      * @return Integer
      */
-    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum);
+    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime);
 
     /**
      * Get one by id and status.
