@@ -29,7 +29,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateStatusAndCompleteTimeById(Long id, Integer status) {
+    public Integer updateStatusById(Long id, Integer status) {
         long now = DateUtil.timestamp();
         return this.jobInstanceRepository.update(id, status, now, now);
     }
@@ -40,12 +40,17 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public List<JobInstance> getFailoverList(Long lastReportTime, InstanceStatusEnum instanceStatus) {
-        return this.jobInstanceRepository.findByLastReportTimeLessThanAndStatus(lastReportTime, instanceStatus.getStatus());
+    public List<JobInstance> getFailoverList(Long lastReportTime, List<Integer> statusList) {
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndStatusIn(lastReportTime, statusList);
     }
 
     @Override
     public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance) {
         return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), DateUtil.timestamp());
+    }
+
+    @Override
+    public JobInstance getOneByIdAndStatus(Long id, Integer status) {
+        return this.jobInstanceRepository.findFirstByIdAndStatus(id, status);
     }
 }

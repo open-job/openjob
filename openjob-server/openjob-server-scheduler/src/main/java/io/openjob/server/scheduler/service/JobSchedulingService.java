@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -62,7 +63,11 @@ public class JobSchedulingService {
      */
     public void scheduleFailoverJob() {
         long failoverReportTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
-        List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(failoverReportTime, InstanceStatusEnum.RUNNING);
+        List<Integer> statusList = Arrays.asList(
+                InstanceStatusEnum.WAITING.getStatus(),
+                InstanceStatusEnum.RUNNING.getStatus()
+        );
+        List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(failoverReportTime, statusList);
 
         // Failover is empty.
         if (CollectionUtils.isEmpty(failoverList)) {
@@ -151,6 +156,7 @@ public class JobSchedulingService {
             jobInstance.setFailRetryTimes(j.getFailRetryTimes());
             jobInstance.setTimeExpressionType(j.getTimeExpressionType());
             jobInstance.setTimeExpression(j.getTimeExpression());
+            jobInstance.setExecuteStrategy(j.getExecuteStrategy());
             jobInstance.setConcurrency(j.getConcurrency());
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
@@ -176,6 +182,7 @@ public class JobSchedulingService {
         schedulerTask.setConcurrency(js.getConcurrency());
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());
+        schedulerTask.setExecuteStrategy(js.getExecuteStrategy());
         return schedulerTask;
     }
 

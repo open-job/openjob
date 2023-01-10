@@ -48,7 +48,7 @@ public class JobInstanceService {
     public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
-            this.jobInstanceDAO.updateStatusAndCompleteTimeById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
+            this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
         }
 
         // Save job instance task
@@ -86,7 +86,7 @@ public class JobInstanceService {
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Update job instance status.
-        this.jobInstanceDAO.updateStatusAndCompleteTimeById(logRequest.getJobInstanceId(), logRequest.getStatus());
+        this.jobInstanceDAO.updateStatusById(logRequest.getJobInstanceId(), logRequest.getStatus());
 
         JobInstanceLog jobInstanceLog = new JobInstanceLog();
         jobInstanceLog.setJobId(logRequest.getJobId());

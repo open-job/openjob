@@ -84,6 +84,9 @@ public class JobInstance {
     @Column(name = "worker_address")
     private String workerAddress;
 
+    @Column(name = "execute_strategy")
+    private Integer executeStrategy;
+
     @Column(name = "deleted")
     private Integer deleted;
 

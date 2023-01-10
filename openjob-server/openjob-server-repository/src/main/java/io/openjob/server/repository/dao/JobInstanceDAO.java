@@ -25,7 +25,7 @@ public interface JobInstanceDAO {
      * @param status status
      * @return Integer
      */
-    Integer updateStatusAndCompleteTimeById(Long id, Integer status);
+    Integer updateStatusById(Long id, Integer status);
 
     /**
      * Update
@@ -40,10 +40,10 @@ public interface JobInstanceDAO {
      * Get failover list.
      *
      * @param lastReportTime last report time.
-     * @param instanceStatus instance status.
+     * @param statusList     status list.
      * @return List
      */
-    List<JobInstance> getFailoverList(Long lastReportTime, InstanceStatusEnum instanceStatus);
+    List<JobInstance> getFailoverList(Long lastReportTime, List<Integer> statusList);
 
     /**
      * Update to running.
@@ -54,4 +54,13 @@ public interface JobInstanceDAO {
      * @return Integer
      */
     Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum);
+
+    /**
+     * Get one by id and status.
+     *
+     * @param id     id
+     * @param status status
+     * @return JobInstance
+     */
+    JobInstance getOneByIdAndStatus(Long id, Integer status);
 }

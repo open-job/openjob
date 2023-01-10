@@ -4,16 +4,16 @@ import io.openjob.common.SpringContext;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
-import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
-import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.scheduler.service.SchedulerTimerService;
 import io.openjob.server.scheduler.util.WorkerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -37,40 +37,15 @@ public class SchedulerTimerTask extends AbstractTimerTask {
     protected String timeExpressionType;
     protected String timeExpression;
 
+    private Integer executeStrategy;
+
     public SchedulerTimerTask(Long taskId, Long slotsId, Long expiration) {
         super(taskId, slotsId, expiration);
     }
 
     @Override
     public void run() {
-        try {
-            ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
-            submitReq.setJobId(this.jobId);
-            submitReq.setJobInstanceId(this.taskId);
-            submitReq.setJobParams(this.jobParams);
-            submitReq.setWorkflowId(this.workflowId);
-            submitReq.setProcessorType(this.processorType);
-            submitReq.setProcessorInfo(this.processorInfo);
-            submitReq.setExecuteType(this.executeType);
-            submitReq.setFailRetryTimes(this.failRetryTimes);
-            submitReq.setFailRetryInterval(this.failRetryInterval);
-            submitReq.setConcurrency(this.concurrency);
-            submitReq.setTimeExpressionType(this.timeExpressionType);
-            submitReq.setTimeExpression(this.timeExpression);
-
-            WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(this.appid);
-            if (Objects.isNull(workerDTO)) {
-                log.error("Worker do not exist! appid={}", this.appid);
-                return;
-            }
-
-            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(workerDTO.getAddress()), submitReq, WorkerResponse.class, 3000L);
-            log.info("Task dispatch success! taskId={}", this.taskId);
-
-            // Update to running status.
-            SpringContext.getBean(JobInstanceDAO.class).updateByRunning(this.taskId, workerDTO.getAddress(), InstanceStatusEnum.RUNNING);
-        } catch (Throwable ex) {
-            log.info("Task dispatch fail! taskId={} message={}", this.taskId, ex.getMessage());
-        }
+        // Dispatch task to run.
+        SpringContext.getBean(SchedulerTimerService.class).run(this);
     }
 }
