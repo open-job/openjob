@@ -16,6 +16,7 @@ import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.wheel.SchedulerWheel;
 import lombok.extern.slf4j.Slf4j;
+import org.graalvm.util.CollectionsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +24,11 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -62,23 +64,25 @@ public class JobSchedulingService {
      * Schedule failover job.
      */
     public void scheduleFailoverJob() {
+        Set<JobInstance> dispatchList = new HashSet<>();
+        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
+
+        // Retry dispatch list.
+        long executeTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
+        List<JobInstance> unDispatchList = this.jobInstanceDAO.getUnDispatchedList(currentSlots, executeTime, InstanceStatusEnum.WAITING);
+        if (!CollectionUtils.isEmpty(unDispatchList)) {
+            dispatchList.addAll(unDispatchList);
+        }
+
+        // Fail over list.
         long failoverReportTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
-        List<Integer> statusList = Arrays.asList(
-                InstanceStatusEnum.WAITING.getStatus(),
-                InstanceStatusEnum.RUNNING.getStatus()
-        );
-
-        // Fixed dispatch all fail task.
-        // Add time period to dispatch.
-        List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(failoverReportTime, statusList);
-
-        // Failover is empty.
-        if (CollectionUtils.isEmpty(failoverList)) {
-            return;
+        List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(currentSlots, failoverReportTime, InstanceStatusEnum.RUNNING);
+        if (!CollectionUtils.isEmpty(failoverList)) {
+            dispatchList.addAll(failoverList);
         }
 
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
-        failoverList.forEach(js -> {
+        dispatchList.forEach(js -> {
             // Check worker instance.
 
             // Add time wheel.

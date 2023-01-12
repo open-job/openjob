@@ -4,6 +4,7 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.server.repository.entity.JobInstance;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -39,11 +40,22 @@ public interface JobInstanceDAO {
     /**
      * Get failover list.
      *
-     * @param lastReportTime last report time.
-     * @param statusList     status list.
+     * @param slotsIds    slots id.
+     * @param executeTime execute time.
+     * @param status      status list.
      * @return List
      */
-    List<JobInstance> getFailoverList(Long lastReportTime, List<Integer> statusList);
+    List<JobInstance> getUnDispatchedList(Set<Long> slotsIds, Long executeTime, InstanceStatusEnum status);
+
+    /**
+     * Get failover list.
+     *
+     * @param slotsIds       slots id.
+     * @param lastReportTime last report time.
+     * @param status         status list.
+     * @return List
+     */
+    List<JobInstance> getFailoverList(Set<Long> slotsIds, Long lastReportTime, InstanceStatusEnum status);
 
     /**
      * Update to running.
@@ -51,7 +63,7 @@ public interface JobInstanceDAO {
      * @param id                 id
      * @param workerAddress      worker address
      * @param instanceStatusEnum instance status
-     * @param lastReportTime last report time.
+     * @param lastReportTime     last report time.
      * @return Integer
      */
     Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime);

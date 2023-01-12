@@ -121,7 +121,7 @@ CREATE TABLE `job` (
                        `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
                        `time_expression_type` varchar(16) NOT NULL DEFAULT 'cron' COMMENT 'cron/second/delay',
                        `time_expression` varchar(32) NOT NULL DEFAULT '' COMMENT 'Cron express type',
-                       `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency'
+                       `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
                        `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1=running 2=stop',
                        `next_execute_time` bigint(12) unsigned NOT NULL,
                        `slots_id` int(11) unsigned NOT NULL,
@@ -170,12 +170,14 @@ CREATE TABLE `job_instance` (
                                 `time_expression` varchar(32) NOT NULL DEFAULT '',
                                 `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
                                 `worker_address` varchar(32) NOT NULL DEFAULT '',
-                                `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency'
+                                `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
                                 `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                                 `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                 `update_time` bigint(12) unsigned NOT NULL,
                                 `create_time` bigint(12) unsigned NOT NULL,
-                                PRIMARY KEY (`id`)
+                                PRIMARY KEY (`id`),
+                                KEY `idx_execute_time_slots_id` (`execute_time`,`slots_id`),
+                                KEY `idx_last_report_time_slots_id` (`last_report_time`,`slots_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

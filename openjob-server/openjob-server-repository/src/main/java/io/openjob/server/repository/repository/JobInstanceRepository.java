@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+import scala.Int;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -58,10 +60,19 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
      * Find failover list.
      *
      * @param lastReportTime last report time.
-     * @param statusList     status list.
      * @return list
      */
-    List<JobInstance> findByLastReportTimeLessThanAndStatusIn(Long lastReportTime, List<Integer> statusList);
+    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdAndStatus(Long lastReportTime, Set<Long> slotsIds, Integer status);
+
+    /**
+     * Find not dispatch list.
+     *
+     * @param executeTime execute time
+     * @param slotsIds    slots ids.
+     * @param status      status.
+     * @return list
+     */
+    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdAndStatus(Long executeTime, Set<Long> slotsIds, Integer status);
 
     /**
      * Find first by id and status.

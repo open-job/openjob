@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -40,8 +41,13 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public List<JobInstance> getFailoverList(Long lastReportTime, List<Integer> statusList) {
-        return this.jobInstanceRepository.findByLastReportTimeLessThanAndStatusIn(lastReportTime, statusList);
+    public List<JobInstance> getUnDispatchedList(Set<Long> slotsIds, Long executeTime, InstanceStatusEnum status) {
+        return this.jobInstanceRepository.findByExecuteTimeLessThanAndSlotsIdAndStatus(executeTime, slotsIds, status.getStatus());
+    }
+
+    @Override
+    public List<JobInstance> getFailoverList(Set<Long> slotsIds, Long lastReportTime, InstanceStatusEnum statusEnum) {
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdAndStatus(lastReportTime, slotsIds, statusEnum.getStatus());
     }
 
     @Override
