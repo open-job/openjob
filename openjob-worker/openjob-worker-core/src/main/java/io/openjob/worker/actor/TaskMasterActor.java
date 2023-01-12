@@ -79,10 +79,15 @@ public class TaskMasterActor extends BaseActor {
     /**
      * Check job instance.
      *
-     * @param checkTaskMasterRequest check request.
+     * @param checkRequest check request.
      */
-    public void checkJobInstance(ServerCheckTaskMasterRequest checkTaskMasterRequest) {
+    public void checkJobInstance(ServerCheckTaskMasterRequest checkRequest) {
+        if (TaskMasterPool.contains(checkRequest.getJobInstanceId())) {
+            getSender().tell(Result.success(new WorkerResponse()), getSelf());
+            return;
+        }
 
+        getSender().tell(Result.fail("Task master is not exist! instanceId=" + checkRequest.getJobInstanceId()), getSelf());
     }
 
     /**

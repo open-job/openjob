@@ -44,4 +44,15 @@ public enum InstanceStatusEnum {
 
     private final Integer status;
     private final String message;
+
+
+    /**
+     * Is running
+     *
+     * @param status status
+     * @return Boolean
+     */
+    public static Boolean isRunning(Integer status) {
+        return RUNNING.getStatus().equals(status);
+    }
 }

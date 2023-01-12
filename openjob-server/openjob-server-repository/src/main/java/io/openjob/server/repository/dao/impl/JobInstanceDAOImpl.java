@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao.impl;
 
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.JobInstance;
@@ -47,7 +48,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public List<JobInstance> getFailoverList(Set<Long> slotsIds, Long lastReportTime, InstanceStatusEnum statusEnum) {
-        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdAndStatus(lastReportTime, slotsIds, statusEnum.getStatus());
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdAndStatusAndTimeExpressionTypeNot(lastReportTime, slotsIds, statusEnum.getStatus(), TimeExpressionTypeEnum.ONE_TIME.name());
     }
 
     @Override

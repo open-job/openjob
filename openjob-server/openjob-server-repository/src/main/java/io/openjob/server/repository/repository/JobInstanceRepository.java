@@ -59,10 +59,13 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
     /**
      * Find failover list.
      *
-     * @param lastReportTime last report time.
-     * @return list
+     * @param lastReportTime last report time
+     * @param slotsIds       slots ids
+     * @param status         status
+     * @param type           type
+     * @return List
      */
-    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdAndStatus(Long lastReportTime, Set<Long> slotsIds, Integer status);
+    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdAndStatusAndTimeExpressionTypeNot(Long lastReportTime, Set<Long> slotsIds, Integer status, String type);
 
     /**
      * Find not dispatch list.

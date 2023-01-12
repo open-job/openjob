@@ -3,9 +3,13 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.request.ServerCheckTaskMasterRequest;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.cron.CronExpression;
+import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
@@ -16,7 +20,6 @@ import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.wheel.SchedulerWheel;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.util.CollectionsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +78,7 @@ public class JobSchedulingService {
         }
 
         // Fail over list.
+        // Must exclude one time job.
         long failoverReportTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
         List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(currentSlots, failoverReportTime, InstanceStatusEnum.RUNNING);
         if (!CollectionUtils.isEmpty(failoverList)) {
@@ -84,6 +88,9 @@ public class JobSchedulingService {
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
         dispatchList.forEach(js -> {
             // Check worker instance.
+            if (InstanceStatusEnum.isRunning(js.getStatus()) && this.checkTaskMaster(js)) {
+                return;
+            }
 
             // Add time wheel.
             timerTasks.add(this.convertToTimerTask(js));
@@ -91,6 +98,19 @@ public class JobSchedulingService {
 
         // Batch add time task to timing wheel.
         this.schedulerWheel.addTimerTask(timerTasks);
+    }
+
+    private Boolean checkTaskMaster(JobInstance js) {
+        try {
+            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
+            checkRequest.setJobInstanceId(js.getId());
+            checkRequest.setJobId(js.getJobId());
+            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
+            return true;
+        } catch (Throwable e) {
+            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
+            return false;
+        }
     }
 
     /**
