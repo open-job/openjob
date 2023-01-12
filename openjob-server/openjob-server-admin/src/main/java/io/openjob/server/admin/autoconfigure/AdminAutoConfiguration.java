@@ -3,7 +3,7 @@ package io.openjob.server.admin.autoconfigure;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.openjob.server.admin.constant.AdminConstant;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
+import io.openjob.server.admin.dto.AdminUserSessionDTO;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ public class AdminAutoConfiguration {
      * @return bean
      */
     @Bean
-    public Cache<String, AdminUserLoginVO> loginCache() {
+    public Cache<String, AdminUserSessionDTO> loginCache() {
         return Caffeine.newBuilder()
                 // cache的初始容量
                 .initialCapacity(userProperties.getCacheInitSize())

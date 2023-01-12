@@ -69,7 +69,7 @@ public class SwaggerAutoConfiguration {
         return newArrayList(
                 SecurityContext.builder()
                         .securityReferences(defaultAuth())
-                        .forPaths(selector -> !selector.contains("login") && !selector.contains("logout"))
+                        .forPaths(selector -> !selector.contains("login"))
                         .build()
         );
     }
