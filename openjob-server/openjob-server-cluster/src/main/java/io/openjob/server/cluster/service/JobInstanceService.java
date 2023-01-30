@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class JobInstanceService {
 
         try {
             this.jobInstanceTaskDAO.batchSave(taskList);
-        } catch (DataIntegrityViolationException exception) {
+        } catch (DataIntegrityViolationException | UnexpectedRollbackException exception) {
             log.warn("Data has been saved! {}", taskList.stream().map(JobInstanceTask::getTaskId).collect(Collectors.toList()));
         }
     }

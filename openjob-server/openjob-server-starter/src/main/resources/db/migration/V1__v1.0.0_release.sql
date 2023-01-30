@@ -136,11 +136,11 @@ CREATE TABLE `job` (
 
 INSERT INTO `job` (`id`, `namespace_id`, `app_id`, `workflow_id`, `name`, `description`, `processor_type`, `processor_info`, `execute_type`, `params`, `fail_retry_times`, `fail_retry_interval`, `concurrency`, `time_expression_type`, `time_expression`, `status`, `next_execute_time`, `slots_id`, `create_time`, `update_time`)
 VALUES
-    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','30 * * * * ?',2,1663590330,15874,1657528102,1663590220),
+    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','30 * * * * ?',2,1663590330,233,1657528102,1663590220),
     (13,1,1,0,'测试任务2','测试任务2','java','io.openjob.worker.samples.processorJavaProcessorSample','standalone','',0,0,1,'cron','10 * * * * ?',2,1660288630,1,1657528102,1660288512),
-    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,1024,1657528102,1660288512),
-    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,10074,1657528102,1660288452),
-    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,2321,1657528102,1666099995);
+    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,126,1657528102,1660288512),
+    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,12,1657528102,1660288452),
+    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,126,1657528102,1666099995);
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
 

@@ -43,12 +43,12 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public List<JobInstance> getUnDispatchedList(Set<Long> slotsIds, Long executeTime, InstanceStatusEnum status) {
-        return this.jobInstanceRepository.findByExecuteTimeLessThanAndSlotsIdAndStatus(executeTime, slotsIds, status.getStatus());
+        return this.jobInstanceRepository.findByExecuteTimeLessThanAndSlotsIdInAndStatus(executeTime, slotsIds, status.getStatus());
     }
 
     @Override
     public List<JobInstance> getFailoverList(Set<Long> slotsIds, Long lastReportTime, InstanceStatusEnum statusEnum) {
-        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdAndStatusAndTimeExpressionTypeNot(lastReportTime, slotsIds, statusEnum.getStatus(), TimeExpressionTypeEnum.ONE_TIME.name());
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNot(lastReportTime, slotsIds, statusEnum.getStatus(), TimeExpressionTypeEnum.ONE_TIME.name());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public JobInstance getOneByIdAndStatus(Long id, Integer status) {
-        return this.jobInstanceRepository.findFirstByIdAndStatus(id, status);
+    public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, Integer status) {
+        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatus(jobId, id, status);
     }
 }

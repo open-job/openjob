@@ -28,4 +28,12 @@ public enum ExecuteStrategyEnum {
 
     private final Integer status;
     private final String message;
+
+    public static Boolean isDiscard(Integer value) {
+        return DISCARD.getStatus().equals(value);
+    }
+
+    public static Boolean isConcurrency(Integer value) {
+        return CONCURRENCY.getStatus().equals(value);
+    }
 }

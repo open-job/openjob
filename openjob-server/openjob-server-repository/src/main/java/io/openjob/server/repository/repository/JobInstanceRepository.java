@@ -65,7 +65,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
      * @param type           type
      * @return List
      */
-    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdAndStatusAndTimeExpressionTypeNot(Long lastReportTime, Set<Long> slotsIds, Integer status, String type);
+    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNot(Long lastReportTime, Set<Long> slotsIds, Integer status, String type);
 
     /**
      * Find not dispatch list.
@@ -75,14 +75,15 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
      * @param status      status.
      * @return list
      */
-    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdAndStatus(Long executeTime, Set<Long> slotsIds, Integer status);
+    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdInAndStatus(Long executeTime, Set<Long> slotsIds, Integer status);
 
     /**
      * Find first by id and status.
      *
+     * @param jobId  jobId
      * @param id     id
      * @param status status
      * @return JobInstance
      */
-    JobInstance findFirstByIdAndStatus(Long id, Integer status);
+    JobInstance findFirstByJobIdAndIdNotAndStatus(Long jobId, Long id, Integer status);
 }

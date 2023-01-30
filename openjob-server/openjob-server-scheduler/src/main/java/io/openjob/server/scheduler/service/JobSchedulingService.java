@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -75,6 +76,7 @@ public class JobSchedulingService {
         List<JobInstance> unDispatchList = this.jobInstanceDAO.getUnDispatchedList(currentSlots, executeTime, InstanceStatusEnum.WAITING);
         if (!CollectionUtils.isEmpty(unDispatchList)) {
             dispatchList.addAll(unDispatchList);
+            log.info("Retry dispatch list!{}", unDispatchList.stream().map(JobInstance::getId).collect(Collectors.toList()));
         }
 
         // Fail over list.
@@ -83,6 +85,7 @@ public class JobSchedulingService {
         List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(currentSlots, failoverReportTime, InstanceStatusEnum.RUNNING);
         if (!CollectionUtils.isEmpty(failoverList)) {
             dispatchList.addAll(failoverList);
+            log.info("Retry failover list!{}", failoverList.stream().map(JobInstance::getId).collect(Collectors.toList()));
         }
 
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
@@ -185,6 +188,7 @@ public class JobSchedulingService {
             jobInstance.setTimeExpression(j.getTimeExpression());
             jobInstance.setExecuteStrategy(j.getExecuteStrategy());
             jobInstance.setConcurrency(j.getConcurrency());
+            jobInstance.setWorkerAddress("");
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             jobInstance.setId(instanceId);
@@ -197,7 +201,7 @@ public class JobSchedulingService {
 
     private AbstractTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
-        schedulerTask.setJobId(js.getId());
+        schedulerTask.setJobId(js.getJobId());
         schedulerTask.setJobParams(js.getJobParams());
         schedulerTask.setAppid(js.getAppId());
         schedulerTask.setWorkflowId(0L);

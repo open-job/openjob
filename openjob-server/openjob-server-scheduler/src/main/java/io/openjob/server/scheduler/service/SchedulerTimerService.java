@@ -3,7 +3,6 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
-import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
@@ -25,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -49,25 +47,21 @@ public class SchedulerTimerService {
      */
     public void run(SchedulerTimerTask task) {
         // Concurrency
-        if (ExecuteStrategyEnum.CONCURRENCY.getStatus().equals(task.getExecuteStrategy())) {
+        if (ExecuteStrategyEnum.isConcurrency(task.getExecuteStrategy())) {
             this.doRun(task, Collections.emptySet());
             return;
         }
 
         // Discard after task.
-        boolean isDiscard = ExecuteStrategyEnum.DISCARD.getStatus().equals(task.getExecuteStrategy());
-        BooleanSupplier supplier = () -> {
-            JobInstance jobInstance = this.jobInstanceDAO.getOneByIdAndStatus(task.getTaskId(), TaskStatusEnum.RUNNING.getStatus());
-            return Objects.nonNull(jobInstance);
-        };
-        if (isDiscard && supplier.getAsBoolean()) {
-            this.addInstanceLog(task.getJobId(), task.getTaskId(), " Discard after task");
+        if (ExecuteStrategyEnum.isDiscard(task.getExecuteStrategy())) {
+            this.doDiscard(task);
             return;
         }
 
         // Overlay before task.
         this.doOverlay(task);
     }
+
 
     /**
      * Do task run.
@@ -91,8 +85,8 @@ public class SchedulerTimerService {
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
-            this.addInstanceLog(task.getJobId(), task.getTaskId(), "Do not have available worker node.");
-            log.error("Do not have available worker node! appid={}", task.getAppid());
+            this.addInstanceLog(task.getJobId(), task.getTaskId(), "Do not have available worker node!");
+            log.error("Do not have available worker node! taskId={} appid={}", task.getTaskId(), task.getAppid());
             return;
         }
 
@@ -131,6 +125,20 @@ public class SchedulerTimerService {
             //Fixed update last report time.otherwise repeat dispatch.
             this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
         }
+    }
+
+    private void doDiscard(SchedulerTimerTask task) {
+        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatus(task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING.getStatus());
+
+        // Exist one task.
+        if (Objects.nonNull(jobInstance)) {
+            this.addInstanceLog(task.getJobId(), task.getTaskId(), "Discard after task!");
+            this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus());
+            return;
+        }
+
+        // Do run.
+        this.doRun(task, Collections.emptySet());
     }
 
     private void doOverlay(SchedulerTimerTask task) {
