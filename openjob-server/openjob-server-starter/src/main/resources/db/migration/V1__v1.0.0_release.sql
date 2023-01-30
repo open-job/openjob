@@ -121,6 +121,7 @@ CREATE TABLE `job` (
                        `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
                        `time_expression_type` varchar(16) NOT NULL DEFAULT 'cron' COMMENT 'cron/second/delay',
                        `time_expression` varchar(32) NOT NULL DEFAULT '' COMMENT 'Cron express type',
+                       `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
                        `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1=running 2=stop',
                        `next_execute_time` bigint(12) unsigned NOT NULL,
                        `slots_id` int(11) unsigned NOT NULL,
@@ -135,11 +136,11 @@ CREATE TABLE `job` (
 
 INSERT INTO `job` (`id`, `namespace_id`, `app_id`, `workflow_id`, `name`, `description`, `processor_type`, `processor_info`, `execute_type`, `params`, `fail_retry_times`, `fail_retry_interval`, `concurrency`, `time_expression_type`, `time_expression`, `status`, `next_execute_time`, `slots_id`, `create_time`, `update_time`)
 VALUES
-    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','30 * * * * ?',2,1663590330,15874,1657528102,1663590220),
+    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','30 * * * * ?',2,1663590330,233,1657528102,1663590220),
     (13,1,1,0,'测试任务2','测试任务2','java','io.openjob.worker.samples.processorJavaProcessorSample','standalone','',0,0,1,'cron','10 * * * * ?',2,1660288630,1,1657528102,1660288512),
-    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,1024,1657528102,1660288512),
-    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,10074,1657528102,1660288452),
-    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,2321,1657528102,1666099995);
+    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,126,1657528102,1660288512),
+    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,12,1657528102,1660288452),
+    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,126,1657528102,1666099995);
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
 
@@ -160,11 +161,23 @@ CREATE TABLE `job_instance` (
                                 `execute_time` bigint(12) unsigned NOT NULL,
                                 `complete_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                 `last_report_time` bigint(12) unsigned NOT NULL DEFAULT '0',
-                                `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                                `processor_type` varchar(16) NOT NULL DEFAULT '',
+                                `processor_info` varchar(128) NOT NULL DEFAULT '',
+                                `execute_type` varchar(16) NOT NULL DEFAULT '',
+                                `fail_retry_times` int(11) unsigned NOT NULL,
+                                `fail_retry_interval` int(11) unsigned NOT NULL,
+                                `time_expression_type` varchar(16) NOT NULL DEFAULT '',
+                                `time_expression` varchar(32) NOT NULL DEFAULT '',
+                                `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
+                                `worker_address` varchar(32) NOT NULL DEFAULT '',
+                                `execute_strategy` tinyint(2) NOT NULL DEFAULT '1' COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
+                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                                 `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                 `update_time` bigint(12) unsigned NOT NULL,
                                 `create_time` bigint(12) unsigned NOT NULL,
-                                PRIMARY KEY (`id`)
+                                PRIMARY KEY (`id`),
+                                KEY `idx_execute_time_slots_id` (`execute_time`,`slots_id`),
+                                KEY `idx_last_report_time_slots_id` (`last_report_time`,`slots_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
