@@ -73,7 +73,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     @Override
     public AdminUserLoginVO login(AdminUserLoginRequest reqDTO) {
         AdminUserDTO userDto = adminUserData.getByUsername(reqDTO.getUsername());
-        checkLoginUser(userDto, reqDTO.getPasswd());
+        checkLoginUser(userDto, reqDTO.getPassword());
 
         // query user perms and menus
         AdminUserSessionDTO sess = buildUserSessionDTO(userDto, false);

@@ -1,6 +1,9 @@
 package io.openjob.server.admin.interceptor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.benmanes.caffeine.cache.Cache;
+import io.openjob.common.response.Result;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.dto.AdminUserSessionDTO;
@@ -11,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,8 +83,20 @@ public class AccessInterceptor implements HandlerInterceptor {
      * @return bool
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         String route = request.getRequestURI();
+
+        // 跨域设置
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, MAX_AGE);
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "*");
+
+        if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+            return false;
+        }
 
         // api auth
         String token = request.getHeader(AdminConstant.HEADER_TOKEN_KEY);
@@ -88,7 +105,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
             // check perms for user
             if (!checkUserPerm(route, user)) {
-                AdminHttpStatusEnum.FORBIDDEN.throwException();
+                returnJson(response, AdminHttpStatusEnum.FORBIDDEN);
             }
             return true;
         }
@@ -97,24 +114,15 @@ public class AccessInterceptor implements HandlerInterceptor {
         if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
             if (StringUtils.isBlank(sessKey)) {
-                AdminHttpStatusEnum.UNAUTHORIZED.throwException();
+                returnJson(response, AdminHttpStatusEnum.UNAUTHORIZED);
+                return false;
             }
 
             // check perms for user
             AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
             if (!checkUserPerm(route, user)) {
-                AdminHttpStatusEnum.FORBIDDEN.throwException();
+                returnJson(response, AdminHttpStatusEnum.FORBIDDEN);
             }
-        }
-
-        // 跨域设置
-        if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
-            response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-            response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
-            response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-            response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "*");
-            response.addHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, MAX_AGE);
-            response.setStatus(HttpStatus.OK.value());
         }
 
         return true;
@@ -161,5 +169,16 @@ public class AccessInterceptor implements HandlerInterceptor {
                 .orElse(null);
 
         return Objects.nonNull(perm);
+    }
+
+    private void returnJson(HttpServletResponse response, AdminHttpStatusEnum statusEnum) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+        Result<Object> result = new Result<>(new Object(), statusEnum.getValue(), statusEnum.getMessage());
+
+        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(statusEnum.getValue());
+        response.getWriter().print(mapper.writeValueAsString(result));
     }
 }
