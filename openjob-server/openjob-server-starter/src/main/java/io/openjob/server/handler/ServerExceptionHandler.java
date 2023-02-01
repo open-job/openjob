@@ -27,6 +27,8 @@ import java.util.List;
 @ControllerAdvice
 public class ServerExceptionHandler {
 
+    private static final String MAX_AGE = "18000L";
+
     /**
      * NoHandlerFoundException
      */
@@ -118,11 +120,11 @@ public class ServerExceptionHandler {
             return Result.success("request failed!");
         }
 
-        // Http status.
-        this.doResponseStatus(response, exception.getBaseEnum().getValue());
+        Integer statusCode = exception.getBaseEnum().getValue();
+        this.doResponseStatus(response, statusCode);
 
         log.info(exception.getMessage(), exception);
-        return Result.success(exception.getMessage());
+        return Result.success(new Object(), statusCode, exception.getMessage());
     }
 
     /**
