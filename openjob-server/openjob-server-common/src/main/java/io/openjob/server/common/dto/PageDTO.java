@@ -28,4 +28,10 @@ public class PageDTO<T> {
      * Page List
      */
     private List<T> list;
+
+    public PageDTO() {
+        this.page = 1;
+        this.size = 10;
+        this.total = 0L;
+    }
 }

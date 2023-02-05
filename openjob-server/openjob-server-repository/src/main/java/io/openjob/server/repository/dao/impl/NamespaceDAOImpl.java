@@ -60,6 +60,8 @@ public class NamespaceDAOImpl implements NamespaceDAO {
         // Query
         Page<Namespace> pageList = this.namespaceRepository.findAll(example, pageRequest);
         if (!pageList.isEmpty()) {
+            pageDTO.setPage(page);
+            pageDTO.setSize(size);
             pageDTO.setTotal(pageList.getTotalElements());
             pageDTO.setList(pageList.toList());
         }
