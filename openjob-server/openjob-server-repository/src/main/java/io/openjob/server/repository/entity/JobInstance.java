@@ -52,10 +52,40 @@ public class JobInstance {
     private Long executeTime;
 
     @Column(name = "complete_time")
-    private Integer completeTime;
+    private Long completeTime;
 
     @Column(name = "last_report_time")
-    private Integer lastReportTime;
+    private Long lastReportTime;
+
+    @Column(name = "processor_type")
+    private String processorType;
+
+    @Column(name = "processor_info")
+    private String processorInfo;
+
+    @Column(name = "execute_type")
+    private String executeType;
+
+    @Column(name = "fail_retry_times")
+    private Integer failRetryTimes;
+
+    @Column(name = "fail_retry_interval")
+    private Integer failRetryInterval;
+
+    @Column(name = "concurrency")
+    private Integer concurrency;
+
+    @Column(name = "time_expression_type")
+    private String timeExpressionType;
+
+    @Column(name = "time_expression")
+    private String timeExpression;
+
+    @Column(name = "worker_address")
+    private String workerAddress;
+
+    @Column(name = "execute_strategy")
+    private Integer executeStrategy;
 
     @Column(name = "deleted")
     private Integer deleted;

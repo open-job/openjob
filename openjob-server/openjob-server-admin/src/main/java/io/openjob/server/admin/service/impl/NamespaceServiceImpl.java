@@ -12,12 +12,12 @@ import io.openjob.server.admin.vo.UpdateNamespaceVO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -35,8 +35,10 @@ public class NamespaceServiceImpl implements NamespaceService {
     @Override
     public AddNamespaceVO add(AddNamespaceRequest addRequest) {
         Namespace namespace = new Namespace();
+        namespace.setName(addRequest.getName());
+        namespace.setDesc(addRequest.getDesc());
+        namespace.setSecret(addRequest.getSecret());
 
-        BeanUtils.copyProperties(namespace, addRequest);
         long id = this.namespaceDAO.save(namespace);
 
         return new AddNamespaceVO().setId(id);
@@ -46,9 +48,15 @@ public class NamespaceServiceImpl implements NamespaceService {
     public UpdateNamespaceVO update(UpdateNamespaceRequest updateRequest) {
         Namespace namespace = new Namespace();
 
-        BeanUtils.copyProperties(namespace, updateRequest);
-        this.namespaceDAO.save(namespace);
+        namespace.setId(updateRequest.getId());
+        namespace.setName(updateRequest.getName());
+        namespace.setDesc(updateRequest.getDesc());
 
+        if (StringUtils.isNotBlank(updateRequest.getSecret())) {
+            namespace.setSecret(updateRequest.getSecret());
+        }
+
+        this.namespaceDAO.save(namespace);
         return new UpdateNamespaceVO();
     }
 
@@ -56,9 +64,10 @@ public class NamespaceServiceImpl implements NamespaceService {
     public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
         Namespace namespace = new Namespace();
 
-        BeanUtils.copyProperties(namespace, updateStatusRequest);
-        this.namespaceDAO.save(namespace);
+        namespace.setId(updateStatusRequest.getId());
+        namespace.setStatus(updateStatusRequest.getStatus());
 
+        this.namespaceDAO.save(namespace);
         return new UpdateNamespaceStatusVO();
     }
 
@@ -66,17 +75,21 @@ public class NamespaceServiceImpl implements NamespaceService {
     public ListNamespaceVO list(ListNamespaceRequest listRequest) {
         List<ListNamespaceVO.NamespaceVO> namespaceList = new ArrayList<>();
 
-        this.namespaceDAO.list(listRequest.getPage(), listRequest.getSize()).forEach(n -> {
+        this.namespaceDAO.list(listRequest.getName(), listRequest.getPage() - 1, listRequest.getSize()).forEach(n -> {
             ListNamespaceVO.NamespaceVO namespaceVO = new ListNamespaceVO.NamespaceVO();
 
-            BeanUtils.copyProperties(namespaceVO, n);
+            namespaceVO.setId(n.getId());
+            namespaceVO.setName(n.getName());
+            namespaceVO.setStatus(n.getStatus());
+            namespaceVO.setUuid(UUID.randomUUID().toString());
+            namespaceVO.setCreateTime(n.getCreateTime());
             namespaceList.add(namespaceVO);
         });
 
         ListNamespaceVO listNamespaceVO = new ListNamespaceVO();
         listNamespaceVO.setPage(listRequest.getPage());
-        listNamespaceVO.setNamespaceList(namespaceList);
-
+        listNamespaceVO.setTotal(8);
+        listNamespaceVO.setList(namespaceList);
         return listNamespaceVO;
     }
 }

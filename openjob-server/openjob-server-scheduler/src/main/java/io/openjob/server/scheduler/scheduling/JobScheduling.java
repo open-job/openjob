@@ -23,4 +23,9 @@ public class JobScheduling {
     public void scheduleJob() {
         this.jobSchedulingService.scheduleJob();
     }
+
+    @Scheduled(initialDelay = SchedulerConstant.JOB_INITIAL_DELAY, fixedDelay = SchedulerConstant.JOB_FIXED_DELAY)
+    public void scheduleFailoverJob() {
+        this.jobSchedulingService.scheduleFailoverJob();
+    }
 }

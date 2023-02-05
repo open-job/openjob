@@ -15,4 +15,8 @@ public class PageDTO<T> {
 
     @ApiModelProperty(value = "total count")
     private Long total;
+
+
+
+
 }

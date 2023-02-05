@@ -70,6 +70,19 @@ public class ClusterUtil {
     }
 
     /**
+     * Online workers.
+     *
+     * @param appId         appId
+     * @return Set
+     */
+    public static Set<String> getOnlineWorkers(Long appId) {
+        return ClusterContext.getWorkersByAppId(appId)
+                .stream()
+                .map(WorkerDTO::getAddress)
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Get know servers.
      *
      * @param nodesMap    nodesMap
@@ -160,7 +173,7 @@ public class ClusterUtil {
             try {
                 return supplier.get();
             } catch (ClusterNodeOperatingException exception) {
-                log.info("Cluster node is operating! {}", exception.getMessage());
+                log.warn("Cluster node is operating! {}", exception.getMessage());
                 Thread.sleep((i + 1) * 1000L);
             }
         }

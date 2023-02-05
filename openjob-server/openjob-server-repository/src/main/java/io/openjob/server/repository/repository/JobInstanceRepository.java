@@ -5,6 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+import scala.Int;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -29,13 +33,58 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> 
     /**
      * Update for last report time.
      *
-     * @param id             id
+     * @param ids            ids
      * @param lastReportTime lastReportTime
-     * @param updateTime     updateTime
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.lastReportTime=?2,j.updateTime=?3 where j.id=?1")
-    Integer update(Long id, Long lastReportTime, Long updateTime);
+    @Query(value = "update JobInstance as j set j.lastReportTime=?2,j.updateTime=?2 where j.id in (?1)")
+    Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
+
+    /**
+     * Update by running
+     *
+     * @param id             id
+     * @param workerAddress  worker address.
+     * @param status         status
+     * @param lastReportTime last report time.
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4 where j.id=?1")
+    Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime);
+
+    /**
+     * Find failover list.
+     *
+     * @param lastReportTime last report time
+     * @param slotsIds       slots ids
+     * @param status         status
+     * @param type           type
+     * @return List
+     */
+    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNot(
+            Long lastReportTime, Set<Long> slotsIds, Integer status, String type);
+
+    /**
+     * Find not dispatch list.
+     *
+     * @param executeTime execute time
+     * @param slotsIds    slots ids.
+     * @param status      status.
+     * @return list
+     */
+    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdInAndStatus(Long executeTime, Set<Long> slotsIds, Integer status);
+
+    /**
+     * Find first by id and status.
+     *
+     * @param jobId  jobId
+     * @param id     id
+     * @param status status
+     * @return JobInstance
+     */
+    JobInstance findFirstByJobIdAndIdNotAndStatus(Long jobId, Long id, Integer status);
 }

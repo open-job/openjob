@@ -84,7 +84,9 @@ public class TaskContainerActor extends BaseActor {
      */
     public void handleDestroyContainer(MasterDestroyContainerRequest destroyReq) {
         TaskContainer taskContainer = TaskContainerPool.get(destroyReq.getJobInstanceId());
-        taskContainer.destroy();
+        if (Objects.nonNull(taskContainer)) {
+            taskContainer.destroy();
+        }
 
         WorkerResponse workerResponse = new WorkerResponse();
         workerResponse.setDeliveryId(destroyReq.getDeliveryId());
@@ -110,7 +112,6 @@ public class TaskContainerActor extends BaseActor {
         jobContext.setConcurrency(startReq.getConcurrency());
         jobContext.setTimeExpression(startReq.getTimeExpression());
         jobContext.setTimeExpressionType(startReq.getTimeExpressionType());
-        jobContext.setWorkerAddresses(startReq.getWorkerAddresses());
         jobContext.setTaskName(startReq.getTaskName());
         jobContext.setMasterActorPath(startReq.getMasterAkkaPath());
         if (Objects.nonNull(startReq.getTask())) {

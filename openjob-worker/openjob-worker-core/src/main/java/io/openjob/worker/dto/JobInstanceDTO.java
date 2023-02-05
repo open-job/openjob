@@ -22,5 +22,4 @@ public class JobInstanceDTO {
     private Integer concurrency;
     private String timeExpressionType;
     private String timeExpression;
-    private List<String> workerAddresses;
 }

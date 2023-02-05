@@ -56,7 +56,6 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
-        jobInstanceDTO.setWorkerAddresses(submitReq.getWorkerAddresses());
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
@@ -80,10 +79,15 @@ public class TaskMasterActor extends BaseActor {
     /**
      * Check job instance.
      *
-     * @param checkTaskMasterRequest check request.
+     * @param checkRequest check request.
      */
-    public void checkJobInstance(ServerCheckTaskMasterRequest checkTaskMasterRequest) {
+    public void checkJobInstance(ServerCheckTaskMasterRequest checkRequest) {
+        if (TaskMasterPool.contains(checkRequest.getJobInstanceId())) {
+            getSender().tell(Result.success(new WorkerResponse()), getSelf());
+            return;
+        }
 
+        getSender().tell(Result.fail("Task master is not exist! instanceId=" + checkRequest.getJobInstanceId()), getSelf());
     }
 
     /**
@@ -107,7 +111,7 @@ public class TaskMasterActor extends BaseActor {
     public void handleProcessorMapTask(ProcessorMapTaskRequest mapTaskReq) {
         TaskMaster taskMaster = TaskMasterPool.get(mapTaskReq.getJobInstanceId());
         if (taskMaster instanceof MapReduceTaskMaster) {
-            ((MapReduceTaskMaster) taskMaster).map(mapTaskReq.getTasks(), mapTaskReq.getTaskName());
+            ((MapReduceTaskMaster) taskMaster).map(mapTaskReq);
         }
 
         getSender().tell(Result.success(new WorkerResponse()), getSelf());

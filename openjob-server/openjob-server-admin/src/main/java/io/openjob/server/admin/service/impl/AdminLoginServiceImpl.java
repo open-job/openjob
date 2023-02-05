@@ -6,15 +6,18 @@ import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
 import io.openjob.server.admin.constant.AdminConstant;
-import io.openjob.server.admin.request.user.AdminUserLoginRequest;
-import io.openjob.server.admin.request.user.AdminUserLogoutRequest;
+import io.openjob.server.admin.constant.AdminHttpStatusEnum;
+import io.openjob.server.admin.dto.AdminUserSessionDTO;
+import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
+import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
+import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
 import io.openjob.server.admin.service.AdminLoginService;
+import io.openjob.server.admin.vo.admin.AdminUserLoginVO;
+import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
+import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
 import io.openjob.server.admin.vo.part.MenuItemVO;
 import io.openjob.server.admin.vo.part.MenuMetaVO;
 import io.openjob.server.admin.vo.part.PermItemVO;
-import io.openjob.server.admin.vo.user.AdminUserLoginVO;
-import io.openjob.server.admin.vo.user.AdminUserLogoutVO;
-import io.openjob.server.common.exception.BusinessException;
 import io.openjob.server.common.util.HmacUtil;
 import io.openjob.server.repository.data.AdminMenuData;
 import io.openjob.server.repository.data.AdminRoleData;
@@ -50,14 +53,14 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private final AdminUserProperties userProperties;
 
-    private final Cache<String, AdminUserLoginVO> loginCache;
+    private final Cache<String, AdminUserSessionDTO> loginCache;
 
     @Autowired
     public AdminLoginServiceImpl(
             AdminRoleData adminRoleData,
             AdminUserData adminUserData,
             AdminMenuData adminMenuData, AdminUserProperties userProperties,
-            Cache<String, AdminUserLoginVO> loginCache
+            Cache<String, AdminUserSessionDTO> loginCache
     ) {
         this.adminRoleData = adminRoleData;
         this.adminUserData = adminUserData;
@@ -70,56 +73,73 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     @Override
     public AdminUserLoginVO login(AdminUserLoginRequest reqDTO) {
         AdminUserDTO userDto = adminUserData.getByUsername(reqDTO.getUsername());
-        checkLoginUser(userDto, reqDTO.getPasswd());
-
-        // build return vo
-        AdminUserLoginVO vo = AdminUserLoginVO.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .nickname(userDto.getNickname())
-                .build();
+        checkLoginUser(userDto, reqDTO.getPassword());
 
         // query user perms and menus
-        appendMenuAndPerms(vo, userDto, false);
+        AdminUserSessionDTO sess = buildUserSessionDTO(userDto, false);
 
-        return vo;
+        // build return vo
+        return AdminUserLoginVO.builder()
+                .id(userDto.getId())
+                .menus(sess.getMenus())
+                .username(userDto.getUsername())
+                .nickname(userDto.getNickname())
+                .supperAdmin(sess.getSupperAdmin())
+                .sessionKey(sess.getSessionKey())
+                .build();
     }
 
     @Override
-    public AdminUserLoginVO authByToken(String token) {
+    public AdminUserSessionDTO authByToken(String token) {
         AdminUserDTO userDto = adminUserData.getByToken(token);
         if (Objects.isNull(userDto)) {
             return null;
         }
 
-        // build return vo
-        AdminUserLoginVO vo = AdminUserLoginVO.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .nickname(userDto.getNickname())
+        // query user perms and menus
+        return buildUserSessionDTO(userDto, true);
+    }
+
+    @Override
+    public LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey) {
+        AdminUserSessionDTO sess = loginCache.getIfPresent(sessKey);
+        if (Objects.isNull(sess)) {
+            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+        }
+
+        LoginUserInfoVO vo = LoginUserInfoVO.builder()
+                .id(sess.getId())
+                .username(sess.getUsername())
+                .nickname(sess.getNickname())
+                .supperAdmin(sess.getSupperAdmin())
                 .build();
 
-        // query user perms and menus
-        appendMenuAndPerms(vo, userDto, true);
+        if (request.getWithMenus()) {
+            vo.setMenus(sess.getMenus());
+        }
+
+        if (request.getWithPerms()) {
+            vo.setPerms(sess.getPerms());
+        }
 
         return vo;
     }
 
     private void checkLoginUser(AdminUserDTO entDTO, String passwd) {
         if (Objects.isNull(entDTO)) {
-            throw new BusinessException("input username is not exists");
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         if (CommonUtil.isTrue(entDTO.getDeleted())) {
-            throw new BusinessException("input username is invalid");
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         if (!HmacUtil.verifyPasswd(entDTO.getPasswd(), passwd, userProperties.getPasswdSalt())) {
-            throw new BusinessException("input user password is error");
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
         if (CollectionUtils.isEmpty(entDTO.getRoleIds())) {
-            throw new BusinessException("not set role for user, please contact administrator");
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
     }
 
@@ -127,11 +147,17 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         return DigestUtils.md5DigestAsHex((DateUtil.milliLongTime() + username).getBytes());
     }
 
-    private void appendMenuAndPerms(AdminUserLoginVO vo, AdminUserDTO entDTO, Boolean onlyPerms) {
+    private AdminUserSessionDTO buildUserSessionDTO(AdminUserDTO userDto, Boolean onlyPerms) {
+        AdminUserSessionDTO sess = AdminUserSessionDTO.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .nickname(userDto.getNickname())
+                .build();
+
         // query user role and perms
-        List<AdminRoleDTO> roles = adminRoleData.getByIds(entDTO.getRoleIds());
+        List<AdminRoleDTO> roles = adminRoleData.getByIds(userDto.getRoleIds());
         if (CollectionUtils.isEmpty(roles)) {
-            throw new BusinessException("login user roles not found");
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
         boolean isAdmin = false;
@@ -149,7 +175,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             menuIds.addAll(roleDto.getPerms());
         }
 
-        vo.setSupperAdmin(isAdmin);
+        sess.setSupperAdmin(isAdmin);
 
         List<PermItemVO> userPerms = new ArrayList<>();
 
@@ -174,9 +200,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             }
         }
 
-        vo.setPerms(userPerms);
+        sess.setPerms(userPerms);
         if (onlyPerms) {
-            return;
+            return sess;
         }
 
         // format menus
@@ -184,11 +210,13 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         List<MenuItemVO> userMenus = formatTreeMenus(menuDtos);
 
         // storage session data
-        String sessKey = userSessionKey(entDTO.getUsername());
-        loginCache.put(sessKey, vo);
+        String sessKey = userSessionKey(userDto.getUsername());
+        loginCache.put(sessKey, sess);
 
-        vo.setMenus(userMenus);
-        vo.setSessionKey(sessKey);
+        sess.setMenus(userMenus);
+        sess.setSessionKey(sessKey);
+
+        return sess;
     }
 
     private List<MenuItemVO> formatTreeMenus(List<AdminMenuDTO> dtoList) {
@@ -233,9 +261,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     @Override
     public AdminUserLogoutVO logout(AdminUserLogoutRequest reqDTO, String sessKey) {
-        AdminUserLoginVO user = loginCache.getIfPresent(sessKey);
+        AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
         if (Objects.isNull(user)) {
-            throw new BusinessException("can not call logout");
+            AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
         // remove session data

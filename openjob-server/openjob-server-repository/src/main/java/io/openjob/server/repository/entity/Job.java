@@ -73,6 +73,9 @@ public class Job {
     @Column(name = "next_execute_time")
     private Long nextExecuteTime;
 
+    @Column(name = "execute_strategy")
+    private Integer executeStrategy;
+
     @Column(name = "deleted")
     private Integer deleted;
 

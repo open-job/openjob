@@ -25,6 +25,14 @@ Content-Type: application/json
     client.global.set("sess_token", response.body.data.sessionKey);
 %}
 
+### Logout 1
+POST http://127.0.0.1:8080/admin/logout
+accept: */*
+Content-Type: application/json
+Session: 6eae14279f6c496fa853416f3480755b
+
+{}
+
 ### Logout
 POST http://127.0.0.1:8080/admin/logout
 accept: */*

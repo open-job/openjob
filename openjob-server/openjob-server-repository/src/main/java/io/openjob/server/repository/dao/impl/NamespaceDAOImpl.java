@@ -1,15 +1,18 @@
 package io.openjob.server.repository.dao.impl;
 
+import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.repository.NamespaceRepository;
-import io.openjob.server.repository.util.EntityUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,11 +42,25 @@ public class NamespaceDAOImpl implements NamespaceDAO {
     }
 
     @Override
-    public Page<Namespace> list(Integer page, Integer size) {
-        // TIP: page start from 0 on JPA.
-        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+    public List<Namespace> list(String searchName, Integer page, Integer size) {
+        // Matcher
+        ExampleMatcher matching = ExampleMatcher.matching();
+        Namespace namespace = new Namespace();
+        if (StringUtils.isNotEmpty(searchName)) {
+            namespace.setName(searchName);
+            matching = matching.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
+        }
 
-        return this.namespaceRepository.findAll(pageReq);
+        // Condition
+        Example<Namespace> example = Example.of(namespace, matching);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // Query
+        Page<Namespace> pageList = this.namespaceRepository.findAll(example, pageRequest);
+        if (pageList.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        return pageList.toList();
     }
 
     @Override

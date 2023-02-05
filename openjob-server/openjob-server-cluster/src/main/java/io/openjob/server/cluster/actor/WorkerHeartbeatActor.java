@@ -1,12 +1,9 @@
 package io.openjob.server.cluster.actor;
 
-import akka.actor.AbstractActor;
 import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerHeartbeatResponse;
-import io.openjob.common.response.ServerHeartbeatSystemResponse;
-import io.openjob.common.response.ServerResponse;
 import io.openjob.server.cluster.service.WorkerHeartbeatService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -10,6 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "openjob.scheduler")
 public class SchedulerProperties {
+    private Integer instanceReDispatchPeriodTime = 90;
+    private Integer instanceFailPeriodTime = 15;
     private Delay delay;
 
     @Data

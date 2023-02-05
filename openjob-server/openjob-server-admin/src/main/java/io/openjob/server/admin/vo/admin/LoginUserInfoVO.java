@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.user;
+package io.openjob.server.admin.vo.admin;
 
 import io.openjob.server.admin.vo.part.MenuItemVO;
 import io.openjob.server.admin.vo.part.PermItemVO;
@@ -15,8 +15,8 @@ import java.util.List;
  */
 @Data
 @Builder
-@ApiModel(value = "AdminUserLoginVO", description = "AdminUserLoginVO")
-public class AdminUserLoginVO {
+@ApiModel(value = "LoginUserInfoVO", description = "LoginUserInfoVO")
+public class LoginUserInfoVO {
 
     @ApiModelProperty(value = "PK")
     private Long id;

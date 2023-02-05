@@ -3,13 +3,18 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.request.ServerCheckTaskMasterRequest;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.cron.CronExpression;
+import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
+import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.timer.SchedulerTimerTask;
@@ -18,12 +23,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -34,14 +43,16 @@ import java.util.List;
 public class JobSchedulingService {
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
-
     private final SchedulerWheel schedulerWheel;
+    private final SchedulerProperties schedulerProperties;
+
 
     @Autowired
-    public JobSchedulingService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel) {
+    public JobSchedulingService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel, SchedulerProperties schedulerProperties) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.schedulerWheel = schedulerWheel;
+        this.schedulerProperties = schedulerProperties;
     }
 
     /**
@@ -51,6 +62,58 @@ public class JobSchedulingService {
         List<Long> currentSlots = new ArrayList<>(ClusterContext.getCurrentSlots());
         // Cron jobs.
         this.scheduleCronJob(currentSlots);
+    }
+
+    /**
+     * Schedule failover job.
+     */
+    public void scheduleFailoverJob() {
+        Set<JobInstance> dispatchList = new HashSet<>();
+        Set<Long> currentSlots = ClusterContext.getCurrentSlots();
+
+        // Retry dispatch list.
+        long executeTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
+        List<JobInstance> unDispatchList = this.jobInstanceDAO.getUnDispatchedList(currentSlots, executeTime, InstanceStatusEnum.WAITING);
+        if (!CollectionUtils.isEmpty(unDispatchList)) {
+            dispatchList.addAll(unDispatchList);
+            log.info("Retry dispatch list!{}", unDispatchList.stream().map(JobInstance::getId).collect(Collectors.toList()));
+        }
+
+        // Fail over list.
+        // Must exclude one time job.
+        long failoverReportTime = DateUtil.timestamp() - this.schedulerProperties.getInstanceFailPeriodTime();
+        List<JobInstance> failoverList = this.jobInstanceDAO.getFailoverList(currentSlots, failoverReportTime, InstanceStatusEnum.RUNNING);
+        if (!CollectionUtils.isEmpty(failoverList)) {
+            dispatchList.addAll(failoverList);
+            log.info("Retry failover list!{}", failoverList.stream().map(JobInstance::getId).collect(Collectors.toList()));
+        }
+
+        List<AbstractTimerTask> timerTasks = new ArrayList<>();
+        dispatchList.forEach(js -> {
+            // Check worker instance.
+            if (InstanceStatusEnum.isRunning(js.getStatus()) && this.checkTaskMaster(js)) {
+                return;
+            }
+
+            // Add time wheel.
+            timerTasks.add(this.convertToTimerTask(js));
+        });
+
+        // Batch add time task to timing wheel.
+        this.schedulerWheel.addTimerTask(timerTasks);
+    }
+
+    private Boolean checkTaskMaster(JobInstance js) {
+        try {
+            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
+            checkRequest.setJobInstanceId(js.getId());
+            checkRequest.setJobId(js.getJobId());
+            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
+            return true;
+        } catch (Throwable e) {
+            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
+            return false;
+        }
     }
 
     /**
@@ -114,27 +177,44 @@ public class JobSchedulingService {
             jobInstance.setCreateTime(now);
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
-            jobInstance.setCompleteTime(0);
-            jobInstance.setLastReportTime(0);
+            jobInstance.setCompleteTime(0L);
+            jobInstance.setLastReportTime(0L);
+            jobInstance.setProcessorType(j.getProcessorType());
+            jobInstance.setProcessorInfo(j.getProcessorInfo());
+            jobInstance.setExecuteType(j.getExecuteType());
+            jobInstance.setFailRetryInterval(j.getFailRetryInterval());
+            jobInstance.setFailRetryTimes(j.getFailRetryTimes());
+            jobInstance.setTimeExpressionType(j.getTimeExpressionType());
+            jobInstance.setTimeExpression(j.getTimeExpression());
+            jobInstance.setExecuteStrategy(j.getExecuteStrategy());
+            jobInstance.setConcurrency(j.getConcurrency());
+            jobInstance.setWorkerAddress("");
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
-            SchedulerTimerTask schedulerTask = new SchedulerTimerTask(instanceId, j.getSlotsId(), j.getNextExecuteTime());
-            schedulerTask.setJobId(j.getId());
-            schedulerTask.setJobParams(j.getParams());
-            schedulerTask.setAppid(j.getAppId());
-            schedulerTask.setWorkflowId(j.getWorkflowId());
-            schedulerTask.setProcessorInfo(j.getProcessorInfo());
-            schedulerTask.setProcessorType(j.getProcessorType());
-            schedulerTask.setExecuteType(j.getExecuteType());
-            schedulerTask.setFailRetryTimes(j.getFailRetryTimes());
-            schedulerTask.setFailRetryInterval(j.getFailRetryInterval());
-            schedulerTask.setConcurrency(j.getConcurrency());
-            schedulerTask.setTimeExpressionType(j.getTimeExpressionType());
-            schedulerTask.setTimeExpression(j.getTimeExpression());
-            timerTasks.add(schedulerTask);
+            jobInstance.setId(instanceId);
+
+            timerTasks.add(this.convertToTimerTask(jobInstance));
         });
 
         this.schedulerWheel.addTimerTask(timerTasks);
+    }
+
+    private AbstractTimerTask convertToTimerTask(JobInstance js) {
+        SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
+        schedulerTask.setJobId(js.getJobId());
+        schedulerTask.setJobParams(js.getJobParams());
+        schedulerTask.setAppid(js.getAppId());
+        schedulerTask.setWorkflowId(0L);
+        schedulerTask.setProcessorInfo(js.getProcessorInfo());
+        schedulerTask.setProcessorType(js.getProcessorType());
+        schedulerTask.setExecuteType(js.getExecuteType());
+        schedulerTask.setFailRetryTimes(js.getFailRetryTimes());
+        schedulerTask.setFailRetryInterval(js.getFailRetryInterval());
+        schedulerTask.setConcurrency(js.getConcurrency());
+        schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
+        schedulerTask.setTimeExpression(js.getTimeExpression());
+        schedulerTask.setExecuteStrategy(js.getExecuteStrategy());
+        return schedulerTask;
     }
 
     private Long calculateNextExecuteTime(Job job, Long now) throws ParseException {

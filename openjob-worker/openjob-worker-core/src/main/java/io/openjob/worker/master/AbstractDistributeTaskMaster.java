@@ -2,35 +2,47 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.util.WorkerUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
 
-    protected AtomicBoolean running = new AtomicBoolean(false);
-
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
+    }
+
+    @Override
+    public void submit() {
+
     }
 
     @Override
@@ -43,26 +55,54 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                 new ThreadPoolExecutor.AbortPolicy()
         );
 
-        // Check task status.
+        // Check task complete status.
         this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
 
-        // Check task container alive
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskContainerChecker(), 1, 3L, TimeUnit.SECONDS);
+        // Pull failover task to redispatch.
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
     }
 
     /**
      * Dispatch tasks.
      *
      * @param startRequests start requests.
+     * @param isFailover    is failover
      */
-    public void dispatchTasks(List<MasterStartContainerRequest> startRequests) {
-        String workerAddress = this.workerAddresses.get(0);
-        String workerPath = WorkerUtil.getWorkerContainerActorPath(workerAddress);
-        ActorSelection workerSelection = actorContext.actorSelection(workerPath);
+    public void dispatchTasks(List<MasterStartContainerRequest> startRequests, Boolean isFailover, Set<String> failWorkers) {
+        String workerAddress = WorkerUtil.selectOneWorker(failWorkers);
+        if (Objects.isNull(workerAddress)) {
+            log.error("Not available worker to dispatch! tasks={} failover={}", startRequests, isFailover);
+            return;
+        }
 
-        // Persist tasks.
-        // Notice h2 write delay.
-        this.persistTasks(startRequests);
+        try {
+            this.doDispatchTasks(workerAddress, startRequests, isFailover);
+        } catch (Throwable e) {
+            // Add fail workers.
+            failWorkers.add(workerAddress);
+
+            // Select worker address.
+            this.dispatchTasks(startRequests, isFailover, failWorkers);
+        }
+    }
+
+    /**
+     * Dispatch tasks.
+     *
+     * @param workerAddress worker dddress
+     * @param startRequests start requests.
+     * @param isFailover    is failover
+     */
+    public void doDispatchTasks(String workerAddress, List<MasterStartContainerRequest> startRequests, Boolean isFailover) {
+        ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
+
+        // Add container workers.
+        this.containerWorkers.add(workerAddress);
+
+        // Not failover to persist tasks.
+        if (!isFailover) {
+            this.persistTasks(workerAddress, startRequests);
+        }
 
         // Switch running status.
         if (!this.running.get()) {
@@ -74,17 +114,19 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         batchRequest.setStartContainerRequests(startRequests);
 
-        try {
-            FutureUtil.ask(workerSelection, batchRequest, 10L);
-        } catch (Exception e) {
-            e.printStackTrace();
+        FutureUtil.mustAsk(workerSelection, batchRequest, WorkerResponse.class, 3000L);
+
+        // Failover to update status.
+        if (isFailover) {
+            List<String> taskIds = startRequests.stream().map(MasterStartContainerRequest::getTaskUniqueId).collect(Collectors.toList());
+            this.taskDAO.batchUpdateStatusAndWorkerAddressByTaskId(taskIds, TaskStatusEnum.INIT.getStatus(), workerAddress);
         }
     }
 
-    protected void persistTasks(List<MasterStartContainerRequest> startRequests) {
-        List<Task> taskList = new ArrayList<>();
-        startRequests.forEach(sr -> taskList.add(this.convertToTask(sr)));
+    protected void persistTasks(String workerAddress, List<MasterStartContainerRequest> startRequests) {
+        List<Task> taskList = startRequests.stream().map(m -> this.convertToTask(m, workerAddress)).collect(Collectors.toList());
 
+        // Batch add task.
         taskDAO.batchAdd(taskList);
     }
 
@@ -102,7 +144,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         jobContext.setConcurrency(this.jobInstanceDTO.getConcurrency());
         jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
         jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
-        jobContext.setWorkerAddresses(this.jobInstanceDTO.getWorkerAddresses());
         return jobContext;
     }
 
@@ -123,7 +164,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
 
             // Dispatch fail task.
-
             boolean isComplete = this.taskMaster.isTaskComplete(instanceId, taskMaster.circleIdGenerator.get());
             if (isComplete) {
                 try {
@@ -138,10 +178,40 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         }
     }
 
-    protected static class TaskContainerChecker implements Runnable {
+    protected static class TaskFailoverPuller implements Runnable {
+
+        protected TaskDAO taskDAO = TaskDAO.INSTANCE;
+        private final AbstractDistributeTaskMaster taskMaster;
+
+        public TaskFailoverPuller(AbstractDistributeTaskMaster taskMaster) {
+            this.taskMaster = taskMaster;
+        }
+
         @Override
         public void run() {
+            // When task is running to check status.
+            if (!this.taskMaster.running.get()) {
+                return;
+            }
 
+            long size = 100;
+            long instanceId = this.taskMaster.jobInstanceDTO.getJobInstanceId();
+            while (true) {
+                List<Task> taskList = this.taskDAO.pullFailoverListBySize(instanceId, size);
+                if (CollectionUtils.isEmpty(taskList)) {
+                    break;
+                }
+
+                List<MasterStartContainerRequest> startRequests = taskList.stream()
+                        .map(this.taskMaster::convertToMasterStartContainerRequest)
+                        .collect(Collectors.toList());
+
+                try {
+                    this.taskMaster.dispatchTasks(startRequests, true, Collections.emptySet());
+                } catch (Throwable e) {
+                    log.error("Task failover dispatch task failed! message={}", e.getMessage());
+                }
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package io.openjob.server.handler;
 
 import io.openjob.common.constant.StatusEnum;
 import io.openjob.common.response.Result;
+import io.openjob.server.common.exception.CodeException;
+import io.openjob.server.common.exception.HttpStatusException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,8 @@ import java.util.List;
 @ControllerAdvice
 public class ServerExceptionHandler {
 
+    private static final String MAX_AGE = "18000L";
+
     /**
      * NoHandlerFoundException
      */
@@ -32,16 +36,16 @@ public class ServerExceptionHandler {
     @ResponseBody
     public Result<Object> defaultErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, NoHandlerFoundException exception) {
         // Http status.
-        this.doResponseStatus(response);
+        this.doResponseStatus(response, StatusEnum.NOT_FOUND.getStatus());
 
         // Empty exception.
         if (exception == null) {
             log.error("NoHandlerFoundException is empty!");
-            return Result.fatal("request failed!");
+            return Result.success("request failed!");
         }
 
         log.error(exception.getMessage(), exception);
-        return Result.normal(new Object(), StatusEnum.NOT_FOUND.getStatus(), 0, exception.getMessage());
+        return Result.success(new Object(), 0, exception.getMessage());
     }
 
     /**
@@ -51,12 +55,12 @@ public class ServerExceptionHandler {
     @ResponseBody
     public Result<Object> defaultErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, MethodArgumentNotValidException argException) {
         // Http status.
-        this.doResponseStatus(response);
+        this.doResponseStatus(response, StatusEnum.INVALID_ARGUMENT.getStatus());
 
         // Empty exception.
         if (argException == null) {
             log.error("MethodArgumentNotValidException is empty!");
-            return Result.fatal("request failed!");
+            return Result.success("request failed!");
         }
 
         log.error(argException.getMessage(), argException);
@@ -78,9 +82,9 @@ public class ServerExceptionHandler {
 
         String message = msgBuilder.toString();
         log.error(message);
-        return Result.normal(new Object(), StatusEnum.INVALID_ARGUMENT.getStatus(), 0, message);
-    }
+        return Result.success(new Object(), 0, message);
 
+    }
 
     /**
      * Throwable
@@ -89,16 +93,57 @@ public class ServerExceptionHandler {
     @ResponseBody
     public Result<Object> defaultErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, Throwable throwable) {
         // Http status.
-        this.doResponseStatus(response);
+        this.doResponseStatus(response, StatusEnum.FAIL.getStatus());
 
         // Empty exception.
         if (throwable == null) {
             log.error("Throwable is empty!");
-            return Result.fatal("request failed!");
+            return Result.success("request failed!");
         }
 
         log.error(throwable.getMessage(), throwable);
-        return Result.fatal(throwable.getMessage());
+        return Result.success(throwable.getMessage());
+    }
+
+    /**
+     * HttpStatusException
+     */
+    @ExceptionHandler(value = HttpStatusException.class)
+    @ResponseBody
+    public Result<Object> httpStatusErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, HttpStatusException exception) {
+        // Empty exception.
+        if (exception == null) {
+            // Http status.
+            this.doResponseStatus(response, StatusEnum.FAIL.getStatus());
+
+            log.error("HttpStatusException is empty!");
+            return Result.success("request failed!");
+        }
+
+        Integer statusCode = exception.getBaseEnum().getValue();
+        this.doResponseStatus(response, statusCode);
+
+        log.info(exception.getMessage(), exception);
+        return Result.success(new Object(), statusCode, exception.getMessage());
+    }
+
+    /**
+     * Throwable
+     */
+    @ExceptionHandler(value = CodeException.class)
+    @ResponseBody
+    public Result<Object> codeErrorHandler(HttpServletRequest ignoredRequest, HttpServletResponse response, CodeException exception) {
+        // Http status.
+        this.doResponseStatus(response, StatusEnum.SUCCESS.getStatus());
+
+        // Empty exception.
+        if (exception == null) {
+            log.error("CodeException is empty!");
+            return Result.success("request failed!");
+        }
+
+        log.info(exception.getMessage(), exception);
+        return Result.success(new Object(), exception.getBaseEnum().getValue(), exception.getMessage());
     }
 
     /**
@@ -106,7 +151,7 @@ public class ServerExceptionHandler {
      *
      * @param response response
      */
-    private void doResponseStatus(HttpServletResponse response) {
-        response.setStatus(StatusEnum.SUCCESS.getStatus());
+    private void doResponseStatus(HttpServletResponse response, Integer status) {
+        response.setStatus(status);
     }
 }
