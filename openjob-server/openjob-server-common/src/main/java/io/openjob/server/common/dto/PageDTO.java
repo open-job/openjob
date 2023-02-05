@@ -1,6 +1,5 @@
 package io.openjob.server.common.dto;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -10,13 +9,23 @@ import java.util.List;
  */
 @Data
 public class PageDTO<T> {
-    @ApiModelProperty(value = "item list")
-    private List<T> list;
+    /**
+     * Current page.
+     */
+    private Integer page;
 
-    @ApiModelProperty(value = "total count")
+    /**
+     * Current size.
+     */
+    private Integer size;
+
+    /**
+     * Total.
+     */
     private Long total;
 
-
-
-
+    /**
+     * Page List
+     */
+    private List<T> list;
 }

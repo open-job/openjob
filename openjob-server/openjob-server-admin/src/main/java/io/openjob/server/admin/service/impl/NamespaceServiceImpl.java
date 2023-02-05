@@ -7,17 +7,21 @@ import io.openjob.server.admin.request.UpdateStatusNamespaceRequest;
 import io.openjob.server.admin.service.NamespaceService;
 import io.openjob.server.admin.vo.AddNamespaceVO;
 import io.openjob.server.admin.vo.ListNamespaceVO;
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.PageUtil;
+import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.UpdateNamespaceVO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -72,24 +76,13 @@ public class NamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
-    public ListNamespaceVO list(ListNamespaceRequest listRequest) {
-        List<ListNamespaceVO.NamespaceVO> namespaceList = new ArrayList<>();
-
-        this.namespaceDAO.list(listRequest.getName(), listRequest.getPage() - 1, listRequest.getSize()).forEach(n -> {
-            ListNamespaceVO.NamespaceVO namespaceVO = new ListNamespaceVO.NamespaceVO();
-
-            namespaceVO.setId(n.getId());
-            namespaceVO.setName(n.getName());
-            namespaceVO.setStatus(n.getStatus());
+    public PageVO<ListNamespaceVO> list(ListNamespaceRequest listRequest) {
+        PageDTO<Namespace> pageDTO = this.namespaceDAO.pageList(listRequest.getName(), listRequest.getPage(), listRequest.getSize());
+        return PageUtil.convert(pageDTO, n -> {
+            ListNamespaceVO namespaceVO = new ListNamespaceVO();
+            BeanUtils.copyProperties(n, namespaceVO);
             namespaceVO.setUuid(UUID.randomUUID().toString());
-            namespaceVO.setCreateTime(n.getCreateTime());
-            namespaceList.add(namespaceVO);
+            return namespaceVO;
         });
-
-        ListNamespaceVO listNamespaceVO = new ListNamespaceVO();
-        listNamespaceVO.setPage(listRequest.getPage());
-        listNamespaceVO.setTotal(8);
-        listNamespaceVO.setList(namespaceList);
-        return listNamespaceVO;
     }
 }

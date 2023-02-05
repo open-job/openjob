@@ -6,6 +6,7 @@ import io.openjob.server.admin.request.UpdateNamespaceRequest;
 import io.openjob.server.admin.request.UpdateStatusNamespaceRequest;
 import io.openjob.server.admin.vo.AddNamespaceVO;
 import io.openjob.server.admin.vo.ListNamespaceVO;
+import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.UpdateNamespaceVO;
 
@@ -45,5 +46,5 @@ public interface NamespaceService {
      * @param listRequest ListNamespaceRequest
      * @return ListNamespaceResponse
      */
-    ListNamespaceVO list(ListNamespaceRequest listRequest);
+    PageVO<ListNamespaceVO> list(ListNamespaceRequest listRequest);
 }

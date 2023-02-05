@@ -8,12 +8,12 @@ import io.openjob.server.admin.request.UpdateStatusNamespaceRequest;
 import io.openjob.server.admin.service.NamespaceService;
 import io.openjob.server.admin.vo.AddNamespaceVO;
 import io.openjob.server.admin.vo.ListNamespaceVO;
+import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.UpdateNamespaceVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +56,7 @@ public class NamespaceController {
 
     @ApiOperation("List namespace")
     @PostMapping("/list")
-    public Result<ListNamespaceVO> list(@Valid @RequestBody ListNamespaceRequest listRequest) {
+    public Result<PageVO<ListNamespaceVO>> list(@Valid @RequestBody ListNamespaceRequest listRequest) {
         return Result.success(this.namespaceService.list(listRequest));
     }
 }
