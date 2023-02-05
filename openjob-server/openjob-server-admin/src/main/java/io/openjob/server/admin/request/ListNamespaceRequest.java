@@ -11,9 +11,12 @@ import lombok.Data;
 @Data
 @ApiModel
 public class ListNamespaceRequest {
+    @ApiModelProperty(value = "Search name.")
+    private String name;
+
     @ApiModelProperty(value = "List page.")
-    private Integer page;
+    private Integer page = 1;
 
     @ApiModelProperty(value = "List size.")
-    private Integer size;
+    private Integer size = 10;
 }

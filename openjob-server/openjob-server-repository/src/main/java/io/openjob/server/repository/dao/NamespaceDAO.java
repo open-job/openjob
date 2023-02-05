@@ -22,11 +22,12 @@ public interface NamespaceDAO {
     /**
      * List by page.
      *
-     * @param page page
-     * @param size size
+     * @param searchName search name
+     * @param page       page
+     * @param size       size
      * @return List
      */
-    List<Namespace> list(Integer page, Integer size);
+    List<Namespace> list(String searchName, Integer page, Integer size);
 
     /**
      * Get by id.
