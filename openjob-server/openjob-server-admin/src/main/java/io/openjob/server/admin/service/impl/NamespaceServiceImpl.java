@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -74,21 +75,21 @@ public class NamespaceServiceImpl implements NamespaceService {
     public ListNamespaceVO list(ListNamespaceRequest listRequest) {
         List<ListNamespaceVO.NamespaceVO> namespaceList = new ArrayList<>();
 
-        this.namespaceDAO.list(listRequest.getPage(), listRequest.getSize()).forEach(n -> {
+        this.namespaceDAO.list(listRequest.getName(), listRequest.getPage() - 1, listRequest.getSize()).forEach(n -> {
             ListNamespaceVO.NamespaceVO namespaceVO = new ListNamespaceVO.NamespaceVO();
 
             namespaceVO.setId(n.getId());
             namespaceVO.setName(n.getName());
-            namespaceVO.setDesc(n.getDesc());
             namespaceVO.setStatus(n.getStatus());
-
+            namespaceVO.setUuid(UUID.randomUUID().toString());
+            namespaceVO.setCreateTime(n.getCreateTime());
             namespaceList.add(namespaceVO);
         });
 
         ListNamespaceVO listNamespaceVO = new ListNamespaceVO();
         listNamespaceVO.setPage(listRequest.getPage());
-        listNamespaceVO.setNamespaceList(namespaceList);
-
+        listNamespaceVO.setTotal(8);
+        listNamespaceVO.setList(namespaceList);
         return listNamespaceVO;
     }
 }
