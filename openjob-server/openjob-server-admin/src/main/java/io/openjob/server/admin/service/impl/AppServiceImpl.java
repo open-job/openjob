@@ -9,6 +9,7 @@ import io.openjob.server.admin.vo.ListAppVO;
 import io.openjob.server.admin.vo.UpdateAppVO;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.entity.App;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.List;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
+ * @date 2022-10-26 23:06:37
  */
 @Service
 public class AppServiceImpl implements AppService {
@@ -31,12 +33,8 @@ public class AppServiceImpl implements AppService {
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
         App app = new App();
-        app.setNamespaceId(addRequest.getNamespaceId());
-        app.setName(addRequest.getName());
-        app.setDesc(addRequest.getDesc());
-        app.setDeleteTime(0L);
-        app.setDeleted(2);
 
+        BeanUtils.copyProperties(app, addRequest);
         long id = appDAO.save(app);
 
         return new AddAppVO().setId(id);
@@ -45,10 +43,8 @@ public class AppServiceImpl implements AppService {
     @Override
     public UpdateAppVO update(UpdateAppRequest updateRequest) {
         App app = new App();
-        app.setId(updateRequest.getId());
-        app.setName(updateRequest.getName());
-        app.setDesc(updateRequest.getDesc());
 
+        BeanUtils.copyProperties(app, updateRequest);
         appDAO.save(app);
 
         return new UpdateAppVO();
@@ -61,10 +57,7 @@ public class AppServiceImpl implements AppService {
         appDAO.list(listRequest.getPage(), listRequest.getSize()).forEach(app -> {
             ListAppVO.AppVO appVO = new ListAppVO.AppVO();
 
-            appVO.setId(app.getId());
-            appVO.setName(app.getName());
-            appVO.setDesc(app.getDesc());
-
+            BeanUtils.copyProperties(app, appVO);
             appList.add(appVO);
         });
 

@@ -5,7 +5,10 @@ import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.repository.JobRepository;
+import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -38,5 +41,13 @@ public class JobDAOImpl implements JobDAO {
     @Override
     public List<Job> listScheduledSecondJobs(List<Long> slotIds) {
         return null;
+    }
+
+    @Override
+    public Page<Job> list(Integer page, Integer size) {
+        // TIP: page start from 0 on JPA.
+        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+
+        return jobRepository.findAll(pageReq);
     }
 }

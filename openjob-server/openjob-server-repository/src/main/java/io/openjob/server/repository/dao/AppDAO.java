@@ -1,8 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.repository.entity.App;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -33,5 +32,5 @@ public interface AppDAO {
      * @param size limit size
      * @return Apps
      */
-    List<App> list(Integer page, Integer size);
+    Page<App> list(Integer page, Integer size);
 }

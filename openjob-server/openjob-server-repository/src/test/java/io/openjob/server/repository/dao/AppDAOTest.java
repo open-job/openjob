@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
