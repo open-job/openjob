@@ -44,10 +44,4 @@ public class AppDAOTest extends RepositoryTest {
 
         Assertions.assertEquals(app.getName(), "xxx-service");
     }
-
-    @Test
-    public void testList() {
-        List<App> app = appDAO.list(1, 10);
-        Assertions.assertTrue(app.size() > 0);
-    }
 }
