@@ -1,8 +1,8 @@
 package io.openjob.server.repository.dao.impl;
 
-import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.repository.NamespaceRepository;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,7 +41,7 @@ public class NamespaceDAOImpl implements NamespaceDAO {
     }
 
     @Override
-    public List<Namespace> list(String searchName, Integer page, Integer size) {
+    public PageDTO<Namespace> pageList(String searchName, Integer page, Integer size) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         Namespace namespace = new Namespace();
@@ -53,14 +52,20 @@ public class NamespaceDAOImpl implements NamespaceDAO {
 
         // Condition
         Example<Namespace> example = Example.of(namespace, matching);
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // Pagination
+        PageDTO<Namespace> pageDTO = new PageDTO<>();
 
         // Query
         Page<Namespace> pageList = this.namespaceRepository.findAll(example, pageRequest);
-        if (pageList.isEmpty()) {
-            return Lists.newArrayList();
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(page);
+            pageDTO.setSize(size);
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
         }
-        return pageList.toList();
+        return pageDTO;
     }
 
     @Override

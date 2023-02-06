@@ -1,8 +1,8 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.Namespace;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,7 +27,7 @@ public interface NamespaceDAO {
      * @param size       size
      * @return List
      */
-    List<Namespace> list(String searchName, Integer page, Integer size);
+    PageDTO<Namespace> pageList(String searchName, Integer page, Integer size);
 
     /**
      * Get by id.
