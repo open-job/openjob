@@ -25,17 +25,15 @@ public class Namespace {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "desc")
-    private String desc;
-
-    @Column(name = "secret")
-    private String secret;
-
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "uuid")
+    private String uuid;
+
     @Column(name = "deleted")
     private Integer deleted;
+
 
     /**
      * Delete time

@@ -35,6 +35,7 @@ public class NamespaceDAOImpl implements NamespaceDAO {
         Long timestamp = DateUtil.timestamp();
         namespace.setDeleted(CommonConstant.NO);
         namespace.setDeleteTime(0L);
+        namespace.setStatus(CommonConstant.YES);
         namespace.setCreateTime(timestamp);
         namespace.setUpdateTime(timestamp);
         return this.namespaceRepository.save(namespace).getId();

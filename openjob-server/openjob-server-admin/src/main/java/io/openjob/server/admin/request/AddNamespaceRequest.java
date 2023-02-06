@@ -17,10 +17,4 @@ public class AddNamespaceRequest {
     @NotBlank
     @ApiModelProperty(value = "Namespace name", required = true)
     private String name;
-
-    @ApiModelProperty(value = "Namespace desc", required = true)
-    private String desc;
-
-    @ApiModelProperty(value = "Namespace visit secret, use md5 submit", required = true)
-    private String secret;
 }

@@ -7,21 +7,18 @@ import io.openjob.server.admin.request.UpdateStatusNamespaceRequest;
 import io.openjob.server.admin.service.NamespaceService;
 import io.openjob.server.admin.vo.AddNamespaceVO;
 import io.openjob.server.admin.vo.ListNamespaceVO;
+import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
+import io.openjob.server.admin.vo.UpdateNamespaceVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
-import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
-import io.openjob.server.admin.vo.UpdateNamespaceVO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -40,25 +37,16 @@ public class NamespaceServiceImpl implements NamespaceService {
     public AddNamespaceVO add(AddNamespaceRequest addRequest) {
         Namespace namespace = new Namespace();
         namespace.setName(addRequest.getName());
-        namespace.setDesc(addRequest.getDesc());
-        namespace.setSecret(addRequest.getSecret());
-
+        namespace.setUuid(UUID.randomUUID().toString());
         long id = this.namespaceDAO.save(namespace);
-
         return new AddNamespaceVO().setId(id);
     }
 
     @Override
     public UpdateNamespaceVO update(UpdateNamespaceRequest updateRequest) {
         Namespace namespace = new Namespace();
-
         namespace.setId(updateRequest.getId());
         namespace.setName(updateRequest.getName());
-        namespace.setDesc(updateRequest.getDesc());
-
-        if (StringUtils.isNotBlank(updateRequest.getSecret())) {
-            namespace.setSecret(updateRequest.getSecret());
-        }
 
         this.namespaceDAO.save(namespace);
         return new UpdateNamespaceVO();
@@ -67,7 +55,6 @@ public class NamespaceServiceImpl implements NamespaceService {
     @Override
     public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
         Namespace namespace = new Namespace();
-
         namespace.setId(updateStatusRequest.getId());
         namespace.setStatus(updateStatusRequest.getStatus());
 

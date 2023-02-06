@@ -528,8 +528,7 @@ DROP TABLE IF EXISTS `namespace`;
 CREATE TABLE `namespace` (
                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                              `name` varchar(64) NOT NULL DEFAULT '',
-                             `desc` varchar(64) NOT NULL DEFAULT '',
-                             `secret` varchar(64) NOT NULL DEFAULT '',
+                             `uuid` varchar(64) NOT NULL DEFAULT '',
                              `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                              `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
