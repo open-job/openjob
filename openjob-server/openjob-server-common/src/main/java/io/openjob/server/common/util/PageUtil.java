@@ -14,6 +14,16 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class PageUtil {
+
+    /**
+     * Convert
+     *
+     * @param pageDTO  Page dto.
+     * @param function Function
+     * @param <S>      source type
+     * @param <T>      Target type
+     * @return PageVo
+     */
     public static <S, T> PageVO<T> convert(PageDTO<S> pageDTO, Function<S, T> function) {
         PageVO<T> pageVO = new PageVO<>();
         pageVO.setSize(pageDTO.getSize());

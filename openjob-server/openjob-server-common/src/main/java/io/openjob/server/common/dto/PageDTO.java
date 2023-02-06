@@ -29,6 +29,9 @@ public class PageDTO<T> {
      */
     private List<T> list;
 
+    /**
+     * New page dto.
+     */
     public PageDTO() {
         this.page = 1;
         this.size = 10;
