@@ -56,7 +56,7 @@ public class NamespaceDAOImpl implements NamespaceDAO {
                 n.setStatus(namespace.getStatus());
             }
 
-            if (Objects.nonNull(namespace.getDeleted())){
+            if (Objects.nonNull(namespace.getDeleted())) {
                 n.setDeleted(namespace.getDeleted());
             }
 
