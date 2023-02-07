@@ -24,7 +24,7 @@ import javax.validation.Valid;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Api(value = "job", tags = "job")
+@Api(value = "Job", tags = "Job")
 @RestController
 @RequestMapping("/admin/job")
 public class JobController {

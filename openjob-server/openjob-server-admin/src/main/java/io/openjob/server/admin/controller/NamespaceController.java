@@ -1,16 +1,18 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.AddNamespaceRequest;
-import io.openjob.server.admin.request.ListNamespaceRequest;
-import io.openjob.server.admin.request.UpdateNamespaceRequest;
-import io.openjob.server.admin.request.UpdateStatusNamespaceRequest;
+import io.openjob.server.admin.request.namespace.AddNamespaceRequest;
+import io.openjob.server.admin.request.namespace.ListNamespaceRequest;
+import io.openjob.server.admin.request.namespace.UpdateNamespaceRequest;
+import io.openjob.server.admin.request.namespace.UpdateStatusNamespaceRequest;
+import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
+import io.openjob.server.admin.vo.namespace.DeleteNamespaceVO;
 import io.openjob.server.admin.service.NamespaceService;
-import io.openjob.server.admin.vo.AddNamespaceVO;
-import io.openjob.server.admin.vo.ListNamespaceVO;
+import io.openjob.server.admin.vo.namespace.AddNamespaceVO;
+import io.openjob.server.admin.vo.namespace.ListNamespaceVO;
 import io.openjob.server.common.vo.PageVO;
-import io.openjob.server.admin.vo.UpdateNamespaceStatusVO;
-import io.openjob.server.admin.vo.UpdateNamespaceVO;
+import io.openjob.server.admin.vo.namespace.UpdateNamespaceStatusVO;
+import io.openjob.server.admin.vo.namespace.UpdateNamespaceVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import javax.validation.Valid;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Api(value = "namespace", tags = "namespace")
+@Api(value = "Namespace", tags = "Namespace")
 @RestController
 @RequestMapping("/admin/namespace")
 public class NamespaceController {
@@ -46,6 +48,12 @@ public class NamespaceController {
     @PostMapping("/update")
     public Result<UpdateNamespaceVO> update(@Valid @RequestBody UpdateNamespaceRequest updateRequest) {
         return Result.success(this.namespaceService.update(updateRequest));
+    }
+
+    @ApiOperation("Update namespace")
+    @PostMapping("/delete")
+    public Result<DeleteNamespaceVO> delete(@Valid @RequestBody DeleteNamespaceRequest deleteRequest) {
+        return Result.success(this.namespaceService.delete(deleteRequest));
     }
 
     @ApiOperation("Update namespace status")

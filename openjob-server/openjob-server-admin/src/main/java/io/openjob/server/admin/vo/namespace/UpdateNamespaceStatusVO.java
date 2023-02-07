@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo;
+package io.openjob.server.admin.vo.namespace;
 
 import lombok.Data;
 
@@ -7,5 +7,5 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class UpdateNamespaceVO {
+public class UpdateNamespaceStatusVO {
 }

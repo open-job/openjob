@@ -62,8 +62,8 @@ public class ObjectUtil {
 
         T target;
         try {
-            target = targetClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            target = targetClass.getDeclaredConstructor().newInstance();
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
 

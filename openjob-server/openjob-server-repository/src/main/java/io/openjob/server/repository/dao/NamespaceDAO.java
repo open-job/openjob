@@ -20,6 +20,14 @@ public interface NamespaceDAO {
     Long save(Namespace namespace);
 
     /**
+     * Update
+     *
+     * @param namespace namespace
+     * @return Long
+     */
+    Long update(Namespace namespace);
+
+    /**
      * List by page.
      *
      * @param searchName search name

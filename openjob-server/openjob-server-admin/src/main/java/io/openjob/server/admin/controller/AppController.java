@@ -22,7 +22,7 @@ import javax.validation.Valid;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Api(value = "app", tags = "app")
+@Api(value = "App", tags = "App")
 @RestController
 @RequestMapping("/admin/app")
 public class AppController {

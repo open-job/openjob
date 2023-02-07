@@ -20,7 +20,7 @@ import javax.validation.Valid;
  * @author riki
  * @since 1.0.0
  */
-@Api(value = "system", tags = "system")
+@Api(value = "System", tags = "System")
 @RestController
 @RequestMapping("/admin/system")
 public class SystemController {

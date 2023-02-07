@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo;
+package io.openjob.server.admin.vo.namespace;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

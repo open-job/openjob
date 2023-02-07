@@ -1,0 +1,55 @@
+### Add
+POST http://127.0.0.1:8080/admin/namespace/add
+accept: */*
+Content-Type: application/json
+Token: dde58fa318e5ecedf152e7e964ce08f9
+
+{
+  "name": "openjob10000",
+  "status": 1
+}
+
+### update status
+POST http://127.0.0.1:8080/admin/namespace/update
+accept: */*
+Content-Type: application/json
+Token: dde58fa318e5ecedf152e7e964ce08f9
+
+{
+  "id": 2,
+  "name": "openjob",
+  "status": 2
+}
+
+### update
+POST http://127.0.0.1:8080/admin/namespace/update-status
+accept: */*
+Content-Type: application/json
+Token: dde58fa318e5ecedf152e7e964ce08f9
+
+{
+  "id": 2,
+  "status": 1
+}
+
+### update
+POST http://127.0.0.1:8080/admin/namespace/delete
+accept: */*
+Content-Type: application/json
+Token: dde58fa318e5ecedf152e7e964ce08f9
+
+{
+  "id": 20
+}
+
+### list
+POST http://127.0.0.1:8080/admin/namespace/list
+accept: */*
+Content-Type: application/json
+Token: dde58fa318e5ecedf152e7e964ce08f9
+
+{
+  "name": "1000",
+  "page": 1,
+  "size": 1
+}
