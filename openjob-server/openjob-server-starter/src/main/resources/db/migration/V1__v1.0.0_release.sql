@@ -535,7 +535,7 @@ CREATE TABLE `namespace` (
                              `create_time` bigint(12) unsigned NOT NULL,
                              `update_time` bigint(12) unsigned NOT NULL,
                              PRIMARY KEY (`id`),
-                             UNIQUE KEY `udx_name` (`name`)
+                             KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

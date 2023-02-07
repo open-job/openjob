@@ -46,6 +46,8 @@ public class NamespaceDAOImpl implements NamespaceDAO {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         Namespace namespace = new Namespace();
+        namespace.setDeleted(CommonConstant.NO);
+
         if (StringUtils.isNotEmpty(searchName)) {
             namespace.setName(searchName);
             matching = matching.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
