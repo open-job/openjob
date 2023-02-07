@@ -3,7 +3,7 @@ package io.openjob.server.admin.request.namespace;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class DeleteNamespaceRequest {
 
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "Namespace primary id", required = true)
     private Long id;
 }

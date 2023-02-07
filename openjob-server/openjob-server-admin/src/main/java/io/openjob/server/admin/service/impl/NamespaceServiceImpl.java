@@ -1,5 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.namespace.AddNamespaceRequest;
 import io.openjob.server.admin.request.namespace.ListNamespaceRequest;
 import io.openjob.server.admin.request.namespace.UpdateNamespaceRequest;
@@ -48,18 +49,21 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Override
     public UpdateNamespaceVO update(UpdateNamespaceRequest updateRequest) {
-        this.namespaceDAO.save(ObjectUtil.mapObject(updateRequest, Namespace.class));
+        this.namespaceDAO.update(ObjectUtil.mapObject(updateRequest, Namespace.class));
         return new UpdateNamespaceVO();
     }
 
     @Override
     public DeleteNamespaceVO delete(DeleteNamespaceRequest deleteNamespaceRequest) {
-        return null;
+        Namespace namespace = ObjectUtil.mapObject(deleteNamespaceRequest, Namespace.class);
+        namespace.setDeleted(CommonConstant.YES);
+        this.namespaceDAO.update(namespace);
+        return new DeleteNamespaceVO();
     }
 
     @Override
     public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
-        this.namespaceDAO.save(ObjectUtil.mapObject(updateStatusRequest, Namespace.class));
+        this.namespaceDAO.update(ObjectUtil.mapObject(updateStatusRequest, Namespace.class));
         return new UpdateNamespaceStatusVO();
     }
 

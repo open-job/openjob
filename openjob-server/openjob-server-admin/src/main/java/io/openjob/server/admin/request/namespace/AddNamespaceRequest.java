@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -19,7 +19,7 @@ public class AddNamespaceRequest {
     @ApiModelProperty(value = "Namespace name", required = true)
     private String name;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(value = "Namespace status", required = true)
     private Integer status;
 }

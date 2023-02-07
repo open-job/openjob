@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author riki
  * @date 2022-12-26
  */
-@Api(value = "adminServer", tags = "adminServer")
+@Api(value = "Server", tags = "Server")
 @RestController
 @RequestMapping("/admin/server")
 public class ServerController {

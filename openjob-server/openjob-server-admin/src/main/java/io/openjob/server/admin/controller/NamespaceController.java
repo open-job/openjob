@@ -27,7 +27,7 @@ import javax.validation.Valid;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Api(value = "namespace", tags = "namespace")
+@Api(value = "Namespace", tags = "Namespace")
 @RestController
 @RequestMapping("/admin/namespace")
 public class NamespaceController {
@@ -45,13 +45,13 @@ public class NamespaceController {
     }
 
     @ApiOperation("Update namespace")
-    @PostMapping("/delete")
+    @PostMapping("/update")
     public Result<UpdateNamespaceVO> update(@Valid @RequestBody UpdateNamespaceRequest updateRequest) {
         return Result.success(this.namespaceService.update(updateRequest));
     }
 
     @ApiOperation("Update namespace")
-    @PostMapping("/update")
+    @PostMapping("/delete")
     public Result<DeleteNamespaceVO> delete(@Valid @RequestBody DeleteNamespaceRequest deleteRequest) {
         return Result.success(this.namespaceService.delete(deleteRequest));
     }

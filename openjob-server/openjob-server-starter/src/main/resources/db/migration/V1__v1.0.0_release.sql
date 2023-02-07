@@ -140,7 +140,7 @@ VALUES
     (13,1,1,0,'测试任务2','测试任务2','java','io.openjob.worker.samples.processorJavaProcessorSample','standalone','',0,0,1,'cron','10 * * * * ?',2,1660288630,1,1657528102,1660288512),
     (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,126,1657528102,1660288512),
     (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,12,1657528102,1660288452),
-    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',1,1666100115,126,1657528102,1666099995);
+    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',2,1666100115,126,1657528102,1666099995);
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
 
