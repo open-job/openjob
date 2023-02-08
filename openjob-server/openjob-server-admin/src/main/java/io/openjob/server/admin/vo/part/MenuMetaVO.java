@@ -14,4 +14,7 @@ public class MenuMetaVO {
 
     @ApiModelProperty(value = "I18n title name")
     private String title;
+
+    @ApiModelProperty(value = "Page component path")
+    private String component;
 }

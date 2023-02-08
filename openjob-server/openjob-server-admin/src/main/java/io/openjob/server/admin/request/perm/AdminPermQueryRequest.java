@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.menu;
+package io.openjob.server.admin.request.perm;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(description = "Delete AdminMenu")
-public class AdminMenuDeleteRequest {
+@ApiModel(value = "AdminPermQuery", description = "Query AdminPerm")
+public class AdminPermQueryRequest {
 
     @Min(1)
     @NotNull()

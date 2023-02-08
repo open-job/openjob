@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.menu;
+package io.openjob.server.admin.request.perm;
 
 import io.openjob.server.admin.request.part.MenuMeta;
 import io.swagger.annotations.ApiModel;
@@ -13,15 +13,11 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuUpdate", description = "Update AdminMenu")
-public class AdminMenuUpdateRequest {
+@ApiModel(value = "AdminPermAddRequest", description = "Add AdminPerm")
+public class AdminPermAddRequest {
 
     @NotNull
-    @Min(1)
-    @ApiModelProperty(value = "PK")
-    private Long id;
-
-    @NotNull
+    @Min(0)
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
 
@@ -33,23 +29,19 @@ public class AdminMenuUpdateRequest {
     @ApiModelProperty(value = "Menu name")
     private String name;
 
+    @NotNull
     @ApiModelProperty(value = "Route path or API path")
     private String path;
 
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
     private MenuMeta meta;
 
-    @NotNull
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;
 
     @NotNull
     @ApiModelProperty(value = "Sort value")
     private Integer sort;
-
-    @NotNull
-    @ApiModelProperty(value = "Delete status. 1=yes 2=no")
-    private Integer deleted;
 
 }
 

@@ -1,47 +1,52 @@
-package io.openjob.server.admin.request.menu;
+package io.openjob.server.admin.vo.perm;
 
-import io.openjob.server.admin.request.part.MenuMeta;
+import io.openjob.server.admin.vo.part.MenuMetaVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author inhere
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuAddRequest", description = "Add AdminMenu")
-public class AdminMenuAddRequest {
+@ApiModel(value = "AdminPermQueryVO", description = "AdminPermQueryVO")
+public class AdminPermQueryVO {
 
-    @NotNull
-    @Min(0)
+    @ApiModelProperty(value = "PK")
+    private Long id;
+
     @ApiModelProperty(value = "Parent ID")
     private Integer pid;
 
-    @NotNull
     @ApiModelProperty(value = "Type. 1=menu 2=perm")
     private Integer type;
 
-    @NotNull
     @ApiModelProperty(value = "Menu name")
     private String name;
 
-    @NotNull
     @ApiModelProperty(value = "Route path or API path")
     private String path;
 
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
-    private MenuMeta meta;
+    private MenuMetaVO meta;
 
     @ApiModelProperty(value = "Hidden status. 1=yes 2=no")
     private Integer hidden;
 
-    @NotNull
     @ApiModelProperty(value = "Sort value")
     private Integer sort;
 
+    @ApiModelProperty(value = "Delete status. 1=yes 2=no")
+    private Integer deleted;
+
+    @ApiModelProperty(value = "Delete time")
+    private Long deleteTime;
+
+    @ApiModelProperty(value = "Update time")
+    private Long updateTime;
+
+    @ApiModelProperty(value = "Create time")
+    private Long createTime;
 }
 

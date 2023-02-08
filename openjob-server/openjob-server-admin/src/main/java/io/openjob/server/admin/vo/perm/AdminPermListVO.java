@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.menu;
+package io.openjob.server.admin.vo.perm;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,14 +11,14 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuListVO", description = "AdminMenu list")
-public class AdminMenuListVO {
+@ApiModel(value = "AdminPermListVO", description = "AdminPerm list")
+public class AdminPermListVO {
 
     @ApiModelProperty(value = "total count")
     private Integer total;
 
     @ApiModelProperty(value = "user list")
-    private List<AdminMenuQueryVO> list;
+    private List<AdminPermQueryVO> list;
 
 
 }

@@ -19,10 +19,11 @@ import io.openjob.server.admin.vo.part.MenuItemVO;
 import io.openjob.server.admin.vo.part.MenuMetaVO;
 import io.openjob.server.admin.vo.part.PermItemVO;
 import io.openjob.server.common.util.HmacUtil;
-import io.openjob.server.repository.data.AdminMenuData;
+import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.repository.data.AdminPermissionData;
 import io.openjob.server.repository.data.AdminRoleData;
 import io.openjob.server.repository.data.AdminUserData;
-import io.openjob.server.repository.dto.AdminMenuDTO;
+import io.openjob.server.repository.dto.AdminPermissionDTO;
 import io.openjob.server.repository.dto.AdminRoleDTO;
 import io.openjob.server.repository.dto.AdminUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private final AdminUserData adminUserData;
 
-    private final AdminMenuData adminMenuData;
+    private final AdminPermissionData adminPermData;
 
     private final AdminUserProperties userProperties;
 
@@ -59,12 +60,13 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     public AdminLoginServiceImpl(
             AdminRoleData adminRoleData,
             AdminUserData adminUserData,
-            AdminMenuData adminMenuData, AdminUserProperties userProperties,
+            AdminPermissionData adminPermData,
+            AdminUserProperties userProperties,
             Cache<String, AdminUserSessionDTO> loginCache
     ) {
         this.adminRoleData = adminRoleData;
         this.adminUserData = adminUserData;
-        this.adminMenuData = adminMenuData;
+        this.adminPermData = adminPermData;
         this.userProperties = userProperties;
 
         this.loginCache = loginCache;
@@ -78,10 +80,14 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         // query user perms and menus
         AdminUserSessionDTO sess = buildUserSessionDTO(userDto, false);
 
+        List<String> permNames = new ArrayList<>();
+        sess.getPerms().forEach(piVo -> permNames.add(piVo.getName()));
+
         // build return vo
         return AdminUserLoginVO.builder()
                 .id(userDto.getId())
                 .menus(sess.getMenus())
+                .permNames(permNames)
                 .username(userDto.getUsername())
                 .nickname(userDto.getNickname())
                 .supperAdmin(sess.getSupperAdmin())
@@ -170,9 +176,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             }
 
             if (!onlyPerms) {
-                menuIds.addAll(roleDto.getMenus());
+                menuIds.addAll(roleDto.getMenuIds());
             }
-            menuIds.addAll(roleDto.getPerms());
+            menuIds.addAll(roleDto.getPermIds());
         }
 
         sess.setSupperAdmin(isAdmin);
@@ -180,16 +186,16 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         List<PermItemVO> userPerms = new ArrayList<>();
 
         // query perms and menus. if is admin, query all valid menus.
-        List<AdminMenuDTO> dbMenuDtos;
+        List<AdminPermissionDTO> dbMenuDtos;
         if (isAdmin) {
-            dbMenuDtos = adminMenuData.getAllMenus();
+            dbMenuDtos = adminPermData.getAllMenus();
         } else {
-            dbMenuDtos = adminMenuData.getByIds(menuIds.stream().distinct().collect(Collectors.toList()));
+            dbMenuDtos = adminPermData.getByIds(menuIds.stream().distinct().collect(Collectors.toList()));
         }
 
-        List<AdminMenuDTO> menuDtos = new ArrayList<>();
+        List<AdminPermissionDTO> menuDtos = new ArrayList<>();
 
-        for (AdminMenuDTO menuDto : dbMenuDtos) {
+        for (AdminPermissionDTO menuDto : dbMenuDtos) {
             if (AdminConstant.MENU_TYPE_PERM.equals(menuDto.getType())) {
                 PermItemVO pItem = new PermItemVO();
                 pItem.setPath(menuDto.getPath());
@@ -206,7 +212,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         }
 
         // format menus
-        menuDtos.sort(Comparator.comparingInt(AdminMenuDTO::getSort));
+        menuDtos.sort(Comparator.comparingInt(AdminPermissionDTO::getSort));
         List<MenuItemVO> userMenus = formatTreeMenus(menuDtos);
 
         // storage session data
@@ -219,13 +225,13 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         return sess;
     }
 
-    private List<MenuItemVO> formatTreeMenus(List<AdminMenuDTO> dtoList) {
+    private List<MenuItemVO> formatTreeMenus(List<AdminPermissionDTO> dtoList) {
 
         List<String> sortProperties = new ArrayList<>();
         Map<Long, MenuItemVO> nodeList = new HashMap<>(dtoList.size());
         List<MenuItemVO> menuVos = new ArrayList<>();
 
-        for (AdminMenuDTO dataRecord : dtoList) {
+        for (AdminPermissionDTO dataRecord : dtoList) {
             MenuItemVO node = new MenuItemVO();
             node.setId(dataRecord.getId());
             node.setPid(dataRecord.getPid());
@@ -235,8 +241,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
             // build meta info
             MenuMetaVO menuMeta = new MenuMetaVO();
-            menuMeta.setIcon(dataRecord.getMeta().getIcon());
-            menuMeta.setTitle(dataRecord.getMeta().getTitle());
+            ObjectUtil.copyObject(dataRecord.getMeta(), menuMeta);
             node.setMeta(menuMeta);
 
             // init sub menus
@@ -246,7 +251,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             nodeList.put(node.getId(), node);
         }
 
-        for (AdminMenuDTO dataRecord : dtoList) {
+        for (AdminPermissionDTO dataRecord : dtoList) {
             MenuItemVO vo = nodeList.get(dataRecord.getId());
 
             if (CommonConstant.LONG_ZERO.equals(dataRecord.getPid())) {
