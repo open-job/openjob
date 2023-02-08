@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "username": "openjob",
-  "passwd": "openjob123"
+  "password": "openjob123"
 }
 
 > {%
@@ -18,12 +18,18 @@ Content-Type: application/json
 
 {
   "username": "admin",
-  "passwd": "admin123"
+  "password": "admin123"
 }
 
 > {%
     client.global.set("sess_token", response.body.data.sessionKey);
 %}
+
+### Logout 1
+POST http://127.0.0.1:8080/admin/logout
+accept: */*
+Content-Type: application/json
+Session: 6eae14279f6c496fa853416f3480755b
 
 ### Logout 1
 POST http://127.0.0.1:8080/admin/logout
