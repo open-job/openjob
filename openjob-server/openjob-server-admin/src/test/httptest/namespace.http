@@ -2,7 +2,7 @@
 POST http://127.0.0.1:8080/admin/namespace/add
 accept: */*
 Content-Type: application/json
-Token: dde58fa318e5ecedf152e7e964ce08f9
+Session: 2cebdf15d414b6713672475a21f995a0
 
 {
   "name": "openjob10000",
@@ -13,7 +13,7 @@ Token: dde58fa318e5ecedf152e7e964ce08f9
 POST http://127.0.0.1:8080/admin/namespace/update
 accept: */*
 Content-Type: application/json
-Token: dde58fa318e5ecedf152e7e964ce08f9
+Session: 2cebdf15d414b6713672475a21f995a0
 
 {
   "id": 2,
@@ -25,7 +25,7 @@ Token: dde58fa318e5ecedf152e7e964ce08f9
 POST http://127.0.0.1:8080/admin/namespace/update-status
 accept: */*
 Content-Type: application/json
-Token: dde58fa318e5ecedf152e7e964ce08f9
+Session: 2cebdf15d414b6713672475a21f995a0
 
 {
   "id": 2,
@@ -36,7 +36,7 @@ Token: dde58fa318e5ecedf152e7e964ce08f9
 POST http://127.0.0.1:8080/admin/namespace/delete
 accept: */*
 Content-Type: application/json
-Token: dde58fa318e5ecedf152e7e964ce08f9
+Session: 2cebdf15d414b6713672475a21f995a0
 
 {
   "id": 20
@@ -46,7 +46,7 @@ Token: dde58fa318e5ecedf152e7e964ce08f9
 POST http://127.0.0.1:8080/admin/namespace/list
 accept: */*
 Content-Type: application/json
-Token: dde58fa318e5ecedf152e7e964ce08f9
+Session: 2cebdf15d414b6713672475a21f995a0
 
 {
   "name": "1000",

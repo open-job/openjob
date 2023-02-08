@@ -130,7 +130,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
-                .sessionKey(userSessionKey(sessionKey))
+                .sessionKey(sessionKey)
                 .build();
 
         // Query user role and perms
