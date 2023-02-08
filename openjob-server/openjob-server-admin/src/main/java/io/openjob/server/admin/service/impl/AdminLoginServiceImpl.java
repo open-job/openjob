@@ -123,11 +123,14 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private AdminUserLoginVO buildUserLoginVO(AdminUser user) {
+        // Session key expire
+        String sessionKey = user.getSessionKey();
+
         AdminUserLoginVO loginVO = AdminUserLoginVO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
-                .sessionKey(userSessionKey(user.getUsername()))
+                .sessionKey(userSessionKey(sessionKey))
                 .build();
 
         // Query user role and perms
@@ -165,7 +168,6 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         loginVO.setPermNames(perms);
         return loginVO;
     }
-
 
 
     @Override
