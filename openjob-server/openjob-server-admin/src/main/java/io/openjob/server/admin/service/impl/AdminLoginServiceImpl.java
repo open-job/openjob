@@ -76,28 +76,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     @Override
     public LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey) {
-//        AdminUserSessionDTO sess = loginCache.getIfPresent(sessKey);
-//        if (Objects.isNull(sess)) {
-//            throw AdminHttpStatusEnum.FORBIDDEN.newException();
-//        }
-//
-//        LoginUserInfoVO vo = LoginUserInfoVO.builder()
-//                .id(sess.getId())
-//                .username(sess.getUsername())
-//                .nickname(sess.getNickname())
-//                .supperAdmin(sess.getSupperAdmin())
-//                .build();
-//
-//        if (request.getWithMenus()) {
-//            vo.setMenus(sess.getMenus());
-//        }
-//
-//        if (request.getWithPerms()) {
-//            vo.setPerms(sess.getPerms());
-//        }
-//
-//        return vo;
-        return null;
+        return LoginUserInfoVO.builder().build();
     }
 
     private void checkLoginUser(AdminUser user, String passwd) {
@@ -172,14 +151,6 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     @Override
     public AdminUserLogoutVO logout(AdminUserLogoutRequest reqDTO, String sessKey) {
-//        AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
-//        if (Objects.isNull(user)) {
-//            AdminHttpStatusEnum.FORBIDDEN.throwException();
-//        }
-//
-//        // remove session data
-//        loginCache.invalidate(sessKey);
-
         return new AdminUserLogoutVO();
     }
 
