@@ -49,15 +49,29 @@ public class AdminRole {
      * Menu ids for role. JSON array
      */
     @Type(type = "json")
-    @Column(name = "menus", columnDefinition = "json")
-    private List<Long> menus;
+    @Column(name = "menu_ids", columnDefinition = "json")
+    private List<Long> menuIds;
 
     /**
      * Menu ids for role. JSON array
      */
     @Type(type = "json")
-    @Column(name = "perms", columnDefinition = "json")
-    private List<Long> perms;
+    @Column(name = "perm_ids", columnDefinition = "json")
+    private List<Long> permIds;
+
+    /**
+     * Namespace ids for role. JSON array
+     */
+    @Type(type = "json")
+    @Column(name = "namespace_ids", columnDefinition = "json")
+    private List<Long> namespaceIds;
+
+    /**
+     * App ids for role. JSON array
+     */
+    @Type(type = "json")
+    @Column(name = "app_ids", columnDefinition = "json")
+    private List<Long> appIds;
 
     /**
      * Is Admin. 1=yes 2=no

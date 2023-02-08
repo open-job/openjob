@@ -22,9 +22,9 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "admin_menu")
+@Table(name = "admin_permission")
 @TypeDef(name = "json", typeClass = JsonType.class)
-public class AdminMenu {
+public class AdminPermission {
 
     /**
      * PK
@@ -46,7 +46,7 @@ public class AdminMenu {
     private Integer type;
 
     /**
-     * Menu name
+     * Menu or perm name.(use for i18n or perm key)
      */
     @Column(name = "name")
     private String name;
@@ -58,7 +58,8 @@ public class AdminMenu {
     private String path;
 
     /**
-     * Extra meta data. JSON object: {icon:xx,title:some.name}
+     * Extra meta data.
+     * - JSON: {icon:xx,title:some.name,component:/@/views/path/to/page.vue}
      */
     @Type(type = "json")
     @Column(name = "meta", columnDefinition = "json")

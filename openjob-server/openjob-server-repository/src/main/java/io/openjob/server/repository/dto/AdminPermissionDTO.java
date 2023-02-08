@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AdminMenuDTO extends BaseFieldsDTO {
+public class AdminPermissionDTO extends BaseFieldsDTO {
 
     /**
      * PK
@@ -28,7 +28,7 @@ public class AdminMenuDTO extends BaseFieldsDTO {
     private Integer type;
 
     /**
-     * Menu name
+     * Menu name key(perm,i18n)
      */
     private String name;
 

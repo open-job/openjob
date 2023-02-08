@@ -1,7 +1,7 @@
 package io.openjob.server.repository.mapper;
 
-import io.openjob.server.repository.dto.AdminMenuDTO;
-import io.openjob.server.repository.entity.AdminMenu;
+import io.openjob.server.repository.dto.AdminPermissionDTO;
+import io.openjob.server.repository.entity.AdminPermission;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -12,30 +12,30 @@ import org.mapstruct.ReportingPolicy;
  * @author inhere
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
-public interface AdminMenuMapper {
+public interface AdminPermissionMapper {
     /**
      * dto to entity
      *
-     * @param adminMenuDTO dto
+     * @param adminPermDTO dto
      * @return entity
      */
-    AdminMenu toEntity(AdminMenuDTO adminMenuDTO);
+    AdminPermission toEntity(AdminPermissionDTO adminPermDTO);
 
     /**
      * entity to dto
      *
-     * @param adminMenu entity
+     * @param adminPerm entity
      * @return dto
      */
-    AdminMenuDTO toDto(AdminMenu adminMenu);
+    AdminPermissionDTO toDto(AdminPermission adminPerm);
 
     /**
      * partial update entity from dto
      *
-     * @param adminMenuDTO dto
-     * @param adminMenu    entity
+     * @param adminPermDTO dto
+     * @param adminPerm    entity
      * @return entity
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    AdminMenu partialUpdate(AdminMenuDTO adminMenuDTO, @MappingTarget AdminMenu adminMenu);
+    AdminPermission partialUpdate(AdminPermissionDTO adminPermDTO, @MappingTarget AdminPermission adminPerm);
 }
