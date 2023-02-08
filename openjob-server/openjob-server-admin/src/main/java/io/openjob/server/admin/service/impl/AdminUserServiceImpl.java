@@ -2,6 +2,7 @@ package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
+import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.request.user.AdminUserAddRequest;
 import io.openjob.server.admin.request.user.AdminUserDeleteRequest;
 import io.openjob.server.admin.request.user.AdminUserListRequest;
@@ -14,14 +15,17 @@ import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.HmacUtil;
 import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
+import io.openjob.server.repository.entity.AdminUser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author inhere
@@ -32,11 +36,14 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     private final AdminUserData adminUserData;
 
+    private final AdminUserDAO adminUserDAO;
+
     private final AdminUserProperties userProperties;
 
     @Autowired
-    public AdminUserServiceImpl(AdminUserData adminUserData, AdminUserProperties userProperties) {
+    public AdminUserServiceImpl(AdminUserData adminUserData, AdminUserDAO adminUserDAO, AdminUserProperties userProperties) {
         this.adminUserData = adminUserData;
+        this.adminUserDAO = adminUserDAO;
         this.userProperties = userProperties;
     }
 
@@ -77,6 +84,15 @@ public class AdminUserServiceImpl implements AdminUserService {
         adminUserData.updateById(entDto);
 
         return retVo;
+    }
+
+    @Override
+    public AdminUser getBySessionKey(String sessionKey) {
+        AdminUser adminUser = this.adminUserDAO.getBySessionKey(sessionKey);
+        if (Objects.isNull(adminUser)) {
+            AdminHttpStatusEnum.NOT_FOUND.throwException();
+        }
+        return adminUser;
     }
 
     @Override

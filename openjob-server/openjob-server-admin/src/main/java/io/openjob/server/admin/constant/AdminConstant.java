@@ -22,6 +22,12 @@ public class AdminConstant {
     public static final String HEADER_TOKEN_KEY = "token";
 
     /**
+     * Request uid key.
+     */
+    public static final String REQUEST_UID_KEY = "uid";
+
+
+    /**
      * mark is permission data
      */
     public static final Integer MENU_TYPE_PERM = 2;

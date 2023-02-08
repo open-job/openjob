@@ -25,5 +25,13 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
      */
     AdminUser findByTokenAndDeleted(String token, Integer deleted);
 
+    /**
+     * find user by sessionKey
+     *
+     * @param sessionKey session
+     * @param deleted    deleted
+     * @return AdminUser
+     */
+    AdminUser findBySessionKeyAndDeleted(String sessionKey, Integer deleted);
 }
 

@@ -1,0 +1,10 @@
+### Login normal user
+POST http://127.0.0.1:8080/admin/perms/menus
+accept: */*
+Content-Type: application/json
+Session: 79f74383e2c92ae01e172ced4c9267d5
+
+
+{
+
+}

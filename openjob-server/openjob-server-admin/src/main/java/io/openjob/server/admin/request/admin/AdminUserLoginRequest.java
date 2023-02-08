@@ -16,13 +16,11 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "AdminUserLoginRequest", description = "AdminUserLoginRequest")
 public class AdminUserLoginRequest {
 
-    @NotNull
     @NotBlank
     @Size(min = 2)
     @ApiModelProperty(value = "User name")
     private String username;
 
-    @NotNull
     @NotBlank
     @Size(min = 6)
     @ApiModelProperty(value = "Password, md5 hashed before submit")

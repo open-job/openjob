@@ -1,25 +1,32 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
+import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.request.perm.AdminPermAddRequest;
 import io.openjob.server.admin.request.perm.AdminPermDeleteRequest;
 import io.openjob.server.admin.request.perm.AdminPermListRequest;
 import io.openjob.server.admin.request.perm.AdminPermQueryRequest;
 import io.openjob.server.admin.request.perm.AdminPermUpdateRequest;
+import io.openjob.server.admin.request.perm.AdminPermissionMenusRequest;
 import io.openjob.server.admin.service.AdminPermService;
 import io.openjob.server.admin.vo.perm.AdminPermAddVO;
 import io.openjob.server.admin.vo.perm.AdminPermQueryVO;
 import io.openjob.server.admin.vo.perm.AdminPermUpdateVO;
+import io.openjob.server.admin.vo.perm.AdminPermissionMenusVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.experimental.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -66,6 +73,13 @@ public class PermController {
     @GetMapping("/list")
     public Result<PageDTO<AdminPermQueryVO>> list(@Valid AdminPermListRequest listRequest) {
         return Result.success(this.adminPermService.getPageList(listRequest));
+    }
+
+    @ApiOperation("List menus")
+    @PostMapping("/menus")
+    public Result<AdminPermissionMenusVO> menus(@Valid AdminPermissionMenusRequest listRequest, HttpServletRequest request) {
+        listRequest.setUid((Long) request.getAttribute(AdminConstant.REQUEST_UID_KEY));
+        return Result.success(this.adminPermService.getMenus(listRequest));
     }
 }
 

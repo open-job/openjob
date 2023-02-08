@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.entity.AdminPermission;
 import io.openjob.server.repository.repository.AdminPermissionRepository;
@@ -62,9 +63,10 @@ public class AdminPermissionDAOImpl implements AdminPermissionDAO {
     }
 
     @Override
-    public List<AdminPermission> getAllMenus() {
+    public List<AdminPermission> getPermissionList(PermissionTypeEnum permissionType) {
         AdminPermission cond = new AdminPermission();
         cond.setDeleted(CommonConstant.NO);
+        cond.setType(permissionType.getType());
 
         Example<AdminPermission> ex = Example.of(cond);
 

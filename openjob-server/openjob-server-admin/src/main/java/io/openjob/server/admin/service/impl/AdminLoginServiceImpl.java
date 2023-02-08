@@ -1,11 +1,9 @@
 package io.openjob.server.admin.service.impl;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
-import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.dto.AdminUserSessionDTO;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
@@ -17,26 +15,29 @@ import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
 import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
 import io.openjob.server.admin.vo.part.MenuItemVO;
 import io.openjob.server.admin.vo.part.MenuMetaVO;
-import io.openjob.server.admin.vo.part.PermItemVO;
 import io.openjob.server.common.util.HmacUtil;
 import io.openjob.server.common.util.ObjectUtil;
-import io.openjob.server.repository.data.AdminPermissionData;
-import io.openjob.server.repository.data.AdminRoleData;
-import io.openjob.server.repository.data.AdminUserData;
+import io.openjob.server.repository.constant.PermissionTypeEnum;
+import io.openjob.server.repository.dao.AdminPermissionDAO;
+import io.openjob.server.repository.dao.AdminRoleDAO;
+import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.dto.AdminPermissionDTO;
-import io.openjob.server.repository.dto.AdminRoleDTO;
-import io.openjob.server.repository.dto.AdminUserDTO;
+import io.openjob.server.repository.entity.AdminPermission;
+import io.openjob.server.repository.entity.AdminRole;
+import io.openjob.server.repository.entity.AdminUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -46,105 +47,73 @@ import java.util.stream.Collectors;
 @Service
 public class AdminLoginServiceImpl implements AdminLoginService {
 
-    private final AdminRoleData adminRoleData;
+    private final AdminUserDAO adminUserDAO;
 
-    private final AdminUserData adminUserData;
+    private final AdminRoleDAO adminRoleDAO;
 
-    private final AdminPermissionData adminPermData;
+    private final AdminPermissionDAO adminPermissionDAO;
 
     private final AdminUserProperties userProperties;
 
-    private final Cache<String, AdminUserSessionDTO> loginCache;
-
     @Autowired
     public AdminLoginServiceImpl(
-            AdminRoleData adminRoleData,
-            AdminUserData adminUserData,
-            AdminPermissionData adminPermData,
-            AdminUserProperties userProperties,
-            Cache<String, AdminUserSessionDTO> loginCache
-    ) {
-        this.adminRoleData = adminRoleData;
-        this.adminUserData = adminUserData;
-        this.adminPermData = adminPermData;
+            AdminUserDAO adminUserDAO,
+            AdminRoleDAO adminRoleDAO, AdminPermissionDAO adminPermissionDAO, AdminUserProperties userProperties) {
+        this.adminUserDAO = adminUserDAO;
+        this.adminRoleDAO = adminRoleDAO;
+        this.adminPermissionDAO = adminPermissionDAO;
         this.userProperties = userProperties;
-
-        this.loginCache = loginCache;
     }
 
     @Override
     public AdminUserLoginVO login(AdminUserLoginRequest reqDTO) {
-        AdminUserDTO userDto = adminUserData.getByUsername(reqDTO.getUsername());
-        checkLoginUser(userDto, reqDTO.getPassword());
+        AdminUser user = this.adminUserDAO.getByUsername(reqDTO.getUsername());
 
-        // query user perms and menus
-        AdminUserSessionDTO sess = buildUserSessionDTO(userDto, false);
-
-        List<String> permNames = new ArrayList<>();
-        sess.getPerms().forEach(piVo -> permNames.add(piVo.getName()));
-
-        // build return vo
-        return AdminUserLoginVO.builder()
-                .id(userDto.getId())
-                .menus(sess.getMenus())
-                .permNames(permNames)
-                .username(userDto.getUsername())
-                .nickname(userDto.getNickname())
-                .supperAdmin(sess.getSupperAdmin())
-                .sessionKey(sess.getSessionKey())
-                .build();
-    }
-
-    @Override
-    public AdminUserSessionDTO authByToken(String token) {
-        AdminUserDTO userDto = adminUserData.getByToken(token);
-        if (Objects.isNull(userDto)) {
-            return null;
-        }
-
-        // query user perms and menus
-        return buildUserSessionDTO(userDto, true);
+        // Check login user.
+        checkLoginUser(user, reqDTO.getPassword());
+        return buildUserLoginVO(user);
     }
 
     @Override
     public LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey) {
-        AdminUserSessionDTO sess = loginCache.getIfPresent(sessKey);
-        if (Objects.isNull(sess)) {
-            throw AdminHttpStatusEnum.FORBIDDEN.newException();
-        }
-
-        LoginUserInfoVO vo = LoginUserInfoVO.builder()
-                .id(sess.getId())
-                .username(sess.getUsername())
-                .nickname(sess.getNickname())
-                .supperAdmin(sess.getSupperAdmin())
-                .build();
-
-        if (request.getWithMenus()) {
-            vo.setMenus(sess.getMenus());
-        }
-
-        if (request.getWithPerms()) {
-            vo.setPerms(sess.getPerms());
-        }
-
-        return vo;
+//        AdminUserSessionDTO sess = loginCache.getIfPresent(sessKey);
+//        if (Objects.isNull(sess)) {
+//            throw AdminHttpStatusEnum.FORBIDDEN.newException();
+//        }
+//
+//        LoginUserInfoVO vo = LoginUserInfoVO.builder()
+//                .id(sess.getId())
+//                .username(sess.getUsername())
+//                .nickname(sess.getNickname())
+//                .supperAdmin(sess.getSupperAdmin())
+//                .build();
+//
+//        if (request.getWithMenus()) {
+//            vo.setMenus(sess.getMenus());
+//        }
+//
+//        if (request.getWithPerms()) {
+//            vo.setPerms(sess.getPerms());
+//        }
+//
+//        return vo;
+        return null;
     }
 
-    private void checkLoginUser(AdminUserDTO entDTO, String passwd) {
-        if (Objects.isNull(entDTO)) {
+    private void checkLoginUser(AdminUser user, String passwd) {
+        if (Objects.isNull(user)) {
             AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
-        if (CommonUtil.isTrue(entDTO.getDeleted())) {
+        if (CommonUtil.isTrue(user.getDeleted())) {
             AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
-        if (!HmacUtil.verifyPasswd(entDTO.getPasswd(), passwd, userProperties.getPasswdSalt())) {
+        if (!HmacUtil.verifyPasswd(user.getPasswd(), passwd, userProperties.getPasswdSalt())) {
             AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
-        if (CollectionUtils.isEmpty(entDTO.getRoleIds())) {
+        if (CollectionUtils.isEmpty(user.getRoleIds())) {
             AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
     }
@@ -153,126 +122,63 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         return DigestUtils.md5DigestAsHex((DateUtil.milliLongTime() + username).getBytes());
     }
 
-    private AdminUserSessionDTO buildUserSessionDTO(AdminUserDTO userDto, Boolean onlyPerms) {
-        AdminUserSessionDTO sess = AdminUserSessionDTO.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .nickname(userDto.getNickname())
+    private AdminUserLoginVO buildUserLoginVO(AdminUser user) {
+        // Session key expire
+        String sessionKey = user.getSessionKey();
+
+        AdminUserLoginVO loginVO = AdminUserLoginVO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .sessionKey(sessionKey)
                 .build();
 
-        // query user role and perms
-        List<AdminRoleDTO> roles = adminRoleData.getByIds(userDto.getRoleIds());
+        // Query user role and perms
+        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIds());
         if (CollectionUtils.isEmpty(roles)) {
             AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
 
-        boolean isAdmin = false;
-        List<Long> menuIds = new ArrayList<>();
-
-        // collect admin_menu.id list
-        for (AdminRoleDTO roleDto : roles) {
-            if (CommonUtil.isTrue(roleDto.getAdmin())) {
-                isAdmin = true;
+        // Admin and permission ids
+        AtomicBoolean isAdmin = new AtomicBoolean(false);
+        Set<Long> permIds = new HashSet<>();
+        roles.forEach(r -> {
+            if (CommonUtil.isTrue(r.getAdmin())) {
+                isAdmin.set(true);
+                return;
             }
+            permIds.addAll(r.getPermIds());
+        });
+        loginVO.setSupperAdmin(isAdmin.get());
 
-            if (!onlyPerms) {
-                menuIds.addAll(roleDto.getMenuIds());
-            }
-            menuIds.addAll(roleDto.getPermIds());
+        //Admin permission
+        if (isAdmin.get()) {
+            List<String> perms = this.adminPermissionDAO.getPermissionList(PermissionTypeEnum.PERMISSION)
+                    .stream().map(AdminPermission::getName)
+                    .collect(Collectors.toList());
+
+            loginVO.setPermNames(perms);
+            return loginVO;
         }
 
-        sess.setSupperAdmin(isAdmin);
-
-        List<PermItemVO> userPerms = new ArrayList<>();
-
-        // query perms and menus. if is admin, query all valid menus.
-        List<AdminPermissionDTO> dbMenuDtos;
-        if (isAdmin) {
-            dbMenuDtos = adminPermData.getAllMenus();
-        } else {
-            dbMenuDtos = adminPermData.getByIds(menuIds.stream().distinct().collect(Collectors.toList()));
-        }
-
-        List<AdminPermissionDTO> menuDtos = new ArrayList<>();
-
-        for (AdminPermissionDTO menuDto : dbMenuDtos) {
-            if (AdminConstant.MENU_TYPE_PERM.equals(menuDto.getType())) {
-                PermItemVO pItem = new PermItemVO();
-                pItem.setPath(menuDto.getPath());
-                pItem.setName(menuDto.getName());
-                userPerms.add(pItem);
-            } else if (AdminConstant.MENU_TYPE_MENU.equals(menuDto.getType())) {
-                menuDtos.add(menuDto);
-            }
-        }
-
-        sess.setPerms(userPerms);
-        if (onlyPerms) {
-            return sess;
-        }
-
-        // format menus
-        menuDtos.sort(Comparator.comparingInt(AdminPermissionDTO::getSort));
-        List<MenuItemVO> userMenus = formatTreeMenus(menuDtos);
-
-        // storage session data
-        String sessKey = userSessionKey(userDto.getUsername());
-        loginCache.put(sessKey, sess);
-
-        sess.setMenus(userMenus);
-        sess.setSessionKey(sessKey);
-
-        return sess;
+        // Not admin permission
+        List<String> perms = this.adminPermissionDAO.getByIds(new ArrayList<>(permIds))
+                .stream().map(AdminPermission::getName)
+                .collect(Collectors.toList());
+        loginVO.setPermNames(perms);
+        return loginVO;
     }
 
-    private List<MenuItemVO> formatTreeMenus(List<AdminPermissionDTO> dtoList) {
-
-        List<String> sortProperties = new ArrayList<>();
-        Map<Long, MenuItemVO> nodeList = new HashMap<>(dtoList.size());
-        List<MenuItemVO> menuVos = new ArrayList<>();
-
-        for (AdminPermissionDTO dataRecord : dtoList) {
-            MenuItemVO node = new MenuItemVO();
-            node.setId(dataRecord.getId());
-            node.setPid(dataRecord.getPid());
-            node.setName(dataRecord.getName());
-            node.setPath(dataRecord.getPath());
-            node.setSort(dataRecord.getSort());
-
-            // build meta info
-            MenuMetaVO menuMeta = new MenuMetaVO();
-            ObjectUtil.copyObject(dataRecord.getMeta(), menuMeta);
-            node.setMeta(menuMeta);
-
-            // init sub menus
-            List<MenuItemVO> temp = new ArrayList<>();
-            node.setChildren(temp);
-
-            nodeList.put(node.getId(), node);
-        }
-
-        for (AdminPermissionDTO dataRecord : dtoList) {
-            MenuItemVO vo = nodeList.get(dataRecord.getId());
-
-            if (CommonConstant.LONG_ZERO.equals(dataRecord.getPid())) {
-                menuVos.add(vo);
-            } else {
-                nodeList.get(dataRecord.getPid()).getChildren().add(vo);
-            }
-        }
-
-        return menuVos;
-    }
 
     @Override
     public AdminUserLogoutVO logout(AdminUserLogoutRequest reqDTO, String sessKey) {
-        AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
-        if (Objects.isNull(user)) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
-        }
-
-        // remove session data
-        loginCache.invalidate(sessKey);
+//        AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
+//        if (Objects.isNull(user)) {
+//            AdminHttpStatusEnum.FORBIDDEN.throwException();
+//        }
+//
+//        // remove session data
+//        loginCache.invalidate(sessKey);
 
         return new AdminUserLogoutVO();
     }

@@ -2,13 +2,13 @@ package io.openjob.server.admin.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.github.benmanes.caffeine.cache.Cache;
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.dto.AdminUserSessionDTO;
-import io.openjob.server.admin.service.AdminLoginService;
+import io.openjob.server.admin.service.AdminUserService;
 import io.openjob.server.admin.vo.part.PermItemVO;
+import io.openjob.server.repository.entity.AdminUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -36,10 +36,7 @@ import java.util.Objects;
 public class AccessInterceptor implements HandlerInterceptor {
 
     private static final String MAX_AGE = "18000L";
-
-    private final AdminLoginService adminLoginService;
-
-    private final Cache<String, AdminUserSessionDTO> loginCache;
+    private final AdminUserService adminUserService;
 
     private final List<String> noLoginRoutes;
 
@@ -52,10 +49,7 @@ public class AccessInterceptor implements HandlerInterceptor {
     private final List<String> notAuthRoutes;
 
     @Autowired
-    public AccessInterceptor(AdminLoginService adminLoginService, Cache<String, AdminUserSessionDTO> loginCache) {
-        this.adminLoginService = adminLoginService;
-        this.loginCache = loginCache;
-
+    public AccessInterceptor(AdminUserService adminUserService) {
         noLoginRoutes = new ArrayList<>();
         noLoginRoutes.add("/");
         noLoginRoutes.add("/csrf");
@@ -72,6 +66,8 @@ public class AccessInterceptor implements HandlerInterceptor {
         notAuthRoutes = new ArrayList<>();
         notAuthRoutes.add("/admin/logout");
         notAuthRoutes.add("/admin/user-info");
+
+        this.adminUserService = adminUserService;
     }
 
     /**
@@ -98,31 +94,16 @@ public class AccessInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // api auth
-        String token = request.getHeader(AdminConstant.HEADER_TOKEN_KEY);
-        if (StringUtils.isNotBlank(token)) {
-            AdminUserSessionDTO user = adminLoginService.authByToken(token);
-
-            // check perms for user
-            if (!checkUserPerm(route, user)) {
-                returnJson(response, AdminHttpStatusEnum.FORBIDDEN);
-            }
-            return true;
-        }
-
         // web login
         if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
-            if (StringUtils.isBlank(sessKey)) {
+            if (StringUtils.isEmpty(sessKey)) {
                 returnJson(response, AdminHttpStatusEnum.UNAUTHORIZED);
                 return false;
             }
 
-            // check perms for user
-            AdminUserSessionDTO user = loginCache.getIfPresent(sessKey);
-            if (!checkUserPerm(route, user)) {
-                returnJson(response, AdminHttpStatusEnum.FORBIDDEN);
-            }
+            AdminUser user = this.adminUserService.getBySessionKey(sessKey);
+            request.setAttribute(AdminConstant.REQUEST_UID_KEY, user.getId());
         }
 
         return true;

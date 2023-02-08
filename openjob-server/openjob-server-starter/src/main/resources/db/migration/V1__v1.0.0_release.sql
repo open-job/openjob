@@ -704,6 +704,8 @@ CREATE TABLE `admin_user` (
                               `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
                               `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
                               `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `session_key` varchar(128) NOT NULL DEFAULT '' COMMENT 'Session key',
+                              `session_expire_at` bigint(12) NOT NULL COMMENT 'Session expire at',
                               `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
                               `role_ids` JSON COMMENT 'role IDs. JSON: [1,2]',
                               `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
@@ -715,10 +717,10 @@ CREATE TABLE `admin_user` (
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
-INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
+INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `session_key`, `session_expire_at`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
-    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', 0, '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', 0, '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_role`;
 CREATE TABLE `admin_role` (
@@ -740,8 +742,8 @@ CREATE TABLE `admin_role` (
 
 INSERT INTO `admin_role` (`name`, `desc`, `menu_ids`, `perm_ids`, `namespace_ids`, `app_ids`, `admin`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    ('Admin', 'Administrator role', '[1, 2, 3]', '[4, 5, 6, 7]', '[]', '[]', 1, 2, 0, 1670255999, 1670255999),
-    ('Developer', 'Developer role', '[1, 2, 3]', '[4, 5, 6, 7]', '[]', '[]', 2, 2, 0, 1670255999, 1670255999);
+    ('Admin', 'Administrator role', '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 1, 2, 0, 1670255999, 1670255999),
+    ('Developer', 'Developer role', '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_permission`;
 CREATE TABLE `admin_permission` (
@@ -764,35 +766,12 @@ CREATE TABLE `admin_permission` (
 
 INSERT INTO `admin_permission` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-/** menus permissions **/
-    (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (2, 0, 1, 'manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (5, 2, 1, 'users.list', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (6, 5, 1, 'users.add', '/users/add', '{"title": "users add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (7, 5, 1, 'users.view', '/users/view', '{"title": "users .view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (8, 5, 1, 'users.edit', '/users/edit', '{"title": "users .edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (10, 2, 1, 'roles.list', '/roles', '{"icon": "fa-list", "title": "roles list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (11, 10, 1, 'roles.add', '/roles/add', '{"title": "roles add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (12, 10, 1, 'roles.view', '/roles/view', '{"title": "roles view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (13, 10, 1, 'roles.edit', '/roles/edit', '{"title": "roles edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (15, 2, 1, 'menus.list', '/menus', '{"icon": "fa-list", "title": "menus list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (16, 15, 1, 'menus.add', '/menus/add', '{"icon": "fa-add", "title": "menus add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (17, 15, 1, 'menus.edit', '/menus/edit', '{"icon": "fa-edit", "title": "menus edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (20, 2, 1, 'perms.list', '/perms', '{"icon": "fa-list", "title": "perms list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (25, 2, 1, 'jobs.list', '/jobs', '{"icon": "fa-list", "title": "jobs list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (26, 25, 1, 'jobs.add', '/jobs/add', '{"icon": "fa-edit", "title": "jobs add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (27, 25, 1, 'jobs.view', '/jobs/view', '{"icon": "fa-edit", "title": "jobs view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (28, 25, 1, 'jobs.edit', '/jobs/edit', '{"icon": "fa-edit", "title": "jobs edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (30, 2, 1, 'executors.list', '/executors', '{"icon": "fa-list", "title": "executors list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (40, 2, 1, 'notify.template.list', '/notify/manage', '{"icon": "fa-list", "title": "notify template list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-/** api permissions **/
-    (60, 0, 2, 'users.add', '/admin/users/add', '{"title": "User add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (61, 0, 2, 'users.get', '/admin/users/get', '{"title": "User get"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (62, 0, 2, 'users.list', '/admin/users/list', '{"title": "Users list"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (63, 0, 2, 'users.edit', '/admin/users/edit', '{"title": "User edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (64, 0, 2, 'users.delete', '/admin/users/delete', '{}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (66, 0, 2, 'roles.get', '/admin/roles/get', '{}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (67, 0, 2, 'roles.add', '/admin/roles/add', '{}', 1, 0, 2, 0, 1669972320, 1669972320);
+    (1,0,1,'dashboard','/dashboard','{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.dashboard.manager", "isLink": "", "isAffix": false, "isIframe": false, "component": "/dashboard/index", "isKeepAlive": true}',2,0,2,0,1669972320,1669972320),
+    (5,0,1,'namespaceManager','/admin/namespace/list','{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.namespace.manager", "isLink": "", "isAffix": false, "isIframe": false, "component": "/namespace/list", "isKeepAlive": true}',2,0,2,0,1669972320,1669972320),
+    (10,0,2,'namespace.add','/admin/namespace/add','{}',2,0,2,0,1669972320,1669972320),
+    (11,0,2,'namespace.delete','/admin/namespace/delete','{}',2,0,2,0,1669972320,1669972320),
+    (12,0,2,'namespace.update','/admin/namespace/update','{}',2,0,2,0,1669972320,1669972320),
+    (13,0,2,'namespace.update.status','/admin/namespace/update-status','{}',2,0,2,0,1669972320,1669972320);
 
 
 DROP TABLE IF EXISTS `notify_template`;

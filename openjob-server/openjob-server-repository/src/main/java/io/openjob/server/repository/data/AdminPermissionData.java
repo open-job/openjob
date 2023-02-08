@@ -49,19 +49,7 @@ public interface AdminPermissionData {
      */
     List<AdminPermissionDTO> getPageList(Long id);
 
-    /**
-     * get AdminPermission list by IDs
-     *
-     * @param ids ids
-     * @return AdminPermission list
-     */
-    List<AdminPermissionDTO> getByIds(List<Long> ids);
 
-    /**
-     * get all valid AdminPermission list
-     *
-     * @return AdminPermission list
-     */
-    List<AdminPermissionDTO> getAllMenus();
+
 }
 
