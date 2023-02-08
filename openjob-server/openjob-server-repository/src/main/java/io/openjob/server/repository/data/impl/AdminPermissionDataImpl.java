@@ -66,25 +66,5 @@ public class AdminPermissionDataImpl implements AdminPermissionData {
     public List<AdminPermissionDTO> getPageList(Long id) {
         return null;
     }
-
-    @Override
-    public List<AdminPermissionDTO> getByIds(List<Long> ids) {
-        List<AdminPermission> entList = adminPermDAO.getByIds(ids);
-        List<AdminPermissionDTO> dtoList = new ArrayList<>();
-
-        entList.forEach(entity -> dtoList.add(adminPermMapper.toDto(entity)));
-
-        return dtoList;
-    }
-
-    @Override
-    public List<AdminPermissionDTO> getAllMenus() {
-        List<AdminPermission> entList = adminPermDAO.getAllMenus();
-        List<AdminPermissionDTO> dtoList = new ArrayList<>();
-
-        entList.forEach(entity -> dtoList.add(adminPermMapper.toDto(entity)));
-
-        return dtoList;
-    }
 }
 

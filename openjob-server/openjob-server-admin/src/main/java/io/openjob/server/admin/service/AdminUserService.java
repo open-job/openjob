@@ -9,6 +9,7 @@ import io.openjob.server.admin.vo.user.AdminUserAddVO;
 import io.openjob.server.admin.vo.user.AdminUserQueryVO;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.entity.AdminUser;
 
 /**
  * @author inhere
@@ -49,12 +50,19 @@ public interface AdminUserService {
     AdminUserUpdateVO delete(AdminUserDeleteRequest reqDTO);
 
     /**
+     * Get by session key.
+     *
+     * @param sessionKey session key.
+     * @return AdminUserUpdateVO
+     */
+    AdminUser getBySessionKey(String sessionKey);
+
+    /**
      * Get page list AdminUser
      *
      * @param reqDTO reqDTO
      * @return AdminUserListVO
      */
     PageDTO<AdminUserQueryVO> getPageList(AdminUserListRequest reqDTO);
-
 }
 

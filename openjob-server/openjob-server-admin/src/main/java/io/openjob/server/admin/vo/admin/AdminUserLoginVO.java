@@ -32,11 +32,7 @@ public class AdminUserLoginVO {
     @ApiModelProperty(value = "user is supper admin")
     private Boolean supperAdmin;
 
-    @ApiModelProperty(value = "Manage menus for user")
-    private List<MenuItemVO> menus;
-
     @ApiModelProperty(value = "Permission names for user")
     private List<String> permNames;
-
 }
 

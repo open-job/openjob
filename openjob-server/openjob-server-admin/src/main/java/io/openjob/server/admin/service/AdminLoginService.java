@@ -1,6 +1,5 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.dto.AdminUserSessionDTO;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
 import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
@@ -12,13 +11,6 @@ import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
  * @author inhere
  */
 public interface AdminLoginService {
-    /**
-     * get user by token
-     *
-     * @param token token
-     * @return user
-     */
-    AdminUserSessionDTO authByToken(String token);
 
     /**
      * admin user login

@@ -57,6 +57,11 @@ public class AdminUserDAOImpl implements AdminUserDAO {
     }
 
     @Override
+    public AdminUser getBySessionKey(String sessionKey) {
+        return this.adminUserRepository.findBySessionKeyAndDeleted(sessionKey, CommonConstant.NO);
+    }
+
+    @Override
     public Page<AdminUser> getPageList(Integer page, Integer size) {
         // TIP: page start from 0 on JPA.
         PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);

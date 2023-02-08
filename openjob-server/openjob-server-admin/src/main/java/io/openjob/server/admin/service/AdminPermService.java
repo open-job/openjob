@@ -5,9 +5,11 @@ import io.openjob.server.admin.request.perm.AdminPermDeleteRequest;
 import io.openjob.server.admin.request.perm.AdminPermListRequest;
 import io.openjob.server.admin.request.perm.AdminPermQueryRequest;
 import io.openjob.server.admin.request.perm.AdminPermUpdateRequest;
+import io.openjob.server.admin.request.perm.AdminPermissionMenusRequest;
 import io.openjob.server.admin.vo.perm.AdminPermAddVO;
 import io.openjob.server.admin.vo.perm.AdminPermQueryVO;
 import io.openjob.server.admin.vo.perm.AdminPermUpdateVO;
+import io.openjob.server.admin.vo.perm.AdminPermissionMenusVO;
 import io.openjob.server.common.dto.PageDTO;
 
 /**
@@ -55,5 +57,13 @@ public interface AdminPermService {
      * @return AdminPermListVO
      */
     PageDTO<AdminPermQueryVO> getPageList(AdminPermListRequest reqDTO);
+
+    /**
+     * Get permission menus.
+     *
+     * @param request request
+     * @return AdminPermissionMenusVO
+     */
+    AdminPermissionMenusVO getMenus(AdminPermissionMenusRequest request);
 }
 

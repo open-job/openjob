@@ -52,6 +52,18 @@ public class AdminUser {
     private String passwd;
 
     /**
+     * Session expire at
+     */
+    @Column(name = "session_expire_at")
+    private Long sessionExpireAt;
+
+    /**
+     * Session key
+     */
+    @Column(name = "session_key")
+    private String sessionKey;
+
+    /**
      * Api auth token
      */
     @Column(name = "token")

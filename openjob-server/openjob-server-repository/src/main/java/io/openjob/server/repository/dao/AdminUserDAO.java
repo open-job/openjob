@@ -66,5 +66,13 @@ public interface AdminUserDAO {
      * @return AdminUser or null
      */
     AdminUser getByToken(String token);
+
+    /**
+     * get AdminUser by session key.
+     *
+     * @param sessionKey session key
+     * @return AdminUser or null
+     */
+    AdminUser getBySessionKey(String sessionKey);
 }
 

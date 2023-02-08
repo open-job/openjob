@@ -704,6 +704,7 @@ CREATE TABLE `admin_user` (
                               `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
                               `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT 'Nickname',
                               `passwd` varchar(128) NOT NULL DEFAULT '' COMMENT 'Password',
+                              `session_key` varchar(128) NOT NULL DEFAULT '' COMMENT 'Session key',
                               `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Api auth token',
                               `role_ids` JSON COMMENT 'role IDs. JSON: [1,2]',
                               `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
@@ -715,10 +716,10 @@ CREATE TABLE `admin_user` (
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
-INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
+INSERT INTO `admin_user` (`username`, `nickname`, `passwd`, `session_key`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
-    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+    ('admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+    ('openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_role`;
 CREATE TABLE `admin_role` (

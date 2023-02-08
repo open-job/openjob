@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.entity.AdminPermission;
 import org.springframework.data.domain.Page;
 
@@ -60,10 +61,11 @@ public interface AdminPermissionDAO {
     Page<AdminPermission> getPageList(Integer page, Integer size);
 
     /**
-     * get all AdminPermission list
+     * Get all AdminPermission list
      *
+     * @param permissionType permissionType
      * @return list
      */
-    List<AdminPermission> getAllMenus();
+    List<AdminPermission> getPermissionList(PermissionTypeEnum permissionType);
 }
 

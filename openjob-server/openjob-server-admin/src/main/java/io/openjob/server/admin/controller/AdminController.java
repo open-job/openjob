@@ -25,7 +25,7 @@ import javax.validation.Valid;
  * @author inhere
  * @since 1.0.0
  */
-@Api(value = "AdminLogInOut", tags = "LogInOut")
+@Api(value = "AdminLogInOut", tags = "AdminLoginInOut")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {

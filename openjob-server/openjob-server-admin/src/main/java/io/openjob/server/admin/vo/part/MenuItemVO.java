@@ -16,25 +16,18 @@ import java.util.List;
 public class MenuItemVO {
 
     /**
-     * ID
+     * id
      */
     private Long id;
-
-    /**
-     * PID
-     */
-    private Long pid;
-
-    @ApiModelProperty(value = "Menu name key(perm,i18n)")
-    private String name;
 
     @ApiModelProperty(value = "Route path or API path")
     private String path;
 
-    /**
-     * Sort value
-     */
-    private Integer sort;
+    @ApiModelProperty(value = "Menu name key(perm,i18n)")
+    private String name;
+
+    @ApiModelProperty(value = "Page component path")
+    private String component;
 
     @ApiModelProperty(value = "Extra meta data. JSON object: {icon:xx,title:some.name}")
     private MenuMetaVO meta;
