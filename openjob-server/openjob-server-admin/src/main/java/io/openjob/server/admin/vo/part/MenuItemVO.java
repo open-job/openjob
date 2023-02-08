@@ -25,7 +25,7 @@ public class MenuItemVO {
      */
     private Long pid;
 
-    @ApiModelProperty(value = "Menu name")
+    @ApiModelProperty(value = "Menu name key(perm,i18n)")
     private String name;
 
     @ApiModelProperty(value = "Route path or API path")

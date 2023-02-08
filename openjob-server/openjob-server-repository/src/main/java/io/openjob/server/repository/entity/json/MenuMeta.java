@@ -14,5 +14,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MenuMeta implements Serializable {
     private String icon;
+
     private String title;
+
+    /**
+     * view component path
+     */
+    private String component;
 }

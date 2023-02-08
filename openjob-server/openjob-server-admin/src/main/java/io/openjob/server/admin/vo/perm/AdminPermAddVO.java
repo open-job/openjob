@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.menu;
+package io.openjob.server.admin.vo.perm;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,10 +9,11 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminMenuDeleteVO", description = "AdminMenuDeleteVO")
-public class AdminMenuDeleteVO {
+@ApiModel(value = "AdminPermAddVO", description = "AdminPermAddVO")
+public class AdminPermAddVO {
 
     @ApiModelProperty(value = "PK")
     private Long id;
+
 }
 

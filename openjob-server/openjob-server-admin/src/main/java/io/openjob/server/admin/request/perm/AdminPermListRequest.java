@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.menu;
+package io.openjob.server.admin.request.perm;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,8 +9,8 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-@ApiModel(description = "List AdminMenu")
-public class AdminMenuListRequest {
+@ApiModel(description = "List AdminPerm")
+public class AdminPermListRequest {
 
     @ApiModelProperty(value = "List page.")
     private Integer page = 1;

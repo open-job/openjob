@@ -679,11 +679,24 @@ CREATE TABLE `admin_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
 
 
-
 INSERT INTO `admin_config` (`name`, `value`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
     ('system_name', 'OpenJob Admin', 2, 0, 1670255999, 1670255999);
 
+DROP TABLE IF EXISTS `admin_session`;
+CREATE TABLE `admin_session` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+                              `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'User Id',
+                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
+                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session token',
+                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
+                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
+                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
+                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
+                              INDEX `idx_user_id` (`user_id`),
+                              UNIQUE `uni_token` (`token`),
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin user session caches';
 
 DROP TABLE IF EXISTS `admin_user`;
 CREATE TABLE `admin_user` (
@@ -712,24 +725,26 @@ CREATE TABLE `admin_role` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `name` varchar(48) NOT NULL DEFAULT '' COMMENT 'role name',
                               `desc` varchar(128) NOT NULL DEFAULT '' COMMENT 'Description',
-                              `menus` JSON COMMENT 'Menu ids for role. JSON array',
-                              `perms` JSON COMMENT 'Permissions ids for role. JSON array',
                               `admin` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Is supper admin. 1=yes 2=no',
+                              `menu_ids` JSON COMMENT 'Menu ids for role. JSON array',
+                              `perm_ids` JSON COMMENT 'Permission ids for role. JSON array',
+                              `namespace_ids` JSON COMMENT 'namespaces Ids. JSON array',
+                              `app_ids` JSON COMMENT 'app ids. JSON array',
                               `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                               `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                               `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
                               `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
                               INDEX `idx_name` (`name`),
                               PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin roles';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin roles with perms';
 
-INSERT INTO `admin_role` (`name`, `desc`, `menus`, `perms`, `admin`, `deleted`, `delete_time`, `update_time`, `create_time`)
+INSERT INTO `admin_role` (`name`, `desc`, `menu_ids`, `perm_ids`, `namespace_ids`, `app_ids`, `admin`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    ('Admin', 'Administrator role', '[1, 2, 3]', '[4, 5, 6, 7]', 1, 2, 0, 1670255999, 1670255999),
-    ('Developer', 'Developer role', '[1, 2, 3]', '[4, 5, 6, 7]', 2, 2, 0, 1670255999, 1670255999);
+    ('Admin', 'Administrator role', '[1, 2, 3]', '[4, 5, 6, 7]', '[]', '[]', 1, 2, 0, 1670255999, 1670255999),
+    ('Developer', 'Developer role', '[1, 2, 3]', '[4, 5, 6, 7]', '[]', '[]', 2, 2, 0, 1670255999, 1670255999);
 
-DROP TABLE IF EXISTS `admin_menu`;
-CREATE TABLE `admin_menu` (
+DROP TABLE IF EXISTS `admin_permission`;
+CREATE TABLE `admin_permission` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
                               `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent ID',
                               `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Type. 1=menu 2=perm',
@@ -745,40 +760,40 @@ CREATE TABLE `admin_menu` (
                               PRIMARY KEY (`id`),
                               INDEX  `idx_pid` (`pid`),
                               INDEX  `idx_path` (`path`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin menu and perms';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin user permissions';
 
-
-/** menus **/
-INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+INSERT INTO `admin_permission` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
 VALUES
-    (1, 0, 1, 'Dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (2, 0, 1, 'Manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (5, 2, 1, 'Users', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (6, 5, 1, 'Users Add', '/users/add', '{"title": "users.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (7, 5, 1, 'Users View', '/users/view', '{"title": "users.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (8, 5, 1, 'Users Edit', '/users/edit', '{"title": "users.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (10, 2, 1, 'Roles', '/roles', '{"icon": "fa-list", "title": "roles.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (11, 10, 1, 'Roles Add', '/roles/add', '{"title": "roles.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (12, 10, 1, 'Roles View', '/roles/view', '{"title": "roles.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (13, 10, 1, 'Roles Edit', '/roles/edit', '{"title": "roles.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (15, 2, 1, 'Menus', '/menus', '{"icon": "fa-list", "title": "menus.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (16, 15, 1, 'Menus Add', '/menus/add', '{"icon": "fa-add", "title": "menus.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (17, 15, 1, 'Menus Edit', '/menus/edit', '{"icon": "fa-edit", "title": "menus.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (20, 2, 1, 'Perms', '/perms', '{"icon": "fa-list", "title": "perms.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (25, 2, 1, 'Jobs', '/jobs', '{"icon": "fa-list", "title": "jobs.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (26, 25, 1, 'Jobs Add', '/jobs/add', '{"icon": "fa-edit", "title": "jobs.add"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (27, 25, 1, 'Jobs View', '/jobs/view', '{"icon": "fa-edit", "title": "jobs.view"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (28, 25, 1, 'Jobs Edit', '/jobs/edit', '{"icon": "fa-edit", "title": "jobs.edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
-    (30, 2, 1, 'Executors', '/executors', '{"icon": "fa-list", "title": "executors.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (40, 2, 1, 'Notify Manage', '/notify/manage', '{"icon": "fa-list", "title": "notify.template.list"}', 2, 0, 2, 0, 1669972320, 1669972320);
+/** menus permissions **/
+    (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "fa-home", "title": "dashboard"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (2, 0, 1, 'manage', '/manage', '{"icon": "fa-settings", "title": "manage"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (5, 2, 1, 'users.list', '/users', '{"icon": "fa-users", "title": "users.list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (6, 5, 1, 'users.add', '/users/add', '{"title": "users add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (7, 5, 1, 'users.view', '/users/view', '{"title": "users .view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (8, 5, 1, 'users.edit', '/users/edit', '{"title": "users .edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (10, 2, 1, 'roles.list', '/roles', '{"icon": "fa-list", "title": "roles list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (11, 10, 1, 'roles.add', '/roles/add', '{"title": "roles add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (12, 10, 1, 'roles.view', '/roles/view', '{"title": "roles view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (13, 10, 1, 'roles.edit', '/roles/edit', '{"title": "roles edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (15, 2, 1, 'menus.list', '/menus', '{"icon": "fa-list", "title": "menus list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (16, 15, 1, 'menus.add', '/menus/add', '{"icon": "fa-add", "title": "menus add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (17, 15, 1, 'menus.edit', '/menus/edit', '{"icon": "fa-edit", "title": "menus edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (20, 2, 1, 'perms.list', '/perms', '{"icon": "fa-list", "title": "perms list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (25, 2, 1, 'jobs.list', '/jobs', '{"icon": "fa-list", "title": "jobs list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (26, 25, 1, 'jobs.add', '/jobs/add', '{"icon": "fa-edit", "title": "jobs add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (27, 25, 1, 'jobs.view', '/jobs/view', '{"icon": "fa-edit", "title": "jobs view"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (28, 25, 1, 'jobs.edit', '/jobs/edit', '{"icon": "fa-edit", "title": "jobs edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (30, 2, 1, 'executors.list', '/executors', '{"icon": "fa-list", "title": "executors list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+    (40, 2, 1, 'notify.template.list', '/notify/manage', '{"icon": "fa-list", "title": "notify template list"}', 2, 0, 2, 0, 1669972320, 1669972320),
+/** api permissions **/
+    (60, 0, 2, 'users.add', '/admin/users/add', '{"title": "User add"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (61, 0, 2, 'users.get', '/admin/users/get', '{"title": "User get"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (62, 0, 2, 'users.list', '/admin/users/list', '{"title": "Users list"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (63, 0, 2, 'users.edit', '/admin/users/edit', '{"title": "User edit"}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (64, 0, 2, 'users.delete', '/admin/users/delete', '{}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (66, 0, 2, 'roles.get', '/admin/roles/get', '{}', 1, 0, 2, 0, 1669972320, 1669972320),
+    (67, 0, 2, 'roles.add', '/admin/roles/add', '{}', 1, 0, 2, 0, 1669972320, 1669972320);
 
-/** permissions **/
-INSERT INTO `admin_menu` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES
-    (60, 0, 2, 'Users Add', '/admin/users/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (61, 0, 2, 'Users Get', '/admin/users/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (62, 0, 2, 'Users List', '/admin/users/list', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
-    (63, 0, 2, 'Rule Get', '/admin/rules/get', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
 
 DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (

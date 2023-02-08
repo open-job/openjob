@@ -31,12 +31,22 @@ public class AdminRoleDTO extends BaseFieldsDTO {
     /**
      * Menu ids for role. JSON array
      */
-    private List<Long> menus;
+    private List<Long> menuIds;
 
     /**
      * Menu ids for role. JSON array
      */
-    private List<Long> perms;
+    private List<Long> permIds;
+
+    /**
+     * Namespace ids for role. JSON array
+     */
+    private List<Long> namespaceIds;
+
+    /**
+     * App ids for role. JSON array
+     */
+    private List<Long> appIds;
 
     /**
      * Is supper admin. 1=yes 2=no
