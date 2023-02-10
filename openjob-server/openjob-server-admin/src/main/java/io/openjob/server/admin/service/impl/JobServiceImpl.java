@@ -1,14 +1,14 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.server.admin.request.AddJobRequest;
-import io.openjob.server.admin.request.ListJobRequest;
-import io.openjob.server.admin.request.UpdateJobRequest;
-import io.openjob.server.admin.request.UpdateJobStatusRequest;
+import io.openjob.server.admin.request.job.AddJobRequest;
+import io.openjob.server.admin.request.job.ListJobRequest;
+import io.openjob.server.admin.request.job.UpdateJobRequest;
+import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
 import io.openjob.server.admin.service.JobService;
-import io.openjob.server.admin.vo.AddJobVO;
-import io.openjob.server.admin.vo.ListJobVO;
-import io.openjob.server.admin.vo.UpdateJobStatusVO;
-import io.openjob.server.admin.vo.UpdateJobVO;
+import io.openjob.server.admin.vo.job.AddJobVO;
+import io.openjob.server.admin.vo.job.ListJobVO;
+import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
+import io.openjob.server.admin.vo.job.UpdateJobVO;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.entity.Job;
 import org.springframework.beans.BeanUtils;

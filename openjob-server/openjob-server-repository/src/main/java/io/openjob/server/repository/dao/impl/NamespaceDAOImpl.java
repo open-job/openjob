@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -101,5 +103,10 @@ public class NamespaceDAOImpl implements NamespaceDAO {
         Namespace namespace = new Namespace();
         namespace.setId(id);
         return this.namespaceRepository.findOne(Example.of(namespace));
+    }
+
+    @Override
+    public List<Namespace> getByIds(List<Long> ids) {
+        return this.namespaceRepository.findAllById(ids);
     }
 }

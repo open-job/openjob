@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request;
+package io.openjob.server.admin.request.admin;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(value = "AdminConfigQueryRequest", description = "AdminConfig query request")
-public class AdminConfigQueryRequest {
+@ApiModel(value = "AdminConfigDeleteRequest", description = "AdminConfig delete request")
+public class AdminConfigDeleteRequest {
 
     @Min(1)
     @NotNull()

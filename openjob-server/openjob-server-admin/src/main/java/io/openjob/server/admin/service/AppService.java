@@ -1,11 +1,14 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.AddAppRequest;
-import io.openjob.server.admin.request.ListAppRequest;
-import io.openjob.server.admin.request.UpdateAppRequest;
-import io.openjob.server.admin.vo.AddAppVO;
-import io.openjob.server.admin.vo.ListAppVO;
-import io.openjob.server.admin.vo.UpdateAppVO;
+import io.openjob.server.admin.request.app.AddAppRequest;
+import io.openjob.server.admin.request.app.ListAppRequest;
+import io.openjob.server.admin.request.app.UpdateAppRequest;
+import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
+import io.openjob.server.admin.vo.app.AddAppVO;
+import io.openjob.server.admin.vo.app.ListAppVO;
+import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
+import io.openjob.server.admin.vo.app.UpdateAppVO;
+import io.openjob.server.common.vo.PageVO;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -30,10 +33,18 @@ public interface AppService {
     UpdateAppVO update(UpdateAppRequest updateRequest);
 
     /**
+     * Update
+     *
+     * @param updateRequest updateRequest
+     * @return UpdateAppStatusVO
+     */
+    UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest);
+
+    /**
      * Add namespace.
      *
      * @param listRequest ListNamespaceRequest
-     * @return ListNamespaceResponse
+     * @return PageVO
      */
-    ListAppVO list(ListAppRequest listRequest);
+    PageVO<ListAppVO> list(ListAppRequest listRequest);
 }

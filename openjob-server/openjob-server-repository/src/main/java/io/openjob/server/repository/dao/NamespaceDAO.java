@@ -3,6 +3,7 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.Namespace;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,4 +45,12 @@ public interface NamespaceDAO {
      * @return Optional
      */
     Optional<Namespace> getById(Long id);
+
+    /**
+     * Get by ids.
+     *
+     * @param ids ids
+     * @return List
+     */
+    List<Namespace> getByIds(List<Long> ids);
 }

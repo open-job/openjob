@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo;
+package io.openjob.server.admin.vo.job;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,9 +11,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Add app vo")
-public class AddAppVO {
+@ApiModel("Add job vo")
+public class AddJobVO {
 
-    @ApiModelProperty(value = "New app primary id", required = true)
+    @ApiModelProperty(value = "New job primary id", required = true)
     private Long id;
 }

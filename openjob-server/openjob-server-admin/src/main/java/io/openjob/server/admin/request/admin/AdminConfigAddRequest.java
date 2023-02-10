@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request;
+package io.openjob.server.admin.request.admin;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

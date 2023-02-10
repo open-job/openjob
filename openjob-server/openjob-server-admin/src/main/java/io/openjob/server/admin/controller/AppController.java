@@ -1,13 +1,14 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.AddAppRequest;
-import io.openjob.server.admin.request.ListAppRequest;
-import io.openjob.server.admin.request.UpdateAppRequest;
+import io.openjob.server.admin.request.app.AddAppRequest;
+import io.openjob.server.admin.request.app.ListAppRequest;
+import io.openjob.server.admin.request.app.UpdateAppRequest;
 import io.openjob.server.admin.service.AppService;
-import io.openjob.server.admin.vo.AddAppVO;
-import io.openjob.server.admin.vo.ListAppVO;
-import io.openjob.server.admin.vo.UpdateAppVO;
+import io.openjob.server.admin.vo.app.AddAppVO;
+import io.openjob.server.admin.vo.app.ListAppVO;
+import io.openjob.server.admin.vo.app.UpdateAppVO;
+import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class AppController {
 
     @ApiOperation("List application")
     @PostMapping("/list")
-    public Result<ListAppVO> list(@Valid @RequestBody ListAppRequest listRequest) {
+    public Result<PageVO<ListAppVO>> list(@Valid @RequestBody ListAppRequest listRequest) {
         return Result.success(this.appService.list(listRequest));
     }
 }
