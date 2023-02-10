@@ -1,8 +1,10 @@
 package io.openjob.server.admin.request.app;
 
+import io.openjob.server.admin.request.PageRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,19 +14,12 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @ApiModel
-public class ListAppRequest {
+@EqualsAndHashCode(callSuper = true)
+public class ListAppRequest extends PageRequest {
     @NotNull
     @ApiModelProperty(value = "App namespace id", required = true)
     private Long namespaceId;
 
     @ApiModelProperty(value = "Search name.")
     private String name;
-
-    @NotNull
-    @ApiModelProperty(value = "List page.")
-    private Integer page = 1;
-
-    @NotNull
-    @ApiModelProperty(value = "List size.")
-    private Integer size = 10;
 }

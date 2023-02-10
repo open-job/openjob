@@ -10,13 +10,8 @@ import javax.validation.constraints.NotNull;
  * @date 2022-11-13 18:14:02
  */
 @Data
-public class UpdateJobStatusRequest {
-
+public class DeleteJobRequest {
     @NotNull
-    @ApiModelProperty(value = "Update job id", required = true)
+    @ApiModelProperty(value = "Delete job id", required = true)
     private Long id;
-
-    @NotNull
-    @ApiModelProperty(value = "New job status", required = true)
-    private Integer status;
 }

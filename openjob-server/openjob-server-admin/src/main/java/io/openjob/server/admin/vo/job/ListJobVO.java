@@ -1,10 +1,7 @@
 package io.openjob.server.admin.vo.job;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
@@ -13,56 +10,57 @@ import java.util.List;
 @Data
 public class ListJobVO {
 
-    @ApiModelProperty("Current page.")
-    private Integer page;
+    @ApiModelProperty(value = "Namespace primary id")
+    private Long namespaceId;
 
-    @ApiModelProperty("Job list.")
-    private List<JobVO> jobList;
+    @ApiModelProperty(value = "App primary id")
+    private Long appId;
 
-    @Data
-    @ApiModel("Job item")
-    public static class JobVO {
+    @ApiModelProperty(value = "Job name")
+    private String name;
 
-        @ApiModelProperty(value = "Namespace name", required = true)
-        private String namespaceName;
+    @ApiModelProperty(value = "Job desc")
+    private String description;
 
-        @ApiModelProperty(value = "App Name", required = true)
-        private String appName;
+    @ApiModelProperty(value = "Job process type: bean/shell/python, default(bean)")
+    private String processorType;
 
-        @ApiModelProperty(value = "Job name", required = true)
-        private String name;
+    @ApiModelProperty(value = "Job process info")
+    private String processorInfo;
 
-        @ApiModelProperty(value = "Job desc", required = true)
-        private String description;
+    @ApiModelProperty(value = "Execute type: standalone, broadcast, MR")
+    private String executeType;
 
-        @ApiModelProperty(value = "Job process type: bean/shell/python, default(bean)", required = true)
-        private String processorType;
+    @ApiModelProperty(value = "Job params type")
+    private String paramsType;
 
-        @ApiModelProperty(value = "Job process info", required = true)
-        private String processorInfo;
+    @ApiModelProperty(value = "Job params")
+    private String params;
 
-        @ApiModelProperty(value = "Execute type: standalone, broadcast, MR", required = true)
-        private String executeType;
+    @ApiModelProperty(value = "Job extend params type")
+    private String extendParamsType;
 
-        @ApiModelProperty(value = "Job params", required = true)
-        private String params;
+    @ApiModelProperty(value = "Job extend params")
+    private String extendParams;
 
-        @ApiModelProperty(value = "Job execute fail retry times", required = true)
-        private Integer failRetryTimes;
+    @ApiModelProperty(value = "Job execute fail retry times")
+    private Integer failRetryTimes;
 
-        @ApiModelProperty(value = "Job execute fail retry interval", required = true)
-        private Integer failRetryInterval;
+    @ApiModelProperty(value = "Job execute fail retry interval")
+    private Integer failRetryInterval;
 
-        @ApiModelProperty(value = "Job execute concurrency, default(1)", required = true)
-        private Integer concurrency;
+    @ApiModelProperty(value = "Job execute concurrency, default(1)")
+    private Integer concurrency;
 
-        @ApiModelProperty(value = "Job type cron/second/delay, default(cron)", required = true)
-        private String timeExpressionType;
+    @ApiModelProperty(value = "Job type cron/second/delay, default(cron)")
+    private String timeExpressionType;
 
-        @ApiModelProperty(value = "Job type=cron need, cron express", required = true)
-        private String timeExpression;
+    @ApiModelProperty(value = "Job type=cron need, cron express")
+    private String timeExpression;
 
-        @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)", required = true)
-        private Integer status;
-    }
+    @ApiModelProperty(value = "Job execute strategy")
+    private Integer executeStrategy;
+
+    @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
+    private Integer status;
 }

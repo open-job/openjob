@@ -44,31 +44,30 @@ public class AppDAOImpl implements AppDAO {
 
     @Override
     public Long update(App app) {
-        Optional<App> findApp = this.appRepository.findById(app.getId());
+        this.appRepository.findById(app.getId())
+                .ifPresent(a -> {
+                    // Update name.
+                    if (StringUtils.isNotEmpty(app.getName())) {
+                        a.setName(app.getName());
+                    }
 
-        findApp.ifPresent(a -> {
-            // Update name.
-            if (StringUtils.isNotEmpty(app.getName())) {
-                a.setName(app.getName());
-            }
+                    // Update name.
+                    if (StringUtils.isNotEmpty(app.getDesc())) {
+                        a.setName(app.getDesc());
+                    }
 
-            // Update name.
-            if (StringUtils.isNotEmpty(app.getDesc())) {
-                a.setName(app.getDesc());
-            }
+                    // Update status
+                    if (Objects.nonNull(app.getStatus())) {
+                        a.setStatus(app.getStatus());
+                    }
 
-            // Update status
-            if (Objects.nonNull(app.getStatus())) {
-                a.setStatus(app.getStatus());
-            }
+                    if (Objects.nonNull(app.getDeleted())) {
+                        a.setDeleted(app.getDeleted());
+                    }
 
-            if (Objects.nonNull(app.getDeleted())) {
-                a.setDeleted(app.getDeleted());
-            }
-
-            a.setUpdateTime(DateUtil.timestamp());
-            this.appRepository.save(a);
-        });
+                    a.setUpdateTime(DateUtil.timestamp());
+                    this.appRepository.save(a);
+                });
         return app.getId();
     }
 

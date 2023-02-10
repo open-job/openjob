@@ -1,6 +1,5 @@
 package io.openjob.server.admin.request.job;
 
-import io.openjob.server.admin.request.job.AddJobRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

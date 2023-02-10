@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +37,6 @@ public class NamespaceDAOImpl implements NamespaceDAO {
         Long timestamp = DateUtil.timestamp();
         namespace.setDeleted(CommonConstant.NO);
         namespace.setDeleteTime(0L);
-        namespace.setStatus(CommonConstant.YES);
         namespace.setCreateTime(timestamp);
         namespace.setUpdateTime(timestamp);
         return this.namespaceRepository.save(namespace).getId();
@@ -46,25 +44,25 @@ public class NamespaceDAOImpl implements NamespaceDAO {
 
     @Override
     public Long update(Namespace namespace) {
-        Optional<Namespace> findNs = this.namespaceRepository.findById(namespace.getId());
-        findNs.ifPresent(n -> {
-            // Update name.
-            if (StringUtils.isNotEmpty(namespace.getName())) {
-                n.setName(namespace.getName());
-            }
+        this.namespaceRepository.findById(namespace.getId())
+                .ifPresent(n -> {
+                    // Update name.
+                    if (StringUtils.isNotEmpty(namespace.getName())) {
+                        n.setName(namespace.getName());
+                    }
 
-            // Update status
-            if (Objects.nonNull(namespace.getStatus())) {
-                n.setStatus(namespace.getStatus());
-            }
+                    // Update status
+                    if (Objects.nonNull(namespace.getStatus())) {
+                        n.setStatus(namespace.getStatus());
+                    }
 
-            if (Objects.nonNull(namespace.getDeleted())) {
-                n.setDeleted(namespace.getDeleted());
-            }
+                    if (Objects.nonNull(namespace.getDeleted())) {
+                        n.setDeleted(namespace.getDeleted());
+                    }
 
-            n.setUpdateTime(DateUtil.timestamp());
-            this.namespaceRepository.save(n);
-        });
+                    n.setUpdateTime(DateUtil.timestamp());
+                    this.namespaceRepository.save(n);
+                });
         return namespace.getId();
     }
 

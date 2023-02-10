@@ -117,6 +117,9 @@ CREATE TABLE `job` (
                        `processor_info` varchar(128) NOT NULL DEFAULT '',
                        `execute_type` varchar(16) NOT NULL DEFAULT 'standalone' COMMENT 'execute type 1=standalone 2=broadcast 3=MR',
                        `params` varchar(3096) NOT NULL DEFAULT '',
+                       `params_type` varchar(16) NOT NULL DEFAULT '' COMMENT 'Params type text/json/yaml',
+                       `extend_params_type` varchar(16) DEFAULT NULL COMMENT 'Extend params type text/json/yaml',
+                       `extend_params` varchar(3096) NOT NULL DEFAULT '',
                        `fail_retry_times` int(11) unsigned NOT NULL,
                        `fail_retry_interval` int(11) unsigned NOT NULL,
                        `concurrency` int(11) unsigned NOT NULL DEFAULT '1',
@@ -135,13 +138,13 @@ CREATE TABLE `job` (
 
 /*!40000 ALTER TABLE `job` DISABLE KEYS */;
 
-INSERT INTO `job` (`id`, `namespace_id`, `app_id`, `workflow_id`, `name`, `description`, `processor_type`, `processor_info`, `execute_type`, `params`, `fail_retry_times`, `fail_retry_interval`, `concurrency`, `time_expression_type`, `time_expression`, `status`, `next_execute_time`, `slots_id`, `create_time`, `update_time`)
+INSERT INTO `job` (`id`, `namespace_id`, `app_id`, `workflow_id`, `name`, `description`, `processor_type`, `processor_info`, `execute_type`, `params`, `params_type`, `extend_params_type`, `extend_params`,`fail_retry_times`, `fail_retry_interval`, `concurrency`, `time_expression_type`, `time_expression`, `status`, `next_execute_time`, `slots_id`, `create_time`, `update_time`)
 VALUES
-    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','30 * * * * ?',2,1663590330,233,1657528102,1663590220),
-    (13,1,1,0,'测试任务2','测试任务2','java','io.openjob.worker.samples.processorJavaProcessorSample','standalone','',0,0,1,'cron','10 * * * * ?',2,1660288630,1,1657528102,1660288512),
-    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','59 * * * * ?',2,1660288619,126,1657528102,1660288512),
-    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,12,1657528102,1660288452),
-    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','',0,0,1,'cron','15 * * * * ?',2,1666100115,126,1657528102,1666099995);
+    (10,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','','text','text','',0,0,1,'cron','30 * * * * ?',2,1663590330,233,1657528102,1663590220),
+    (13,1,1,0,'测试任务2','测试任务2','java','io.openjob.worker.samples.processorJavaProcessorSample','standalone','','text','text','',0,0,1,'cron','10 * * * * ?',2,1660288630,1,1657528102,1660288512),
+    (14,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','','text','text','',0,0,1,'cron','59 * * * * ?',2,1660288619,126,1657528102,1660288512),
+    (15,1,1,0,'测试任务','测试任务','java','io.openjob.worker.samples.processor.JavaProcessorSample','standalone','','text','text','',0,0,1,'cron','0 */3 * * * ?',2,1660288680,12,1657528102,1660288452),
+    (16,1,1,0,'MR任务测试','测试MR','java','io.openjob.worker.samples.processor.MapReduceProcessorSample','mapReduce','','text','text','',0,0,1,'cron','15 * * * * ?',2,1666100115,126,1657528102,1666099995);
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
 

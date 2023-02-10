@@ -2,14 +2,17 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.job.AddJobRequest;
+import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ListJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
 import io.openjob.server.admin.service.JobService;
 import io.openjob.server.admin.vo.job.AddJobVO;
+import io.openjob.server.admin.vo.job.DeleteJobVO;
 import io.openjob.server.admin.vo.job.ListJobVO;
 import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
 import io.openjob.server.admin.vo.job.UpdateJobVO;
+import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +57,15 @@ public class JobController {
         return Result.success(jobService.updateStatus(updateJobStatusRequest));
     }
 
+    @ApiOperation("Delete job")
+    @PostMapping("/delete")
+    public Result<DeleteJobVO> update(@Valid @RequestBody DeleteJobRequest deleteJobRequest) {
+        return Result.success(jobService.delete(deleteJobRequest));
+    }
+
     @ApiOperation("List jobs")
     @PostMapping("/list")
-    public Result<ListJobVO> listJob(@Valid @RequestBody ListJobRequest listJobRequest) {
+    public Result<PageVO<ListJobVO>> listJob(@Valid @RequestBody ListJobRequest listJobRequest) {
         return Result.success(jobService.list(listJobRequest));
     }
 }

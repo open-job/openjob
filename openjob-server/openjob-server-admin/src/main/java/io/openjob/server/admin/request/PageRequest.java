@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "BasePageRequest", description = "Base Page Request")
-public class BasePageRequest {
+public class PageRequest {
 
     @ApiModelProperty(value = "List page.")
     private Integer page = 1;

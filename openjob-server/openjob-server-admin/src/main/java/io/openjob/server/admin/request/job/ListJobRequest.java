@@ -1,24 +1,25 @@
 package io.openjob.server.admin.request.job;
 
+import io.openjob.server.admin.request.PageRequest;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
  * @date 2022-11-13 18:14:41
  */
 @Data
-public class ListJobRequest {
+@ApiModel
+@EqualsAndHashCode(callSuper = true)
+public class ListJobRequest extends PageRequest {
+    @ApiModelProperty(value = "App primary id", required = true)
+    private Long appId;
 
-    @ApiModelProperty(value = "List page.")
-    private Integer page;
+    @ApiModelProperty(value = "Job name", required = true)
+    private String name;
 
-    @ApiModelProperty(value = "List size.")
-    private Integer size;
-
-    @ApiModelProperty(value = "Search description.")
-    private String description;
-
-    @ApiModelProperty(value = "Filter job status.")
-    private String status;
+    @ApiModelProperty(value = "Job status", required = true)
+    private Integer status;
 }
