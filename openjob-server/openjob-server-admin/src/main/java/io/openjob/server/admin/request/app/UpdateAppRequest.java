@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@ApiModel("Add app request")
+@ApiModel()
 @Data
 public class UpdateAppRequest {
 

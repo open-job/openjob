@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Add job vo")
+@ApiModel()
 public class AddJobVO {
 
     @ApiModelProperty(value = "New job primary id", required = true)

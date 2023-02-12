@@ -11,7 +11,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-@ApiModel("List app")
+@ApiModel()
 public class ListAppVO {
 
     @ApiModelProperty(value = "App primary id", required = true)

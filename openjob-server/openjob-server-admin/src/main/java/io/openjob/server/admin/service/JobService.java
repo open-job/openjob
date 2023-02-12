@@ -14,7 +14,7 @@ import io.openjob.server.common.vo.PageVO;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
- * @date 2022-11-13 18:16:47
+ * @since 1.0.0
  */
 public interface JobService {
 

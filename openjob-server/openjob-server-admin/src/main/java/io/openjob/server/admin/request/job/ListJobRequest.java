@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
- * @date 2022-11-13 18:14:41
+ * @since 1.0.0
  */
 @Data
 @ApiModel

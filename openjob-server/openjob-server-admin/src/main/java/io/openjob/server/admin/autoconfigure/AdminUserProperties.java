@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author inhere <inhere@okzl.com>
- * @date 2022/12/1 19:50
+ * @since 1.0.0
  */
 @Data
 @ConfigurationProperties(prefix = "openjob.admin.user")

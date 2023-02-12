@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@ApiModel("Update namespace status request")
+@ApiModel()
 @Data
 public class UpdateStatusNamespaceRequest {
 

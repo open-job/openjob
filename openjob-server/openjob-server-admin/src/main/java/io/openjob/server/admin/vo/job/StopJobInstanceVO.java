@@ -3,9 +3,9 @@ package io.openjob.server.admin.vo.job;
 import lombok.Data;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class UpdateJobStatusVO {
+public class StopJobInstanceVO {
 }

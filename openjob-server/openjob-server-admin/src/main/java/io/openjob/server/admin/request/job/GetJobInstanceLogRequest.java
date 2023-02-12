@@ -6,12 +6,12 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class DeleteJobRequest {
+public class GetJobInstanceLogRequest {
     @NotNull
-    @ApiModelProperty(value = "Delete job id", required = true)
-    private Long id;
+    @ApiModelProperty(value = "Job instance id", required = true)
+    private Long jobInstanceId;
 }

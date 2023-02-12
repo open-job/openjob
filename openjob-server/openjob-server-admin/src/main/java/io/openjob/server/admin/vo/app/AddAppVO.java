@@ -11,7 +11,6 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Add app vo")
 public class AddAppVO {
 
     @ApiModelProperty(value = "New app primary id", required = true)

@@ -10,6 +10,6 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Update job vo")
+@ApiModel()
 public class UpdateJobVO {
 }

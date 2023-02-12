@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author riki
- * @date 2022-12-26
+ * @since 1.0.0
  */
 @Api(value = "Server", tags = "Server")
 @RestController

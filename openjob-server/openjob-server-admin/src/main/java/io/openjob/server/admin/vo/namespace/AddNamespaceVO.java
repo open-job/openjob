@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Add namespace vo")
+@ApiModel()
 public class AddNamespaceVO {
 
     @ApiModelProperty(value = "New namespace primary id", required = true)

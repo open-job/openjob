@@ -18,16 +18,12 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.entity.Job;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
- * @date 2022-11-13 18:21:16
+ * @since 1.0.0
  */
 @Component
 public class JobServiceImpl implements JobService {

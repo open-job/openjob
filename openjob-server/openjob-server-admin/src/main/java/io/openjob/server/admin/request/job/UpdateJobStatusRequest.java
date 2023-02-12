@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
- * @date 2022-11-13 18:14:02
+ * @since 1.0.0
  */
 @Data
 public class UpdateJobStatusRequest {

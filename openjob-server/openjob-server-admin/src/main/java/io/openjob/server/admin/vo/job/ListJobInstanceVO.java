@@ -4,11 +4,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class ListJobVO {
+public class ListJobInstanceVO {
+    @ApiModelProperty(value = "Job instance primary id")
+    private Long id;
 
     @ApiModelProperty(value = "Namespace primary id")
     private Long namespaceId;

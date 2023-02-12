@@ -9,7 +9,7 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-@ApiModel(description = "List AdminPerm")
+@ApiModel()
 public class AdminPermListRequest {
 
     @ApiModelProperty(value = "List page.")
