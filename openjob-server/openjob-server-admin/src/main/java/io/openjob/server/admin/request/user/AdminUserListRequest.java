@@ -1,7 +1,7 @@
 
 package io.openjob.server.admin.request.user;
 
-import io.openjob.server.admin.request.BasePageRequest;
+import io.openjob.server.admin.request.PageRequest;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "AdminUserListRequest", description = "AdminUserListRequest")
-public class AdminUserListRequest extends BasePageRequest {
+public class AdminUserListRequest extends PageRequest {
 
 }
 

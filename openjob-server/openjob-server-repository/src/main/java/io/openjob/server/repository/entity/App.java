@@ -41,6 +41,12 @@ public class App {
     private String desc;
 
     /**
+     * App status
+     */
+    @Column(name = "status")
+    private Integer status;
+
+    /**
      * Delete status. 1=yes 2=no
      */
     @Column(name = "deleted")

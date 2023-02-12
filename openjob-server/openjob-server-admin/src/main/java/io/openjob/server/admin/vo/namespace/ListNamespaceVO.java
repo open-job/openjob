@@ -4,14 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-@ApiModel("List namespace")
+@ApiModel()
 public class ListNamespaceVO {
     @ApiModelProperty(value = "Namespace primary id", required = true)
     private Long id;

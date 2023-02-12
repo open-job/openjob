@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.vo.PageVO;
 import org.springframework.util.CollectionUtils;
+import scala.util.parsing.input.Page;
 
 import java.util.List;
 import java.util.function.Function;
@@ -36,6 +37,22 @@ public class PageUtil {
         }
 
         pageVO.setList(list);
+        return pageVO;
+    }
+
+    /**
+     * Empty list page vo.
+     *
+     * @param tClass tClass class type.
+     * @param <T>    type
+     * @return PageVO
+     */
+    public static <T> PageVO<T> emptyList(Class<T> tClass) {
+        PageVO<T> pageVO = new PageVO<>();
+        pageVO.setList(Lists.newArrayList());
+        pageVO.setPage(1);
+        pageVO.setSize(10);
+        pageVO.setTotal(0L);
         return pageVO;
     }
 }

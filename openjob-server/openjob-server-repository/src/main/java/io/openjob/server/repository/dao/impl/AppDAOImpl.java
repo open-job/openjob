@@ -1,13 +1,22 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.repository.AppRepository;
-import io.openjob.server.repository.util.EntityUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -25,7 +34,41 @@ public class AppDAOImpl implements AppDAO {
 
     @Override
     public Long save(App app) {
+        Long timestamp = DateUtil.timestamp();
+        app.setDeleted(CommonConstant.NO);
+        app.setDeleteTime(0L);
+        app.setCreateTime(timestamp);
+        app.setUpdateTime(timestamp);
         return appRepository.save(app).getId();
+    }
+
+    @Override
+    public Long update(App app) {
+        this.appRepository.findById(app.getId())
+                .ifPresent(a -> {
+                    // Update name.
+                    if (StringUtils.isNotEmpty(app.getName())) {
+                        a.setName(app.getName());
+                    }
+
+                    // Update name.
+                    if (StringUtils.isNotEmpty(app.getDesc())) {
+                        a.setName(app.getDesc());
+                    }
+
+                    // Update status
+                    if (Objects.nonNull(app.getStatus())) {
+                        a.setStatus(app.getStatus());
+                    }
+
+                    if (Objects.nonNull(app.getDeleted())) {
+                        a.setDeleted(app.getDeleted());
+                    }
+
+                    a.setUpdateTime(DateUtil.timestamp());
+                    this.appRepository.save(a);
+                });
+        return app.getId();
     }
 
     @Override
@@ -34,10 +77,31 @@ public class AppDAOImpl implements AppDAO {
     }
 
     @Override
-    public Page<App> list(Integer page, Integer size) {
-        // TIP: page start from 0 on JPA.
-        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+    public PageDTO<App> pageList(Long namespaceId, String searchName, Integer page, Integer size) {
+        // Matcher
+        ExampleMatcher matching = ExampleMatcher.matching();
+        App app = new App();
+        app.setDeleted(CommonConstant.NO);
+        if (StringUtils.isNotEmpty(searchName)) {
+            app.setName(searchName);
+            matching = matching.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
+        }
 
-        return this.appRepository.findAll(pageReq);
+        // Condition
+        Example<App> example = Example.of(app, matching);
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // Pagination
+        PageDTO<App> pageDTO = new PageDTO<>();
+
+        // Query
+        Page<App> pageList = this.appRepository.findAll(example, pageRequest);
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(page);
+            pageDTO.setSize(size);
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
+        }
+        return pageDTO;
     }
 }

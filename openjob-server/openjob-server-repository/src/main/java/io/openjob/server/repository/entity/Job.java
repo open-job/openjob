@@ -55,6 +55,15 @@ public class Job {
     @Column(name = "params")
     private String params;
 
+    @Column(name = "params_type")
+    private String paramsType;
+
+    @Column(name = "extend_params_type")
+    private String extendParamsType;
+
+    @Column(name = "extend_params")
+    private String extendParams;
+
     @Column(name = "fail_retry_times")
     private Integer failRetryTimes;
 

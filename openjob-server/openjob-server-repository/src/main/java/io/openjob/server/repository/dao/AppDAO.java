@@ -1,7 +1,7 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.App;
-import org.springframework.data.domain.Page;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -18,6 +18,14 @@ public interface AppDAO {
     Long save(App app);
 
     /**
+     * Update
+     *
+     * @param app app
+     * @return Long
+     */
+    Long update(App app);
+
+    /**
      * Get app by name.
      *
      * @param appName appName
@@ -28,9 +36,11 @@ public interface AppDAO {
     /**
      * List apps
      *
-     * @param page current page
-     * @param size limit size
+     * @param namespaceId namespaceId
+     * @param searchName  search name
+     * @param page        current page
+     * @param size        limit size
      * @return Apps
      */
-    Page<App> list(Integer page, Integer size);
+    PageDTO<App> pageList(Long namespaceId, String searchName, Integer page, Integer size);
 }

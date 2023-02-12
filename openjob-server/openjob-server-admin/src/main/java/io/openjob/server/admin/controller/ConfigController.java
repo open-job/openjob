@@ -1,15 +1,15 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.AdminConfigAddRequest;
-import io.openjob.server.admin.request.AdminConfigDeleteRequest;
-import io.openjob.server.admin.request.AdminConfigListRequest;
-import io.openjob.server.admin.request.AdminConfigQueryRequest;
-import io.openjob.server.admin.request.AdminConfigUpdateRequest;
+import io.openjob.server.admin.request.admin.AdminConfigAddRequest;
+import io.openjob.server.admin.request.admin.AdminConfigDeleteRequest;
+import io.openjob.server.admin.request.admin.AdminConfigListRequest;
+import io.openjob.server.admin.request.admin.AdminConfigQueryRequest;
+import io.openjob.server.admin.request.admin.AdminConfigUpdateRequest;
 import io.openjob.server.admin.service.AdminConfigService;
-import io.openjob.server.admin.vo.AdminConfigAddVO;
-import io.openjob.server.admin.vo.AdminConfigQueryVO;
-import io.openjob.server.admin.vo.AdminConfigUpdateVO;
+import io.openjob.server.admin.vo.admin.AdminConfigAddVO;
+import io.openjob.server.admin.vo.admin.AdminConfigQueryVO;
+import io.openjob.server.admin.vo.admin.AdminConfigUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -30,14 +30,26 @@ public class JobInstance {
     @Column(name = "app_id")
     private Long appId;
 
+    @Column(name = "workflow_id")
+    private Long workflowId;
+
     /**
      * Job id.
      */
     @Column(name = "job_id")
     private Long jobId;
 
-    @Column(name = "job_params")
-    private String jobParams;
+    @Column(name = "params")
+    private String params;
+
+    @Column(name = "params_type")
+    private String paramsType;
+
+    @Column(name = "extend_params_type")
+    private String extendParamsType;
+
+    @Column(name = "extend_params")
+    private String extendParams;
 
     @Column(name = "status")
     private Integer status;

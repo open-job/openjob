@@ -1,17 +1,22 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.AddJobRequest;
-import io.openjob.server.admin.request.ListJobRequest;
-import io.openjob.server.admin.request.UpdateJobRequest;
-import io.openjob.server.admin.request.UpdateJobStatusRequest;
-import io.openjob.server.admin.vo.AddJobVO;
-import io.openjob.server.admin.vo.ListJobVO;
-import io.openjob.server.admin.vo.UpdateJobStatusVO;
-import io.openjob.server.admin.vo.UpdateJobVO;
+import io.openjob.server.admin.request.job.AddJobRequest;
+import io.openjob.server.admin.request.job.DeleteJobRequest;
+import io.openjob.server.admin.request.job.ExecuteJobRequest;
+import io.openjob.server.admin.request.job.ListJobRequest;
+import io.openjob.server.admin.request.job.UpdateJobRequest;
+import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
+import io.openjob.server.admin.vo.job.AddJobVO;
+import io.openjob.server.admin.vo.job.DeleteJobVO;
+import io.openjob.server.admin.vo.job.ExecuteJobVO;
+import io.openjob.server.admin.vo.job.ListJobVO;
+import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
+import io.openjob.server.admin.vo.job.UpdateJobVO;
+import io.openjob.server.common.vo.PageVO;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
- * @date 2022-11-13 18:16:47
+ * @since 1.0.0
  */
 public interface JobService {
 
@@ -32,6 +37,14 @@ public interface JobService {
     UpdateJobVO update(UpdateJobRequest updateJobRequest);
 
     /**
+     * Delete job
+     *
+     * @param deleteJobRequest deleteJobRequest
+     * @return DeleteJobVO
+     */
+    DeleteJobVO delete(DeleteJobRequest deleteJobRequest);
+
+    /**
      * Add job.
      *
      * @param updateJobStatusRequest UpdateJobStatusRequest
@@ -40,10 +53,18 @@ public interface JobService {
     UpdateJobStatusVO updateStatus(UpdateJobStatusRequest updateJobStatusRequest);
 
     /**
+     * Execute job
+     *
+     * @param request request
+     * @return ExecuteJobVO
+     */
+    ExecuteJobVO execute(ExecuteJobRequest request);
+
+    /**
      * Add job.
      *
      * @param listJobRequest ListJobRequest
      * @return ListJobVO
      */
-    ListJobVO list(ListJobRequest listJobRequest);
+    PageVO<ListJobVO> list(ListJobRequest listJobRequest);
 }

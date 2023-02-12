@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author riki
- * @date 2022-12-26
+ * @since 1.0.0
  */
 @Data
 public class WorkerListReqDTO {

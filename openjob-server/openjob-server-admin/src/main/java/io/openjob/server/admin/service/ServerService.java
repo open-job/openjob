@@ -6,7 +6,7 @@ import io.openjob.server.common.dto.PageDTO;
 
 /**
  * @author riki
- * @date 2022-12-26
+ * @since 1.0.0
  */
 public interface ServerService {
 

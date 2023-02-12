@@ -31,7 +31,7 @@ public class JobInstanceDAOTest extends RepositoryTest {
     public void testSaveAndUpdate() throws InterruptedException {
         JobInstance jobInstance = new JobInstance();
         jobInstance.setJobId(1L);
-        jobInstance.setJobParams("");
+        jobInstance.setParams("");
         jobInstance.setSlotsId(1L);
         jobInstance.setNamespaceId(1L);
         jobInstance.setAppId(1L);

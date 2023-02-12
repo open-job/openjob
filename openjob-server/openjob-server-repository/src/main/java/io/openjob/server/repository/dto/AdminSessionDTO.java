@@ -4,7 +4,6 @@ import lombok.Data;
 
 /**
  * @author inhere
- * @date 2023-02-08 14:21:16
  * @since 1.0.0
  */
 @Data

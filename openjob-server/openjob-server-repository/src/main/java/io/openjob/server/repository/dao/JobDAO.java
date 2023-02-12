@@ -1,7 +1,7 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.Job;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,6 +17,24 @@ public interface JobDAO {
      * @return Long
      */
     Long save(Job job);
+
+    /**
+     * Update job
+     *
+     * @param job job
+     * @return Long
+     */
+    Long update(Job job);
+
+    /**
+     * Update by status or deleted.
+     *
+     * @param id      id
+     * @param status  status
+     * @param deleted deleted
+     * @return Long
+     */
+    Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted);
 
     /**
      * List scheduled jobs.
@@ -36,11 +54,14 @@ public interface JobDAO {
     List<Job> listScheduledSecondJobs(List<Long> slotIds);
 
     /**
-     * job list
+     * Get page list.
      *
-     * @param page page
-     * @param size size
-     * @return Page<job>
+     * @param appId      appId
+     * @param status     status
+     * @param searchName searchName
+     * @param page       page
+     * @param size       size
+     * @return PageDTO
      */
-    Page<Job> list(Integer page, Integer size);
+    PageDTO<Job> pageList(Long appId, Integer status, String searchName, Integer page, Integer size);
 }

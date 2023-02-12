@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * @author inhere <in.798@qq.com>
- * @date 2022/11/15 22:56
+ * @since 1.0.0
  */
 public class CommonUtil {
     /**

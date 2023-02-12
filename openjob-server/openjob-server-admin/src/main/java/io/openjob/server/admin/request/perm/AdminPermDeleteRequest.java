@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-@ApiModel(description = "Delete AdminPerm")
+@ApiModel()
 public class AdminPermDeleteRequest {
 
     @Min(1)

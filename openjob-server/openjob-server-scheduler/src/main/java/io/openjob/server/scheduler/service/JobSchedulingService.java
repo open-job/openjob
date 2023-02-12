@@ -169,7 +169,7 @@ public class JobSchedulingService {
             jobInstance.setJobId(j.getId());
             jobInstance.setAppId(j.getAppId());
             jobInstance.setNamespaceId(j.getNamespaceId());
-            jobInstance.setJobParams(j.getParams());
+            jobInstance.setParams(j.getParams());
             jobInstance.setSlotsId(j.getSlotsId());
             jobInstance.setExecuteTime(j.getNextExecuteTime());
             jobInstance.setDeleteTime(0L);
@@ -202,7 +202,7 @@ public class JobSchedulingService {
     private AbstractTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
         schedulerTask.setJobId(js.getJobId());
-        schedulerTask.setJobParams(js.getJobParams());
+        schedulerTask.setJobParams(js.getParams());
         schedulerTask.setAppid(js.getAppId());
         schedulerTask.setWorkflowId(0L);
         schedulerTask.setProcessorInfo(js.getProcessorInfo());
