@@ -3,12 +3,14 @@ package io.openjob.server.admin.service.impl;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
+import io.openjob.server.admin.request.job.ExecuteJobRequest;
 import io.openjob.server.admin.request.job.ListJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
 import io.openjob.server.admin.service.JobService;
 import io.openjob.server.admin.vo.job.AddJobVO;
 import io.openjob.server.admin.vo.job.DeleteJobVO;
+import io.openjob.server.admin.vo.job.ExecuteJobVO;
 import io.openjob.server.admin.vo.job.ListJobVO;
 import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
 import io.openjob.server.admin.vo.job.UpdateJobVO;
@@ -57,6 +59,11 @@ public class JobServiceImpl implements JobService {
     public UpdateJobStatusVO updateStatus(UpdateJobStatusRequest request) {
         this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null);
         return new UpdateJobStatusVO();
+    }
+
+    @Override
+    public ExecuteJobVO execute(ExecuteJobRequest request) {
+        return null;
     }
 
     @Override

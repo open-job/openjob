@@ -37,6 +37,7 @@ public interface AppDAO {
      * List apps
      *
      * @param namespaceId namespaceId
+     * @param searchName  search name
      * @param page        current page
      * @param size        limit size
      * @return Apps

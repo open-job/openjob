@@ -9,5 +9,12 @@ import io.openjob.server.common.vo.PageVO;
  * @since 1.0.0
  */
 public interface JobInstanceService {
+
+    /**
+     * List job instance.
+     *
+     * @param request request
+     * @return PageVO
+     */
     PageVO<ListJobInstanceVO> list(ListJobInstanceRequest request);
 }
