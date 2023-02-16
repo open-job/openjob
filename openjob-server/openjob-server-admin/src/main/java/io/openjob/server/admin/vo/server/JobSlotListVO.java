@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+
 /**
  * @author riki
  * @since 1.0.0
@@ -16,6 +18,12 @@ public class JobSlotListVO {
 
     @ApiModelProperty(value = "Server id")
     private Long serverId;
+
+    @ApiModelProperty(value = "Server address")
+    private String akkaAddress;
+
+    @ApiModelProperty(value = "Server status")
+    private Integer serverStatus;
 
     @ApiModelProperty(value = "Server create time")
     private Long createTime;

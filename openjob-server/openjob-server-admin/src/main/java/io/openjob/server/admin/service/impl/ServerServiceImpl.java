@@ -16,6 +16,12 @@ import io.openjob.server.repository.entity.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author riki
  * @since 1.0.0
@@ -40,7 +46,22 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public PageVO<JobSlotListVO> getJobSlotsList(JobSlotRequest request) {
+        // Job slots list.
         PageDTO<JobSlots> paging = this.jobSlotsDAO.pageList(request.getPage(), request.getSize());
-        return PageUtil.convert(paging, s -> ObjectUtil.mapObject(s, JobSlotListVO.class));
+
+        // Server map
+        Set<Long> serverIdS = paging.getList().stream().map(JobSlots::getServerId).collect(Collectors.toSet());
+        Map<Long, Server> serverMap = this.serverDAO.listServerByIds(new ArrayList<>(serverIdS)).stream()
+                .collect(Collectors.toMap(Server::getId, s -> s));
+
+        return PageUtil.convert(paging, s -> {
+            JobSlotListVO jobSlotListVO = ObjectUtil.mapObject(s, JobSlotListVO.class);
+            Server server = serverMap.get(jobSlotListVO.getServerId());
+            if (Objects.nonNull(server)) {
+                jobSlotListVO.setAkkaAddress(server.getAkkaAddress());
+                jobSlotListVO.setServerStatus(server.getStatus());
+            }
+            return jobSlotListVO;
+        });
     }
 }

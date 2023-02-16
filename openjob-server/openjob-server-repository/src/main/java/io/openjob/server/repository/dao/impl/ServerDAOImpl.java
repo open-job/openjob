@@ -73,6 +73,11 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
+    public List<Server> listServerByIds(List<Long> serverIds) {
+        return this.serverRepository.findAllById(serverIds);
+    }
+
+    @Override
     public PageDTO<Server> pageList(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
         Page<Server> pageResult = serverRepository.findAll(pageable);
