@@ -69,5 +69,5 @@ public interface ServerDAO {
      * @param size size
      * @return page result
      */
-    PageDTO<Server> getPageList(Integer page, Integer size);
+    PageDTO<Server> pageList(Integer page, Integer size);
 }

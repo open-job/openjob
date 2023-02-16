@@ -43,13 +43,7 @@ Session: 2cebdf15d414b6713672475a21f995a0
 }
 
 ### list
-POST http://127.0.0.1:8080/admin/namespace/list
+GET http://127.0.0.1:8080/admin/namespace/list?page=1&size=10
 accept: */*
 Content-Type: application/json
 Session: 2cebdf15d414b6713672475a21f995a0
-
-{
-  "name": "1000",
-  "page": 1,
-  "size": 1
-}

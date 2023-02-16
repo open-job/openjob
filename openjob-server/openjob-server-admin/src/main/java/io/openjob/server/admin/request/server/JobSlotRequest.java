@@ -2,7 +2,6 @@ package io.openjob.server.admin.request.server;
 
 import io.openjob.server.admin.request.PageRequest;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,7 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "ServerListRequest", description = "ServerList page list request")
-public class ServerListRequest extends PageRequest {
+@ApiModel(value = "JobSlotRequest", description = "Job slot list request")
+public class JobSlotRequest extends PageRequest {
 }
 

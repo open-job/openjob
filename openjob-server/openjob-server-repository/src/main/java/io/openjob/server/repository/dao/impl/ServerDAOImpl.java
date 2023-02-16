@@ -73,12 +73,17 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
-    public PageDTO<Server> getPageList(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+    public PageDTO<Server> pageList(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
         Page<Server> pageResult = serverRepository.findAll(pageable);
+
         PageDTO<Server> paging = new PageDTO<>();
-        paging.setList(pageResult.getContent());
-        paging.setTotal(pageResult.getTotalElements());
+        if (!pageResult.isEmpty()) {
+            paging.setPage(page);
+            paging.setSize(size);
+            paging.setList(pageResult.getContent());
+            paging.setTotal(pageResult.getTotalElements());
+        }
         return paging;
     }
 }

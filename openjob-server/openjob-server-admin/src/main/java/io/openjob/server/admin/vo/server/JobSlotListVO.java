@@ -10,19 +10,16 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "ServerListVO", description = "server list VO")
-public class ServerListVO {
+public class JobSlotListVO {
     @ApiModelProperty(value = "pk")
     private Long id;
 
-    @ApiModelProperty(value = "Server IP")
-    private String ip;
-
-    @ApiModelProperty(value = "Server address")
-    private String akkaAddress;
-
-    @ApiModelProperty(value = "Server status")
-    private Integer status;
+    @ApiModelProperty(value = "Server id")
+    private Long serverId;
 
     @ApiModelProperty(value = "Server create time")
     private Long createTime;
+
+    @ApiModelProperty(value = "Server update time")
+    private Long updateTime;
 }
