@@ -86,6 +86,7 @@ public class AppDAOImpl implements AppDAO {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         App app = new App();
+        app.setNamespaceId(namespaceId);
         app.setDeleted(CommonConstant.NO);
         if (StringUtils.isNotEmpty(searchName)) {
             app.setName(searchName);
