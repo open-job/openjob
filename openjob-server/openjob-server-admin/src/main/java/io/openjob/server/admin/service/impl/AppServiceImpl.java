@@ -1,11 +1,15 @@
 package io.openjob.server.admin.service.impl;
 
+import io.openjob.common.constant.CommonConstant;
+import io.openjob.server.admin.constant.AppCodeEnum;
 import io.openjob.server.admin.request.app.AddAppRequest;
+import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.service.AppService;
 import io.openjob.server.admin.vo.app.AddAppVO;
+import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
 import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
@@ -44,6 +48,9 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
+        App app = this.appDAO.getAppByName(addRequest.getName());
+        AppCodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
+
         Long id = this.appDAO.save(ObjectUtil.mapObject(addRequest, App.class));
 
         AddAppVO addAppVO = new AddAppVO();
@@ -53,9 +60,23 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public UpdateAppVO update(UpdateAppRequest updateRequest) {
+        // App name is exist and not self!
+        App nameApp = this.appDAO.getAppByName(updateRequest.getName());
+        if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())){
+            AppCodeEnum.NAME_EXIST.throwException();
+        }
+
         App app = ObjectUtil.mapObject(ObjectUtil.mapObject(updateRequest, App.class), App.class);
         this.appDAO.update(app);
         return new UpdateAppVO();
+    }
+
+    @Override
+    public DeleteAppVO delete(DeleteAppRequest deleteAppRequest) {
+        App app = ObjectUtil.mapObject(deleteAppRequest, App.class);
+        app.setDeleted(CommonConstant.YES);
+        this.appDAO.update(app);
+        return new DeleteAppVO();
     }
 
     @Override

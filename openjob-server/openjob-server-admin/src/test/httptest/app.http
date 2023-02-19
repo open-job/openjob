@@ -1,0 +1,53 @@
+### Add
+POST http://127.0.0.1:8080/admin/app/add
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "namespaceId": 1,
+  "desc": "desc",
+  "name": "openjob6",
+  "status": 1
+}
+
+### update status
+POST http://127.0.0.1:8080/admin/app/update
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "namespaceId": 1,
+  "id": 5,
+  "name": "openjob9",
+  "desc": "desc5",
+  "status": 2
+}
+
+### update
+POST http://127.0.0.1:8080/admin/app/update-status
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "id": 5,
+  "status": 2
+}
+
+### update
+POST http://127.0.0.1:8080/admin/app/delete
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "id": 5
+}
+
+### list
+GET http://127.0.0.1:8080/admin/app/list?namespaceId=1&name=desc&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0

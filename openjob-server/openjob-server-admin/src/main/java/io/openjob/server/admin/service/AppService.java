@@ -1,10 +1,12 @@
 package io.openjob.server.admin.service;
 
 import io.openjob.server.admin.request.app.AddAppRequest;
+import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.vo.app.AddAppVO;
+import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
 import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
@@ -31,6 +33,13 @@ public interface AppService {
      * @return UpdateNamespaceResponse
      */
     UpdateAppVO update(UpdateAppRequest updateRequest);
+
+    /**
+     * Delete app
+     * @param deleteAppRequest delete app request
+     * @return DeleteAppVO
+     */
+    DeleteAppVO delete(DeleteAppRequest deleteAppRequest);
 
     /**
      * Update
