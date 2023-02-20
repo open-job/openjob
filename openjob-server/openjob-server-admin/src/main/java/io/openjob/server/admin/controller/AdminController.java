@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -51,7 +52,7 @@ public class AdminController {
      * @return vo
      */
     @ApiOperation("login user info, menus, perms")
-    @PostMapping("/user-info")
+    @GetMapping("/user-info")
     public Result<LoginUserInfoVO> loginUserInfo(@RequestBody LoginUserInfoRequest request, @RequestHeader HttpHeaders headers) {
         String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
 
@@ -67,7 +68,7 @@ public class AdminController {
      */
     @ApiOperation("admin user logout")
     @PostMapping("/logout")
-    public Result<AdminUserLogoutVO> logout(@RequestBody AdminUserLogoutRequest request, @RequestHeader HttpHeaders headers) {
+    public Result<AdminUserLogoutVO> logout(@RequestBody(required = false) AdminUserLogoutRequest request, @RequestHeader HttpHeaders headers) {
         String sessKey = headers.getFirst(AdminConstant.HEADER_SESSION_KEY);
 
         return Result.success(this.adminLoginService.logout(request, sessKey));
