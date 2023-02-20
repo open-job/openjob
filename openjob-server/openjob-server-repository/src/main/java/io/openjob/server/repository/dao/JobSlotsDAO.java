@@ -1,6 +1,8 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.JobSlots;
+import io.openjob.server.repository.entity.Server;
 
 import java.util.List;
 
@@ -48,4 +50,13 @@ public interface JobSlotsDAO {
      * @return Effected rows.
      */
     Integer updateByServerId(Long serverId);
+
+    /**
+     * Job slot
+     *
+     * @param page page
+     * @param size size
+     * @return PageDTO
+     */
+    PageDTO<JobSlots> pageList(Integer page, Integer size);
 }

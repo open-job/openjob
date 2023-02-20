@@ -37,7 +37,7 @@ public class App {
     /**
      * App desc
      */
-    @Column(name = "desc")
+    @Column(name = "`desc`")
     private String desc;
 
     /**

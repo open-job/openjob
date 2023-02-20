@@ -2,16 +2,22 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.app.AddAppRequest;
+import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
+import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.service.AppService;
 import io.openjob.server.admin.vo.app.AddAppVO;
+import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
+import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,9 +52,21 @@ public class AppController {
         return Result.success(this.appService.update(updateRequest));
     }
 
+    @ApiOperation("Update status")
+    @PostMapping("/update-status")
+    public Result<UpdateAppStatusVO> updateStatus(@Valid @RequestBody UpdateAppStatusRequest updateRequest) {
+        return Result.success(this.appService.updateStatus(updateRequest));
+    }
+
+    @ApiOperation("Delete application")
+    @PostMapping("/delete")
+    public Result<DeleteAppVO> delete(@Valid @RequestBody DeleteAppRequest deleteAppRequest) {
+        return Result.success(this.appService.delete(deleteAppRequest));
+    }
+
     @ApiOperation("List application")
-    @PostMapping("/list")
-    public Result<PageVO<ListAppVO>> list(@Valid @RequestBody ListAppRequest listRequest) {
+    @GetMapping("/list")
+    public Result<PageVO<ListAppVO>> list(@Valid @ModelAttribute ListAppRequest listRequest) {
         return Result.success(this.appService.list(listRequest));
     }
 }

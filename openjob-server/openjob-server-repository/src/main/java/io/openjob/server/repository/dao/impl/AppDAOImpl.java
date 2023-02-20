@@ -46,14 +46,19 @@ public class AppDAOImpl implements AppDAO {
     public Long update(App app) {
         this.appRepository.findById(app.getId())
                 .ifPresent(a -> {
+                    // Update namespace.
+                    if (Objects.nonNull(app.getNamespaceId())) {
+                        a.setNamespaceId(app.getNamespaceId());
+                    }
+
                     // Update name.
                     if (StringUtils.isNotEmpty(app.getName())) {
                         a.setName(app.getName());
                     }
 
-                    // Update name.
+                    // Update desc.
                     if (StringUtils.isNotEmpty(app.getDesc())) {
-                        a.setName(app.getDesc());
+                        a.setDesc(app.getDesc());
                     }
 
                     // Update status
@@ -81,6 +86,7 @@ public class AppDAOImpl implements AppDAO {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         App app = new App();
+        app.setNamespaceId(namespaceId);
         app.setDeleted(CommonConstant.NO);
         if (StringUtils.isNotEmpty(searchName)) {
             app.setName(searchName);

@@ -41,6 +41,7 @@ public class NamespaceServiceImpl implements NamespaceService {
         Namespace namespace = new Namespace();
         namespace.setName(addRequest.getName());
         namespace.setUuid(UUID.randomUUID().toString());
+        namespace.setStatus(addRequest.getStatus());
 
         // Save
         long id = this.namespaceDAO.save(namespace);

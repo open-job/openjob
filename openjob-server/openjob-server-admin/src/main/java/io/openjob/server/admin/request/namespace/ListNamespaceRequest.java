@@ -16,10 +16,4 @@ import lombok.EqualsAndHashCode;
 public class ListNamespaceRequest extends PageRequest {
     @ApiModelProperty(value = "Search name.")
     private String name;
-
-    @ApiModelProperty(value = "List page.")
-    private Integer page = 1;
-
-    @ApiModelProperty(value = "List size.")
-    private Integer size = 10;
 }

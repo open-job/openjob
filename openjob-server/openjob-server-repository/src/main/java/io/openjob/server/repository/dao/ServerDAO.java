@@ -63,11 +63,19 @@ public interface ServerDAO {
     List<Server> listServers(Integer status);
 
     /**
+     * List server by ids
+     *
+     * @param serverIds server ids
+     * @return List
+     */
+    List<Server> listServerByIds(List<Long> serverIds);
+
+    /**
      * page list servers
      *
      * @param page page
      * @param size size
      * @return page result
      */
-    PageDTO<Server> getPageList(Integer page, Integer size);
+    PageDTO<Server> pageList(Integer page, Integer size);
 }
