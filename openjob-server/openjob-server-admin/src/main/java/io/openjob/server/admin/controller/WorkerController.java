@@ -4,7 +4,7 @@ import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.worker.WorkerListRequest;
 import io.openjob.server.admin.service.WorkerService;
 import io.openjob.server.admin.vo.worker.WorkerListVO;
-import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,9 @@ public class WorkerController {
         this.workerService = workerService;
     }
 
-
     @ApiOperation("List Worker by page")
     @GetMapping("/list")
-    public Result<PageDTO<WorkerListVO>> list(@ModelAttribute WorkerListRequest request) {
-        return Result.success(workerService.page(request));
+    public Result<PageVO<WorkerListVO>> list(@ModelAttribute WorkerListRequest request) {
+        return Result.success(workerService.getPage(request));
     }
-
 }

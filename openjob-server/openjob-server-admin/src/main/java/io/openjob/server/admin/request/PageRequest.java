@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "BasePageRequest", description = "Base Page Request")
 public class PageRequest {
-
     @ApiModelProperty(value = "List page.")
     @NotNull
     @Min(1)
