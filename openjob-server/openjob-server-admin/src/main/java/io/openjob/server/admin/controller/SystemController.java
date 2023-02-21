@@ -33,7 +33,7 @@ public class SystemController {
     }
 
     @ApiOperation("Get the latest System information")
-    @GetMapping("/get")
+    @GetMapping("/config")
     public Result<AdminSystemVO> getLatest() {
         return Result.success(this.systemService.getLatest());
     }

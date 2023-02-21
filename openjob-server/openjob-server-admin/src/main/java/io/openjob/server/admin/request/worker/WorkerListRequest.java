@@ -20,6 +20,6 @@ public class WorkerListRequest extends PageRequest {
     @ApiModelProperty(value = "NamespaceId")
     private Long namespaceId;
 
-    @ApiModelProperty(value = "App name")
-    private String appName;
+    @ApiModelProperty(value = "Address")
+    private String address;
 }

@@ -67,10 +67,10 @@ public class WorkerDAOImpl implements WorkerDAO {
             worker.setAppId(workerPageDTO.getAppId());
         }
 
-        // App name.
-        if (StringUtils.isNotEmpty(workerPageDTO.getAppName())) {
-            worker.setAppName(workerPageDTO.getAppName());
-            matching = matching.withMatcher("appName", ExampleMatcher.GenericPropertyMatchers.contains());
+        // Address.
+        if (StringUtils.isNotEmpty(workerPageDTO.getAddress())) {
+            worker.setAddress(workerPageDTO.getAddress());
+            matching = matching.withMatcher("address", ExampleMatcher.GenericPropertyMatchers.contains());
         }
 
         // Condition

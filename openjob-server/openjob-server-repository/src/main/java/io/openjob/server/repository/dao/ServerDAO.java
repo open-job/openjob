@@ -73,9 +73,10 @@ public interface ServerDAO {
     /**
      * page list servers
      *
-     * @param page page
-     * @param size size
+     * @param searchAddress search address
+     * @param page          page
+     * @param size          size
      * @return page result
      */
-    PageDTO<Server> pageList(Integer page, Integer size);
+    PageDTO<Server> pageList(String searchAddress, Integer page, Integer size);
 }

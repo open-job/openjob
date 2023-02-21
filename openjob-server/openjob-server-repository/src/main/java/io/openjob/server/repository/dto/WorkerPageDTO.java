@@ -29,7 +29,7 @@ public class WorkerPageDTO {
     private Long namespaceId;
 
     /**
-     * App name
+     * Address
      */
-    private String appName;
+    private String address;
 }
