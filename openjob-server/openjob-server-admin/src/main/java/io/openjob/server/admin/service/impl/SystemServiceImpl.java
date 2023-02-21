@@ -7,7 +7,6 @@ import io.openjob.server.admin.vo.system.AdminSystemVO;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.SystemDAO;
 import io.openjob.server.repository.entity.System;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,19 +24,13 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public AdminSystemVO getLatest() {
-        System adminSystem = systemDAO.getOne();
+        System adminSystem = this.systemDAO.getOne();
         return ObjectUtil.mapObject(adminSystem, AdminSystemVO.class);
     }
 
     @Override
     public AdminSystemUpdateVO update(AdminSystemUpdateRequest request) {
-        System system = new System();
-        BeanUtils.copyProperties(request, system);
-
-        AdminSystemUpdateVO retVo = new AdminSystemUpdateVO();
-        systemDAO.updateById(system);
-        return retVo;
-
-
+        this.systemDAO.updateById(ObjectUtil.mapObject(request, System.class));
+        return new AdminSystemUpdateVO();
     }
 }

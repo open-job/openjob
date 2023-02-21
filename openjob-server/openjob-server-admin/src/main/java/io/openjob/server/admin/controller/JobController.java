@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,7 +75,7 @@ public class JobController {
 
     @ApiOperation("List jobs")
     @GetMapping("/list")
-    public Result<PageVO<ListJobVO>> listJob(@Valid @RequestBody ListJobRequest listJobRequest) {
-        return Result.success(this.jobService.list(listJobRequest));
+    public Result<PageVO<ListJobVO>> listJob(@Valid @ModelAttribute ListJobRequest listJobRequest) {
+        return Result.success(this.jobService.getPageList(listJobRequest));
     }
 }

@@ -6,6 +6,7 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
+import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.repository.JobRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -99,26 +100,30 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
-    public PageDTO<Job> pageList(Long appId, Integer status, String searchName, Integer page, Integer size) {
+    public PageDTO<Job> pageList(JobPageDTO jobPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         Job job = new Job();
         job.setDeleted(CommonConstant.NO);
 
-        if (StringUtils.isNotEmpty(searchName)) {
-            job.setName(searchName);
+        if (StringUtils.isNotEmpty(jobPageDTO.getName())) {
+            job.setName(jobPageDTO.getName());
             matching = matching.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
         }
 
         // Condition
         Example<Job> example = Example.of(job, matching);
-        if (Objects.nonNull(appId)) {
-            job.setAppId(appId);
+        if (Objects.nonNull(jobPageDTO.getNamespaceId())){
+            job.setNamespaceId(jobPageDTO.getNamespaceId());
         }
-        if (Objects.nonNull(status)) {
-            job.setStatus(status);
+        if (Objects.nonNull(jobPageDTO.getAppId())) {
+            job.setAppId(jobPageDTO.getAppId());
         }
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+        if (Objects.nonNull(jobPageDTO.getStatus())) {
+            job.setStatus(jobPageDTO.getStatus());
+        }
+
+        PageRequest pageRequest = PageRequest.of(jobPageDTO.getPage() - 1, jobPageDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
 
         // Pagination
         PageDTO<Job> pageDTO = new PageDTO<>();
@@ -126,8 +131,8 @@ public class JobDAOImpl implements JobDAO {
         // Query
         Page<Job> pageList = this.jobRepository.findAll(example, pageRequest);
         if (!pageList.isEmpty()) {
-            pageDTO.setPage(page);
-            pageDTO.setSize(size);
+            pageDTO.setPage(jobPageDTO.getPage());
+            pageDTO.setSize(jobPageDTO.getSize());
             pageDTO.setTotal(pageList.getTotalElements());
             pageDTO.setList(pageList.toList());
         }

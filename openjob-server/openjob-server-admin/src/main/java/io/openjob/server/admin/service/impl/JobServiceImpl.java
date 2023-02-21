@@ -19,6 +19,7 @@ import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.JobDAO;
+import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,8 +68,8 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public PageVO<ListJobVO> list(ListJobRequest request) {
-        PageDTO<Job> jobPageDTO = this.jobDAO.pageList(request.getAppId(), request.getStatus(), request.getName(), request.getPage(), request.getSize());
+    public PageVO<ListJobVO> getPageList(ListJobRequest request) {
+        PageDTO<Job> jobPageDTO = this.jobDAO.pageList(ObjectUtil.mapObject(request, JobPageDTO.class));
         return PageUtil.convert(jobPageDTO, j -> ObjectUtil.mapObject(j, ListJobVO.class));
     }
 }

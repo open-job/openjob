@@ -38,12 +38,9 @@ public class SystemController {
         return Result.success(this.systemService.getLatest());
     }
 
-
     @ApiOperation("Update the System information")
     @PostMapping("/update")
     public Result<AdminSystemUpdateVO> update(@Valid @RequestBody AdminSystemUpdateRequest request) {
         return Result.success(this.systemService.update(request));
     }
-
-
 }

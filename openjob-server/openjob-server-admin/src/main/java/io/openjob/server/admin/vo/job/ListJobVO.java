@@ -63,4 +63,10 @@ public class ListJobVO {
 
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;
+
+    @ApiModelProperty(value = "Create time")
+    private Long createTime;
+
+    @ApiModelProperty(value = "Update time")
+    private Long updateTime;
 }

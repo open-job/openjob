@@ -1,0 +1,5 @@
+### list
+GET http://127.0.0.1:8080/admin/job/list?namespaceId=1&appId=1&name=MR&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
