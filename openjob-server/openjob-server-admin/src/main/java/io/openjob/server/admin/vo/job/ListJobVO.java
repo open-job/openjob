@@ -10,8 +10,14 @@ import lombok.Data;
 @Data
 public class ListJobVO {
 
+    @ApiModelProperty(value = "Primary id", required = true)
+    private Long id;
+
     @ApiModelProperty(value = "Namespace primary id")
     private Long namespaceId;
+
+    @ApiModelProperty(value = "Workflow_id")
+    private Long workflowId;
 
     @ApiModelProperty(value = "App primary id")
     private Long appId;
