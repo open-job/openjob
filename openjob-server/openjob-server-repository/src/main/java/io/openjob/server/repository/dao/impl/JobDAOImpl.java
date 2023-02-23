@@ -4,6 +4,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
@@ -42,6 +43,9 @@ public class JobDAOImpl implements JobDAO {
         job.setDeleteTime(0L);
         job.setCreateTime(timestamp);
         job.setUpdateTime(timestamp);
+        job.setNextExecuteTime(0L);
+        job.setSlotsId(SlotsUtil.getSlotsId(String.valueOf(timestamp)));
+        job.setWorkflowId(0L);
         return jobRepository.save(job).getId();
     }
 
