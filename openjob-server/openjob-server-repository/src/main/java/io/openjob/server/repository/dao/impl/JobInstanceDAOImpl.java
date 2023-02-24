@@ -7,7 +7,6 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
-import io.openjob.server.repository.repository.JobInstanceExecutorRepository;
 import io.openjob.server.repository.repository.JobInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,10 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,12 +28,9 @@ import java.util.Set;
 @Component
 public class JobInstanceDAOImpl implements JobInstanceDAO {
     private final JobInstanceRepository jobInstanceRepository;
-    private final JobInstanceExecutorRepository jobInstanceExecutorRepository;
-
     @Autowired
-    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository, JobInstanceExecutorRepository jobInstanceExecutorRepository) {
+    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository) {
         this.jobInstanceRepository = jobInstanceRepository;
-        this.jobInstanceExecutorRepository = jobInstanceExecutorRepository;
     }
 
     @Override
@@ -79,40 +72,39 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public PageDTO<JobInstance> pageList(JobInstancePageDTO instanceDTO) {
-        Specification<JobInstance> specification = new Specification<JobInstance>() {
-            @Override
-            public Predicate toPredicate(Root<JobInstance> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> conditions = new ArrayList<>();
 
-                List<Predicate> conditions = new ArrayList<>();
+            // Namespace id.
+            conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), instanceDTO.getNamespaceId()));
 
-                // App id.
-                if (Objects.nonNull(instanceDTO.getAppId())) {
-                    conditions.add(criteriaBuilder.equal(root.get("appId"), instanceDTO.getAppId()));
-                }
-
-                // Job id.
-                if (Objects.nonNull(instanceDTO.getJobId())) {
-                    conditions.add(criteriaBuilder.equal(root.get("jobId"), instanceDTO.getJobId()));
-                }
-
-                // Status
-                if (Objects.nonNull(instanceDTO.getStatus())) {
-                    conditions.add(criteriaBuilder.equal(root.get("status"), instanceDTO.getStatus()));
-                }
-
-                // Begin time
-                if (Objects.nonNull(instanceDTO.getBeginTime())) {
-                    conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime"), instanceDTO.getBeginTime()));
-                }
-
-                // Begin time
-                if (Objects.nonNull(instanceDTO.getEndTime())) {
-                    conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), instanceDTO.getBeginTime()));
-                }
-
-                Predicate[] conditionAry = new Predicate[conditions.size()];
-                return criteriaBuilder.and(conditions.toArray(conditionAry));
+            // App id.
+            if (Objects.nonNull(instanceDTO.getAppId())) {
+                conditions.add(criteriaBuilder.equal(root.get("appId").as(Long.class), instanceDTO.getAppId()));
             }
+
+            // Job id.
+            if (Objects.nonNull(instanceDTO.getJobId())) {
+                conditions.add(criteriaBuilder.equal(root.get("jobId").as(Long.class), instanceDTO.getJobId()));
+            }
+
+            // Status
+            if (Objects.nonNull(instanceDTO.getStatus())) {
+                conditions.add(criteriaBuilder.equal(root.get("status").as(Integer.class), instanceDTO.getStatus()));
+            }
+
+            // Begin time
+            if (Objects.nonNull(instanceDTO.getBeginTime())) {
+                conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
+            }
+
+            // Begin time
+            if (Objects.nonNull(instanceDTO.getEndTime())) {
+                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
+            }
+
+            Predicate[] conditionAry = new Predicate[conditions.size()];
+            return criteriaBuilder.and(conditions.toArray(conditionAry));
         };
 
         // Pagination
@@ -120,7 +112,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
         PageRequest pageRequest = PageRequest.of(instanceDTO.getPage() - 1, instanceDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
 
         // Query
-        Page<JobInstance> pageList = this.jobInstanceExecutorRepository.findAll(specification, pageRequest);
+        Page<JobInstance> pageList = this.jobInstanceRepository.findAll(specification, pageRequest);
         if (!pageList.isEmpty()) {
             pageDTO.setPage(instanceDTO.getPage());
             pageDTO.setSize(instanceDTO.getSize());

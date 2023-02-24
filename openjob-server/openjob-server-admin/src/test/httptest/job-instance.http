@@ -1,0 +1,5 @@
+### list
+GET http://127.0.0.1:8080/admin/job-instance/list?namespaceId=3&jobId=&beginTime=2&endTime=2&appId=1&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0

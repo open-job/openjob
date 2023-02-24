@@ -2,6 +2,7 @@ package io.openjob.server.repository.repository;
 
 import io.openjob.server.repository.entity.JobInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import java.util.Set;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public interface JobInstanceRepository extends JpaRepository<JobInstance, Long> {
+public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>, JpaSpecificationExecutor<JobInstance> {
 
     /**
      * Update for status.
