@@ -16,5 +16,5 @@ public interface JobInstanceService {
      * @param request request
      * @return PageVO
      */
-    PageVO<ListJobInstanceVO> list(ListJobInstanceRequest request);
+    PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request);
 }

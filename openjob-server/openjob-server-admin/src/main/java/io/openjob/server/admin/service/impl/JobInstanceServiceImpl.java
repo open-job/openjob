@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobInstanceServiceImpl implements JobInstanceService {
     @Override
-    public PageVO<ListJobInstanceVO> list(ListJobInstanceRequest request) {
+    public PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request) {
         return null;
     }
 }
