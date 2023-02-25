@@ -18,6 +18,9 @@ public class ListJobInstanceVO {
     @ApiModelProperty(value = "App primary id")
     private Long appId;
 
+    @ApiModelProperty(value = "Job id")
+    private Long jobId;
+
     @ApiModelProperty(value = "Job name")
     private String name;
 
@@ -65,6 +68,9 @@ public class ListJobInstanceVO {
 
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;
+
+    @ApiModelProperty(value = "Worker address")
+    private String workerAddress;
 
     @ApiModelProperty(value = "Job execute complete time")
     private Long completeTime;
