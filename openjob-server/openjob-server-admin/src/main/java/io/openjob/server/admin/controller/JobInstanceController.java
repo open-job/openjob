@@ -1,8 +1,10 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
+import io.openjob.server.admin.request.job.KillJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.service.JobInstanceService;
+import io.openjob.server.admin.vo.job.KillJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
@@ -34,5 +36,11 @@ public class JobInstanceController {
     @GetMapping("/list")
     public Result<PageVO<ListJobInstanceVO>> listJobInstance(@Valid @ModelAttribute ListJobInstanceRequest listJobRequest) {
         return Result.success(this.jobInstanceService.getPageList(listJobRequest));
+    }
+
+    @ApiOperation("Kill job instances")
+    @GetMapping("/kill")
+    public Result<KillJobInstanceVO> killJobInstance(@Valid @ModelAttribute KillJobInstanceRequest killRequest) {
+        return Result.success(this.jobInstanceService.killInstance(killRequest));
     }
 }
