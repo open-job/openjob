@@ -1,7 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.repository.dto.WorkerListReqDTO;
+import io.openjob.server.repository.dto.WorkerPageDTO;
 import io.openjob.server.repository.entity.Worker;
 
 import java.util.List;
@@ -46,8 +46,9 @@ public interface WorkerDAO {
 
     /**
      * page result
-     * @param request params
+     *
+     * @param workerPageDTO pageDTO
      * @return result
      */
-    PageDTO<Worker> getPageList(WorkerListReqDTO request);
+    PageDTO<Worker> getPage(WorkerPageDTO workerPageDTO);
 }

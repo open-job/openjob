@@ -546,6 +546,9 @@ CREATE TABLE `namespace` (
                              KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+insert into namespace (id, `name`, uuid, status, deleted, delete_time, create_time, update_time)
+values  (1, 'default', 'a65d3fe5-258d-43e3-a5e6-dc12c4879ed6', 1, 2, 0, 1657528102, 1657528102);
+
 
 
 # Dump of table server
@@ -772,15 +775,27 @@ CREATE TABLE `admin_permission` (
                               INDEX  `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin user permissions';
 
-INSERT INTO `admin_permission` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES
-    (1,0,1,'dashboard','/dashboard','{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.dashboard.manager", "isLink": "", "isAffix": false, "isIframe": false, "component": "/dashboard/index", "isKeepAlive": true}',2,0,2,0,1669972320,1669972320),
-    (5,0,1,'namespaceManager','/admin/namespace/list','{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.namespace.manager", "isLink": "", "isAffix": false, "isIframe": false, "component": "/namespace/list", "isKeepAlive": true}',2,0,2,0,1669972320,1669972320),
-    (10,0,2,'namespace.add','/admin/namespace/add','{}',2,0,2,0,1669972320,1669972320),
-    (11,0,2,'namespace.delete','/admin/namespace/delete','{}',2,0,2,0,1669972320,1669972320),
-    (12,0,2,'namespace.update','/admin/namespace/update','{}',2,0,2,0,1669972320,1669972320),
-    (13,0,2,'namespace.update.status','/admin/namespace/update-status','{}',2,0,2,0,1669972320,1669972320);
-
+insert into admin_permission (id, pid, `type`, `name`, `path`, meta, hidden, sort, deleted, delete_time, update_time, create_time)
+values  (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "iconfont icon-shouye", "roles": ["admin"], "title": "message.router.dashboard", "isLink": "", "isAffix": false, "isIframe": false, "component": "/home/index.vue", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (20, 0, 1, 'namespace', '/admin/namespace/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.namespace", "isLink": "", "isAffix": false, "isIframe": false, "component": "/namespace/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (40, 0, 1, 'application', '/admin/app/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.application", "isLink": "", "isAffix": false, "isIframe": false, "component": "/app/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (60, 0, 1, 'cronJob', '/a', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.cronJob", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (61, 60, 1, 'cronJobJob', '/admin/job/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.cronJobJob", "isLink": "", "isAffix": false, "isIframe": false, "component": "/job/job/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (62, 60, 1, 'cronJobInstance', '/admin/job-instance/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.cronJobInstance", "isLink": "", "isAffix": false, "isIframe": false, "component": "/job/instance/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (63, 60, 1, 'cronJobPage', '/admin/job/page', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.cronJobInstance", "isLink": "", "isAffix": false, "isIframe": false, "component": "/job/job/page", "isKeepAlive": true}', 1, 0, 2, 0, 1669972320, 1669972320),
+        (80, 0, 1, 'delayJob', '/b', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.delayJob", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (81, 80, 1, 'delayJobDelay', '/admin/delay/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.delayJobJob", "isLink": "", "isAffix": false, "isIframe": false, "component": "/delay/job/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (82, 80, 1, 'delayJobInstance', '/admin/delay-instance/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.delayJobInstance", "isLink": "", "isAffix": false, "isIframe": false, "component": "/delay/instance/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (200, 0, 1, 'cluster', '/c', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.clusterManager", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (201, 200, 1, 'ClusterNode', '/admin/cluster-node/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.clusterNode", "isLink": "", "isAffix": false, "isIframe": false, "component": "/cluster/node/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (202, 200, 1, 'ClusterWorker', '/admin/cluster-worker/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.clusterWorker", "isLink": "", "isAffix": false, "isIframe": false, "component": "/cluster/worker/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (300, 0, 1, 'system', '/d', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.systemManager", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (301, 300, 1, 'SystemConfiguration', '/admin/system-config/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.systemConfiguration", "isLink": "", "isAffix": false, "isIframe": false, "component": "/system/config/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (302, 300, 1, 'SystemSlots', '/admin/system-slots/list', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.systemSlots", "isLink": "", "isAffix": false, "isIframe": false, "component": "/system/slots/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (1000, 0, 2, 'namespace.add', '/admin/namespace/add', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (1001, 0, 2, 'namespace.delete', '/admin/namespace/delete', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (1002, 0, 2, 'namespace.update', '/admin/namespace/update', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (1003, 0, 2, 'namespace.update.status', '/admin/namespace/update-status', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
 
 DROP TABLE IF EXISTS `notify_template`;
 CREATE TABLE `notify_template` (

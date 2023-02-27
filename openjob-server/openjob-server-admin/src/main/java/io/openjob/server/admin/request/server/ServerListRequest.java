@@ -14,5 +14,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "ServerListRequest", description = "ServerList page list request")
 public class ServerListRequest extends PageRequest {
+    @ApiModelProperty(value = "Server address")
+    private String address;
 }
 

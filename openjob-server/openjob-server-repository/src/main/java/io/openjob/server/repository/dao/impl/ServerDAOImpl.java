@@ -5,10 +5,13 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
 import io.openjob.server.repository.dao.ServerDAO;
+import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.entity.Server;
 import io.openjob.server.repository.repository.ServerRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -78,9 +81,22 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
-    public PageDTO<Server> pageList(Integer page, Integer size) {
+    public PageDTO<Server> pageList(String searchAddress, Integer page, Integer size) {
+        // Matcher
+        ExampleMatcher matching = ExampleMatcher.matching();
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
-        Page<Server> pageResult = serverRepository.findAll(pageable);
+        Server server = new Server();
+        server.setDeleted(CommonConstant.NO);
+
+        // Search address.
+        if (StringUtils.isNotEmpty(searchAddress)) {
+            server.setAkkaAddress(searchAddress);
+            matching = matching.withMatcher("akkaAddress", ExampleMatcher.GenericPropertyMatchers.contains());
+        }
+
+        // Condition
+        Example<Server> example = Example.of(server, matching);
+        Page<Server> pageResult = serverRepository.findAll(example,pageable);
 
         PageDTO<Server> paging = new PageDTO<>();
         if (!pageResult.isEmpty()) {

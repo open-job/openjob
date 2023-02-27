@@ -66,5 +66,5 @@ public interface JobService {
      * @param listJobRequest ListJobRequest
      * @return ListJobVO
      */
-    PageVO<ListJobVO> list(ListJobRequest listJobRequest);
+    PageVO<ListJobVO> getPageList(ListJobRequest listJobRequest);
 }

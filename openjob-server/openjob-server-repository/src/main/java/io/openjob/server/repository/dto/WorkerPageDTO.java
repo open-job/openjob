@@ -7,7 +7,7 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class WorkerListReqDTO {
+public class WorkerPageDTO {
     /**
      * List page
      */
@@ -17,7 +17,6 @@ public class WorkerListReqDTO {
      * List size. default 10
      */
     private Integer size;
-
 
     /**
      * Appid
@@ -30,9 +29,7 @@ public class WorkerListReqDTO {
     private Long namespaceId;
 
     /**
-     * App name
+     * Address
      */
-    private String appName;
-
-
+    private String address;
 }

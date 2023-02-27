@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.repository.dao.SystemDAO;
 import io.openjob.server.repository.entity.System;
 import io.openjob.server.repository.repository.SystemRepository;
@@ -37,8 +38,7 @@ public class SystemDAOImpl implements SystemDAO {
 
     @Override
     public void updateById(System system) {
-        systemRepository.save(system);
+        System old = this.getOne();
+        systemRepository.save(ObjectUtil.copyObject(system, old));
     }
-
-
 }

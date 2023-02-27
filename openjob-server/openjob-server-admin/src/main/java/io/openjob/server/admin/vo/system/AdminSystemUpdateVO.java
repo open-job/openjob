@@ -11,7 +11,4 @@ import lombok.Data;
 @Data
 @ApiModel(value = "AdminSystemVO", description = "Admin System update VO")
 public class AdminSystemUpdateVO {
-    @ApiModelProperty(value = "PK")
-    private Long id;
-
 }

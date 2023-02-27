@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.Job;
 
 import java.util.List;
@@ -56,12 +57,8 @@ public interface JobDAO {
     /**
      * Get page list.
      *
-     * @param appId      appId
-     * @param status     status
-     * @param searchName searchName
-     * @param page       page
-     * @param size       size
+     * @param jobPageDTO jobPageDTO
      * @return PageDTO
      */
-    PageDTO<Job> pageList(Long appId, Integer status, String searchName, Integer page, Integer size);
+    PageDTO<Job> pageList(JobPageDTO jobPageDTO);
 }

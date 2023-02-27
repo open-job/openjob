@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
  * @since 1.0.0
@@ -14,6 +16,10 @@ import lombok.EqualsAndHashCode;
 @ApiModel
 @EqualsAndHashCode(callSuper = true)
 public class ListJobRequest extends PageRequest {
+    @ApiModelProperty(value = "NamespaceId")
+    @NotNull
+    private Long namespaceId;
+
     @ApiModelProperty(value = "App primary id", required = true)
     private Long appId;
 

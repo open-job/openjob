@@ -40,7 +40,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public PageVO<ServerListVO> getServerList(ServerListRequest request) {
-        PageDTO<Server> paging = this.serverDAO.pageList(request.getPage(), request.getSize());
+        PageDTO<Server> paging = this.serverDAO.pageList(request.getAddress(), request.getPage(), request.getSize());
         return PageUtil.convert(paging, s -> ObjectUtil.mapObject(s, ServerListVO.class));
     }
 

@@ -1,6 +1,8 @@
 package io.openjob.server.admin.service;
 
+import io.openjob.server.admin.request.job.KillJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
+import io.openjob.server.admin.vo.job.KillJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 
@@ -16,5 +18,13 @@ public interface JobInstanceService {
      * @param request request
      * @return PageVO
      */
-    PageVO<ListJobInstanceVO> list(ListJobInstanceRequest request);
+    PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request);
+
+    /**
+     * Kill instance
+     *
+     * @param killRequest killRequest
+     * @return return
+     */
+    KillJobInstanceVO killInstance(KillJobInstanceRequest killRequest);
 }

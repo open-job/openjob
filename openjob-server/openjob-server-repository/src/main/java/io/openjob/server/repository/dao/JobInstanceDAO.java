@@ -1,6 +1,8 @@
 package io.openjob.server.repository.dao;
 
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 
 import java.util.List;
@@ -77,4 +79,12 @@ public interface JobInstanceDAO {
      * @return JobInstance
      */
     JobInstance getOneByJobIdAndStatus(Long jobId, Long id, Integer status);
+
+    /**
+     * Get page list.
+     *
+     * @param jobInstancePageDTO jobInstancePageDTO
+     * @return PageDTO
+     */
+    PageDTO<JobInstance> pageList(JobInstancePageDTO jobInstancePageDTO);
 }

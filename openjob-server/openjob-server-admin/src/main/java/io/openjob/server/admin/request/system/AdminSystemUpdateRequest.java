@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class AdminSystemUpdateRequest {
     @NotNull
     @ApiModelProperty(value = "PK")
-    private Long id;
+    private Integer id;
 
     @ApiModelProperty(value = "cluster_supervisor_slot")
     private Integer clusterSupervisorSlot;

@@ -62,7 +62,7 @@ public class AppServiceImpl implements AppService {
     public UpdateAppVO update(UpdateAppRequest updateRequest) {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
-        if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())){
+        if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())) {
             AppCodeEnum.NAME_EXIST.throwException();
         }
 

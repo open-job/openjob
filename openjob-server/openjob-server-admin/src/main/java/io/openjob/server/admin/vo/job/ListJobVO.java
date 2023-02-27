@@ -10,8 +10,14 @@ import lombok.Data;
 @Data
 public class ListJobVO {
 
+    @ApiModelProperty(value = "Primary id", required = true)
+    private Long id;
+
     @ApiModelProperty(value = "Namespace primary id")
     private Long namespaceId;
+
+    @ApiModelProperty(value = "Workflow_id")
+    private Long workflowId;
 
     @ApiModelProperty(value = "App primary id")
     private Long appId;
@@ -63,4 +69,10 @@ public class ListJobVO {
 
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;
+
+    @ApiModelProperty(value = "Create time")
+    private Long createTime;
+
+    @ApiModelProperty(value = "Update time")
+    private Long updateTime;
 }

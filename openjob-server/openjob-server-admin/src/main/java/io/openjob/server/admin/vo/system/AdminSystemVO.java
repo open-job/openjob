@@ -2,6 +2,7 @@ package io.openjob.server.admin.vo.system;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 /**
@@ -14,7 +15,7 @@ public class AdminSystemVO {
 
 
     @ApiModelProperty(value = "PK")
-    private Long id;
+    private Integer id;
 
     /**
      * System version

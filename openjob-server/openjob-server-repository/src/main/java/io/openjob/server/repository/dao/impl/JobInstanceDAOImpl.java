@@ -3,13 +3,22 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.JobInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -60,5 +69,57 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, Integer status) {
         return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatus(jobId, id, status);
+    }
+
+    @Override
+    public PageDTO<JobInstance> pageList(JobInstancePageDTO instanceDTO) {
+        Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> conditions = new ArrayList<>();
+
+            // Namespace id.
+            conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), instanceDTO.getNamespaceId()));
+
+            // App id.
+            if (Objects.nonNull(instanceDTO.getAppId())) {
+                conditions.add(criteriaBuilder.equal(root.get("appId").as(Long.class), instanceDTO.getAppId()));
+            }
+
+            // Job id.
+            if (Objects.nonNull(instanceDTO.getJobId())) {
+                conditions.add(criteriaBuilder.equal(root.get("jobId").as(Long.class), instanceDTO.getJobId()));
+            }
+
+            // Status
+            if (Objects.nonNull(instanceDTO.getStatus())) {
+                conditions.add(criteriaBuilder.equal(root.get("status").as(Integer.class), instanceDTO.getStatus()));
+            }
+
+            // Begin time
+            if (Objects.nonNull(instanceDTO.getBeginTime())) {
+                conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
+            }
+
+            // Begin time
+            if (Objects.nonNull(instanceDTO.getEndTime())) {
+                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
+            }
+
+            Predicate[] conditionAry = new Predicate[conditions.size()];
+            return criteriaBuilder.and(conditions.toArray(conditionAry));
+        };
+
+        // Pagination
+        PageDTO<JobInstance> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(instanceDTO.getPage() - 1, instanceDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
+
+        // Query
+        Page<JobInstance> pageList = this.jobInstanceRepository.findAll(specification, pageRequest);
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(instanceDTO.getPage());
+            pageDTO.setSize(instanceDTO.getSize());
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
+        }
+        return pageDTO;
     }
 }

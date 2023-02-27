@@ -1,23 +1,24 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.constant.WorkerStatusEnum;
 import io.openjob.server.repository.dao.WorkerDAO;
-import io.openjob.server.repository.dto.WorkerListReqDTO;
+import io.openjob.server.repository.dto.WorkerPageDTO;
+import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.repository.repository.WorkerRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -25,7 +26,6 @@ import java.util.List;
  */
 @Component
 public class WorkerDAOImpl implements WorkerDAO {
-
 
     private final WorkerRepository workerRepository;
 
@@ -50,26 +50,44 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
-    public PageDTO<Worker> getPageList(WorkerListReqDTO request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("id").descending());
-        Specification<Worker> specification = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (StringUtils.isNotBlank(request.getAppName())) {
-                predicates.add(criteriaBuilder.like(root.get("appName"), request.getAppName()));
-            }
-            if (request.getAppId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("appId"), request.getAppId()));
-            }
-            if (request.getNamespaceId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("namespaceId"), request.getNamespaceId()));
-            }
-            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
-        };
-        Page<Worker> pageResult = workerRepository.findAll(specification, pageable);
-        PageDTO<Worker> paging = new PageDTO<>();
-        paging.setList(pageResult.getContent());
-        paging.setTotal(pageResult.getTotalElements());
-        return paging;
+    public PageDTO<Worker> getPage(WorkerPageDTO workerPageDTO) {
+        // Matcher
+        ExampleMatcher matching = ExampleMatcher.matching();
+        Worker worker = new Worker();
+        worker.setDeleted(CommonConstant.NO);
+
+        // Namespace id.
+        if (Objects.nonNull(workerPageDTO.getNamespaceId())) {
+            worker.setNamespaceId(workerPageDTO.getNamespaceId());
+        }
+
+        // App id.
+        if (Objects.nonNull(workerPageDTO.getAppId())) {
+            worker.setAppId(workerPageDTO.getAppId());
+        }
+
+        // Address.
+        if (StringUtils.isNotEmpty(workerPageDTO.getAddress())) {
+            worker.setAddress(workerPageDTO.getAddress());
+            matching = matching.withMatcher("address", ExampleMatcher.GenericPropertyMatchers.contains());
+        }
+
+        // Condition
+        Example<Worker> example = Example.of(worker, matching);
+        PageRequest pageRequest = PageRequest.of(workerPageDTO.getPage() - 1, workerPageDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
+
+        // Pagination
+        PageDTO<Worker> pageDTO = new PageDTO<>();
+
+        // Query
+        Page<Worker> pageList = this.workerRepository.findAll(example, pageRequest);
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(workerPageDTO.getPage());
+            pageDTO.setSize(workerPageDTO.getSize());
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
+        }
+        return pageDTO;
     }
 
     @Override

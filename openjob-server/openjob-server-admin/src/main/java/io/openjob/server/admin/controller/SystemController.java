@@ -33,17 +33,14 @@ public class SystemController {
     }
 
     @ApiOperation("Get the latest System information")
-    @GetMapping("/get")
+    @GetMapping("/config")
     public Result<AdminSystemVO> getLatest() {
         return Result.success(this.systemService.getLatest());
     }
-
 
     @ApiOperation("Update the System information")
     @PostMapping("/update")
     public Result<AdminSystemUpdateVO> update(@Valid @RequestBody AdminSystemUpdateRequest request) {
         return Result.success(this.systemService.update(request));
     }
-
-
 }
