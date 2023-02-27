@@ -1,7 +1,7 @@
 package io.openjob.server.openapi.service.impl;
 
 import io.openjob.server.openapi.request.DelayInstanceAddRequest;
-import io.openjob.server.openapi.service.DelayInstanceService;
+import io.openjob.server.openapi.service.OpenDelayInstanceService;
 import io.openjob.server.openapi.vo.DelayInstanceAddVO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class DelayInstanceServiceImpl implements DelayInstanceService {
+public class OpenDelayInstanceServiceImpl implements OpenDelayInstanceService {
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceServiceImpl(DelayInstanceScheduler delayInstanceScheduler) {
+    public OpenDelayInstanceServiceImpl(DelayInstanceScheduler delayInstanceScheduler) {
         this.delayInstanceScheduler = delayInstanceScheduler;
     }
 

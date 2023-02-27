@@ -2,7 +2,7 @@ package io.openjob.server.openapi.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.openapi.request.DelayInstanceAddRequest;
-import io.openjob.server.openapi.service.DelayInstanceService;
+import io.openjob.server.openapi.service.OpenDelayInstanceService;
 import io.openjob.server.openapi.vo.DelayInstanceAddVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,12 +21,12 @@ import javax.validation.Valid;
 @RestController
 @Api(value = "delay-instance", tags = "delay-instance")
 @RequestMapping("/openapi/delay-instance")
-public class DelayInstanceController {
+public class OpenDelayInstanceController {
 
-    private final DelayInstanceService instanceService;
+    private final OpenDelayInstanceService instanceService;
 
     @Autowired
-    public DelayInstanceController(DelayInstanceService instanceService) {
+    public OpenDelayInstanceController(OpenDelayInstanceService instanceService) {
         this.instanceService = instanceService;
     }
 

@@ -1,5 +1,7 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.Delay;
 
 import java.util.List;
@@ -17,6 +19,32 @@ public interface DelayDAO {
      * @return Long
      */
     Long save(Delay delay);
+
+    /**
+     * Update
+     *
+     * @param delay
+     * @return Long
+     */
+    Long update(Delay delay);
+
+    /**
+     * Update status or deleted
+     *
+     * @param id      id
+     * @param status  status
+     * @param deleted deleted
+     * @return Long
+     */
+    Long updateStatusOrDeleted(Long id, Integer status, Integer deleted);
+
+    /**
+     * Page list
+     *
+     * @param delayPageDTO
+     * @return PageDTO
+     */
+    PageDTO<Delay> pageList(DelayPageDTO delayPageDTO);
 
     /**
      * Find by namespaceId and topic.
