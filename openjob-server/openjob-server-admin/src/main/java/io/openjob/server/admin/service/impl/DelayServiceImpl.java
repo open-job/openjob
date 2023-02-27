@@ -6,13 +6,12 @@ import io.openjob.server.admin.request.delay.ListDelayRequest;
 import io.openjob.server.admin.request.delay.UpdateDelayRequest;
 import io.openjob.server.admin.request.delay.UpdateStatusDelayRequest;
 import io.openjob.server.admin.service.DelayService;
-import io.openjob.server.admin.vo.Delay.AddDelayVO;
-import io.openjob.server.admin.vo.Delay.DeleteDelayVO;
-import io.openjob.server.admin.vo.Delay.ListDelayVO;
-import io.openjob.server.admin.vo.Delay.UpdateDelayVO;
-import io.openjob.server.admin.vo.Delay.UpdateStatusDelayVO;
+import io.openjob.server.admin.vo.delay.AddDelayVO;
+import io.openjob.server.admin.vo.delay.DeleteDelayVO;
+import io.openjob.server.admin.vo.delay.ListDelayVO;
+import io.openjob.server.admin.vo.delay.UpdateDelayVO;
+import io.openjob.server.admin.vo.delay.UpdateStatusDelayVO;
 import io.openjob.server.common.vo.PageVO;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**

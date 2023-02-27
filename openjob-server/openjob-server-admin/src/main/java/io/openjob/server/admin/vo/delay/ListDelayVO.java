@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.Delay;
+package io.openjob.server.admin.vo.delay;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +13,7 @@ public class ListDelayVO {
     private Long id;
 
     @ApiModelProperty(value = "Namespace id", required = true)
-    private Long namespace_id;
+    private Long namespaceId;
 
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;

@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class AddDelayRequest {
     @ApiModelProperty(value = "Namespace id", required = true)
-    private Long namespace_id;
+    private Long namespaceId;
 
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;

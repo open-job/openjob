@@ -117,7 +117,7 @@ public class JobDAOImpl implements JobDAO {
 
         // Condition
         Example<Job> example = Example.of(job, matching);
-        if (Objects.nonNull(jobPageDTO.getNamespaceId())){
+        if (Objects.nonNull(jobPageDTO.getNamespaceId())) {
             job.setNamespaceId(jobPageDTO.getNamespaceId());
         }
         if (Objects.nonNull(jobPageDTO.getAppId())) {

@@ -28,6 +28,7 @@ import java.util.Set;
 @Component
 public class JobInstanceDAOImpl implements JobInstanceDAO {
     private final JobInstanceRepository jobInstanceRepository;
+
     @Autowired
     public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository) {
         this.jobInstanceRepository = jobInstanceRepository;

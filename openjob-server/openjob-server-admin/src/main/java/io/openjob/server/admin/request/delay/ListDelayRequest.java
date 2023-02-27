@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ListDelayRequest extends PageRequest {
     @ApiModelProperty(value = "Namespace id", required = true)
-    private Long namespace_id;
+    private Long namespaceId;
 
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;

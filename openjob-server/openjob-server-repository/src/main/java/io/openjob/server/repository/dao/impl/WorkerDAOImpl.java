@@ -27,7 +27,6 @@ import java.util.Objects;
 @Component
 public class WorkerDAOImpl implements WorkerDAO {
 
-
     private final WorkerRepository workerRepository;
 
     @Autowired
@@ -58,12 +57,12 @@ public class WorkerDAOImpl implements WorkerDAO {
         worker.setDeleted(CommonConstant.NO);
 
         // Namespace id.
-        if (Objects.nonNull(workerPageDTO.getNamespaceId())){
+        if (Objects.nonNull(workerPageDTO.getNamespaceId())) {
             worker.setNamespaceId(workerPageDTO.getNamespaceId());
         }
 
         // App id.
-        if (Objects.nonNull(workerPageDTO.getAppId())){
+        if (Objects.nonNull(workerPageDTO.getAppId())) {
             worker.setAppId(workerPageDTO.getAppId());
         }
 
@@ -78,7 +77,7 @@ public class WorkerDAOImpl implements WorkerDAO {
         PageRequest pageRequest = PageRequest.of(workerPageDTO.getPage() - 1, workerPageDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
 
         // Pagination
-        PageDTO<Worker>  pageDTO= new PageDTO<>();
+        PageDTO<Worker> pageDTO = new PageDTO<>();
 
         // Query
         Page<Worker> pageList = this.workerRepository.findAll(example, pageRequest);

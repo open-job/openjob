@@ -13,7 +13,7 @@ public class UpdateDelayRequest {
     private Long id;
 
     @ApiModelProperty(value = "Namespace id", required = true)
-    private Long namespace_id;
+    private Long namespaceId;
 
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;
