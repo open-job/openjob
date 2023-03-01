@@ -1,6 +1,9 @@
 package io.openjob.server.admin.request.job;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -8,4 +11,7 @@ import lombok.Data;
  */
 @Data
 public class DeleteDelayInstanceVO {
+    @NotNull
+    @ApiModelProperty(value = "Delete job id", required = true)
+    private Long id;
 }

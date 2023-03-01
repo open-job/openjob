@@ -105,7 +105,7 @@ public class DelayDAOImpl implements DelayDAO {
 
         // Topic
         if (StringUtils.isNotEmpty(delayPageDTO.getTopic())) {
-            delay.setName(delayPageDTO.getTopic());
+            delay.setTopic(delayPageDTO.getTopic());
             matching = matching.withMatcher("topic", ExampleMatcher.GenericPropertyMatchers.contains());
         }
 

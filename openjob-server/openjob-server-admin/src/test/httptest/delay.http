@@ -1,0 +1,49 @@
+### Add
+POST http://127.0.0.1:8080/admin/delay/add
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "name": "openjob10000",
+  "status": 1
+}
+
+### update status
+POST http://127.0.0.1:8080/admin/delay/update
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "id": 2,
+  "name": "openjob",
+  "status": 2
+}
+
+### update
+POST http://127.0.0.1:8080/admin/delay/update-status
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "id": 2,
+  "status": 1
+}
+
+### update
+POST http://127.0.0.1:8080/admin/delay/delete
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
+
+{
+  "id": 20
+}
+
+### list
+GET http://127.0.0.1:8080/admin/delay/list?namespaceId=1&appId=1&topic=openjob&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0
