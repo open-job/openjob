@@ -22,6 +22,9 @@ public class ListJobVO {
     @ApiModelProperty(value = "App primary id")
     private Long appId;
 
+    @ApiModelProperty(value = "App name")
+    private String appName;
+
     @ApiModelProperty(value = "Job name")
     private String name;
 

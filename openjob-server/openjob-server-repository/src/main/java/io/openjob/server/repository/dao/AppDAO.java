@@ -3,6 +3,8 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.App;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -32,6 +34,14 @@ public interface AppDAO {
      * @return App
      */
     App getAppByName(String appName);
+
+    /**
+     * Get by ids.
+     *
+     * @param ids ids
+     * @return List
+     */
+    List<App> getByIds(List<Long> ids);
 
     /**
      * List apps

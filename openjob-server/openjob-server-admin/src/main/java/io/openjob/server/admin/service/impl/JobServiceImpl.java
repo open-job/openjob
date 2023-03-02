@@ -18,11 +18,19 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
+import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
+import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author zhenghongyang <sakuraovq@gmail.com>
@@ -32,10 +40,12 @@ import org.springframework.stereotype.Component;
 public class JobServiceImpl implements JobService {
 
     private final JobDAO jobDAO;
+    private final AppDAO appDAO;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO) {
+    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO) {
         this.jobDAO = jobDAO;
+        this.appDAO = appDAO;
     }
 
     @Override
@@ -70,6 +80,24 @@ public class JobServiceImpl implements JobService {
     @Override
     public PageVO<ListJobVO> getPageList(ListJobRequest request) {
         PageDTO<Job> jobPageDTO = this.jobDAO.pageList(ObjectUtil.mapObject(request, JobPageDTO.class));
-        return PageUtil.convert(jobPageDTO, j -> ObjectUtil.mapObject(j, ListJobVO.class));
+        if (CollectionUtils.isEmpty(jobPageDTO.getList())) {
+            return PageUtil.emptyList(ListJobVO.class);
+        }
+
+        // App list.
+        List<Long> appIds = jobPageDTO.getList().stream()
+                .map(Job::getAppId).distinct().collect(Collectors.toList());
+        Map<Long, App> appMap = this.appDAO.getByIds(appIds).stream()
+                .collect(Collectors.toMap(App::getId, a -> a));
+
+        // Page
+        return PageUtil.convert(jobPageDTO, j -> {
+            ListJobVO listJobVO = ObjectUtil.mapObject(j, ListJobVO.class);
+            App app = appMap.get(j.getAppId());
+            if (Objects.nonNull(app)) {
+                listJobVO.setAppName(app.getName());
+            }
+            return listJobVO;
+        });
     }
 }

@@ -16,11 +16,19 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.ObjectUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
+import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dto.DelayPageDTO;
+import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -29,10 +37,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DelayServiceImpl implements DelayService {
     private final DelayDAO delayDAO;
+    private final AppDAO appDAO;
 
     @Autowired
-    public DelayServiceImpl(DelayDAO delayDAO) {
+    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO) {
         this.delayDAO = delayDAO;
+        this.appDAO = appDAO;
     }
 
     @Override
@@ -46,7 +56,25 @@ public class DelayServiceImpl implements DelayService {
     public PageVO<ListDelayVO> list(ListDelayRequest listDelayRequest) {
         DelayPageDTO delayPageDTO = ObjectUtil.mapObject(listDelayRequest, DelayPageDTO.class);
         PageDTO<Delay> pageList = this.delayDAO.pageList(delayPageDTO);
-        return PageUtil.convert(pageList, d -> ObjectUtil.mapObject(d, ListDelayVO.class));
+        if (CollectionUtils.isEmpty(pageList.getList())) {
+            return PageUtil.emptyList(ListDelayVO.class);
+        }
+
+        // App list.
+        List<Long> appIds = pageList.getList().stream()
+                .map(Delay::getAppId).distinct().collect(Collectors.toList());
+        Map<Long, App> appMap = this.appDAO.getByIds(appIds).stream()
+                .collect(Collectors.toMap(App::getId, a -> a));
+
+        // Page
+        return PageUtil.convert(pageList, d -> {
+            ListDelayVO listDelayVO = ObjectUtil.mapObject(d, ListDelayVO.class);
+            App app = appMap.get(d.getAppId());
+            if (Objects.nonNull(app)) {
+                listDelayVO.setAppName(app.getName());
+            }
+            return listDelayVO;
+        });
     }
 
     @Override

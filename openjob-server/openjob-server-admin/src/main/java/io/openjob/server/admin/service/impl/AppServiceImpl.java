@@ -96,7 +96,7 @@ public class AppServiceImpl implements AppService {
 
         // Name space list.
         List<Long> nsIds = appPageDTO.getList().stream()
-                .map(App::getNamespaceId).collect(Collectors.toList());
+                .map(App::getNamespaceId).distinct().collect(Collectors.toList());
         Map<Long, Namespace> nsMap = this.namespaceDAO.getByIds(nsIds)
                 .stream().collect(Collectors.toMap(Namespace::getId, namespace -> namespace));
 
