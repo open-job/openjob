@@ -8,6 +8,7 @@ import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.JobInstanceRepository;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,13 +96,13 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
             }
 
             // Begin time
-            if (Objects.nonNull(instanceDTO.getBeginTime())) {
+            if (Objects.nonNull(instanceDTO.getBeginTime()) && instanceDTO.getBeginTime() > 0) {
                 conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
             }
 
             // Begin time
-            if (Objects.nonNull(instanceDTO.getEndTime())) {
-                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getBeginTime()));
+            if (Objects.nonNull(instanceDTO.getEndTime()) && instanceDTO.getEndTime() > 0) {
+                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), instanceDTO.getEndTime()));
             }
 
             Predicate[] conditionAry = new Predicate[conditions.size()];
