@@ -1,6 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.data.AdminPermissionData;
 import io.openjob.server.repository.dto.AdminPermissionDTO;
@@ -52,7 +52,7 @@ public class AdminPermissionDataImpl implements AdminPermissionData {
     public AdminPermissionDTO getById(Long id) {
         AdminPermission entity = adminPermDAO.getById(id);
 
-        return ObjectUtil.mapObject(entity, AdminPermissionDTO.class);
+        return BeanMapperUtil.map(entity, AdminPermissionDTO.class);
     }
 
     @Override

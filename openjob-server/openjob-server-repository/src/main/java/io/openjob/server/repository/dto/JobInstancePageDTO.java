@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class JobInstancePageDTO {
+    private Long id;
+
     private Long namespaceId;
 
     private Long appId;

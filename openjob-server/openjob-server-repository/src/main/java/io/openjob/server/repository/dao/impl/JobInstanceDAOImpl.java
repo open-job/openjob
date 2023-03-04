@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
@@ -77,8 +78,16 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
         Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> conditions = new ArrayList<>();
 
+            // Deleted
+            conditions.add(criteriaBuilder.equal(root.get("deleted").as(Integer.class), CommonConstant.NO));
+
             // Namespace id.
             conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), instanceDTO.getNamespaceId()));
+
+            // ID
+            if (Objects.nonNull(instanceDTO.getId())) {
+                conditions.add(criteriaBuilder.equal(root.get("id").as(Long.class), instanceDTO.getId()));
+            }
 
             // App id.
             if (Objects.nonNull(instanceDTO.getAppId())) {

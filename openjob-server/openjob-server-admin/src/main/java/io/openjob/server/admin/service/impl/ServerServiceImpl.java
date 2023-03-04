@@ -6,7 +6,7 @@ import io.openjob.server.admin.service.ServerService;
 import io.openjob.server.admin.vo.server.JobSlotListVO;
 import io.openjob.server.admin.vo.server.ServerListVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.JobSlotsDAO;
@@ -41,7 +41,7 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public PageVO<ServerListVO> getServerList(ServerListRequest request) {
         PageDTO<Server> paging = this.serverDAO.pageList(request.getAddress(), request.getPage(), request.getSize());
-        return PageUtil.convert(paging, s -> ObjectUtil.mapObject(s, ServerListVO.class));
+        return PageUtil.convert(paging, s -> BeanMapperUtil.map(s, ServerListVO.class));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ServerServiceImpl implements ServerService {
                 .collect(Collectors.toMap(Server::getId, s -> s));
 
         return PageUtil.convert(paging, s -> {
-            JobSlotListVO jobSlotListVO = ObjectUtil.mapObject(s, JobSlotListVO.class);
+            JobSlotListVO jobSlotListVO = BeanMapperUtil.map(s, JobSlotListVO.class);
             Server server = serverMap.get(jobSlotListVO.getServerId());
             if (Objects.nonNull(server)) {
                 jobSlotListVO.setAkkaAddress(server.getAkkaAddress());

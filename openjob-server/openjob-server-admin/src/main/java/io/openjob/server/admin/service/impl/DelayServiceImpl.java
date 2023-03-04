@@ -13,7 +13,7 @@ import io.openjob.server.admin.vo.delay.ListDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateStatusDelayVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.AppDAO;
@@ -47,14 +47,14 @@ public class DelayServiceImpl implements DelayService {
 
     @Override
     public AddDelayVO add(AddDelayRequest addRequest) {
-        Delay delay = ObjectUtil.mapObject(addRequest, Delay.class);
+        Delay delay = BeanMapperUtil.map(addRequest, Delay.class);
         this.delayDAO.save(delay);
         return new AddDelayVO();
     }
 
     @Override
     public PageVO<ListDelayVO> list(ListDelayRequest listDelayRequest) {
-        DelayPageDTO delayPageDTO = ObjectUtil.mapObject(listDelayRequest, DelayPageDTO.class);
+        DelayPageDTO delayPageDTO = BeanMapperUtil.map(listDelayRequest, DelayPageDTO.class);
         PageDTO<Delay> pageList = this.delayDAO.pageList(delayPageDTO);
         if (CollectionUtils.isEmpty(pageList.getList())) {
             return PageUtil.emptyList(ListDelayVO.class);
@@ -68,7 +68,7 @@ public class DelayServiceImpl implements DelayService {
 
         // Page
         return PageUtil.convert(pageList, d -> {
-            ListDelayVO listDelayVO = ObjectUtil.mapObject(d, ListDelayVO.class);
+            ListDelayVO listDelayVO = BeanMapperUtil.map(d, ListDelayVO.class);
             App app = appMap.get(d.getAppId());
             if (Objects.nonNull(app)) {
                 listDelayVO.setAppName(app.getName());
@@ -85,7 +85,7 @@ public class DelayServiceImpl implements DelayService {
 
     @Override
     public UpdateDelayVO update(UpdateDelayRequest updateDelayRequest) {
-        Delay delay = ObjectUtil.mapObject(updateDelayRequest, Delay.class);
+        Delay delay = BeanMapperUtil.map(updateDelayRequest, Delay.class);
         this.delayDAO.update(delay);
         return new UpdateDelayVO();
     }

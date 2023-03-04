@@ -6,7 +6,7 @@ import io.openjob.server.admin.request.job.DeleteDelayInstanceVO;
 import io.openjob.server.admin.service.DelayInstanceService;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
@@ -30,9 +30,9 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
 
     @Override
     public PageVO<ListDelayInstanceVO> pageList(ListDelayInstanceRequest request) {
-        DelayInstancePageDTO delayInstancePageDTO = ObjectUtil.mapObject(request, DelayInstancePageDTO.class);
+        DelayInstancePageDTO delayInstancePageDTO = BeanMapperUtil.map(request, DelayInstancePageDTO.class);
         PageDTO<DelayInstance> pageDTO = this.delayInstanceDAO.pageList(delayInstancePageDTO);
-        return PageUtil.convert(pageDTO, ds -> ObjectUtil.mapObject(ds, ListDelayInstanceVO.class));
+        return PageUtil.convert(pageDTO, ds -> BeanMapperUtil.map(ds, ListDelayInstanceVO.class));
     }
 
     @Override

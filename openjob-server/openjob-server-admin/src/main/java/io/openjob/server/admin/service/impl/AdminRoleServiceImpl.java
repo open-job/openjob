@@ -11,7 +11,7 @@ import io.openjob.server.admin.vo.user.AdminRoleAddVO;
 import io.openjob.server.admin.vo.user.AdminRoleQueryVO;
 import io.openjob.server.admin.vo.user.AdminRoleUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.data.AdminRoleData;
 import io.openjob.server.repository.dto.AdminRoleDTO;
 import org.springframework.beans.BeanUtils;
@@ -72,7 +72,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
     public AdminRoleQueryVO query(AdminRoleQueryRequest reqDTO) {
         AdminRoleDTO entDTO = adminRoleData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, AdminRoleQueryVO.class);
+        return BeanMapperUtil.map(entDTO, AdminRoleQueryVO.class);
     }
 
     @Override

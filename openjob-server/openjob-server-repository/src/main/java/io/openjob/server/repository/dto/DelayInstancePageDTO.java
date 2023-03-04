@@ -16,7 +16,13 @@ public class DelayInstancePageDTO {
 
     private String taskId;
 
+    private Integer status;
+
     private Integer page;
 
     private Integer size;
+
+    private Long beginTime;
+
+    private Long endTime;
 }

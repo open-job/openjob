@@ -11,7 +11,7 @@ import io.openjob.server.admin.vo.admin.AdminConfigAddVO;
 import io.openjob.server.admin.vo.admin.AdminConfigQueryVO;
 import io.openjob.server.admin.vo.admin.AdminConfigUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.data.AdminConfigData;
 import io.openjob.server.repository.dto.AdminConfigDTO;
 import org.springframework.beans.BeanUtils;
@@ -69,7 +69,7 @@ public class AdminConfigServiceImpl implements AdminConfigService {
     public AdminConfigQueryVO query(AdminConfigQueryRequest reqDTO) {
         AdminConfigDTO entDTO = adminConfigData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, AdminConfigQueryVO.class);
+        return BeanMapperUtil.map(entDTO, AdminConfigQueryVO.class);
     }
 
     @Override

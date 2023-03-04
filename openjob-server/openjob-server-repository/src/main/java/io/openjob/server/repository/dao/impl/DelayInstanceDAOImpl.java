@@ -6,19 +6,23 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.entity.DelayInstance;
+import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.persistence.criteria.Predicate;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,38 +104,56 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     @Override
     public PageDTO<DelayInstance> pageList(DelayInstancePageDTO instancePageDTO) {
-        DelayInstance ds = new DelayInstance();
-        ds.setDeleted(CommonConstant.NO);
 
-        // Namespace
-        if (Objects.nonNull(instancePageDTO.getNamespaceId())) {
-            ds.setNamespaceId(instancePageDTO.getNamespaceId());
-        }
+        Specification<DelayInstance> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> conditions = new ArrayList<>();
 
-        // Application
-        if (Objects.nonNull(instancePageDTO.getAppId())) {
-            ds.setAppId(instancePageDTO.getAppId());
-        }
+            // Deleted
+            conditions.add(criteriaBuilder.equal(root.get("deleted").as(Integer.class), CommonConstant.NO));
 
-        // Topic
-        if (Objects.nonNull(instancePageDTO.getTopic())) {
-            ds.setTopic(instancePageDTO.getTopic());
-        }
+            // Namespace id.
+            conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), instancePageDTO.getNamespaceId()));
 
-        // TaskId
-        if (Objects.nonNull(instancePageDTO.getTaskId())) {
-            ds.setTaskId(instancePageDTO.getTaskId());
-        }
+            // Begin time
+            if (Objects.nonNull(instancePageDTO.getBeginTime()) && instancePageDTO.getBeginTime() > 0) {
+                conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instancePageDTO.getBeginTime()));
+            }
 
-        // Condition
-        Example<DelayInstance> example = Example.of(ds);
-        PageRequest pageRequest = PageRequest.of(instancePageDTO.getPage() - 1, instancePageDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
+            // Begin time
+            if (Objects.nonNull(instancePageDTO.getBeginTime()) && instancePageDTO.getBeginTime() > 0) {
+                conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instancePageDTO.getBeginTime()));
+            }
+
+            // App id.
+            if (Objects.nonNull(instancePageDTO.getAppId())) {
+                conditions.add(criteriaBuilder.equal(root.get("appId").as(Long.class), instancePageDTO.getAppId()));
+            }
+
+            // Topic
+            if (Objects.nonNull(instancePageDTO.getTopic())) {
+                conditions.add(criteriaBuilder.equal(root.get("topic").as(String.class), instancePageDTO.getTopic()));
+            }
+
+            // Task id.
+            if (Objects.nonNull(instancePageDTO.getTaskId())) {
+                conditions.add(criteriaBuilder.equal(root.get("taskId").as(String.class), instancePageDTO.getTaskId()));
+            }
+
+            // Status.
+            if (Objects.nonNull(instancePageDTO.getStatus())) {
+                conditions.add(criteriaBuilder.equal(root.get("status").as(Integer.class), instancePageDTO.getStatus()));
+            }
+
+            Predicate[] conditionAry = new Predicate[conditions.size()];
+            return criteriaBuilder.and(conditions.toArray(conditionAry));
+        };
 
         // Pagination
         PageDTO<DelayInstance> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(instancePageDTO.getPage() - 1, instancePageDTO.getSize(), Sort.by(Sort.Direction.DESC, "id"));
 
         // Query
-        Page<DelayInstance> pageList = this.delayInstanceRepository.findAll(example, pageRequest);
+        Page<DelayInstance> pageList = this.delayInstanceRepository.findAll(specification, pageRequest);
         if (!pageList.isEmpty()) {
             pageDTO.setPage(instancePageDTO.getPage());
             pageDTO.setSize(instancePageDTO.getSize());

@@ -21,6 +21,15 @@ public class ListDelayInstanceRequest extends PageRequest {
     @ApiModelProperty(value = "Topic", required = true)
     private String topic;
 
+    @ApiModelProperty(value = "Status", required = true)
+    private Integer status;
+
     @ApiModelProperty(value = "Task id", required = true)
     private String taskId;
+
+    @ApiModelProperty(value = "Job begin time.")
+    private Long beginTime;
+
+    @ApiModelProperty(value = "Job end time.")
+    private Long endTime;
 }

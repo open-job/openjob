@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @author inhere <in.798@qq.com>
  */
-public class ObjectUtil {
+public class BeanMapperUtil {
     /**
      * copy source object to target object on source is non-null.
      *
@@ -15,7 +15,7 @@ public class ObjectUtil {
      * @param target target
      * @return target
      */
-    public static <T> T copyObject(Object source, T target) {
+    public static <T> T mapObject(Object source, T target) {
         if (Objects.nonNull(source)) {
             BeanUtils.copyProperties(source, target);
         }
@@ -31,7 +31,7 @@ public class ObjectUtil {
      * @return object or null
      */
     public static <T> T mapOrNull(Object source, Class<T> targetClass) {
-        return mapObject(source, targetClass, false);
+        return map(source, targetClass, false);
     }
 
     /**
@@ -42,8 +42,8 @@ public class ObjectUtil {
      * @param <T>         class
      * @return object or null
      */
-    public static <T> T mapObject(Object source, Class<T> targetClass) {
-        return mapObject(source, targetClass, true);
+    public static <T> T map(Object source, Class<T> targetClass) {
+        return map(source, targetClass, true);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ObjectUtil {
      * @param <T>         class
      * @return object
      */
-    public static <T> T mapObject(Object source, Class<T> targetClass, Boolean newIt) {
+    public static <T> T map(Object source, Class<T> targetClass, Boolean newIt) {
         boolean srcIsNull = Objects.isNull(source);
         if (srcIsNull && !newIt) {
             return null;

@@ -1,6 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.AdminConfigDAO;
 import io.openjob.server.repository.data.AdminConfigData;
 import io.openjob.server.repository.dto.AdminConfigDTO;
@@ -49,13 +49,13 @@ public class AdminConfigDataImpl implements AdminConfigData {
     public AdminConfigDTO getById(Long id) {
         AdminConfig entity = adminConfigDAO.getById(id);
 
-        return ObjectUtil.mapObject(entity, AdminConfigDTO.class);
+        return BeanMapperUtil.map(entity, AdminConfigDTO.class);
     }
 
     @Override
     public Integer updateById(AdminConfigDTO dto) {
         AdminConfig entity = new AdminConfig();
-        ObjectUtil.copyObject(dto, entity);
+        BeanMapperUtil.mapObject(dto, entity);
 
         return adminConfigDAO.updateById(entity);
     }

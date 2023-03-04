@@ -2,16 +2,14 @@ package io.openjob.server.admin.service.impl;
 
 import io.openjob.server.admin.request.worker.WorkerListRequest;
 import io.openjob.server.admin.service.WorkerService;
-import io.openjob.server.admin.vo.namespace.ListNamespaceVO;
 import io.openjob.server.admin.vo.worker.WorkerListVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.dto.WorkerPageDTO;
 import io.openjob.server.repository.entity.Worker;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,7 +27,7 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public PageVO<WorkerListVO> getPage(WorkerListRequest request) {
-        PageDTO<Worker> paging = this.workerDAO.getPage(ObjectUtil.mapObject(request, WorkerPageDTO.class));
-        return PageUtil.convert(paging, n -> ObjectUtil.mapObject(n, WorkerListVO.class));
+        PageDTO<Worker> paging = this.workerDAO.getPage(BeanMapperUtil.map(request, WorkerPageDTO.class));
+        return PageUtil.convert(paging, n -> BeanMapperUtil.map(n, WorkerListVO.class));
     }
 }

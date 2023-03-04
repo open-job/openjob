@@ -14,7 +14,7 @@ import io.openjob.server.admin.vo.user.AdminUserQueryVO;
 import io.openjob.server.admin.vo.user.AdminUserUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.HmacUtil;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
@@ -49,7 +49,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public AdminUserAddVO add(AdminUserAddRequest reqDTO) {
-        AdminUserDTO entDto = ObjectUtil.copyObject(reqDTO, new AdminUserDTO());
+        AdminUserDTO entDto = BeanMapperUtil.mapObject(reqDTO, new AdminUserDTO());
 
         // hash input passwd
         entDto.setPasswd(HmacUtil.hashPasswd(reqDTO.getPasswd(), userProperties.getPasswdSalt()));
@@ -99,7 +99,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     public AdminUserQueryVO query(AdminUserQueryRequest reqDTO) {
         AdminUserDTO entDTO = adminUserData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, AdminUserQueryVO.class);
+        return BeanMapperUtil.map(entDTO, AdminUserQueryVO.class);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         pageVo.setList(new ArrayList<>());
 
         pageList.forEach(entDTO -> {
-            pageVo.getList().add(ObjectUtil.mapObject(entDTO, AdminUserQueryVO.class));
+            pageVo.getList().add(BeanMapperUtil.map(entDTO, AdminUserQueryVO.class));
         });
 
         return pageVo;
