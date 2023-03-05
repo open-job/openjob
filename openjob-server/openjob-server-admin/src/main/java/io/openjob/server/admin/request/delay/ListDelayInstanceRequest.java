@@ -18,8 +18,8 @@ public class ListDelayInstanceRequest extends PageRequest {
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;
 
-    @ApiModelProperty(value = "Topic", required = true)
-    private String topic;
+    @ApiModelProperty(value = "Delay id", required = true)
+    private Long delayId;
 
     @ApiModelProperty(value = "Status", required = true)
     private Integer status;

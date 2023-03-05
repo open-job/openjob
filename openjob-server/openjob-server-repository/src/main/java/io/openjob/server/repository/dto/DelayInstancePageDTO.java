@@ -12,7 +12,7 @@ public class DelayInstancePageDTO {
 
     private Long appId;
 
-    private String topic;
+    private Long delayId;
 
     private String taskId;
 

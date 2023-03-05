@@ -8,6 +8,7 @@ import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -129,13 +130,13 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 conditions.add(criteriaBuilder.equal(root.get("appId").as(Long.class), instancePageDTO.getAppId()));
             }
 
-            // Topic
-            if (Objects.nonNull(instancePageDTO.getTopic())) {
-                conditions.add(criteriaBuilder.equal(root.get("topic").as(String.class), instancePageDTO.getTopic()));
+            // Delay id.
+            if (Objects.nonNull(instancePageDTO.getDelayId())) {
+                conditions.add(criteriaBuilder.equal(root.get("delayId").as(String.class), instancePageDTO.getDelayId()));
             }
 
             // Task id.
-            if (Objects.nonNull(instancePageDTO.getTaskId())) {
+            if (StringUtils.isNotEmpty(instancePageDTO.getTaskId())) {
                 conditions.add(criteriaBuilder.equal(root.get("taskId").as(String.class), instancePageDTO.getTaskId()));
             }
 
