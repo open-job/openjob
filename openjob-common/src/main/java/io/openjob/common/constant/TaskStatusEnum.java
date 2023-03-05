@@ -23,27 +23,27 @@ public enum TaskStatusEnum {
     /**
      * Init.
      */
-    INIT(3, "init"),
+    INIT(5, "init"),
 
     /**
      * Failover task will be redispatched!
      */
-    FAILOVER(5, "failover"),
+    FAILOVER(10, "failover"),
 
     /**
      * running.
      */
-    RUNNING(7, "running"),
+    RUNNING(15, "running"),
 
     /**
      * Success.
      */
-    SUCCESS(9, "success"),
+    SUCCESS(20, "success"),
 
     /**
      * Fail.
      */
-    FAILED(11, "fail"),
+    FAILED(25, "fail"),
     ;
 
     /**
