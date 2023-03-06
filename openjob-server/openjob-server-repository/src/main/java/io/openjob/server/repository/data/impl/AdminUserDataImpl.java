@@ -1,6 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.data.AdminUserData;
 import io.openjob.server.repository.dto.AdminUserDTO;
@@ -52,17 +52,17 @@ public class AdminUserDataImpl implements AdminUserData {
 
     @Override
     public AdminUserDTO getById(Long id) {
-        return ObjectUtil.mapObject(adminUserDAO.getById(id), AdminUserDTO.class);
+        return BeanMapperUtil.map(adminUserDAO.getById(id), AdminUserDTO.class);
     }
 
     @Override
     public AdminUserDTO getByUsername(String username) {
-        return ObjectUtil.mapOrNull(adminUserDAO.getByUsername(username), AdminUserDTO.class);
+        return BeanMapperUtil.mapOrNull(adminUserDAO.getByUsername(username), AdminUserDTO.class);
     }
 
     @Override
     public AdminUserDTO getByToken(String token) {
-        return ObjectUtil.mapOrNull(adminUserDAO.getByToken(token), AdminUserDTO.class);
+        return BeanMapperUtil.mapOrNull(adminUserDAO.getByToken(token), AdminUserDTO.class);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class AdminUserDataImpl implements AdminUserData {
         Page<AdminUser> entPage = adminUserDAO.getPageList(page, size);
         List<AdminUserDTO> dtoList = new ArrayList<>();
 
-        entPage.forEach(entity -> dtoList.add(ObjectUtil.copyObject(entity, new AdminUserDTO())));
+        entPage.forEach(entity -> dtoList.add(BeanMapperUtil.mapObject(entity, new AdminUserDTO())));
 
         return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());
     }

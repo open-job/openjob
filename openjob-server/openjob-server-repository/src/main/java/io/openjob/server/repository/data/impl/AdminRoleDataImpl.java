@@ -1,6 +1,6 @@
 package io.openjob.server.repository.data.impl;
 
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.AdminRoleDAO;
 import io.openjob.server.repository.data.AdminRoleData;
 import io.openjob.server.repository.dto.AdminRoleDTO;
@@ -51,7 +51,7 @@ public class AdminRoleDataImpl implements AdminRoleData {
     public AdminRoleDTO getById(Long id) {
         AdminRole entity = adminRoleDAO.getById(id);
 
-        return ObjectUtil.mapObject(entity, AdminRoleDTO.class);
+        return BeanMapperUtil.map(entity, AdminRoleDTO.class);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AdminRoleDataImpl implements AdminRoleData {
         List<AdminRoleDTO> dtoList = new ArrayList<>();
 
         entList.forEach(entity -> {
-            dtoList.add(ObjectUtil.copyObject(entity, new AdminRoleDTO()));
+            dtoList.add(BeanMapperUtil.mapObject(entity, new AdminRoleDTO()));
         });
 
         return dtoList;
@@ -80,7 +80,7 @@ public class AdminRoleDataImpl implements AdminRoleData {
         List<AdminRoleDTO> dtoList = new ArrayList<>();
 
         entPage.forEach(entity -> {
-            dtoList.add(ObjectUtil.copyObject(entity, new AdminRoleDTO()));
+            dtoList.add(BeanMapperUtil.mapObject(entity, new AdminRoleDTO()));
         });
 
         return new PageImpl<>(dtoList, entPage.getPageable(), entPage.getTotalElements());

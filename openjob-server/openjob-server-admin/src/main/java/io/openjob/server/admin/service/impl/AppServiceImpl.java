@@ -14,7 +14,7 @@ import io.openjob.server.admin.vo.app.ListAppVO;
 import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.AppDAO;
@@ -51,7 +51,7 @@ public class AppServiceImpl implements AppService {
         App app = this.appDAO.getAppByName(addRequest.getName());
         AppCodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
 
-        Long id = this.appDAO.save(ObjectUtil.mapObject(addRequest, App.class));
+        Long id = this.appDAO.save(BeanMapperUtil.map(addRequest, App.class));
 
         AddAppVO addAppVO = new AddAppVO();
         addAppVO.setId(id);
@@ -66,14 +66,14 @@ public class AppServiceImpl implements AppService {
             AppCodeEnum.NAME_EXIST.throwException();
         }
 
-        App app = ObjectUtil.mapObject(ObjectUtil.mapObject(updateRequest, App.class), App.class);
+        App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
         this.appDAO.update(app);
         return new UpdateAppVO();
     }
 
     @Override
     public DeleteAppVO delete(DeleteAppRequest deleteAppRequest) {
-        App app = ObjectUtil.mapObject(deleteAppRequest, App.class);
+        App app = BeanMapperUtil.map(deleteAppRequest, App.class);
         app.setDeleted(CommonConstant.YES);
         this.appDAO.update(app);
         return new DeleteAppVO();
@@ -81,7 +81,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest) {
-        App app = ObjectUtil.mapObject(ObjectUtil.mapObject(updateRequest, App.class), App.class);
+        App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
         this.appDAO.update(app);
         return new UpdateAppStatusVO();
     }
@@ -96,13 +96,13 @@ public class AppServiceImpl implements AppService {
 
         // Name space list.
         List<Long> nsIds = appPageDTO.getList().stream()
-                .map(App::getNamespaceId).collect(Collectors.toList());
+                .map(App::getNamespaceId).distinct().collect(Collectors.toList());
         Map<Long, Namespace> nsMap = this.namespaceDAO.getByIds(nsIds)
                 .stream().collect(Collectors.toMap(Namespace::getId, namespace -> namespace));
 
         // Page vo
         return PageUtil.convert(appPageDTO, a -> {
-            ListAppVO listAppVO = ObjectUtil.mapObject(a, ListAppVO.class);
+            ListAppVO listAppVO = BeanMapperUtil.map(a, ListAppVO.class);
             Namespace namespace = nsMap.get(a.getNamespaceId());
             if (Objects.nonNull(namespace)) {
                 listAppVO.setNamespaceName(namespace.getName());

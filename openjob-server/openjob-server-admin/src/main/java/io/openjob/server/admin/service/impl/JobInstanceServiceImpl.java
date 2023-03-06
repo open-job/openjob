@@ -6,7 +6,7 @@ import io.openjob.server.admin.service.JobInstanceService;
 import io.openjob.server.admin.vo.job.KillJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
@@ -30,8 +30,8 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
     @Override
     public PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request) {
-        PageDTO<JobInstance> pageDTO = this.jobInstanceDAO.pageList(ObjectUtil.mapObject(request, JobInstancePageDTO.class));
-        return PageUtil.convert(pageDTO, n -> ObjectUtil.mapObject(n, ListJobInstanceVO.class));
+        PageDTO<JobInstance> pageDTO = this.jobInstanceDAO.pageList(BeanMapperUtil.map(request, JobInstancePageDTO.class));
+        return PageUtil.convert(pageDTO, n -> BeanMapperUtil.map(n, ListJobInstanceVO.class));
     }
 
     @Override

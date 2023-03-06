@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -79,6 +80,11 @@ public class AppDAOImpl implements AppDAO {
     @Override
     public App getAppByName(String appName) {
         return appRepository.findAppByName(appName);
+    }
+
+    @Override
+    public List<App> getByIds(List<Long> ids) {
+        return this.appRepository.findAllById(ids);
     }
 
     @Override

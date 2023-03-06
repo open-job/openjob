@@ -14,6 +14,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel()
 public class ListJobInstanceRequest extends PageRequest {
+
+    @ApiModelProperty(value = "Instance id")
+    private Long id;
+
     @ApiModelProperty(value = "App primary id")
     private Long appId;
 

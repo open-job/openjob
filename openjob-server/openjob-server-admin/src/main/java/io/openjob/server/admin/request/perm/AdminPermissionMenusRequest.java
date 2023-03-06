@@ -1,5 +1,6 @@
 package io.openjob.server.admin.request.perm;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -9,8 +10,6 @@ import lombok.Data;
 @Data
 public class AdminPermissionMenusRequest {
 
-    /**
-     * Admin uid.
-     */
+    @ApiModelProperty(value = "Admin uid", hidden = true)
     private Long uid;
 }

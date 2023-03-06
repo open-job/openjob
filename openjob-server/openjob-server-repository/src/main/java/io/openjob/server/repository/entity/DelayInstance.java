@@ -46,9 +46,6 @@ public class DelayInstance {
     @Column(name = "status")
     private Integer status;
 
-    @Column(name = "slots_id")
-    private Long slotsId;
-
     @Column(name = "execute_time")
     private Long executeTime;
 

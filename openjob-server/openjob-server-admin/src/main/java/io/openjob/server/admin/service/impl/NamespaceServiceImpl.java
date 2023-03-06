@@ -13,7 +13,7 @@ import io.openjob.server.admin.vo.namespace.ListNamespaceVO;
 import io.openjob.server.admin.vo.namespace.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.namespace.UpdateNamespaceVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.NamespaceDAO;
@@ -50,13 +50,13 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Override
     public UpdateNamespaceVO update(UpdateNamespaceRequest updateRequest) {
-        this.namespaceDAO.update(ObjectUtil.mapObject(updateRequest, Namespace.class));
+        this.namespaceDAO.update(BeanMapperUtil.map(updateRequest, Namespace.class));
         return new UpdateNamespaceVO();
     }
 
     @Override
     public DeleteNamespaceVO delete(DeleteNamespaceRequest deleteNamespaceRequest) {
-        Namespace namespace = ObjectUtil.mapObject(deleteNamespaceRequest, Namespace.class);
+        Namespace namespace = BeanMapperUtil.map(deleteNamespaceRequest, Namespace.class);
         namespace.setDeleted(CommonConstant.YES);
         this.namespaceDAO.update(namespace);
         return new DeleteNamespaceVO();
@@ -64,13 +64,13 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Override
     public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
-        this.namespaceDAO.update(ObjectUtil.mapObject(updateStatusRequest, Namespace.class));
+        this.namespaceDAO.update(BeanMapperUtil.map(updateStatusRequest, Namespace.class));
         return new UpdateNamespaceStatusVO();
     }
 
     @Override
     public PageVO<ListNamespaceVO> list(ListNamespaceRequest listRequest) {
         PageDTO<Namespace> pageDTO = this.namespaceDAO.pageList(listRequest.getName(), listRequest.getPage(), listRequest.getSize());
-        return PageUtil.convert(pageDTO, n -> ObjectUtil.mapObject(n, ListNamespaceVO.class));
+        return PageUtil.convert(pageDTO, n -> BeanMapperUtil.map(n, ListNamespaceVO.class));
     }
 }

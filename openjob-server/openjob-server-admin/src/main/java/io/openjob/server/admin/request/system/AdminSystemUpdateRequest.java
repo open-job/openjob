@@ -17,15 +17,6 @@ public class AdminSystemUpdateRequest {
     @ApiModelProperty(value = "PK")
     private Integer id;
 
-    @ApiModelProperty(value = "cluster_supervisor_slot")
-    private Integer clusterSupervisorSlot;
-
-    /**
-     * Worker supervisor slot.
-     */
-    @ApiModelProperty(value = "worker_supervisor_slot")
-    private Integer workerSupervisorSlot;
-
     /**
      * Delay zset slot.
      */
@@ -55,6 +46,5 @@ public class AdminSystemUpdateRequest {
      */
     @ApiModelProperty(value = "max_slot")
     private Integer maxSlot;
-
 }
 

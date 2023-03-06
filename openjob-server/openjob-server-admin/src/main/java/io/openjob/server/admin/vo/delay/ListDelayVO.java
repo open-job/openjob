@@ -18,6 +18,9 @@ public class ListDelayVO {
     @ApiModelProperty(value = "Application id", required = true)
     private Long appId;
 
+    @ApiModelProperty(value = "Application name", required = true)
+    private String appName;
+
     @ApiModelProperty(value = "Name", required = true)
     private String name;
 
@@ -27,7 +30,7 @@ public class ListDelayVO {
     @ApiModelProperty(value = "Description", required = true)
     private String description;
 
-    @ApiModelProperty(value = "", required = true)
+    @ApiModelProperty(value = "Processor Info", required = true)
     private String processorInfo;
 
     @ApiModelProperty(value = "Fail retry times", required = true)

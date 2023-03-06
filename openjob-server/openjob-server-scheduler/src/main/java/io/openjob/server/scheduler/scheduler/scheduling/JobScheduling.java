@@ -1,4 +1,4 @@
-package io.openjob.server.scheduler.scheduling;
+package io.openjob.server.scheduler.scheduler.scheduling;
 
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.service.JobSchedulingService;

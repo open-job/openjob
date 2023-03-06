@@ -11,7 +11,7 @@ import io.openjob.server.admin.vo.notify.NotifyTemplateAddVO;
 import io.openjob.server.admin.vo.notify.NotifyTemplateQueryVO;
 import io.openjob.server.admin.vo.notify.NotifyTemplateUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.data.NotifyTemplateData;
 import io.openjob.server.repository.dto.NotifyTemplateDTO;
 import org.springframework.beans.BeanUtils;
@@ -69,7 +69,7 @@ public class NotifyTemplateServiceImpl implements NotifyTemplateService {
     public NotifyTemplateQueryVO query(NotifyTemplateQueryRequest reqDTO) {
         NotifyTemplateDTO entDTO = notifyTemplateData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, NotifyTemplateQueryVO.class);
+        return BeanMapperUtil.map(entDTO, NotifyTemplateQueryVO.class);
     }
 
     @Override

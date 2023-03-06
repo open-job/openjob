@@ -11,7 +11,7 @@ import io.openjob.server.admin.vo.notify.NotifyContactAddVO;
 import io.openjob.server.admin.vo.notify.NotifyContactQueryVO;
 import io.openjob.server.admin.vo.notify.NotifyContactUpdateVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.data.NotifyContactData;
 import io.openjob.server.repository.dto.NotifyContactDTO;
 import org.springframework.beans.BeanUtils;
@@ -69,7 +69,7 @@ public class NotifyContactServiceImpl implements NotifyContactService {
     public NotifyContactQueryVO query(NotifyContactQueryRequest reqDTO) {
         NotifyContactDTO entDTO = notifyContactData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, NotifyContactQueryVO.class);
+        return BeanMapperUtil.map(entDTO, NotifyContactQueryVO.class);
     }
 
     @Override

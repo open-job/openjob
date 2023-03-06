@@ -7,20 +7,14 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class JobInstancePageDTO {
-    private Long id;
-
+public class DelayPageDTO {
     private Long namespaceId;
 
     private Long appId;
 
-    private Long jobId;
+    private String name;
 
-    private Integer status;
-
-    private Long beginTime;
-
-    private Long endTime;
+    private String topic;
 
     private Integer page;
 

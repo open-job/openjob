@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.scheduler;
 import com.google.common.collect.Lists;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.Delay;
@@ -145,7 +146,7 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
                 delayInstance.setDelayId(topicDelay.getId());
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
-                delayInstance.setStatus(1);
+                delayInstance.setStatus(TaskStatusEnum.INIT.getStatus());
                 delayInstance.setDelayParams(d.getParams());
                 delayInstance.setDelayExtra(d.getExtra());
                 delayInstance.setDeleted(CommonConstant.NO);

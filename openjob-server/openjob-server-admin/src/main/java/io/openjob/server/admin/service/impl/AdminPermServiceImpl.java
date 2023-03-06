@@ -16,7 +16,7 @@ import io.openjob.server.admin.vo.perm.AdminPermQueryVO;
 import io.openjob.server.admin.vo.perm.AdminPermUpdateVO;
 import io.openjob.server.admin.vo.perm.AdminPermissionMenusVO;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.ObjectUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.dao.AdminRoleDAO;
@@ -31,13 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * @author inhere
@@ -96,7 +96,7 @@ public class AdminPermServiceImpl implements AdminPermService {
     public AdminPermQueryVO query(AdminPermQueryRequest reqDTO) {
         AdminPermissionDTO entDTO = adminPermData.getById(reqDTO.getId());
 
-        return ObjectUtil.mapObject(entDTO, AdminPermQueryVO.class);
+        return BeanMapperUtil.map(entDTO, AdminPermQueryVO.class);
     }
 
     @Override
@@ -128,6 +128,7 @@ public class AdminPermServiceImpl implements AdminPermService {
             permissionList = this.adminPermissionDAO.getByIds(new ArrayList<>(menuIds));
         }
 
+        permissionList.sort(Comparator.comparing(AdminPermission::getId));
         List<MenuItemVO> menuItemList = this.formatTreeMenus(permissionList);
         AdminPermissionMenusVO adminPermissionMenusVO = new AdminPermissionMenusVO();
         adminPermissionMenusVO.setList(menuItemList);
@@ -145,7 +146,7 @@ public class AdminPermServiceImpl implements AdminPermService {
             node.setPath(dataRecord.getPath());
             node.setComponent(dataRecord.getMeta().getComponent());
 
-            MenuMetaVO menuMetaVO = ObjectUtil.mapObject(dataRecord.getMeta(), MenuMetaVO.class);
+            MenuMetaVO menuMetaVO = BeanMapperUtil.map(dataRecord.getMeta(), MenuMetaVO.class);
             menuMetaVO.setIsHide(CommonUtil.isTrue(dataRecord.getHidden()));
             node.setMeta(menuMetaVO);
 

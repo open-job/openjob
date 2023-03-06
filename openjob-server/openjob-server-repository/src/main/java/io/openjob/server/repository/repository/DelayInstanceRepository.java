@@ -1,21 +1,19 @@
 package io.openjob.server.repository.repository;
 
 import io.openjob.server.repository.entity.DelayInstance;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
-import scala.util.parsing.input.Page;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Long> {
+public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Long>, JpaSpecificationExecutor<DelayInstance> {
 
     /**
      * Batch delete by task ids.
