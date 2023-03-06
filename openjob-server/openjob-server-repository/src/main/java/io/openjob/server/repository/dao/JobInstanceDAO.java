@@ -75,10 +75,10 @@ public interface JobInstanceDAO {
      *
      * @param jobId  jobId
      * @param id     id
-     * @param status status
+     * @param statusList statusList
      * @return JobInstance
      */
-    JobInstance getOneByJobIdAndStatus(Long jobId, Long id, Integer status);
+    JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList);
 
     /**
      * Get page list.

@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.service;
 
+import com.google.common.collect.Lists;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -128,7 +130,11 @@ public class SchedulerTimerService {
     }
 
     private void doDiscard(SchedulerTimerTask task) {
-        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatus(task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING.getStatus());
+        List<Integer> statusList = Arrays.asList(
+                InstanceStatusEnum.WAITING.getStatus(),
+                InstanceStatusEnum.RUNNING.getStatus()
+        );
+        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatus(task.getJobId(), task.getTaskId(), statusList);
 
         // Exist one task.
         if (Objects.nonNull(jobInstance)) {

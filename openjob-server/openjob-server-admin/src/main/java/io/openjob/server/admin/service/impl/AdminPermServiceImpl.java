@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -127,6 +128,7 @@ public class AdminPermServiceImpl implements AdminPermService {
             permissionList = this.adminPermissionDAO.getByIds(new ArrayList<>(menuIds));
         }
 
+        permissionList.sort(Comparator.comparing(AdminPermission::getId));
         List<MenuItemVO> menuItemList = this.formatTreeMenus(permissionList);
         AdminPermissionMenusVO adminPermissionMenusVO = new AdminPermissionMenusVO();
         adminPermissionMenusVO.setList(menuItemList);

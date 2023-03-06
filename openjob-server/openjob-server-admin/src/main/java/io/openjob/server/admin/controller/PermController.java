@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,19 +63,19 @@ public class PermController {
 
     @ApiOperation("Get a adminPerm")
     @GetMapping("/get")
-    public Result<AdminPermQueryVO> query(@Valid AdminPermQueryRequest getRequest) {
+    public Result<AdminPermQueryVO> query(@Valid @ModelAttribute AdminPermQueryRequest getRequest) {
         return Result.success(this.adminPermService.query(getRequest));
     }
 
     @ApiOperation("List adminPerm")
     @GetMapping("/list")
-    public Result<PageDTO<AdminPermQueryVO>> list(@Valid AdminPermListRequest listRequest) {
+    public Result<PageDTO<AdminPermQueryVO>> list(@Valid @ModelAttribute AdminPermListRequest listRequest) {
         return Result.success(this.adminPermService.getPageList(listRequest));
     }
 
     @ApiOperation("List menus")
     @GetMapping("/menus")
-    public Result<AdminPermissionMenusVO> menus(@Valid AdminPermissionMenusRequest listRequest, HttpServletRequest request) {
+    public Result<AdminPermissionMenusVO> menus(@Valid @ModelAttribute AdminPermissionMenusRequest listRequest, HttpServletRequest request) {
         listRequest.setUid((Long) request.getAttribute(AdminConstant.REQUEST_UID_KEY));
         return Result.success(this.adminPermService.getMenus(listRequest));
     }

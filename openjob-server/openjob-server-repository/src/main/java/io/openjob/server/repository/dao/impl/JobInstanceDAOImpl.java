@@ -69,8 +69,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, Integer status) {
-        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatus(jobId, id, status);
+    public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList) {
+        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusIn(jobId, id, statusList);
     }
 
     @Override

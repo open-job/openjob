@@ -81,10 +81,10 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Find first by id and status.
      *
-     * @param jobId  jobId
-     * @param id     id
-     * @param status status
+     * @param jobId      jobId
+     * @param id         id
+     * @param statusList statusList
      * @return JobInstance
      */
-    JobInstance findFirstByJobIdAndIdNotAndStatus(Long jobId, Long id, Integer status);
+    JobInstance findFirstByJobIdAndIdNotAndStatusIn(Long jobId, Long id, List<Integer> statusList);
 }

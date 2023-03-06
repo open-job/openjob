@@ -169,6 +169,7 @@ public class JobSchedulingService {
             jobInstance.setJobId(j.getId());
             jobInstance.setAppId(j.getAppId());
             jobInstance.setNamespaceId(j.getNamespaceId());
+            jobInstance.setParamsType(j.getParamsType());
             jobInstance.setParams(j.getParams());
             jobInstance.setSlotsId(j.getSlotsId());
             jobInstance.setExecuteTime(j.getNextExecuteTime());
@@ -189,6 +190,9 @@ public class JobSchedulingService {
             jobInstance.setExecuteStrategy(j.getExecuteStrategy());
             jobInstance.setConcurrency(j.getConcurrency());
             jobInstance.setWorkerAddress("");
+            jobInstance.setExtendParamsType(j.getExtendParamsType());
+            jobInstance.setExtendParams(j.getExtendParams());
+            jobInstance.setWorkflowId(j.getWorkflowId());
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             jobInstance.setId(instanceId);
