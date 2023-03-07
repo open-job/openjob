@@ -13,10 +13,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "AdminSystemUpdateRequest", description = "AdminSystem Update  Request")
 public class AdminSystemUpdateRequest {
-    @NotNull
-    @ApiModelProperty(value = "PK")
-    private Integer id;
-
     /**
      * Delay zset slot.
      */

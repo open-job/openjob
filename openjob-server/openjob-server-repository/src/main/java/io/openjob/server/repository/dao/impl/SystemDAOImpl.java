@@ -7,6 +7,9 @@ import io.openjob.server.repository.repository.SystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -39,6 +42,31 @@ public class SystemDAOImpl implements SystemDAO {
     @Override
     public void updateById(System system) {
         System old = this.getOne();
-        systemRepository.save(BeanMapperUtil.mapObject(system, old));
+
+        // Max slot
+        if (Objects.nonNull(system.getMaxSlot())){
+            old.setMaxSlot(system.getMaxSlot());
+        }
+
+        // Delay zset slot
+        if (Objects.nonNull(system.getDelayZsetSlot())){
+            old.setDelayZsetSlot(system.getDelayZsetSlot());
+        }
+
+        // Delay add list slot
+        if (Objects.nonNull(system.getDelayAddListSlot())){
+            old.setDelayAddListSlot(system.getDelayAddListSlot());
+        }
+
+        // Delay status list slot
+        if (Objects.nonNull(system.getDelayStatusListSlot())){
+            old.setDelayStatusListSlot(system.getDelayStatusListSlot());
+        }
+
+        // Delay delete list slot
+        if (Objects.nonNull(system.getDelayDeleteListSlot())){
+            old.setDelayDeleteListSlot(system.getDelayDeleteListSlot());
+        }
+        systemRepository.save(old);
     }
 }
