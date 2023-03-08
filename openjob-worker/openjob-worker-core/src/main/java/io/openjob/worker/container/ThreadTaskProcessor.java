@@ -48,7 +48,7 @@ public class ThreadTaskProcessor implements Runnable {
 
         try {
             // Java
-            if (ProcessorTypeEnum.JAVA.getType().equals(this.jobContext.getProcessorType())) {
+            if (ProcessorTypeEnum.PROCESSOR.getType().equals(this.jobContext.getProcessorType())) {
                 this.baseProcessor = ProcessorUtil.getProcess(this.jobContext.getProcessorInfo());
             }
 

@@ -27,9 +27,8 @@ public class UpdateAppRequest {
     @ApiModelProperty(value = "App name", required = true)
     private String name;
 
-    @NotBlank
     @ApiModelProperty(value = "App desc", required = true)
-    private String desc;
+    private String desc = "";
 
     @NotNull
     @ApiModelProperty(value = "App status.", required = true)

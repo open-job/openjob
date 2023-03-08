@@ -672,27 +672,6 @@ INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version
 VALUES
     (1,'1.0.0',1,1,1,256,2,2,2,1,256,1663590330,1663590330);
 
-/*!40000 ALTER TABLE `system` ENABLE KEYS */;
-
-
-
-DROP TABLE IF EXISTS `admin_config`;
-CREATE TABLE `admin_config` (
-                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
-                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
-                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                PRIMARY KEY (`id`),
-                                INDEX `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
-
-
-INSERT INTO `admin_config` (`name`, `value`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES
-    ('system_name', 'OpenJob Admin', 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_session`;
 CREATE TABLE `admin_session` (
