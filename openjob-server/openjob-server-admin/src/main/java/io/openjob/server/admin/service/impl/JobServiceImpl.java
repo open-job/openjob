@@ -138,6 +138,10 @@ public class JobServiceImpl implements JobService {
             if (Objects.nonNull(app)) {
                 listJobVO.setAppName(app.getName());
             }
+
+            if (!TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())){
+                listJobVO.setTimeExpressionValue(Long.valueOf(j.getTimeExpression()));
+            }
             return listJobVO;
         });
     }
