@@ -1,7 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
-import io.openjob.server.admin.constant.AppCodeEnum;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.app.AddAppRequest;
 import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
@@ -49,7 +49,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
         App app = this.appDAO.getAppByName(addRequest.getName());
-        AppCodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
+        CodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
 
         Long id = this.appDAO.save(BeanMapperUtil.map(addRequest, App.class));
 
@@ -63,7 +63,7 @@ public class AppServiceImpl implements AppService {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
         if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())) {
-            AppCodeEnum.NAME_EXIST.throwException();
+            CodeEnum.NAME_EXIST.throwException();
         }
 
         App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);

@@ -49,6 +49,7 @@ public class AddJobRequest {
     @ApiModelProperty(value = "Job params")
     private String params;
 
+    @NotBlank
     @ApiModelProperty(value = "Job extend params type")
     private String extendParamsType;
 
@@ -71,9 +72,11 @@ public class AddJobRequest {
     @ApiModelProperty(value = "Job type cron/second/delay, default(cron)", required = true)
     private String timeExpressionType;
 
-    @NotNull
-    @ApiModelProperty(value = "Job type=cron need, cron express", required = true)
+    @ApiModelProperty(value = "Job cron express")
     private String timeExpression;
+
+    @ApiModelProperty(value = "Job express value(secondDelay/fixedRate/oneTime)")
+    private Long timeExpressionValue;
 
     @NotNull
     @ApiModelProperty(value = "Job execute strategy", required = true)
