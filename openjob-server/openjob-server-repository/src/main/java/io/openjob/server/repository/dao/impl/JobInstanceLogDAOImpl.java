@@ -23,4 +23,9 @@ public class JobInstanceLogDAOImpl implements JobInstanceLogDAO {
     public Long save(JobInstanceLog jobInstanceLog) {
         return this.jobInstanceLogRepository.save(jobInstanceLog).getId();
     }
+
+    @Override
+    public JobInstanceLog getByJobInstanceId(Long jobInstanceId) {
+        return this.jobInstanceLogRepository.findByJobInstanceId(jobInstanceId);
+    }
 }

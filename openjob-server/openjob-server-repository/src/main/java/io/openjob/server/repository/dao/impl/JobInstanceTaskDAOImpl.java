@@ -30,4 +30,9 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     public Integer batchSave(List<JobInstanceTask> taskList) {
         return this.jobInstanceTaskRepository.saveAll(taskList).size();
     }
+
+    @Override
+    public JobInstanceTask getByJobInstanceId(Long jobInstanceId) {
+        return this.jobInstanceTaskRepository.findByJobInstanceId(jobInstanceId);
+    }
 }

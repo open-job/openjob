@@ -15,4 +15,12 @@ public interface JobInstanceLogDAO {
      * @return Long
      */
     Long save(JobInstanceLog jobInstanceLog);
+
+    /**
+     * Get by job instance id.
+     *
+     * @param jobInstanceId jobInstanceId
+     * @return JobInstanceLog
+     */
+    JobInstanceLog getByJobInstanceId(Long jobInstanceId);
 }

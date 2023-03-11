@@ -7,6 +7,10 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class JobStartRequestDTO {
-    
+public class JobExecuteRequestDTO {
+    private Long id;
+
+    private String params;
+
+    private String extendParams;
 }

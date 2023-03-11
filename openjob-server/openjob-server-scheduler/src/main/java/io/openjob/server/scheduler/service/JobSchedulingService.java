@@ -16,6 +16,8 @@ import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
+import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
+import io.openjob.server.scheduler.dto.JobExecuteResponseDTO;
 import io.openjob.server.scheduler.timer.AbstractTimerTask;
 import io.openjob.server.scheduler.timer.SchedulerTimerTask;
 import io.openjob.server.scheduler.wheel.SchedulerWheel;
@@ -31,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -153,6 +156,25 @@ public class JobSchedulingService {
                 log.error("Cron expression({}) is invalid!", j.getTimeExpression());
             }
         });
+    }
+
+    /**
+     * Execute job
+     *
+     * @param executeRequestDTO executeRequestDTO
+     * @return JobExecuteResponseDTO
+     */
+    public JobExecuteResponseDTO execute(JobExecuteRequestDTO executeRequestDTO) {
+        Job job = this.jobDAO.getById(executeRequestDTO.getId());
+        if (Objects.isNull(job)) {
+            throw new RuntimeException("Job is not exist!");
+        }
+
+        job.setParams(executeRequestDTO.getParams());
+        job.setExtendParams(executeRequestDTO.getExtendParams());
+        job.setNextExecuteTime(DateUtil.timestamp());
+        this.createJobInstance(Collections.singletonList(job));
+        return new JobExecuteResponseDTO();
     }
 
     /**

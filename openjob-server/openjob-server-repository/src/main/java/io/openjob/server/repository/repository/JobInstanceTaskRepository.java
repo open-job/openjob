@@ -8,4 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface JobInstanceTaskRepository extends JpaRepository<JobInstanceTask, Long> {
+
+    /**
+     * Find by job instance id.
+     *
+     * @param jobInstanceId jobInstanceId
+     * @return JobInstanceTask
+     */
+    JobInstanceTask findByJobInstanceId(Long jobInstanceId);
 }

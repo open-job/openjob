@@ -3,7 +3,6 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
-import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ExecuteJobRequest;
@@ -29,6 +28,8 @@ import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
+import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
+import io.openjob.server.scheduler.service.JobSchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -50,11 +51,13 @@ public class JobServiceImpl implements JobService {
 
     private final JobDAO jobDAO;
     private final AppDAO appDAO;
+    private final JobSchedulingService jobSchedulingService;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO) {
+    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobSchedulingService jobSchedulingService) {
         this.jobDAO = jobDAO;
         this.appDAO = appDAO;
+        this.jobSchedulingService = jobSchedulingService;
     }
 
     @Override
@@ -91,7 +94,8 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public ExecuteJobVO execute(ExecuteJobRequest request) {
-        return null;
+        this.jobSchedulingService.execute(BeanMapperUtil.map(request, JobExecuteRequestDTO.class));
+        return new ExecuteJobVO();
     }
 
     @Override

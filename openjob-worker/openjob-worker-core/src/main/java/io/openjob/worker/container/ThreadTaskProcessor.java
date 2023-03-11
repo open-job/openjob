@@ -9,6 +9,8 @@ import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -17,9 +19,10 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public class ThreadTaskProcessor implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger("openjob");
+
     protected JobContext jobContext;
     protected BaseProcessor baseProcessor;
-
 
     public ThreadTaskProcessor(JobContext jobContext) {
         this.jobContext = jobContext;
@@ -62,6 +65,8 @@ public class ThreadTaskProcessor implements Runnable {
                 } else {
                     result = this.baseProcessor.process(this.jobContext);
                 }
+            } else {
+                logger.error("Processor({}) can not find!", this.jobContext.getProcessorInfo());
             }
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());

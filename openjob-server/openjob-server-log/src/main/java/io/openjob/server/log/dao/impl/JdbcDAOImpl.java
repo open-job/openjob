@@ -1,6 +1,5 @@
 package io.openjob.server.log.dao.impl;
 
-import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLog;
