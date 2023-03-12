@@ -5,6 +5,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.server.admin.request.job.KillJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListProcessorLogRequest;
@@ -81,28 +82,26 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         }
 
         AtomicInteger isComplete = new AtomicInteger(CommonConstant.NO);
-        JobInstanceTask jobInstanceTask = this.jobInstanceTaskDAO.getByJobInstanceId(request.getJobInstanceId());
-        if (Objects.nonNull(jobInstanceTask)) {
-            try {
-                List<ProcessorLog> processorLogs = this.logDAO.queryByPage(jobInstanceTask.getTaskId(), request.getTime(), request.getSize());
-                processorLogs.forEach(l -> {
-                    Map<String, String> fieldMap = l.getFields().stream()
-                            .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
-                    list.add(this.formatLog(fieldMap));
+        try {
+            String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 0L, 0L);
+            List<ProcessorLog> processorLogs = this.logDAO.queryByPage(taskId, request.getTime(), request.getSize());
+            processorLogs.forEach(l -> {
+                Map<String, String> fieldMap = l.getFields().stream()
+                        .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
+                list.add(this.formatLog(fieldMap));
 
-                    String message = fieldMap.get(LogFieldConstant.MESSAGE);
-                    if (Objects.nonNull(message) && message.equals("Task processor completed!")) {
-                        isComplete.set(CommonConstant.YES);
-                    }
-                });
-
-                if (!CollectionUtils.isEmpty(processorLogs)) {
-                    ProcessorLog processorLog = processorLogs.get(processorLogs.size() - 1);
-                    nextTime = processorLog.getTime();
+                String message = fieldMap.get(LogFieldConstant.MESSAGE);
+                if (Objects.nonNull(message) && message.equals("Task processor completed!")) {
+                    isComplete.set(CommonConstant.YES);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            });
+
+            if (!CollectionUtils.isEmpty(processorLogs)) {
+                ProcessorLog processorLog = processorLogs.get(processorLogs.size() - 1);
+                nextTime = processorLog.getTime();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         ListProcessorLogVO listProcessorLogVO = new ListProcessorLogVO();

@@ -15,6 +15,10 @@ public class ListProcessorLogRequest {
 
     @NotNull
     @ApiModelProperty(value = "Job instance id", required = true)
+    private Long jobId;
+
+    @NotNull
+    @ApiModelProperty(value = "Job instance id", required = true)
     private Long jobInstanceId;
 
     @NotBlank
