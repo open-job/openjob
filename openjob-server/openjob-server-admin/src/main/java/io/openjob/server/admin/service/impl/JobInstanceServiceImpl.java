@@ -1,6 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import com.google.common.collect.Lists;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
@@ -28,11 +29,13 @@ import io.openjob.server.repository.entity.JobInstanceLog;
 import io.openjob.server.repository.entity.JobInstanceTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -69,18 +72,34 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
     @Override
     public ListProcessorLogVO getProcessorList(ListProcessorLogRequest request) {
-        Long nextTime = 0L;
+        long nextTime = 0L;
         List<String> list = Lists.newArrayList();
-        if (ExecuteTypeEnum.isStandalone(request.getExecuteType())) {
+        if (request.getTime().equals(0L) && ExecuteTypeEnum.isStandalone(request.getExecuteType())) {
             JobInstanceLog jobInstanceLog = this.jobInstanceLogDAO.getByJobInstanceId(request.getJobInstanceId());
             list.add(this.formatLogInstanceLog(jobInstanceLog));
+            nextTime = jobInstanceLog.getCreateTime() * 1000;
         }
 
+        AtomicInteger isComplete = new AtomicInteger(CommonConstant.NO);
         JobInstanceTask jobInstanceTask = this.jobInstanceTaskDAO.getByJobInstanceId(request.getJobInstanceId());
         if (Objects.nonNull(jobInstanceTask)) {
             try {
                 List<ProcessorLog> processorLogs = this.logDAO.queryByPage(jobInstanceTask.getTaskId(), request.getTime(), request.getSize());
-                processorLogs.forEach(l -> list.add(this.formatLog(l)));
+                processorLogs.forEach(l -> {
+                    Map<String, String> fieldMap = l.getFields().stream()
+                            .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
+                    list.add(this.formatLog(fieldMap));
+
+                    String message = fieldMap.get(LogFieldConstant.MESSAGE);
+                    if (Objects.nonNull(message) && message.equals("Task processor completed!")) {
+                        isComplete.set(CommonConstant.YES);
+                    }
+                });
+
+                if (!CollectionUtils.isEmpty(processorLogs)) {
+                    ProcessorLog processorLog = processorLogs.get(processorLogs.size() - 1);
+                    nextTime = processorLog.getTime();
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -89,6 +108,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         ListProcessorLogVO listProcessorLogVO = new ListProcessorLogVO();
         listProcessorLogVO.setList(list);
         listProcessorLogVO.setTime(nextTime);
+        listProcessorLogVO.setComplete(isComplete.get());
         return listProcessorLogVO;
     }
 
@@ -102,10 +122,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         );
     }
 
-    private String formatLog(ProcessorLog processorLog) {
-        Map<String, String> fieldMap = processorLog.getFields().stream()
-                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
-
+    private String formatLog(Map<String, String> fieldMap) {
         String location = fieldMap.get(LogFieldConstant.LOCATION);
         return String.format(
                 LOG_FORMAT,

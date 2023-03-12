@@ -16,4 +16,7 @@ public class ListProcessorLogVO {
 
     @ApiModelProperty(value = "Time")
     private Long time;
+
+    @ApiModelProperty(value = "Load complete")
+    private Integer complete;
 }

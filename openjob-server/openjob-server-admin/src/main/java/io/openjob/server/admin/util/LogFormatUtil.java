@@ -19,7 +19,7 @@ public class LogFormatUtil {
         String packageString = location.substring(0, substring.lastIndexOf("."));
         String lineNo = location.substring(location.lastIndexOf(":")).replace(")", "");
 
-        int maxLen = 40;
+        int maxLen = 40 - lineNo.length();
         int len = packageString.length();
         if (len < maxLen) {
             return location;

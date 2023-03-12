@@ -1,6 +1,5 @@
 package io.openjob.server.log.dto;
 
-import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import lombok.Data;
 
 import java.util.List;
