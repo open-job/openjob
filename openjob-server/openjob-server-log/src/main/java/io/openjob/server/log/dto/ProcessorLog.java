@@ -13,7 +13,6 @@ import java.util.List;
 public class ProcessorLog {
     private String taskId;
     private String workerAddress;
-    private String content;
     private List<ProcessorLogField> fields;
     private Long time;
 }

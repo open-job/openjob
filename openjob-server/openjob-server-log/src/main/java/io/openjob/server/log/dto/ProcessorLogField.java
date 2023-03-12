@@ -10,4 +10,9 @@ import lombok.Data;
 public class ProcessorLogField {
     private String name;
     private String value;
+
+    public ProcessorLogField(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 }
