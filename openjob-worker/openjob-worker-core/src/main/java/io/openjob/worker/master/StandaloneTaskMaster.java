@@ -22,6 +22,9 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
         taskDAO.add(this.convertToTask(startRequest, this.localWorkerAddress));
 
+        // Add address.
+        this.containerWorkers.add(this.localWorkerAddress);
+
         // Switch running status.
         if (!this.running.get()) {
             this.running.set(true);

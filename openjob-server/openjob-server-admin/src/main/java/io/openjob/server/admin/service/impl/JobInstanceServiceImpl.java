@@ -72,6 +72,9 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         jobInstanceStopRequestDTO.setJobInstanceId(killRequest.getId());
         JobInstanceStopResponseDTO stop = this.jobInstanceScheduler.stop(jobInstanceStopRequestDTO);
 
+        // Update status.
+        this.jobInstanceDAO.updateStatusById(killRequest.getId(), InstanceStatusEnum.STOP.getStatus());
+
         // Response
         StopJobInstanceVO stopJobInstanceVO = new StopJobInstanceVO();
         stopJobInstanceVO.setType(stop.getType());
