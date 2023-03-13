@@ -66,12 +66,13 @@ public class ThreadTaskProcessor implements Runnable {
                     result = this.baseProcessor.process(this.jobContext);
                 }
 
-                logger.error("Task processor completed!");
+                logger.info("Task processor completed!");
             } else {
                 logger.error("Processor({}) can not find!", this.jobContext.getProcessorInfo());
             }
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
+            logger.error("Processor execute error!", ex);
         } finally {
             this.reportTaskStatus(result, workerAddress);
         }

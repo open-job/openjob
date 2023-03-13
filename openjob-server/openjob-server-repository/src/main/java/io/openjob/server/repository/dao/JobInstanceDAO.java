@@ -40,6 +40,14 @@ public interface JobInstanceDAO {
     Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
 
     /**
+     * Get by id.
+     *
+     * @param id id
+     * @return JobInstance
+     */
+    JobInstance getById(Long id);
+
+    /**
      * Get failover list.
      *
      * @param slotsIds    slots id.
@@ -73,8 +81,8 @@ public interface JobInstanceDAO {
     /**
      * Get one by id and status.
      *
-     * @param jobId  jobId
-     * @param id     id
+     * @param jobId      jobId
+     * @param id         id
      * @param statusList statusList
      * @return JobInstance
      */

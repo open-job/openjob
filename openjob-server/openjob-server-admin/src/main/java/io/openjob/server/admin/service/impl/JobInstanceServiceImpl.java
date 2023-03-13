@@ -3,6 +3,7 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
@@ -23,11 +24,9 @@ import io.openjob.server.log.dto.ProcessorLog;
 import io.openjob.server.log.dto.ProcessorLogField;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
-import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceLog;
-import io.openjob.server.repository.entity.JobInstanceTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,8 +34,7 @@ import org.springframework.util.CollectionUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -49,15 +47,12 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     private final LogDAO logDAO;
     private final JobInstanceDAO jobInstanceDAO;
     private final JobInstanceLogDAO jobInstanceLogDAO;
-    private final JobInstanceTaskDAO jobInstanceTaskDAO;
-
 
     @Autowired
-    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceTaskDAO jobInstanceTaskDAO) {
+    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO) {
         this.logDAO = logDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
-        this.jobInstanceTaskDAO = jobInstanceTaskDAO;
     }
 
     @Override
@@ -73,32 +68,37 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
     @Override
     public ListProcessorLogVO getProcessorList(ListProcessorLogRequest request) {
-        long nextTime = 0L;
+        AtomicLong nextTime = new AtomicLong(0L);
         List<String> list = Lists.newArrayList();
+
+        // First to query job instance log.
         if (request.getTime().equals(0L) && ExecuteTypeEnum.isStandalone(request.getExecuteType())) {
-            JobInstanceLog jobInstanceLog = this.jobInstanceLogDAO.getByJobInstanceId(request.getJobInstanceId());
-            list.add(this.formatLogInstanceLog(jobInstanceLog));
-            nextTime = jobInstanceLog.getCreateTime() * 1000;
+            List<JobInstanceLog> jobInstanceLogs = this.jobInstanceLogDAO.getByJobInstanceId(request.getJobInstanceId());
+            jobInstanceLogs.forEach(j->{
+                list.add(this.formatLogInstanceLog(j));
+                nextTime.set(j.getCreateTime() * 1000);
+            });
         }
 
-        AtomicInteger isComplete = new AtomicInteger(CommonConstant.NO);
+        Integer isComplete = CommonConstant.NO;
         try {
             String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 0L, 0L);
             List<ProcessorLog> processorLogs = this.logDAO.queryByPage(taskId, request.getTime(), request.getSize());
-            processorLogs.forEach(l -> {
-                Map<String, String> fieldMap = l.getFields().stream()
-                        .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
-                list.add(this.formatLog(fieldMap));
-
-                String message = fieldMap.get(LogFieldConstant.MESSAGE);
-                if (Objects.nonNull(message) && message.equals("Task processor completed!")) {
-                    isComplete.set(CommonConstant.YES);
-                }
-            });
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
-                ProcessorLog processorLog = processorLogs.get(processorLogs.size() - 1);
-                nextTime = processorLog.getTime();
+                // Processor list and nextTime.
+                processorLogs.forEach(l -> list.add(this.formatLog(l)));
+                nextTime.set(processorLogs.get(processorLogs.size() - 1).getTime());
+            } else {
+                boolean completeStatus = !InstanceStatusEnum.NOT_COMPLETE.contains(request.getStatus());
+                if (completeStatus) {
+                    isComplete = CommonConstant.YES;
+                } else if (CommonConstant.YES.equals(request.getLoading())) {
+                    JobInstance queryInstance = this.jobInstanceDAO.getById(request.getJobInstanceId());
+                    if (!InstanceStatusEnum.NOT_COMPLETE.contains(queryInstance.getStatus())) {
+                        isComplete = CommonConstant.YES;
+                    }
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -106,8 +106,8 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
         ListProcessorLogVO listProcessorLogVO = new ListProcessorLogVO();
         listProcessorLogVO.setList(list);
-        listProcessorLogVO.setTime(nextTime);
-        listProcessorLogVO.setComplete(isComplete.get());
+        listProcessorLogVO.setTime(nextTime.get());
+        listProcessorLogVO.setComplete(isComplete);
         return listProcessorLogVO;
     }
 
@@ -121,7 +121,9 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         );
     }
 
-    private String formatLog(Map<String, String> fieldMap) {
+    private String formatLog(ProcessorLog processorLog) {
+        Map<String, String> fieldMap = processorLog.getFields().stream()
+                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
         String location = fieldMap.get(LogFieldConstant.LOCATION);
         return String.format(
                 LOG_FORMAT,

@@ -25,6 +25,14 @@ public class ListProcessorLogRequest {
     @ApiModelProperty(value = "Execute type: standalone, broadcast, MR", required = true)
     private String executeType;
 
+    @NotNull
+    @ApiModelProperty(value = "Status", required = true)
+    private Integer status;
+
+    @NotNull
+    @ApiModelProperty(value = "Loading", required = true)
+    private Integer loading;
+
     @ApiModelProperty(value = "Processor time, default is zero.", required = true)
     private Long time = 0L;
 

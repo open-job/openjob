@@ -6,6 +6,8 @@ import io.openjob.server.repository.repository.JobInstanceLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -25,7 +27,7 @@ public class JobInstanceLogDAOImpl implements JobInstanceLogDAO {
     }
 
     @Override
-    public JobInstanceLog getByJobInstanceId(Long jobInstanceId) {
-        return this.jobInstanceLogRepository.findByJobInstanceId(jobInstanceId);
+    public List<JobInstanceLog> getByJobInstanceId(Long jobInstanceId) {
+        return this.jobInstanceLogRepository.findByJobInstanceIdOrderByCreateTimeAsc(jobInstanceId);
     }
 }

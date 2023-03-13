@@ -21,6 +21,7 @@ import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -50,6 +51,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime) {
         return this.jobInstanceRepository.updateLastReportTimeByIds(ids, lastReportTime);
+    }
+
+    @Override
+    public JobInstance getById(Long id) {
+        return this.jobInstanceRepository.findById(id).orElse(null);
     }
 
     @Override
