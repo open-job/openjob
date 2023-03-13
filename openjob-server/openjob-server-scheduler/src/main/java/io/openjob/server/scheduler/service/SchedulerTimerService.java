@@ -1,6 +1,5 @@
 package io.openjob.server.scheduler.service;
 
-import com.google.common.collect.Lists;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;

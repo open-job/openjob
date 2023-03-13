@@ -13,29 +13,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ThreadTaskProcessor implements Runnable {
+public class ThreadTaskProcessor implements TaskProcessor, Runnable {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
     protected JobContext jobContext;
+
     protected BaseProcessor baseProcessor;
 
-    public ThreadTaskProcessor(JobContext jobContext) {
+    protected Long processorId;
+
+    protected Consumer<Long> consumer;
+
+    public ThreadTaskProcessor(Long processorId, JobContext jobContext, Consumer<Long> consumer) {
+        this.processorId = processorId;
         this.jobContext = jobContext;
+        this.consumer = consumer;
     }
 
     @Override
     public void run() {
         this.start();
+        this.consumer.accept(this.processorId);
     }
 
     /**
      * Start
      */
+    @Override
     public void start() {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);
@@ -72,9 +82,21 @@ public class ThreadTaskProcessor implements Runnable {
             }
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
-            logger.error("Processor execute error!", ex);
+            logger.error("Processor execute exception!", ex);
         } finally {
             this.reportTaskStatus(result, workerAddress);
+        }
+    }
+
+    @Override
+    public void stop() {
+        if (Objects.nonNull(this.baseProcessor)) {
+            try {
+                this.baseProcessor.stop(this.jobContext);
+                logger.info("Task processor stopped!");
+            } catch (Throwable ex) {
+                logger.error("Processor stop exception!", ex);
+            }
         }
     }
 

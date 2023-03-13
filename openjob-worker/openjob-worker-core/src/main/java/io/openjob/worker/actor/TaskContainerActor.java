@@ -70,7 +70,9 @@ public class TaskContainerActor extends BaseActor {
      */
     public void handleStopContainer(MasterStopContainerRequest stopReq) {
         TaskContainer taskContainer = TaskContainerPool.get(stopReq.getJobInstanceId());
-        taskContainer.stop();
+        if (Objects.nonNull(taskContainer)) {
+            taskContainer.stop();
+        }
 
         WorkerResponse workerResponse = new WorkerResponse();
         workerResponse.setDeliveryId(stopReq.getDeliveryId());

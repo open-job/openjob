@@ -68,12 +68,14 @@ public class TaskMasterActor extends BaseActor {
      */
     public void stopJobInstance(ServerStopJobInstanceRequest stopReq) {
         if (!TaskMasterPool.contains(stopReq.getJobInstanceId())) {
-            throw new RuntimeException(String.format("Task master is not running! jobInstanceId=%s", stopReq.getJobInstanceId()));
+            getSender().tell(Result.fail(String.format("Task master is not running! jobInstanceId=%s", stopReq.getJobInstanceId())), getSelf());
+            return;
         }
 
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         TaskMaster taskMaster = TaskMasterPool.get(stopReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.stop();
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
     /**

@@ -10,5 +10,7 @@ import java.io.Serializable;
  */
 @Data
 public class ServerStopJobInstanceRequest implements Serializable {
+    private Long jobId;
+
     private Long jobInstanceId;
 }

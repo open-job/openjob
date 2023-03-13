@@ -7,14 +7,14 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
-import io.openjob.server.admin.request.job.KillJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListProcessorLogRequest;
+import io.openjob.server.admin.request.job.StopJobInstanceRequest;
 import io.openjob.server.admin.service.JobInstanceService;
 import io.openjob.server.admin.util.LogFormatUtil;
-import io.openjob.server.admin.vo.job.KillJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListProcessorLogVO;
+import io.openjob.server.admin.vo.job.StopJobInstanceVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -27,6 +27,9 @@ import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceLog;
+import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
+import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
+import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -47,12 +50,14 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     private final LogDAO logDAO;
     private final JobInstanceDAO jobInstanceDAO;
     private final JobInstanceLogDAO jobInstanceLogDAO;
+    private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO) {
+    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceScheduler jobInstanceScheduler) {
         this.logDAO = logDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
+        this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
     @Override
@@ -62,8 +67,15 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     }
 
     @Override
-    public KillJobInstanceVO killInstance(KillJobInstanceRequest killRequest) {
-        return new KillJobInstanceVO();
+    public StopJobInstanceVO stopInstance(StopJobInstanceRequest killRequest) {
+        JobInstanceStopRequestDTO jobInstanceStopRequestDTO = new JobInstanceStopRequestDTO();
+        jobInstanceStopRequestDTO.setJobInstanceId(killRequest.getId());
+        JobInstanceStopResponseDTO stop = this.jobInstanceScheduler.stop(jobInstanceStopRequestDTO);
+
+        // Response
+        StopJobInstanceVO stopJobInstanceVO = new StopJobInstanceVO();
+        stopJobInstanceVO.setType(stop.getType());
+        return stopJobInstanceVO;
     }
 
     @Override
@@ -74,7 +86,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         // First to query job instance log.
         if (request.getTime().equals(0L) && ExecuteTypeEnum.isStandalone(request.getExecuteType())) {
             List<JobInstanceLog> jobInstanceLogs = this.jobInstanceLogDAO.getByJobInstanceId(request.getJobInstanceId());
-            jobInstanceLogs.forEach(j->{
+            jobInstanceLogs.forEach(j -> {
                 list.add(this.formatLogInstanceLog(j));
                 nextTime.set(j.getCreateTime() * 1000);
             });

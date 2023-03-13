@@ -16,5 +16,7 @@ public class MasterStopContainerRequest implements Serializable {
 
     private Long jobInstanceId;
 
+    private String workerAddress;
+
     private Long taskId;
 }
