@@ -1,9 +1,7 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
-import io.openjob.server.admin.request.job.DeleteDelayInstanceVO;
-import io.openjob.server.admin.vo.delay.DeleteDelayVO;
+import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 

@@ -1,8 +1,10 @@
 package io.openjob.server.admin.service;
 
+import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListProcessorLogRequest;
 import io.openjob.server.admin.request.job.StopJobInstanceRequest;
+import io.openjob.server.admin.vo.job.DeleteJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListProcessorLogVO;
 import io.openjob.server.admin.vo.job.StopJobInstanceVO;
@@ -29,6 +31,14 @@ public interface JobInstanceService {
      * @return return
      */
     StopJobInstanceVO stopInstance(StopJobInstanceRequest killRequest);
+
+    /**
+     * Delete job instance.
+     *
+     * @param request request
+     * @return DeleteJobInstanceVO
+     */
+    DeleteJobInstanceVO deleteInstance(DeleteJobInstanceRequest request);
 
     /**
      * Get processor log.

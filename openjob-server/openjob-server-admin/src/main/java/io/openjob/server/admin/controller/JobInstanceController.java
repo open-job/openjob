@@ -1,10 +1,12 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
+import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListProcessorLogRequest;
 import io.openjob.server.admin.request.job.StopJobInstanceRequest;
 import io.openjob.server.admin.service.JobInstanceService;
+import io.openjob.server.admin.vo.job.DeleteJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListProcessorLogVO;
 import io.openjob.server.admin.vo.job.StopJobInstanceVO;
@@ -46,6 +48,12 @@ public class JobInstanceController {
     @PostMapping("/stop")
     public Result<StopJobInstanceVO> stopJobInstance(@Valid @RequestBody StopJobInstanceRequest stopRequest) {
         return Result.success(this.jobInstanceService.stopInstance(stopRequest));
+    }
+
+    @ApiOperation("Delete job instances")
+    @PostMapping("/delete")
+    public Result<DeleteJobInstanceVO> stopJobInstance(@Valid @RequestBody DeleteJobInstanceRequest request) {
+        return Result.success(this.jobInstanceService.deleteInstance(request));
     }
 
     @ApiOperation("List job instance log")

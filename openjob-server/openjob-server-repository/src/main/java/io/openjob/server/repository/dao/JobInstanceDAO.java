@@ -22,6 +22,13 @@ public interface JobInstanceDAO {
     Long save(JobInstance jobInstance);
 
     /**
+     * Delete by id
+     *
+     * @param id id
+     */
+    void deleteById(Long id);
+
+    /**
      * Update
      *
      * @param id     id

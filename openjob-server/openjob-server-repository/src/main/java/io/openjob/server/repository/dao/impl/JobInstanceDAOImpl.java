@@ -43,6 +43,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public void deleteById(Long id) {
+        this.jobInstanceRepository.deleteById(id);
+    }
+
+    @Override
     public Integer updateStatusById(Long id, Integer status) {
         long now = DateUtil.timestamp();
         return this.jobInstanceRepository.update(id, status, now, now);

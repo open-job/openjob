@@ -7,11 +7,13 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
+import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListProcessorLogRequest;
 import io.openjob.server.admin.request.job.StopJobInstanceRequest;
 import io.openjob.server.admin.service.JobInstanceService;
 import io.openjob.server.admin.util.LogFormatUtil;
+import io.openjob.server.admin.vo.job.DeleteJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListProcessorLogVO;
 import io.openjob.server.admin.vo.job.StopJobInstanceVO;
@@ -79,6 +81,12 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         StopJobInstanceVO stopJobInstanceVO = new StopJobInstanceVO();
         stopJobInstanceVO.setType(stop.getType());
         return stopJobInstanceVO;
+    }
+
+    @Override
+    public DeleteJobInstanceVO deleteInstance(DeleteJobInstanceRequest request) {
+        this.jobInstanceDAO.deleteById(request.getId());
+        return new DeleteJobInstanceVO();
     }
 
     @Override

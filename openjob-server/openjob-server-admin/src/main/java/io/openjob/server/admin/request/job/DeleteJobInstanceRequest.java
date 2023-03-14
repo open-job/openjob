@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
-public class DeleteDelayInstanceVO {
+public class DeleteJobInstanceRequest {
     @NotNull
-    @ApiModelProperty(value = "Delete job id", required = true)
+    @ApiModelProperty(value = "Delete id", required = true)
     private Long id;
 }
