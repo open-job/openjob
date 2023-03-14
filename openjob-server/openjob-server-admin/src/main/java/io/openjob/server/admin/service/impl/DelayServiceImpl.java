@@ -21,6 +21,8 @@ import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.scheduler.dto.TopicTotalAndReadyCounterDTO;
+import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,11 +40,13 @@ import java.util.stream.Collectors;
 public class DelayServiceImpl implements DelayService {
     private final DelayDAO delayDAO;
     private final AppDAO appDAO;
+    private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO) {
+    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO, DelayInstanceScheduler delayInstanceScheduler) {
         this.delayDAO = delayDAO;
         this.appDAO = appDAO;
+        this.delayInstanceScheduler = delayInstanceScheduler;
     }
 
     @Override
@@ -60,6 +64,13 @@ public class DelayServiceImpl implements DelayService {
             return PageUtil.emptyList(ListDelayVO.class);
         }
 
+        // Topic ready count.
+        List<String> topics = pageList.getList().stream()
+                .map(Delay::getTopic).distinct().collect(Collectors.toList());
+        Map<String, TopicTotalAndReadyCounterDTO> counterMap = this.delayInstanceScheduler.getTopicTotalReadyCount(topics)
+                .stream()
+                .collect(Collectors.toMap(TopicTotalAndReadyCounterDTO::getTopic, t -> t));
+
         // App list.
         List<Long> appIds = pageList.getList().stream()
                 .map(Delay::getAppId).distinct().collect(Collectors.toList());
@@ -73,6 +84,10 @@ public class DelayServiceImpl implements DelayService {
             if (Objects.nonNull(app)) {
                 listDelayVO.setAppName(app.getName());
             }
+
+            // Total and Ready
+            listDelayVO.setTotal(counterMap.get(d.getTopic()).getTotal());
+            listDelayVO.setReady(counterMap.get(d.getTopic()).getReady());
             return listDelayVO;
         });
     }

@@ -19,6 +19,7 @@ import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
+import io.openjob.server.scheduler.dto.TopicTotalAndReadyCounterDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
@@ -27,13 +28,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -79,6 +83,33 @@ public class DelayInstanceScheduler {
         DelayInstanceAddResponseDTO responseDTO = new DelayInstanceAddResponseDTO();
         responseDTO.setTaskId(taskId);
         return responseDTO;
+    }
+
+    /**
+     * Get topic ready count.
+     *
+     * @param topics topics
+     * @return List
+     */
+    public List<TopicTotalAndReadyCounterDTO> getTopicTotalReadyCount(List<String> topics) {
+        List<TopicTotalAndReadyCounterDTO> counters = new ArrayList<>();
+        RedisTemplate<String, Object> template = RedisUtil.getTemplate();
+        topics.forEach(t -> {
+            String cacheListKey = CacheUtil.getTopicListKey(t);
+            TopicTotalAndReadyCounterDTO counterDTO = new TopicTotalAndReadyCounterDTO();
+            counterDTO.setTopic(t);
+
+            // Total
+            String totalKey = CacheUtil.getDelayTopicCounterKey(t);
+            Long total = Long.valueOf(Optional.ofNullable(template.opsForValue().get(totalKey)).orElse(0).toString());
+            counterDTO.setTotal(total);
+
+            // Ready
+            long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
+            counterDTO.setReady(Count);
+            counters.add(counterDTO);
+        });
+        return counters;
     }
 
     /**
@@ -172,6 +203,14 @@ public class DelayInstanceScheduler {
         // Delay status list key.
         String statusListKey = CacheUtil.getStatusListKey(DelaySlotUtil.getStatusListSlotId(UUID.randomUUID().toString()));
 
+        // Update topic counter
+        Map<String, List<DelayInstanceStatusRequestDTO>> groupByTopic = statusList.stream()
+                .collect(Collectors.groupingBy(DelayInstanceStatusRequestDTO::getTopic));
+        groupByTopic.forEach((t, l) -> {
+            String topicCounterKey = CacheUtil.getDelayTopicCounterKey(t);
+            RedisUtil.getTemplate().opsForValue().decrement(topicCounterKey, l.size());
+        });
+
         // Pipeline
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
@@ -222,11 +261,13 @@ public class DelayInstanceScheduler {
         String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
         String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
+        String topicCounterKey = CacheUtil.getDelayTopicCounterKey(addRequest.getTopic());
 
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                 operations.multi();
+                operations.opsForValue().increment(topicCounterKey);
                 operations.opsForValue().set(detailKey, addRequest);
                 operations.opsForZSet().add(zsetKey, taskId, addRequest.getExecuteTime());
                 operations.opsForList().rightPush(listKey, taskId);
@@ -254,6 +295,8 @@ public class DelayInstanceScheduler {
                 operations.delete(detailKey);
                 operations.opsForZSet().remove(zsetKey, taskId);
                 operations.opsForList().remove(listKey, 1, taskId);
+
+                // Topic total
                 return operations.exec();
             }
         });
