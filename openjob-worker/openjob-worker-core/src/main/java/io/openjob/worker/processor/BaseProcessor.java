@@ -21,5 +21,5 @@ public interface BaseProcessor {
      *
      * @param context context
      */
-    void stop(JobContext context);
+    void stop(JobContext context) throws Exception;
 }

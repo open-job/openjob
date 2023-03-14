@@ -6,6 +6,7 @@ import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.util.AddressUtil;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -23,7 +24,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         taskDAO.add(this.convertToTask(startRequest, this.localWorkerAddress));
 
         // Add address.
-        this.containerWorkers.add(this.localWorkerAddress);
+        this.containerWorkers.add(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
 
         // Switch running status.
         if (!this.running.get()) {

@@ -14,6 +14,8 @@ import io.openjob.worker.master.TaskMasterPool;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 
+import java.util.Objects;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -99,7 +101,9 @@ public class TaskMasterActor extends BaseActor {
      */
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
         TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
-        taskMaster.updateStatus(batchTaskStatusReq);
+        if (Objects.nonNull(taskMaster)){
+            taskMaster.updateStatus(batchTaskStatusReq);
+        }
 
         WorkerResponse workerResponse = new WorkerResponse(batchTaskStatusReq.getDeliveryId());
         getSender().tell(Result.success(workerResponse), getSelf());

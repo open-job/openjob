@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -26,20 +25,14 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
     protected BaseProcessor baseProcessor;
 
-    protected Long processorId;
 
-    protected Consumer<Long> consumer;
-
-    public ThreadTaskProcessor(Long processorId, JobContext jobContext, Consumer<Long> consumer) {
-        this.processorId = processorId;
+    public ThreadTaskProcessor(JobContext jobContext) {
         this.jobContext = jobContext;
-        this.consumer = consumer;
     }
 
     @Override
     public void run() {
         this.start();
-        this.consumer.accept(this.processorId);
     }
 
     /**
@@ -80,9 +73,12 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             } else {
                 logger.error("Processor({}) can not find!", this.jobContext.getProcessorInfo());
             }
+        } catch (InterruptedException ex) {
+            // Stop processor.
+            this.stop();
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
-            logger.error("Processor execute exception!", ex);
+            logger.error("Processor execute exception!{}", ex.getMessage());
         } finally {
             this.reportTaskStatus(result, workerAddress);
         }
