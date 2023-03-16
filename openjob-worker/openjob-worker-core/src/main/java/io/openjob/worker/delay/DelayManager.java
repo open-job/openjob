@@ -36,6 +36,9 @@ public class DelayManager {
     public void init() {
         if (WorkerConfig.getDelayEnable()) {
             this.delayTaskMaster.init();
+
+            // Delay task manager.
+            DelayTaskManager.INSTANCE.init();
         }
     }
 
@@ -71,5 +74,8 @@ public class DelayManager {
 
         // Stop task container.
         DelayTaskContainerPool.getAllDelayTaskContainer().forEach((t, c) -> c.stop());
+
+        // Delay task manager.
+        DelayTaskManager.INSTANCE.stop();
     }
 }
