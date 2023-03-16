@@ -33,11 +33,10 @@ public interface DelayInstanceDAO {
     /**
      * Update deleted
      *
-     * @param id      id
+     * @param taskid  taskid
      * @param deleted deleted
-     * @return Long
      */
-    Long updateDeleted(Long id, Integer deleted);
+    void updateDeleted(String taskid, Integer deleted);
 
     /**
      * Get page list

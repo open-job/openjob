@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -91,8 +92,8 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public Long updateDeleted(Long id, Integer deleted) {
-        this.delayInstanceRepository.findById(id)
+    public void updateDeleted(String taskid, Integer deleted) {
+        Optional.ofNullable(this.delayInstanceRepository.findByTaskId(taskid))
                 .ifPresent(d -> {
                     if (Objects.nonNull(deleted)) {
                         d.setDeleted(deleted);
@@ -100,7 +101,6 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                     }
                     this.delayInstanceRepository.save(d);
                 });
-        return id;
     }
 
     @Override

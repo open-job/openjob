@@ -113,17 +113,6 @@ public class DelayInstanceScheduler {
     }
 
     /**
-     * Stop delay task.
-     *
-     * @param stopRequest stopRequest
-     * @return DelayInstanceStopResponseDTO
-     */
-    public DelayInstanceStopResponseDTO stop(DelayInstanceStopRequestDTO stopRequest) {
-        System.out.println(stopRequest);
-        return new DelayInstanceStopResponseDTO();
-    }
-
-    /**
      * Pull topic list.
      *
      * @param pullRequestDTO pullRequest
@@ -232,6 +221,16 @@ public class DelayInstanceScheduler {
                 return null;
             }
         });
+    }
+
+    /**
+     * Stop delay task.
+     *
+     * @param stopRequest stopRequest
+     * @return DelayInstanceStopResponseDTO
+     */
+    public DelayInstanceStopResponseDTO stop(DelayInstanceStopRequestDTO stopRequest) {
+        return new DelayInstanceStopResponseDTO();
     }
 
     /**

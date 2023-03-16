@@ -1,5 +1,6 @@
 package io.openjob.server.admin.service;
 
+import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
 import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
@@ -25,5 +26,5 @@ public interface DelayInstanceService {
      * @param request request
      * @return DeleteDelayVO
      */
-    DeleteDelayInstanceVO delete(DeleteDelayInstanceVO request);
+    DeleteDelayInstanceVO delete(DeleteDelayRequest request);
 }
