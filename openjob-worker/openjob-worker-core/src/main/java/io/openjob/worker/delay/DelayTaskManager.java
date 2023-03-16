@@ -45,17 +45,34 @@ public class DelayTaskManager {
         this.scheduledService.scheduleWithFixedDelay(new TaskExecuteTimeoutRunnable(this), 1, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Add task
+     *
+     * @param taskId    taskId
+     * @param future    future
+     * @param atTimeout atTimeout
+     */
     public void addTask(String taskId, Future<?> future, Long atTimeout) {
         this.taskId2Timeout.put(taskId, atTimeout);
         this.taskId2Future.put(taskId, future);
     }
 
+    /**
+     * Remove task
+     *
+     * @param taskId taskId
+     */
     public void remove(String taskId) {
         this.taskId2Timeout.remove(taskId);
         this.taskId2Future.remove(taskId);
     }
 
-    public void stopAndRemove(String taskId) {
+    /**
+     * Stop and remove
+     *
+     * @param taskId taskId
+     */
+    public void stopAndRemoveTaskInstance(String taskId) {
         // Stop task
         Optional.ofNullable(this.taskId2Future.get(taskId))
                 .ifPresent(f -> f.cancel(true));
@@ -64,11 +81,16 @@ public class DelayTaskManager {
         this.remove(taskId);
     }
 
-
+    /**
+     * Stop task manager
+     */
     public void stop() {
         this.scheduledService.shutdown();
     }
 
+    /**
+     * Task execute runnable
+     */
     private static class TaskExecuteTimeoutRunnable implements Runnable {
         private final DelayTaskManager delayTaskManager;
 
@@ -85,7 +107,7 @@ public class DelayTaskManager {
                 }
 
                 // Stop and remove
-                this.delayTaskManager.stopAndRemove(tid);
+                this.delayTaskManager.stopAndRemoveTaskInstance(tid);
             });
         }
     }

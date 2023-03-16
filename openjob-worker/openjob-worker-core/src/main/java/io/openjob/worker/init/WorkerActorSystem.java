@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.actor.DelayTaskMasterActor;
 import io.openjob.worker.actor.TaskContainerActor;
 import io.openjob.worker.actor.TaskMasterActor;
 import io.openjob.worker.actor.WorkerHeartbeatActor;
@@ -15,6 +16,7 @@ import io.openjob.worker.actor.WorkerPersistentRoutingActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.util.ConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -79,6 +81,15 @@ public class WorkerActorSystem {
                 .withRouter(new RoundRobinPool(taskContainerNum))
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_TASK_CONTAINER);
         actorSystem.actorOf(containerProps, WorkerAkkaConstant.ACTOR_CONTAINER);
+
+        // Delay task
+        if (WorkerConfig.getDelayEnable()) {
+            int delayMasterNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_DELAY_MASTER_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_DELAY_MASTER_ACTOR_NUM);
+            Props delayMasterProps = Props.create(DelayTaskMasterActor.class)
+                    .withRouter(new RoundRobinPool(delayMasterNum))
+                    .withDispatcher(WorkerAkkaConstant.DISPATCHER_DELAY_MASTER);
+            actorSystem.actorOf(delayMasterProps, AkkaConstant.WORKER_ACTOR_DELAY_MASTER);
+        }
     }
 
     public static ActorSystem getActorSystem() {

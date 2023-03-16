@@ -9,6 +9,8 @@ import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -16,8 +18,9 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Slf4j
 public class DelayThreadTaskProcessor implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger("openjob");
 
     protected JobContext jobContext;
 
@@ -48,12 +51,18 @@ public class DelayThreadTaskProcessor implements Runnable {
             }
 
             result = this.baseProcessor.process(this.jobContext);
+            logger.info("Delay processor completed! taskId={}", this.jobContext.getTaskId());
+        } catch (InterruptedException ex) {
+            logger.info("Delay processor is interrupted! taskId={}", this.jobContext.getTaskId());
         } catch (Throwable ex) {
-            log.error("Delay processor run failed!", ex);
+            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getTaskId()), ex);
             result.setResult(ex.getMessage());
         } finally {
             DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
             this.reportTaskStatus(result, workerAddress);
+
+            // Remove from task manager
+            DelayTaskManager.INSTANCE.remove(this.jobContext.getDelayTaskId());
         }
     }
 

@@ -31,6 +31,8 @@ public class WorkerConstant {
     public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "worker.persistent.actor.num";
     public static final String WORKER_TASK_PERSISTENT_ROUTING_ACTOR_NUM = "worker.persistent.routing.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "worker.heartbeat.interval";
+
+    public static final String WORKER_DELAY_MASTER_ACTOR_NUM = "worker.delay.master.actor.num";
     public static final String WORKER_DELAY_PULL_SIZE = "worker.delay.pull.size";
     public static final String WORKER_DELAY_PULL_SLEEP = "worker.delay.pull.sleep";
     public static final String WORKER_DELAY_PULL_STEP = "worker.delay.pull.step";
@@ -46,7 +48,7 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ROUTING_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
-
+    public static final Integer DEFAULT_WORKER_DELAY_MASTER_ACTOR_NUM = 4;
     public static final Integer DEFAULT_WORKER_DELAY_PULL_SIZE = 10;
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
