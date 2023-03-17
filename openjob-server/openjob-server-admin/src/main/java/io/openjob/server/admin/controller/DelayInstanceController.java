@@ -4,9 +4,11 @@ import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.delay.DeleteDelayInstanceRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
+import io.openjob.server.admin.request.delay.StopDelayInstanceRequest;
 import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
 import io.openjob.server.admin.service.DelayInstanceService;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
+import io.openjob.server.admin.vo.delay.StopDelayInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,5 +48,11 @@ public class DelayInstanceController {
     @PostMapping("/delete")
     public Result<DeleteDelayInstanceVO> delete(@Valid @RequestBody DeleteDelayInstanceRequest request) {
         return Result.success(this.delayInstanceService.delete(request));
+    }
+
+    @ApiOperation("Delete delay instance")
+    @PostMapping("/delete")
+    public Result<StopDelayInstanceVO> stop(@Valid @RequestBody StopDelayInstanceRequest request) {
+        return Result.success(this.delayInstanceService.stop(request));
     }
 }

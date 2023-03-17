@@ -7,8 +7,7 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class TopicTotalAndReadyCounterDTO {
+public class TopicReadyCounterDTO {
     private String topic;
-    private Long total;
     private Long ready;
 }

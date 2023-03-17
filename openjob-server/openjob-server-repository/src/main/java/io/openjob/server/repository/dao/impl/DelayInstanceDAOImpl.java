@@ -5,6 +5,7 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
+import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
@@ -168,6 +169,16 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     public List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size) {
         DelayInstance delayInstance = new DelayInstance();
         return this.delayInstanceRepository.findAll(Example.of(delayInstance), PageRequest.of(0, size, Sort.by("id"))).toList();
+    }
+
+    @Override
+    public DelayInstance getByTaskId(String taskId) {
+        return this.delayInstanceRepository.findByTaskId(taskId);
+    }
+
+    @Override
+    public List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses) {
+        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.server.admin.request.delay.AddDelayRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayRequest;
@@ -18,15 +19,18 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayDAO;
+import io.openjob.server.repository.dao.DelayInstanceDAO;
+import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
-import io.openjob.server.scheduler.dto.TopicTotalAndReadyCounterDTO;
+import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,14 +42,18 @@ import java.util.stream.Collectors;
  */
 @Service
 public class DelayServiceImpl implements DelayService {
-    private final DelayDAO delayDAO;
+
     private final AppDAO appDAO;
+    private final DelayDAO delayDAO;
+    private final DelayInstanceDAO delayInstanceDAO;
+
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO, DelayInstanceScheduler delayInstanceScheduler) {
+    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO, DelayInstanceDAO delayInstanceDAO, DelayInstanceScheduler delayInstanceScheduler) {
         this.delayDAO = delayDAO;
         this.appDAO = appDAO;
+        this.delayInstanceDAO = delayInstanceDAO;
         this.delayInstanceScheduler = delayInstanceScheduler;
     }
 
@@ -64,12 +72,23 @@ public class DelayServiceImpl implements DelayService {
             return PageUtil.emptyList(ListDelayVO.class);
         }
 
-        // Topic ready count.
         List<String> topics = pageList.getList().stream()
                 .map(Delay::getTopic).distinct().collect(Collectors.toList());
-        Map<String, TopicTotalAndReadyCounterDTO> counterMap = this.delayInstanceScheduler.getTopicTotalReadyCount(topics)
+
+        // Topic total count
+        List<Integer> statuses = Arrays.asList(
+                TaskStatusEnum.UNKNOWN.getStatus(),
+                TaskStatusEnum.INIT.getStatus(),
+                TaskStatusEnum.FAILOVER.getStatus(),
+                TaskStatusEnum.RUNNING.getStatus()
+        );
+        Map<String, Long> totalMap = this.delayInstanceDAO.getTopicTotalCount(topics, statuses).stream()
+                .collect(Collectors.toMap(DelayInstanceTotalDTO::getTopic, DelayInstanceTotalDTO::getTotal));
+
+        // Topic ready count.
+        Map<String, Long> readyMap = this.delayInstanceScheduler.getTopicReadyCount(topics)
                 .stream()
-                .collect(Collectors.toMap(TopicTotalAndReadyCounterDTO::getTopic, t -> t));
+                .collect(Collectors.toMap(TopicReadyCounterDTO::getTopic, TopicReadyCounterDTO::getReady));
 
         // App list.
         List<Long> appIds = pageList.getList().stream()
@@ -86,8 +105,8 @@ public class DelayServiceImpl implements DelayService {
             }
 
             // Total and Ready
-            listDelayVO.setTotal(counterMap.get(d.getTopic()).getTotal());
-            listDelayVO.setReady(counterMap.get(d.getTopic()).getReady());
+            listDelayVO.setTotal(totalMap.get(d.getTopic()));
+            listDelayVO.setReady(readyMap.get(d.getTopic()));
             return listDelayVO;
         });
     }
