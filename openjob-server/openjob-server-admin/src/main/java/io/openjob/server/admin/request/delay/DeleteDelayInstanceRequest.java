@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class DeleteDelayInstanceRequest {
-    @ApiModelProperty(value = "Primary id", required = true)
-    private Long id;
+    @ApiModelProperty(value = "Delay task id", required = true)
+    private String taskId;
 }

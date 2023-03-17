@@ -16,12 +16,12 @@ public class CacheUtil {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_TOPIC_PREFIX, topic);
     }
 
-    public static String getDelayTopicCounterKey(String topic) {
-        return String.format("%s:%s", CacheConst.DELAY_TOPIC_COUNTER, topic);
-    }
-
     public static String getDelayDetailTaskIdKey(String taskId) {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_TASKID_PREFIX, taskId);
+    }
+
+    public static String getDelayDetailWorkerAddress(String taskId){
+        return String.format("%s:%s", CacheConst.DELAY_DETAIL_WORKER_ADDRESS_PREFIX, taskId);
     }
 
     public static String getZsetKey(Long slotId) {

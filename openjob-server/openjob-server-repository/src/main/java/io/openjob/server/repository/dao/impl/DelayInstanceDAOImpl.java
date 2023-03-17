@@ -173,11 +173,19 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     @Override
     public Integer batchUpdateStatus(List<DelayInstance> updateList) {
         // When then sql.
-        StringBuilder whenThen = new StringBuilder();
-        updateList.forEach(d -> whenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus())));
+        StringBuilder statusWhenThen = new StringBuilder();
+        StringBuilder addressWhenThen = new StringBuilder();
+        updateList.forEach(d -> {
+            statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
+            addressWhenThen.append(String.format(" when '%s' then `%s` ", d.getTaskId(), d.getWorkerAddress()));
+        });
 
         // Update sql.
-        String sql = String.format("update `delay_instance` set `update_time`=%d, `status`=(case `task_id` %s ELSE `status` END)", DateUtil.timestamp(), whenThen);
+        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),`update_time`=%d, `status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+                addressWhenThen,
+                DateUtil.timestamp(),
+                statusWhenThen,
+                statusWhenThen);
         return this.jdbcTemplate.update(sql);
     }
 

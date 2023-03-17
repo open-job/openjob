@@ -38,4 +38,9 @@ public class DelayInstanceStatusRequestDTO {
      * Zset cache key
      */
     private String zsetKey;
+
+    /**
+     * Worker address
+     */
+    private String workerAddress;
 }

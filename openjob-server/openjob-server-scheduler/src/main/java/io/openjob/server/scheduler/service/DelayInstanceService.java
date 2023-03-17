@@ -56,7 +56,7 @@ public class DelayInstanceService {
         // Pull delay instance.
         pullRequest.getPullItems().forEach(item -> {
             DelayItemPullRequestDTO delayItemPullRequestDTO = SchedulerMapper.INSTANCE.toDelayItemPullRequestDTO(item);
-            List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(delayItemPullRequestDTO);
+            List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(pullRequest.getWorkerAddress(), delayItemPullRequestDTO);
             responses.addAll(SchedulerMapper.INSTANCE.toServerDelayPullResponseList(responseList));
         });
 

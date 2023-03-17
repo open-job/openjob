@@ -1,13 +1,14 @@
 package io.openjob.worker.delay;
 
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
+import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,12 @@ public class DelayThreadTaskProcessor implements Runnable {
     public void run() {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);
-        String workerAddress = "";
 
         ProcessResult result = new ProcessResult(false);
         try {
+            // Report running
+            this.reportRunningTaskStatus();
+
             String taskId = this.jobContext.getDelayTaskId();
             String topic = this.jobContext.getDelayTopic();
             String processorInfo = this.jobContext.getProcessorInfo();
@@ -59,20 +62,31 @@ public class DelayThreadTaskProcessor implements Runnable {
             result.setResult(ex.getMessage());
         } finally {
             DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
-            this.reportTaskStatus(result, workerAddress);
+            this.reportFinallyTaskStatus(result);
 
             // Remove from task manager
             DelayTaskManager.INSTANCE.remove(this.jobContext.getDelayTaskId());
         }
     }
 
-    private void reportTaskStatus(ProcessResult result, String workerAddress) {
+    private void reportRunningTaskStatus() {
+        WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
+        workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
+        workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
+        workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
+        workerDelayTaskRequest.setStatus(TaskStatusEnum.RUNNING.getStatus());
+        workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
+        DelayStatusReporter.report(workerDelayTaskRequest);
+    }
+
+    private void reportFinallyTaskStatus(ProcessResult result) {
         WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
         workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
         workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(result.getStatus().getStatus());
         workerDelayTaskRequest.setResult(result.getResult());
+        workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
         DelayStatusReporter.report(workerDelayTaskRequest);
     }
 }

@@ -81,6 +81,10 @@ public enum TaskStatusEnum {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("TaskStatusEnum parseValue(%s) failed!", status)));
     }
 
+    public static Boolean isRunning(Integer status) {
+        return RUNNING.getStatus().equals(status);
+    }
+
     /**
      * Status.
      */

@@ -12,11 +12,6 @@ public class CacheConst {
     public static final String TOPIC_LIST_PREFIX = "topic:list";
 
     /**
-     * Delay topic counter
-     */
-    public static final String DELAY_TOPIC_COUNTER = "delay:topic:counter";
-
-    /**
      * Delay prefix
      */
     public static final String DELAY_DETAIL_TOPIC_PREFIX = "delay:detail:topic";
@@ -25,6 +20,11 @@ public class CacheConst {
      * Delay detail prefix.
      */
     public static final String DELAY_DETAIL_TASKID_PREFIX = "delay:detail:taskid";
+
+    /**
+     * Delay worker address
+     */
+    public static final String DELAY_DETAIL_WORKER_ADDRESS_PREFIX = "delay:detail:worker:address";
 
     /**
      * Delay list prefix.

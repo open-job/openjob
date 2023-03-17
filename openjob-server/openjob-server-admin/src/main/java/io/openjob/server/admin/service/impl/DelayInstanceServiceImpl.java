@@ -1,11 +1,14 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.server.admin.request.delay.DeleteDelayInstanceRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
+import io.openjob.server.admin.request.delay.StopDelayInstanceRequest;
 import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
 import io.openjob.server.admin.service.DelayInstanceService;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
+import io.openjob.server.admin.vo.delay.StopDelayInstanceVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -14,6 +17,7 @@ import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,12 +45,23 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
     }
 
     @Override
-    public DeleteDelayInstanceVO delete(DeleteDelayRequest request) {
+    public DeleteDelayInstanceVO delete(DeleteDelayInstanceRequest request) {
         DelayInstanceDeleteRequestDTO delayInstanceDeleteRequestDTO = new DelayInstanceDeleteRequestDTO();
         delayInstanceDeleteRequestDTO.setTaskId(request.getTaskId());
-
         this.delayInstanceScheduler.delete(delayInstanceDeleteRequestDTO);
+
+        // Update deleted
         this.delayInstanceDAO.updateDeleted(request.getTaskId(), CommonConstant.YES);
         return new DeleteDelayInstanceVO();
+    }
+
+    @Override
+    public StopDelayInstanceVO stop(StopDelayInstanceRequest request) {
+        DelayInstanceStopRequestDTO delayInstanceStopRequestDTO = new DelayInstanceStopRequestDTO();
+        delayInstanceStopRequestDTO.setTaskId(request.getTaskId());
+        this.delayInstanceScheduler.stop(delayInstanceStopRequestDTO);
+
+        // Update status
+        return new StopDelayInstanceVO();
     }
 }
