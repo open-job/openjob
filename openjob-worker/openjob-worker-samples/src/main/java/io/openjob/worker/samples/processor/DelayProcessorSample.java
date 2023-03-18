@@ -17,9 +17,14 @@ public class DelayProcessorSample implements JavaProcessor {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
     @Override
-    public ProcessResult process(JobContext context) {
+    public ProcessResult process(JobContext context) throws InterruptedException {
         logger.info("Delay run {} {} {}", context.getDelayTaskId(), context.getDelayParams(), context.getDelayExtra());
         log.info("Delay run {} {} {}", context.getDelayTaskId(), context.getDelayParams(), context.getDelayExtra());
+
+        for (int i = 0; i < 2; i++) {
+            logger.info("JavaProcessorTest execute success! taskId={}", context.getDelayTaskId());
+            Thread.sleep(1000L);
+        }
         return new ProcessResult(true);
     }
 }

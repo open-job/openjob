@@ -37,6 +37,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -204,6 +205,10 @@ public class DelayInstanceScheduler {
         List<String> notRunningAddressKeys = notRunningList.stream().map(d -> CacheUtil.getDelayDetailWorkerAddressKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
+        // Worker address keys.
+        List<String> notRunningRetryKeys = notRunningList.stream().map(d -> CacheUtil.getDelayRetryTimesKey(d.getTaskId()))
+                .collect(Collectors.toList());
+
         // Delay status list key.
         String statusListKey = CacheUtil.getStatusListKey(DelaySlotUtil.getStatusListSlotId(UUID.randomUUID().toString()));
 
@@ -214,15 +219,20 @@ public class DelayInstanceScheduler {
                 operations.multi();
 
                 // Remove from zset
-                zsetKeyMap.forEach((k, list) -> operations.opsForZSet().remove(
-                        k,
-                        list.stream().filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
-                                .map(DelayInstanceStatusRequestDTO::getTaskId).distinct()
-                                .toArray()
-                ));
+                zsetKeyMap.forEach((k, list) -> {
+                    List<String> completeStatusList = list.stream().filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
+                            .map(DelayInstanceStatusRequestDTO::getTaskId)
+                            .distinct().collect(Collectors.toList());
+
+                    if (!CollectionUtils.isEmpty(completeStatusList)) {
+                        operations.opsForZSet().remove(k, completeStatusList.toArray());
+                    }
+                });
 
                 // Delete detail.
-                operations.delete(notRunningDetailKeys.addAll(notRunningAddressKeys));
+                notRunningDetailKeys.addAll(notRunningAddressKeys);
+                notRunningDetailKeys.addAll(notRunningRetryKeys);
+                operations.delete(notRunningDetailKeys);
 
                 // Push delay status to list
                 operations.opsForList().rightPushAll(statusListKey, statusList.toArray());
@@ -287,10 +297,6 @@ public class DelayInstanceScheduler {
      */
     @SuppressWarnings("unchecked")
     private void addDelay(DelayInstanceAddRequestDTO addRequest) {
-        if (addRequest.getExecuteTime() < DateUtil.timestamp()) {
-            throw new RuntimeException("Execute time is expire!");
-        }
-
         String taskId = addRequest.getTaskId();
         String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
@@ -320,11 +326,12 @@ public class DelayInstanceScheduler {
         String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
         String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
         String addressKey = CacheUtil.getDelayDetailWorkerAddressKey(taskId);
+        String retryKey = CacheUtil.getDelayRetryTimesKey(taskId);
         RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
             @Override
             public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                 operations.multi();
-                operations.delete(Arrays.asList(detailKey, addressKey));
+                operations.delete(Arrays.asList(detailKey, addressKey, retryKey));
                 operations.opsForZSet().remove(zsetKey, taskId);
                 operations.opsForList().remove(listKey, 1, taskId);
                 return operations.exec();

@@ -156,7 +156,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                 if (Objects.isNull(times)) {
                     continue;
                 }
-                timesMap.put(retryKeys.get(i), (Integer) Optional.ofNullable(times.get(i)).orElse(0));
+                timesMap.put(timingMembers.get(i), (Integer) Optional.ofNullable(times.get(i)).orElse(0));
             }
 
             // Get delay instance detail list

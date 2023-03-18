@@ -51,7 +51,7 @@ public class DelayInstanceController {
     }
 
     @ApiOperation("Delete delay instance")
-    @PostMapping("/delete")
+    @PostMapping("/stop")
     public Result<StopDelayInstanceVO> stop(@Valid @RequestBody StopDelayInstanceRequest request) {
         return Result.success(this.delayInstanceService.stop(request));
     }

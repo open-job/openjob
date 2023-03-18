@@ -188,7 +188,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
         StringBuilder addressWhenThen = new StringBuilder();
         updateList.forEach(d -> {
             statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
-            addressWhenThen.append(String.format(" when '%s' then `%s` ", d.getTaskId(), d.getWorkerAddress()));
+            addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
         });
 
         // Update sql.
