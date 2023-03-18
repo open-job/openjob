@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -105,7 +106,7 @@ public class DelayServiceImpl implements DelayService {
             }
 
             // Total and Ready
-            listDelayVO.setTotal(totalMap.get(d.getTopic()));
+            listDelayVO.setTotal(Optional.ofNullable(totalMap.get(d.getTopic())).orElse(0L));
             listDelayVO.setReady(readyMap.get(d.getTopic()));
             return listDelayVO;
         });
