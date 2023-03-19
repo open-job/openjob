@@ -16,6 +16,9 @@ public class ListDelayInstanceVO {
     @ApiModelProperty(value = "Namespace", required = true)
     private Long namespaceId;
 
+    @ApiModelProperty(value = "Application name", required = true)
+    private String appName;
+
     @ApiModelProperty(value = "Application", required = true)
     private Long appId;
 
@@ -39,6 +42,9 @@ public class ListDelayInstanceVO {
 
     @ApiModelProperty(value = "Execute time", required = true)
     private Long executeTime;
+
+    @ApiModelProperty(value = "Complete time", required = true)
+    private Long completeTime;
 
     @ApiModelProperty(value = "Create time", required = true)
     private Long createTime;
