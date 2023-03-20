@@ -42,7 +42,7 @@ public class DelayTaskManager {
                 new ThreadPoolExecutor.AbortPolicy()
         );
 
-        this.scheduledService.scheduleWithFixedDelay(new TaskExecuteTimeoutRunnable(this), 1, 2, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new TaskExecuteTimeoutRunnable(this), 1, 1, TimeUnit.SECONDS);
     }
 
     /**

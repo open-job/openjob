@@ -186,14 +186,17 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
         // When then sql.
         StringBuilder statusWhenThen = new StringBuilder();
         StringBuilder addressWhenThen = new StringBuilder();
+        StringBuilder completeWhenThen = new StringBuilder();
         updateList.forEach(d -> {
             statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
             addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
+            completeWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getCompleteTime()));
         });
 
         // Update sql.
-        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),`update_time`=%d, `status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, `status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
                 addressWhenThen,
+                completeWhenThen,
                 DateUtil.timestamp(),
                 statusWhenThen,
                 statusWhenThen);

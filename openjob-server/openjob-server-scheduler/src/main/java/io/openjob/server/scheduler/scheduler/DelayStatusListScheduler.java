@@ -111,6 +111,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                 delayInstance.setTaskId(delayStatus.getTaskId());
                 delayInstance.setStatus(delayStatus.getStatus());
                 delayInstance.setWorkerAddress(delayStatus.getWorkerAddress());
+                delayInstance.setCompleteTime(delayStatus.getCompleteTime());
                 return delayInstance;
             }).collect(Collectors.toList());
 

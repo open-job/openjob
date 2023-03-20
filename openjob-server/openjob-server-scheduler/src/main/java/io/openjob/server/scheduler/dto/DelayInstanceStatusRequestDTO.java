@@ -43,4 +43,9 @@ public class DelayInstanceStatusRequestDTO {
      * Worker address
      */
     private String workerAddress;
+
+    /**
+     * Complete time
+     */
+    private Long completeTime;
 }

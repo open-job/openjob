@@ -40,4 +40,9 @@ public class WorkerDelayTaskRequest implements Serializable {
      * Worker address
      */
     private String workerAddress;
+
+    /**
+     * Complete time
+     */
+    private Long completeTime;
 }

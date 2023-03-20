@@ -2,6 +2,7 @@ package io.openjob.worker.delay;
 
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayTaskRequest;
+import io.openjob.common.util.DateUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.init.WorkerConfig;
@@ -87,6 +88,7 @@ public class DelayThreadTaskProcessor implements Runnable {
         workerDelayTaskRequest.setStatus(result.getStatus().getStatus());
         workerDelayTaskRequest.setResult(result.getResult());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
+        workerDelayTaskRequest.setCompleteTime(DateUtil.timestamp());
         DelayStatusReporter.report(workerDelayTaskRequest);
     }
 }
