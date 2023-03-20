@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.scheduler;
 import io.openjob.common.SpringContext;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
@@ -210,7 +211,8 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
                         // Update score(score=score+timeout)
                         if (Objects.nonNull(topicDelay)) {
-                            pushTask.forEach(d -> operations.opsForZSet().incrementScore(key, d.getTaskId(), topicDelay.getExecuteTimeout()));
+                            double retryTime = topicDelay.getExecuteTimeout() + topicDelay.getFailRetryInterval() + SchedulerConstant.DELAY_RETRY_AFTER;
+                            pushTask.forEach(d -> operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime));
                         }
                     });
 

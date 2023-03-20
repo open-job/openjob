@@ -52,7 +52,7 @@ public class DelayTaskContainer {
     public void execute(List<DelayInstanceDTO> instanceList) {
         DelayDAO.INSTANCE.updatePullSizeById(this.id, -instanceList.size());
 
-        Long nowMill = DateUtil.instant().toEpochMilli();
+        Long timestamp = DateUtil.timestamp();
         instanceList.forEach(i -> {
             JobContext jobContext = new JobContext();
             jobContext.setDelayId(i.getDelayId());
@@ -64,7 +64,7 @@ public class DelayTaskContainer {
             jobContext.setDelayTaskId(i.getTaskId());
             jobContext.setDelayTopic(i.getTopic());
             Future<?> future = this.executorService.submit(new DelayThreadTaskProcessor(jobContext));
-            DelayTaskManager.INSTANCE.addTask(i.getTaskId(), future, nowMill + i.getExecuteTimeout());
+            DelayTaskManager.INSTANCE.addTask(i.getTaskId(), future, timestamp + i.getExecuteTimeout());
         });
     }
 

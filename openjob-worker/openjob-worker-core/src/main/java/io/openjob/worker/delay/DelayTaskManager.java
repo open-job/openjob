@@ -42,7 +42,7 @@ public class DelayTaskManager {
                 new ThreadPoolExecutor.AbortPolicy()
         );
 
-        this.scheduledService.scheduleWithFixedDelay(new TaskExecuteTimeoutRunnable(this), 1, 1, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new TaskExecuteTimeoutRunnable(this), 1, 2, TimeUnit.SECONDS);
     }
 
     /**
@@ -100,7 +100,7 @@ public class DelayTaskManager {
 
         @Override
         public void run() {
-            Long timestamp = DateUtil.instant().toEpochMilli();
+            Long timestamp = DateUtil.timestamp();
             this.delayTaskManager.taskId2Timeout.forEach((tid, time) -> {
                 if (time > timestamp) {
                     return;
