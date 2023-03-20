@@ -46,6 +46,9 @@ public class ListDelayInstanceVO {
     @ApiModelProperty(value = "Complete time", required = true)
     private Long completeTime;
 
+    @ApiModelProperty(value = "Worker address", required = true)
+    private String workerAddress;
+
     @ApiModelProperty(value = "Create time", required = true)
     private Long createTime;
 

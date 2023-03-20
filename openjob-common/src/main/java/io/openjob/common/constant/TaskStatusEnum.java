@@ -57,6 +57,14 @@ public enum TaskStatusEnum {
     );
 
     /**
+     * Complete status
+     */
+    public static final List<Integer> FINISH_LIST = Arrays.asList(
+            SUCCESS.status,
+            FAILED.status
+    );
+
+    /**
      * All status.
      */
     public static final List<Integer> ALL = Arrays.asList(

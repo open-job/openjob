@@ -2,9 +2,11 @@ package io.openjob.server.admin.service;
 
 import io.openjob.server.admin.request.delay.DeleteDelayInstanceRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
+import io.openjob.server.admin.request.delay.ListDelayInstanceLogRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
 import io.openjob.server.admin.request.delay.StopDelayInstanceRequest;
 import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
+import io.openjob.server.admin.vo.delay.ListDelayInstanceLogVO;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
 import io.openjob.server.admin.vo.delay.StopDelayInstanceVO;
 import io.openjob.server.common.vo.PageVO;
@@ -38,4 +40,12 @@ public interface DelayInstanceService {
      * @return StopDelayInstanceVO
      */
     StopDelayInstanceVO stop(StopDelayInstanceRequest request);
+
+    /**
+     * List log
+     *
+     * @param request request
+     * @return ListDelayInstanceLogVO
+     */
+    ListDelayInstanceLogVO listProcessorLog(ListDelayInstanceLogRequest request);
 }

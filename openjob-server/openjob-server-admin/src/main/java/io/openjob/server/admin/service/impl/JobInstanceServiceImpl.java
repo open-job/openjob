@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
-import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
@@ -23,7 +22,6 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLog;
-import io.openjob.server.log.dto.ProcessorLogField;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
@@ -38,9 +36,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -48,7 +44,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class JobInstanceServiceImpl implements JobInstanceService {
-    private final static String LOG_FORMAT = "%-23s %-7s %-40s : %s";
     private final LogDAO logDAO;
     private final JobInstanceDAO jobInstanceDAO;
     private final JobInstanceLogDAO jobInstanceLogDAO;
@@ -110,7 +105,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
                 // Processor list and nextTime.
-                processorLogs.forEach(l -> list.add(this.formatLog(l)));
+                processorLogs.forEach(l -> list.add(LogFormatUtil.formatLog(l)));
                 nextTime.set(processorLogs.get(processorLogs.size() - 1).getTime());
             } else {
                 boolean completeStatus = !InstanceStatusEnum.NOT_COMPLETE.contains(request.getStatus());
@@ -136,24 +131,11 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
     private String formatLogInstanceLog(JobInstanceLog jobInstanceLog) {
         return String.format(
-                LOG_FORMAT,
+                LogFormatUtil.LOG_FORMAT,
                 DateUtil.formatTimestamp(jobInstanceLog.getCreateTime() * 1000),
                 "WARNING",
                 "",
                 jobInstanceLog.getMessage()
-        );
-    }
-
-    private String formatLog(ProcessorLog processorLog) {
-        Map<String, String> fieldMap = processorLog.getFields().stream()
-                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
-        String location = fieldMap.get(LogFieldConstant.LOCATION);
-        return String.format(
-                LOG_FORMAT,
-                DateUtil.formatTimestamp(Long.parseLong(fieldMap.get(LogFieldConstant.TIME_STAMP))),
-                fieldMap.get(LogFieldConstant.LEVEL),
-                LogFormatUtil.formatLocation(location),
-                fieldMap.get(LogFieldConstant.MESSAGE)
         );
     }
 }
