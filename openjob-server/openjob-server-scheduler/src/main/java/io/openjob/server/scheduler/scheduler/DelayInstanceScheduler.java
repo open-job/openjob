@@ -334,7 +334,8 @@ public class DelayInstanceScheduler {
                 operations.delete(Arrays.asList(detailKey, addressKey, retryKey));
                 operations.opsForZSet().remove(zsetKey, taskId);
                 operations.opsForList().remove(listKey, 1, taskId);
-                return operations.exec();
+                operations.exec();
+                return null;
             }
         });
     }
