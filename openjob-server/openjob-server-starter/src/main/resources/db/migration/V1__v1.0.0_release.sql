@@ -8,7 +8,6 @@ CREATE TABLE `app` (
                        `namespace_id` bigint(20) NOT NULL,
                        `name` varchar(256) NOT NULL DEFAULT '',
                        `desc` varchar(256) NOT NULL DEFAULT '',
-                       `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                        `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                        `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                        `create_time` bigint(12) unsigned NOT NULL,
@@ -19,9 +18,9 @@ CREATE TABLE `app` (
 
 /*!40000 ALTER TABLE `app` DISABLE KEYS */;
 
-INSERT INTO `app` (`id`, `namespace_id`, `name`, `desc`, `status`, `create_time`, `update_time`)
+INSERT INTO `app` (`id`, `namespace_id`, `name`, `desc`, `create_time`, `update_time`)
 VALUES
-    (1,1,'openjob','openjob', 1, 1658473199,1658473199);
+    (1,1,'openjob','openjob', 1658473199,1658473199);
 
 /*!40000 ALTER TABLE `app` ENABLE KEYS */;
 
@@ -539,7 +538,6 @@ CREATE TABLE `namespace` (
                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                              `name` varchar(64) NOT NULL DEFAULT '',
                              `uuid` varchar(64) NOT NULL DEFAULT '',
-                             `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                              `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                              `create_time` bigint(12) unsigned NOT NULL,
@@ -548,8 +546,8 @@ CREATE TABLE `namespace` (
                              KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-insert into namespace (id, `name`, uuid, status, deleted, delete_time, create_time, update_time)
-values  (1, 'default', 'a65d3fe5-258d-43e3-a5e6-dc12c4879ed6', 1, 2, 0, 1657528102, 1657528102);
+insert into namespace (id, `name`, deleted, delete_time, create_time, update_time)
+values  (1, 'default', 'a65d3fe5-258d-43e3-a5e6-dc12c4879ed6', 2, 0, 1657528102, 1657528102);
 
 
 

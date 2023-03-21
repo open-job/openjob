@@ -18,8 +18,4 @@ public class AddNamespaceRequest {
     @NotBlank
     @ApiModelProperty(value = "Namespace name", required = true)
     private String name;
-
-    @NotNull
-    @ApiModelProperty(value = "Namespace status", required = true)
-    private Integer status;
 }

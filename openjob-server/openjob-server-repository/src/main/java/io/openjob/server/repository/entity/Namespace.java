@@ -25,9 +25,6 @@ public class Namespace {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "status")
-    private Integer status;
-
     @Column(name = "uuid")
     private String uuid;
 

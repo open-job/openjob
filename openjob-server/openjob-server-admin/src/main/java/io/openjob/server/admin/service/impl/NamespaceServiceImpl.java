@@ -41,7 +41,6 @@ public class NamespaceServiceImpl implements NamespaceService {
         Namespace namespace = new Namespace();
         namespace.setName(addRequest.getName());
         namespace.setUuid(UUID.randomUUID().toString());
-        namespace.setStatus(addRequest.getStatus());
 
         // Save
         long id = this.namespaceDAO.save(namespace);
@@ -60,12 +59,6 @@ public class NamespaceServiceImpl implements NamespaceService {
         namespace.setDeleted(CommonConstant.YES);
         this.namespaceDAO.update(namespace);
         return new DeleteNamespaceVO();
-    }
-
-    @Override
-    public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
-        this.namespaceDAO.update(BeanMapperUtil.map(updateStatusRequest, Namespace.class));
-        return new UpdateNamespaceStatusVO();
     }
 
     @Override

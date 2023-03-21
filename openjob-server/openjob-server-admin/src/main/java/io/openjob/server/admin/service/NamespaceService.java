@@ -43,14 +43,6 @@ public interface NamespaceService {
     DeleteNamespaceVO delete(DeleteNamespaceRequest deleteNamespaceRequest);
 
     /**
-     * Update namespace status
-     *
-     * @param updateStatusRequest UpdateNamespaceStatusRequest
-     * @return UpdateStatusResult
-     */
-    UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest);
-
-    /**
      * Add namespace.
      *
      * @param listRequest ListNamespaceRequest

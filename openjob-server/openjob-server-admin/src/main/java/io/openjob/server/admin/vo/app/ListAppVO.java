@@ -29,9 +29,6 @@ public class ListAppVO {
     @ApiModelProperty(value = "App desc", required = true)
     private String desc;
 
-    @ApiModelProperty(value = "App status", required = true)
-    private Integer status;
-
     @ApiModelProperty(value = "App createTime", required = true)
     private Long createTime;
 }

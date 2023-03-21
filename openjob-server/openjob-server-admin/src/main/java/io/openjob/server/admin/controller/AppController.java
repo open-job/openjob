@@ -52,12 +52,6 @@ public class AppController {
         return Result.success(this.appService.update(updateRequest));
     }
 
-    @ApiOperation("Update status")
-    @PostMapping("/update-status")
-    public Result<UpdateAppStatusVO> updateStatus(@Valid @RequestBody UpdateAppStatusRequest updateRequest) {
-        return Result.success(this.appService.updateStatus(updateRequest));
-    }
-
     @ApiOperation("Delete application")
     @PostMapping("/delete")
     public Result<DeleteAppVO> delete(@Valid @RequestBody DeleteAppRequest deleteAppRequest) {

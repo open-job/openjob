@@ -42,14 +42,6 @@ public interface AppService {
     DeleteAppVO delete(DeleteAppRequest deleteAppRequest);
 
     /**
-     * Update
-     *
-     * @param updateRequest updateRequest
-     * @return UpdateAppStatusVO
-     */
-    UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest);
-
-    /**
      * Add namespace.
      *
      * @param listRequest ListNamespaceRequest

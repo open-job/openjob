@@ -24,8 +24,4 @@ public class AddAppRequest {
 
     @ApiModelProperty(value = "App desc", required = true)
     private String desc = "";
-
-    @NotNull
-    @ApiModelProperty(value = "App status", required = true)
-    private Integer status;
 }

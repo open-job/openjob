@@ -80,13 +80,6 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest) {
-        App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
-        this.appDAO.update(app);
-        return new UpdateAppStatusVO();
-    }
-
-    @Override
     public PageVO<ListAppVO> list(ListAppRequest listRequest) {
         // App list
         PageDTO<App> appPageDTO = this.appDAO.pageList(listRequest.getNamespaceId(), listRequest.getName(), listRequest.getPage(), listRequest.getSize());
