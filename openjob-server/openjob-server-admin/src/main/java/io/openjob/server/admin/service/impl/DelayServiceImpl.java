@@ -6,13 +6,11 @@ import io.openjob.server.admin.request.delay.AddDelayRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayRequest;
 import io.openjob.server.admin.request.delay.UpdateDelayRequest;
-import io.openjob.server.admin.request.delay.UpdateStatusDelayRequest;
 import io.openjob.server.admin.service.DelayService;
 import io.openjob.server.admin.vo.delay.AddDelayVO;
 import io.openjob.server.admin.vo.delay.DeleteDelayVO;
 import io.openjob.server.admin.vo.delay.ListDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateDelayVO;
-import io.openjob.server.admin.vo.delay.UpdateStatusDelayVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -123,11 +121,5 @@ public class DelayServiceImpl implements DelayService {
         Delay delay = BeanMapperUtil.map(updateDelayRequest, Delay.class);
         this.delayDAO.update(delay);
         return new UpdateDelayVO();
-    }
-
-    @Override
-    public UpdateStatusDelayVO updateStatus(UpdateStatusDelayRequest updateRequest) {
-        this.delayDAO.updateStatusOrDeleted(updateRequest.getId(), updateRequest.getStatus(), null);
-        return new UpdateStatusDelayVO();
     }
 }

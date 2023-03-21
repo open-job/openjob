@@ -40,7 +40,6 @@ CREATE TABLE `delay` (
                          `processor_info` varchar(256) NOT NULL DEFAULT '',
                          `fail_retry_times` int(11) unsigned NOT NULL DEFAULT '0',
                          `fail_retry_interval` int(11) unsigned NOT NULL DEFAULT '1000',
-                         `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                          `execute_timeout` int(11) unsigned NOT NULL DEFAULT '0',
                          `concurrency` int(11) unsigned NOT NULL DEFAULT '2',
                          `blocking_size` int(11) unsigned NOT NULL DEFAULT '20',
@@ -53,9 +52,9 @@ CREATE TABLE `delay` (
                          KEY `udx_topic` (`topic`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `status`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
+INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
 VALUES
-    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,1,30,2,20,'openjob.delay.test',2,0,0,0);
+    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,30,2,20,'openjob.delay.test',2,0,0,0);
 
 
 # Dump of table delay_instance

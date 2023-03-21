@@ -55,7 +55,6 @@ public class DelayDAOImpl implements DelayDAO {
                     d.setProcessorInfo(delay.getProcessorInfo());
                     d.setFailRetryTimes(delay.getFailRetryTimes());
                     d.setFailRetryInterval(delay.getFailRetryInterval());
-                    d.setStatus(delay.getStatus());
                     d.setExecuteTimeout(delay.getExecuteTimeout());
                     d.setConcurrency(delay.getConcurrency());
                     d.setBlockingSize(delay.getBlockingSize());
@@ -68,9 +67,6 @@ public class DelayDAOImpl implements DelayDAO {
     public Long updateStatusOrDeleted(Long id, Integer status, Integer deleted) {
         this.delayRepository.findById(id)
                 .ifPresent(d -> {
-                    if (Objects.nonNull(status)) {
-                        d.setStatus(status);
-                    }
                     if (Objects.nonNull(deleted)) {
                         d.setDeleted(deleted);
                         d.setDeleteTime(DateUtil.timestamp());

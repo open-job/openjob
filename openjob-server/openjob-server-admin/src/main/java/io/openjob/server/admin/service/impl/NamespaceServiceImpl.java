@@ -2,15 +2,13 @@ package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.namespace.AddNamespaceRequest;
+import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
 import io.openjob.server.admin.request.namespace.ListNamespaceRequest;
 import io.openjob.server.admin.request.namespace.UpdateNamespaceRequest;
-import io.openjob.server.admin.request.namespace.UpdateStatusNamespaceRequest;
-import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
-import io.openjob.server.admin.vo.namespace.DeleteNamespaceVO;
 import io.openjob.server.admin.service.NamespaceService;
 import io.openjob.server.admin.vo.namespace.AddNamespaceVO;
+import io.openjob.server.admin.vo.namespace.DeleteNamespaceVO;
 import io.openjob.server.admin.vo.namespace.ListNamespaceVO;
-import io.openjob.server.admin.vo.namespace.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.namespace.UpdateNamespaceVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;

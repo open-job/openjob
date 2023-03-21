@@ -5,13 +5,11 @@ import io.openjob.server.admin.request.delay.AddDelayRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayRequest;
 import io.openjob.server.admin.request.delay.UpdateDelayRequest;
-import io.openjob.server.admin.request.delay.UpdateStatusDelayRequest;
 import io.openjob.server.admin.service.DelayService;
 import io.openjob.server.admin.vo.delay.AddDelayVO;
 import io.openjob.server.admin.vo.delay.DeleteDelayVO;
 import io.openjob.server.admin.vo.delay.ListDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateDelayVO;
-import io.openjob.server.admin.vo.delay.UpdateStatusDelayVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,11 +60,5 @@ public class DelayController {
     @PostMapping("/update")
     public Result<UpdateDelayVO> update(@Valid @RequestBody UpdateDelayRequest updateDelayRequest) {
         return Result.success(this.delayService.update(updateDelayRequest));
-    }
-
-    @ApiOperation("Update delay status")
-    @PostMapping("/update-status")
-    public Result<UpdateStatusDelayVO> updateStatus(@Valid @RequestBody UpdateStatusDelayRequest updateRequest) {
-        return Result.success(this.delayService.updateStatus(updateRequest));
     }
 }

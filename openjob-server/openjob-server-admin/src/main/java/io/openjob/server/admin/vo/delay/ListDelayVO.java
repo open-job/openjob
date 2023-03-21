@@ -45,9 +45,6 @@ public class ListDelayVO {
     @ApiModelProperty(value = "fail retry interval", required = true)
     private Integer failRetryInterval;
 
-    @ApiModelProperty(value = "status", required = true)
-    private Integer status;
-
     @ApiModelProperty(value = "Execute timeout", required = true)
     private Integer executeTimeout;
 
