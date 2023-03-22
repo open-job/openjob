@@ -117,6 +117,17 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         super.stop();
     }
 
+    @Override
+    public void destroyTaskContainer() {
+        // Stop child task consumer
+        this.childTaskConsumer.stop();
+
+        // Stop scheduled thread poll
+        this.scheduledService.shutdown();
+
+        // Destroy task container
+        super.destroyTaskContainer();
+    }
 
     protected void reduce() {
         BaseProcessor processor = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());

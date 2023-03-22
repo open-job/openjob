@@ -4,12 +4,14 @@ import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ExecuteJobRequest;
 import io.openjob.server.admin.request.job.ListJobRequest;
+import io.openjob.server.admin.request.job.TimeExpressionRequest;
 import io.openjob.server.admin.request.job.UpdateJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
 import io.openjob.server.admin.vo.job.AddJobVO;
 import io.openjob.server.admin.vo.job.DeleteJobVO;
 import io.openjob.server.admin.vo.job.ExecuteJobVO;
 import io.openjob.server.admin.vo.job.ListJobVO;
+import io.openjob.server.admin.vo.job.TimeExpressionVO;
 import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
 import io.openjob.server.admin.vo.job.UpdateJobVO;
 import io.openjob.server.common.vo.PageVO;
@@ -59,6 +61,14 @@ public interface JobService {
      * @return ExecuteJobVO
      */
     ExecuteJobVO execute(ExecuteJobRequest request);
+
+    /**
+     * Time expression
+     *
+     * @param request request
+     * @return TimeExpressionVO
+     */
+    TimeExpressionVO timeExpression(TimeExpressionRequest request);
 
     /**
      * Add job.

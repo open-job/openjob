@@ -18,6 +18,7 @@ import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.request.MasterStopContainerRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -89,7 +90,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            this.stop();
+            this.destroyTaskContainer();
             return;
         }
 
@@ -137,12 +138,22 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
 
-        // Destroy task container.
-        this.destroyTaskContainer();
+        // Stop task container.
+        this.containerWorkers.forEach(w -> {
+            MasterStopContainerRequest request = new MasterStopContainerRequest();
+            request.setJobId(this.jobInstanceDTO.getJobId());
+            request.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+            request.setWorkerAddress(w);
+            WorkerActorSystem.atLeastOnceDelivery(request, null);
+        });
     }
 
     @Override
     public void destroyTaskContainer() {
+        // Remove from task master pool.
+        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
+
+        // Stop task container
         this.containerWorkers.forEach(w -> {
             MasterDestroyContainerRequest destroyRequest = new MasterDestroyContainerRequest();
             destroyRequest.setJobId(this.jobInstanceDTO.getJobId());

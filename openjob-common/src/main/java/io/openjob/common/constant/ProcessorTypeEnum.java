@@ -11,9 +11,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProcessorTypeEnum {
     /**
-     * Java.
+     * Processor(Java/Go/PHP)
      */
-    JAVA("java"),
+    PROCESSOR("processor"),
 
     /**
      * Shell.

@@ -27,6 +27,12 @@ public class ListDelayVO {
     @ApiModelProperty(value = "Topic", required = true)
     private String topic;
 
+    @ApiModelProperty(value = "Total", required = true)
+    private Long total;
+
+    @ApiModelProperty(value = "Ready", required = true)
+    private Long ready;
+
     @ApiModelProperty(value = "Description", required = true)
     private String description;
 
@@ -38,9 +44,6 @@ public class ListDelayVO {
 
     @ApiModelProperty(value = "fail retry interval", required = true)
     private Integer failRetryInterval;
-
-    @ApiModelProperty(value = "status", required = true)
-    private Integer status;
 
     @ApiModelProperty(value = "Execute timeout", required = true)
     private Integer executeTimeout;

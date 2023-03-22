@@ -9,6 +9,8 @@ import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -16,8 +18,11 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-public class ThreadTaskProcessor implements Runnable {
+public class ThreadTaskProcessor implements TaskProcessor, Runnable {
+    private static final Logger logger = LoggerFactory.getLogger("openjob");
+
     protected JobContext jobContext;
+
     protected BaseProcessor baseProcessor;
 
 
@@ -33,6 +38,7 @@ public class ThreadTaskProcessor implements Runnable {
     /**
      * Start
      */
+    @Override
     public void start() {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);
@@ -48,7 +54,7 @@ public class ThreadTaskProcessor implements Runnable {
 
         try {
             // Java
-            if (ProcessorTypeEnum.JAVA.getType().equals(this.jobContext.getProcessorType())) {
+            if (ProcessorTypeEnum.PROCESSOR.getType().equals(this.jobContext.getProcessorType())) {
                 this.baseProcessor = ProcessorUtil.getProcess(this.jobContext.getProcessorInfo());
             }
 
@@ -62,11 +68,35 @@ public class ThreadTaskProcessor implements Runnable {
                 } else {
                     result = this.baseProcessor.process(this.jobContext);
                 }
+
+                logger.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
+            } else {
+                logger.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!", this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
             }
+        } catch (InterruptedException ex) {
+            // Stop processor.
+            this.stop();
+
+            // Result
+            result.setResult(ex.getMessage());
+            logger.info("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
         } catch (Throwable ex) {
             result.setResult(ex.getMessage());
+            logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), ex);
         } finally {
             this.reportTaskStatus(result, workerAddress);
+        }
+    }
+
+    @Override
+    public void stop() {
+        if (Objects.nonNull(this.baseProcessor)) {
+            try {
+                this.baseProcessor.stop(this.jobContext);
+                logger.info("Task processor stopped!");
+            } catch (Throwable ex) {
+                logger.error("Processor stop exception!", ex);
+            }
         }
     }
 

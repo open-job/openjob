@@ -3,3 +3,9 @@ GET http://127.0.0.1:8080/admin/job-instance/list?namespaceId=1&jobId=&appId=1&p
 accept: */*
 Content-Type: application/json
 Session: 2cebdf15d414b6713672475a21f995a0
+
+### list processor list
+GET http://127.0.0.1:8080/admin/job-instance/list-processor-log?jobInstanceId=15&executeType=standalone
+accept: */*
+Content-Type: application/json
+Session: 2cebdf15d414b6713672475a21f995a0

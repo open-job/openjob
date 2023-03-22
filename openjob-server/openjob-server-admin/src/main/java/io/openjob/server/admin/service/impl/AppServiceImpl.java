@@ -1,17 +1,15 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
-import io.openjob.server.admin.constant.AppCodeEnum;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.app.AddAppRequest;
 import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
-import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.service.AppService;
 import io.openjob.server.admin.vo.app.AddAppVO;
 import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
-import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
@@ -49,7 +47,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
         App app = this.appDAO.getAppByName(addRequest.getName());
-        AppCodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
+        CodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
 
         Long id = this.appDAO.save(BeanMapperUtil.map(addRequest, App.class));
 
@@ -63,7 +61,7 @@ public class AppServiceImpl implements AppService {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
         if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())) {
-            AppCodeEnum.NAME_EXIST.throwException();
+            CodeEnum.NAME_EXIST.throwException();
         }
 
         App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
@@ -77,13 +75,6 @@ public class AppServiceImpl implements AppService {
         app.setDeleted(CommonConstant.YES);
         this.appDAO.update(app);
         return new DeleteAppVO();
-    }
-
-    @Override
-    public UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest) {
-        App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
-        this.appDAO.update(app);
-        return new UpdateAppStatusVO();
     }
 
     @Override

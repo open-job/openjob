@@ -8,9 +8,11 @@ import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
 import io.openjob.worker.entity.Delay;
+import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.util.OpenjobConfigUtil;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +73,7 @@ public class DelayTaskMasterExecutor implements Runnable {
 
         // Pull request.
         WorkerDelayPullRequest delayPullRequest = new WorkerDelayPullRequest();
+        delayPullRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
         delayPullRequest.setPullItems(pullTopicItems);
 
         // Pull delay instance by akka.

@@ -5,6 +5,7 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
+import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
@@ -26,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -91,8 +93,8 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
-    public Long updateDeleted(Long id, Integer deleted) {
-        this.delayInstanceRepository.findById(id)
+    public void updateDeleted(String taskid, Integer deleted) {
+        Optional.ofNullable(this.delayInstanceRepository.findByTaskId(taskid))
                 .ifPresent(d -> {
                     if (Objects.nonNull(deleted)) {
                         d.setDeleted(deleted);
@@ -100,7 +102,6 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                     }
                     this.delayInstanceRepository.save(d);
                 });
-        return id;
     }
 
     @Override
@@ -171,13 +172,34 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public DelayInstance getByTaskId(String taskId) {
+        return this.delayInstanceRepository.findByTaskId(taskId);
+    }
+
+    @Override
+    public List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses) {
+        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses);
+    }
+
+    @Override
     public Integer batchUpdateStatus(List<DelayInstance> updateList) {
         // When then sql.
-        StringBuilder whenThen = new StringBuilder();
-        updateList.forEach(d -> whenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus())));
+        StringBuilder statusWhenThen = new StringBuilder();
+        StringBuilder addressWhenThen = new StringBuilder();
+        StringBuilder completeWhenThen = new StringBuilder();
+        updateList.forEach(d -> {
+            statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
+            addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
+            completeWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getCompleteTime()));
+        });
 
         // Update sql.
-        String sql = String.format("update `delay_instance` set `update_time`=%d, `status`=(case `task_id` %s ELSE `status` END)", DateUtil.timestamp(), whenThen);
+        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, `status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+                addressWhenThen,
+                completeWhenThen,
+                DateUtil.timestamp(),
+                statusWhenThen,
+                statusWhenThen);
         return this.jdbcTemplate.update(sql);
     }
 

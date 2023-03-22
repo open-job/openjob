@@ -7,6 +7,7 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class JobStartRequestDTO {
-    
+public class TopicReadyCounterDTO {
+    private String topic;
+    private Long ready;
 }

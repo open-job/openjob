@@ -3,25 +3,29 @@ package io.openjob.server.scheduler.scheduler;
 import io.openjob.common.SpringContext;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
+import io.swagger.models.auth.In;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import scala.Int;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -143,6 +147,19 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
             List<String> timingMembers = rangeObjects.stream().map(String::valueOf)
                     .collect(Collectors.toList());
 
+            // Retry times.
+            // First retry times is zero.
+            List<String> retryKeys = timingMembers.stream().map(CacheUtil::getDelayRetryTimesKey)
+                    .collect(Collectors.toList());
+            List<Object> times = RedisUtil.getTemplate().opsForValue().multiGet(retryKeys);
+            Map<String, Integer> timesMap = new HashMap<>();
+            for (int i = 0; i < retryKeys.size(); i++) {
+                if (Objects.isNull(times)) {
+                    continue;
+                }
+                timesMap.put(timingMembers.get(i), (Integer) Optional.ofNullable(times.get(i)).orElse(0));
+            }
+
             // Get delay instance detail list
             List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(timingMembers);
 
@@ -161,13 +178,41 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
                     // Push by topic
                     detailListMap.forEach((t, list) -> {
+                        Delay topicDelay = delayMap.get(t).get(0);
                         String cacheListKey = CacheUtil.getTopicListKey(t);
-                        operations.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
+
+                        // Find can be push task
+                        List<DelayInstanceAddRequestDTO> pushTask = list.stream().filter(i -> {
+                            Integer currentTimes = timesMap.get(i.getTaskId());
+                            if (currentTimes >= topicDelay.getFailRetryTimes()) {
+                                log.warn("Task will be ignore,retryTimes={} taskId={}", currentTimes, i.getTaskId());
+                                return false;
+                            }
+                            return true;
+                        }).collect(Collectors.toList());
+
+                        // Empty
+                        if (CollectionUtils.isEmpty(pushTask)) {
+                            return;
+                        }
+
+                        // Remove task id.
+                        // Fixed retry task id.
+                        pushTask.forEach(i -> {
+                            operations.opsForList().remove(cacheListKey, 0, i.getTaskId());
+
+                            // Retry times.
+                            String delayRetryTimesKey = CacheUtil.getDelayRetryTimesKey(i.getTaskId());
+                            operations.opsForValue().increment(delayRetryTimesKey);
+                        });
+
+                        // Add task id to queue.
+                        operations.opsForList().rightPushAll(cacheListKey, pushTask.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
 
                         // Update score(score=score+timeout)
-                        Delay topicDelay = delayMap.get(t).get(0);
                         if (Objects.nonNull(topicDelay)) {
-                            list.forEach(d -> RedisUtil.getTemplate().opsForZSet().incrementScore(key, d.getTaskId(), topicDelay.getExecuteTimeout()));
+                            double retryTime = topicDelay.getExecuteTimeout() + topicDelay.getFailRetryInterval() + SchedulerConstant.DELAY_RETRY_AFTER;
+                            pushTask.forEach(d -> operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime));
                         }
                     });
 

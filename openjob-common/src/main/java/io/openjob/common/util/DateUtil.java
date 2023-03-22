@@ -1,5 +1,6 @@
 package io.openjob.common.util;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 /**
@@ -25,6 +26,28 @@ public class DateUtil {
      */
     public static Long timestamp() {
         return instant().getEpochSecond();
+    }
+
+    /**
+     * Format timestamp
+     *
+     * @param timeMillis timeMillis
+     * @return String
+     */
+    public static String formatTimestamp(Long timeMillis) {
+        return timestampToString(timeMillis, "yyyy-MM-dd HH:mm:ss.SSS");
+    }
+
+    /**
+     * Timestamp to string
+     *
+     * @param timeMillis timeMillis
+     * @param pattern    pattern
+     * @return String
+     */
+    public static String timestampToString(Long timeMillis, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(timeMillis);
     }
 
     /**

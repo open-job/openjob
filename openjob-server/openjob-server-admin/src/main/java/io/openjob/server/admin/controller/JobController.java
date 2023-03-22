@@ -5,6 +5,7 @@ import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ExecuteJobRequest;
 import io.openjob.server.admin.request.job.ListJobRequest;
+import io.openjob.server.admin.request.job.TimeExpressionRequest;
 import io.openjob.server.admin.request.job.UpdateJobRequest;
 import io.openjob.server.admin.request.job.UpdateJobStatusRequest;
 import io.openjob.server.admin.service.JobService;
@@ -12,6 +13,7 @@ import io.openjob.server.admin.vo.job.AddJobVO;
 import io.openjob.server.admin.vo.job.DeleteJobVO;
 import io.openjob.server.admin.vo.job.ExecuteJobVO;
 import io.openjob.server.admin.vo.job.ListJobVO;
+import io.openjob.server.admin.vo.job.TimeExpressionVO;
 import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
 import io.openjob.server.admin.vo.job.UpdateJobVO;
 import io.openjob.server.common.vo.PageVO;
@@ -71,6 +73,12 @@ public class JobController {
     @PostMapping("/execute")
     public Result<ExecuteJobVO> execute(@Valid @RequestBody ExecuteJobRequest request) {
         return Result.success(this.jobService.execute(request));
+    }
+
+    @ApiOperation("Execute job")
+    @PostMapping("/time-expression")
+    public Result<TimeExpressionVO> timeExpression(@Valid @RequestBody TimeExpressionRequest request) {
+        return Result.success(this.jobService.timeExpression(request));
     }
 
     @ApiOperation("List jobs")

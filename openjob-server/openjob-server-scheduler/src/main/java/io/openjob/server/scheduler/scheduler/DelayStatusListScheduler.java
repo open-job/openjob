@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -111,6 +110,8 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                 DelayInstance delayInstance = new DelayInstance();
                 delayInstance.setTaskId(delayStatus.getTaskId());
                 delayInstance.setStatus(delayStatus.getStatus());
+                delayInstance.setWorkerAddress(delayStatus.getWorkerAddress());
+                delayInstance.setCompleteTime(delayStatus.getCompleteTime());
                 return delayInstance;
             }).collect(Collectors.toList());
 

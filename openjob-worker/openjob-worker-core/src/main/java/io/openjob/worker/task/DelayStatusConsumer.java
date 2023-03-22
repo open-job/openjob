@@ -3,7 +3,9 @@ package io.openjob.worker.task;
 import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.init.WorkerActorSystem;
+import io.openjob.worker.init.WorkerConfig;
 
 import java.util.List;
 

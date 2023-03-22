@@ -32,4 +32,14 @@ public enum ExecuteTypeEnum {
     ;
 
     private final String type;
+
+    /**
+     * Whether is standalone
+     *
+     * @param type type
+     * @return Boolean
+     */
+    public static Boolean isStandalone(String type) {
+        return STANDALONE.getType().equals(type);
+    }
 }

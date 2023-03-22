@@ -8,5 +8,5 @@ import lombok.Data;
  */
 @Data
 public class JobInstanceStopRequestDTO {
-    
+    private Long jobInstanceId;
 }

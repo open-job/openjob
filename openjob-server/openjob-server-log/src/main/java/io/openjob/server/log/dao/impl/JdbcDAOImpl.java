@@ -1,6 +1,8 @@
 package io.openjob.server.log.dao.impl;
 
-import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLog;
@@ -12,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -79,33 +83,37 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     private String getContent(List<ProcessorLogField> fields) {
-        StringBuilder sb = new StringBuilder();
-        boolean isFirst = true;
-        for (ProcessorLogField f : fields) {
-            if (Objects.isNull(f.getValue())) {
-                continue;
-            }
+        Map<String, String> fieldMap = fields.stream()
+                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
 
-            if (isFirst) {
-                isFirst = false;
-            } else {
-                sb.append(" ");
-            }
-
-            sb.append(f.getName());
-            sb.append(":");
-            sb.append(f.getValue());
+        // Format log fields
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(fieldMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-
-        return sb.toString();
     }
 
     private ProcessorLog convert(ResultSet rs) throws SQLException {
         ProcessorLog taskLog = new ProcessorLog();
         taskLog.setTaskId(rs.getString("task_id"));
         taskLog.setWorkerAddress(rs.getString("worker_address"));
-        taskLog.setContent(rs.getString("content"));
         taskLog.setTime(rs.getLong("time"));
+        String content = rs.getString("content");
+
+        // Parse log fields
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> fieldMap = mapper.readValue(content, new TypeReference<Map<String, String>>() {
+            });
+
+            List<ProcessorLogField> fieldsList = new ArrayList<>();
+            fieldMap.forEach((name, value) -> fieldsList.add(new ProcessorLogField(name, value)));
+            taskLog.setFields(fieldsList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return taskLog;
     }
 }

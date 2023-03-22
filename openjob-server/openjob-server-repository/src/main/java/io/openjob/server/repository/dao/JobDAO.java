@@ -38,6 +38,14 @@ public interface JobDAO {
     Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted);
 
     /**
+     * Get by id
+     *
+     * @param id id
+     * @return Job
+     */
+    Job getById(Long id);
+
+    /**
      * List scheduled jobs.
      *
      * @param slotIds slotIds

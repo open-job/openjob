@@ -5,12 +5,10 @@ import io.openjob.server.admin.request.app.AddAppRequest;
 import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
-import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.service.AppService;
 import io.openjob.server.admin.vo.app.AddAppVO;
 import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
-import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
@@ -50,12 +48,6 @@ public class AppController {
     @PostMapping("/update")
     public Result<UpdateAppVO> update(@Valid @RequestBody UpdateAppRequest updateRequest) {
         return Result.success(this.appService.update(updateRequest));
-    }
-
-    @ApiOperation("Update status")
-    @PostMapping("/update-status")
-    public Result<UpdateAppStatusVO> updateStatus(@Valid @RequestBody UpdateAppStatusRequest updateRequest) {
-        return Result.success(this.appService.updateStatus(updateRequest));
     }
 
     @ApiOperation("Delete application")

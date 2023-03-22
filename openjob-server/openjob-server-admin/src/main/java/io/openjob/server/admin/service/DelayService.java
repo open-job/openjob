@@ -4,12 +4,10 @@ import io.openjob.server.admin.request.delay.AddDelayRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayRequest;
 import io.openjob.server.admin.request.delay.UpdateDelayRequest;
-import io.openjob.server.admin.request.delay.UpdateStatusDelayRequest;
 import io.openjob.server.admin.vo.delay.AddDelayVO;
 import io.openjob.server.admin.vo.delay.DeleteDelayVO;
 import io.openjob.server.admin.vo.delay.ListDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateDelayVO;
-import io.openjob.server.admin.vo.delay.UpdateStatusDelayVO;
 import io.openjob.server.common.vo.PageVO;
 
 /**
@@ -50,12 +48,4 @@ public interface DelayService {
      * @return UpdateDelayVO
      */
     UpdateDelayVO update(UpdateDelayRequest updateDelayRequest);
-
-    /**
-     * Update delay status
-     *
-     * @param updateRequest updateRequest
-     * @return UpdateStatusDelayVO
-     */
-    UpdateStatusDelayVO updateStatus(UpdateStatusDelayRequest updateRequest);
 }

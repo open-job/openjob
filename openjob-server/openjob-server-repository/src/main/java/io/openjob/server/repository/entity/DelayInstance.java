@@ -49,6 +49,12 @@ public class DelayInstance {
     @Column(name = "execute_time")
     private Long executeTime;
 
+    @Column(name = "complete_time")
+    private Long completeTime;
+
+    @Column(name = "worker_address")
+    private String workerAddress;
+
     @Column(name = "deleted")
     private Integer deleted;
 

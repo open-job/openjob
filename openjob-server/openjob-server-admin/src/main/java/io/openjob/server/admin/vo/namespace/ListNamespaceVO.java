@@ -20,9 +20,6 @@ public class ListNamespaceVO {
     @ApiModelProperty(value = "Namespace uuid", required = true)
     private String uuid;
 
-    @ApiModelProperty(value = "Namespace status", required = true)
-    private Integer status;
-
     @ApiModelProperty(value = "Namespace createTime", required = true)
     private Long createTime;
 }

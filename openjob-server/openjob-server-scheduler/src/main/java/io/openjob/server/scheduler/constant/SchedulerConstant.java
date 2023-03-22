@@ -18,5 +18,13 @@ public class SchedulerConstant {
      */
     public static final long JOB_FIXED_DELAY = 60000L;
 
+    /**
+     * Unit ms
+     */
     public static final Integer UNIT_MS = 1000;
+
+    /**
+     * Delay retry time(s)
+     */
+    public static final Long DELAY_RETRY_AFTER = 30L;
 }

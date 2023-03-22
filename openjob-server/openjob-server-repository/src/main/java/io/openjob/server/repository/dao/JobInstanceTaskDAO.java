@@ -26,4 +26,12 @@ public interface JobInstanceTaskDAO {
      * @return Integer
      */
     Integer batchSave(List<JobInstanceTask> taskList);
+
+    /**
+     * Get job instance task
+     *
+     * @param jobInstanceId jobInstanceId
+     * @return JobInstanceTask
+     */
+    JobInstanceTask getByJobInstanceId(Long jobInstanceId);
 }

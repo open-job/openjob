@@ -8,7 +8,6 @@ CREATE TABLE `app` (
                        `namespace_id` bigint(20) NOT NULL,
                        `name` varchar(256) NOT NULL DEFAULT '',
                        `desc` varchar(256) NOT NULL DEFAULT '',
-                       `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                        `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                        `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                        `create_time` bigint(12) unsigned NOT NULL,
@@ -19,9 +18,9 @@ CREATE TABLE `app` (
 
 /*!40000 ALTER TABLE `app` DISABLE KEYS */;
 
-INSERT INTO `app` (`id`, `namespace_id`, `name`, `desc`, `status`, `create_time`, `update_time`)
+INSERT INTO `app` (`id`, `namespace_id`, `name`, `desc`, `create_time`, `update_time`)
 VALUES
-    (1,1,'openjob','openjob', 1, 1658473199,1658473199);
+    (1,1,'openjob','openjob', 1658473199,1658473199);
 
 /*!40000 ALTER TABLE `app` ENABLE KEYS */;
 
@@ -41,7 +40,6 @@ CREATE TABLE `delay` (
                          `processor_info` varchar(256) NOT NULL DEFAULT '',
                          `fail_retry_times` int(11) unsigned NOT NULL DEFAULT '0',
                          `fail_retry_interval` int(11) unsigned NOT NULL DEFAULT '1000',
-                         `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                          `execute_timeout` int(11) unsigned NOT NULL DEFAULT '0',
                          `concurrency` int(11) unsigned NOT NULL DEFAULT '2',
                          `blocking_size` int(11) unsigned NOT NULL DEFAULT '20',
@@ -54,9 +52,9 @@ CREATE TABLE `delay` (
                          KEY `udx_topic` (`topic`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `status`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
+INSERT INTO `delay` (`id`, `namespace_id`, `app_id`, `name`, `description`, `processor_info`, `fail_retry_times`, `fail_retry_interval`, `execute_timeout`, `concurrency`, `blocking_size`, `topic`, `deleted`, `delete_time`, `create_time`, `update_time`)
 VALUES
-    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,1,30,2,20,'openjob.delay.test',2,0,0,0);
+    (1,1,1,'delay_test','','io.openjob.worker.samples.processor.DelayProcessorSample',0,1000,30,2,20,'openjob.delay.test',2,0,0,0);
 
 
 # Dump of table delay_instance
@@ -75,6 +73,8 @@ CREATE TABLE `delay_instance` (
                                   `delay_extra` text NOT NULL,
                                   `status` tinyint(2) NOT NULL,
                                   `execute_time` bigint(12) NOT NULL,
+                                  `worker_address` varchar(32) NOT NULL DEFAULT '',
+                                  `complete_time` bigint(12) NOT NULL DEFAULT '0',
                                   `deleted` tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                                   `create_time` bigint(12) NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE `job` (
                        `name` varchar(32) NOT NULL DEFAULT '',
                        `description` varchar(128) NOT NULL DEFAULT '',
                        `processor_type` varchar(16) NOT NULL DEFAULT 'java' COMMENT 'java /shell/python',
-                       `processor_info` varchar(128) NOT NULL DEFAULT '',
+                       `processor_info` text NOT NULL,
                        `execute_type` varchar(16) NOT NULL DEFAULT 'standalone' COMMENT 'execute type 1=standalone 2=broadcast 3=MR',
                        `params` varchar(3096) NOT NULL DEFAULT '',
                        `params_type` varchar(16) NOT NULL DEFAULT '' COMMENT 'Params type text/json/yaml',
@@ -170,7 +170,7 @@ CREATE TABLE `job_instance` (
                                 `complete_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                 `last_report_time` bigint(12) unsigned NOT NULL DEFAULT '0',
                                 `processor_type` varchar(16) NOT NULL DEFAULT '',
-                                `processor_info` varchar(128) NOT NULL DEFAULT '',
+                                `processor_info` text NOT NULL,
                                 `execute_type` varchar(16) NOT NULL DEFAULT '',
                                 `fail_retry_times` int(11) unsigned NOT NULL,
                                 `fail_retry_interval` int(11) unsigned NOT NULL,
@@ -537,7 +537,6 @@ CREATE TABLE `namespace` (
                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                              `name` varchar(64) NOT NULL DEFAULT '',
                              `uuid` varchar(64) NOT NULL DEFAULT '',
-                             `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
                              `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                              `create_time` bigint(12) unsigned NOT NULL,
@@ -546,8 +545,8 @@ CREATE TABLE `namespace` (
                              KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-insert into namespace (id, `name`, uuid, status, deleted, delete_time, create_time, update_time)
-values  (1, 'default', 'a65d3fe5-258d-43e3-a5e6-dc12c4879ed6', 1, 2, 0, 1657528102, 1657528102);
+insert into namespace (id, `name`, deleted, delete_time, create_time, update_time)
+values  (1, 'default', 'a65d3fe5-258d-43e3-a5e6-dc12c4879ed6', 2, 0, 1657528102, 1657528102);
 
 
 
@@ -652,13 +651,16 @@ CREATE TABLE `system` (
                           `version` varchar(16) NOT NULL DEFAULT '0',
                           `cluster_version` bigint(20) unsigned NOT NULL DEFAULT '1',
                           `cluster_delay_version` bigint(20) unsigned NOT NULL DEFAULT '1',
-                          `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
                           `delay_add_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
                           `delay_status_list_slot` int(10) unsigned NOT NULL DEFAULT '2',
                           `delay_delete_list_slot` int(10) unsigned NOT NULL DEFAULT '1',
                           `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
+                          `job_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `delay_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `server_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `worker_keep_days` int(11) NOT NULL DEFAULT '30',
                           `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                           `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                           `create_time` bigint(12) unsigned NOT NULL,
@@ -668,31 +670,10 @@ CREATE TABLE `system` (
 
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_add_list_slot`, `delay_status_list_slot`, `delay_delete_list_slot`, `max_slot`, `create_time`, `update_time`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_add_list_slot`, `delay_status_list_slot`, `delay_delete_list_slot`, `max_slot`, `create_time`, `update_time`)
 VALUES
-    (1,'1.0.0',1,1,1,256,2,2,2,1,256,1663590330,1663590330);
+    (1,'1.0.0',1,1,256,2,2,2,1,256,1663590330,1663590330);
 
-/*!40000 ALTER TABLE `system` ENABLE KEYS */;
-
-
-
-DROP TABLE IF EXISTS `admin_config`;
-CREATE TABLE `admin_config` (
-                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Config name',
-                                `value` varchar(1204) NOT NULL DEFAULT '' COMMENT 'Config value',
-                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                PRIMARY KEY (`id`),
-                                INDEX `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin config';
-
-
-INSERT INTO `admin_config` (`name`, `value`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES
-    ('system_name', 'OpenJob Admin', 2, 0, 1670255999, 1670255999);
 
 DROP TABLE IF EXISTS `admin_session`;
 CREATE TABLE `admin_session` (

@@ -1,9 +1,9 @@
 package io.openjob.server.admin.service;
 
 
-import io.openjob.server.admin.request.system.AdminSystemUpdateRequest;
-import io.openjob.server.admin.vo.system.AdminSystemUpdateVO;
-import io.openjob.server.admin.vo.system.AdminSystemVO;
+import io.openjob.server.admin.request.system.SystemUpdateRequest;
+import io.openjob.server.admin.vo.system.SystemUpdateVO;
+import io.openjob.server.admin.vo.system.SystemVO;
 
 /**
  * @author riki
@@ -15,12 +15,12 @@ public interface SystemService {
      * Get the latest System information
      * @return the latest System information
      */
-    AdminSystemVO getLatest();
+    SystemVO getLatest();
 
     /**
      * update the latest System information
      * @param request update params
      * @return result
      */
-    AdminSystemUpdateVO update(AdminSystemUpdateRequest request);
+    SystemUpdateVO update(SystemUpdateRequest request);
 }

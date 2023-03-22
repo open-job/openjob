@@ -62,11 +62,6 @@ public class AppDAOImpl implements AppDAO {
                         a.setDesc(app.getDesc());
                     }
 
-                    // Update status
-                    if (Objects.nonNull(app.getStatus())) {
-                        a.setStatus(app.getStatus());
-                    }
-
                     if (Objects.nonNull(app.getDeleted())) {
                         a.setDeleted(app.getDeleted());
                     }

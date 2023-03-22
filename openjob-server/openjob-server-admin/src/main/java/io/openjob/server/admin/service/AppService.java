@@ -4,11 +4,9 @@ import io.openjob.server.admin.request.app.AddAppRequest;
 import io.openjob.server.admin.request.app.DeleteAppRequest;
 import io.openjob.server.admin.request.app.ListAppRequest;
 import io.openjob.server.admin.request.app.UpdateAppRequest;
-import io.openjob.server.admin.request.app.UpdateAppStatusRequest;
 import io.openjob.server.admin.vo.app.AddAppVO;
 import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
-import io.openjob.server.admin.vo.app.UpdateAppStatusVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
 import io.openjob.server.common.vo.PageVO;
 
@@ -40,14 +38,6 @@ public interface AppService {
      * @return DeleteAppVO
      */
     DeleteAppVO delete(DeleteAppRequest deleteAppRequest);
-
-    /**
-     * Update
-     *
-     * @param updateRequest updateRequest
-     * @return UpdateAppStatusVO
-     */
-    UpdateAppStatusVO updateStatus(UpdateAppStatusRequest updateRequest);
 
     /**
      * Add namespace.

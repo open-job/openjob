@@ -22,6 +22,16 @@ public class CacheConst {
     public static final String DELAY_DETAIL_TASKID_PREFIX = "delay:detail:taskid";
 
     /**
+     * Delay worker address
+     */
+    public static final String DELAY_DETAIL_WORKER_ADDRESS_PREFIX = "delay:detail:worker:address";
+
+    /**
+     * Delay task retry times
+     */
+    public static final String DELAY_TASK_RETRY_TIMES_PREFIX = "delay:task:retry:times";
+
+    /**
      * Delay list prefix.
      */
     public static final String DELAY_ADD_LIST_PREFIX = "delay:list:add";

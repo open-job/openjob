@@ -2,15 +2,13 @@ package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.request.namespace.AddNamespaceRequest;
+import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
 import io.openjob.server.admin.request.namespace.ListNamespaceRequest;
 import io.openjob.server.admin.request.namespace.UpdateNamespaceRequest;
-import io.openjob.server.admin.request.namespace.UpdateStatusNamespaceRequest;
-import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
-import io.openjob.server.admin.vo.namespace.DeleteNamespaceVO;
 import io.openjob.server.admin.service.NamespaceService;
 import io.openjob.server.admin.vo.namespace.AddNamespaceVO;
+import io.openjob.server.admin.vo.namespace.DeleteNamespaceVO;
 import io.openjob.server.admin.vo.namespace.ListNamespaceVO;
-import io.openjob.server.admin.vo.namespace.UpdateNamespaceStatusVO;
 import io.openjob.server.admin.vo.namespace.UpdateNamespaceVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
@@ -41,7 +39,6 @@ public class NamespaceServiceImpl implements NamespaceService {
         Namespace namespace = new Namespace();
         namespace.setName(addRequest.getName());
         namespace.setUuid(UUID.randomUUID().toString());
-        namespace.setStatus(addRequest.getStatus());
 
         // Save
         long id = this.namespaceDAO.save(namespace);
@@ -60,12 +57,6 @@ public class NamespaceServiceImpl implements NamespaceService {
         namespace.setDeleted(CommonConstant.YES);
         this.namespaceDAO.update(namespace);
         return new DeleteNamespaceVO();
-    }
-
-    @Override
-    public UpdateNamespaceStatusVO updateStatus(UpdateStatusNamespaceRequest updateStatusRequest) {
-        this.namespaceDAO.update(BeanMapperUtil.map(updateStatusRequest, Namespace.class));
-        return new UpdateNamespaceStatusVO();
     }
 
     @Override

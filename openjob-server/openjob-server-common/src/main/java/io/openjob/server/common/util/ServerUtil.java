@@ -29,6 +29,10 @@ public class ServerUtil {
         return SpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_MASTER));
     }
 
+    public static ActorSelection getWorkerDelayMasterActor(String address) {
+        return SpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_DELAY_MASTER));
+    }
+
     /**
      * @param address address
      * @param name    actor name

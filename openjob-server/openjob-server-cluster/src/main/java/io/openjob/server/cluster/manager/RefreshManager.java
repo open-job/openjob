@@ -69,7 +69,6 @@ public class RefreshManager {
         SystemDTO systemDTO = new SystemDTO();
         systemDTO.setMaxSlot(currentSystem.getMaxSlot());
         systemDTO.setClusterVersion(currentVersion);
-        systemDTO.setClusterSupervisorSlot(currentSystem.getClusterSupervisorSlot());
         systemDTO.setWorkerSupervisorSlot(currentSystem.getWorkerSupervisorSlot());
         systemDTO.setDelayZsetMaxSlot(currentSystem.getDelayZsetSlot());
         systemDTO.setDelayAddListMaxSlot(currentSystem.getDelayAddListSlot());

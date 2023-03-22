@@ -67,6 +67,9 @@ public class ListJobVO {
     @ApiModelProperty(value = "Job type=cron need, cron express")
     private String timeExpression;
 
+    @ApiModelProperty(value = "Job express value(secondDelay/fixedRate/oneTime)")
+    private Long timeExpressionValue;
+
     @ApiModelProperty(value = "Job execute strategy")
     private Integer executeStrategy;
 

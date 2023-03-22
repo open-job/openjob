@@ -17,7 +17,8 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @param status  status
      * @param types   types
      * @param time    time
+     * @param deleted deleted
      * @return jobs
      */
-    List<Job> findBySlotsIdInAndStatusAndTimeExpressionTypeNotInAndNextExecuteTimeLessThanEqual(List<Long> slotIds, Integer status, List<String> types, Long time);
+    List<Job> findBySlotsIdInAndStatusAndTimeExpressionTypeNotInAndNextExecuteTimeLessThanEqualAndDeleted(List<Long> slotIds, Integer status, List<String> types, Long time, Integer deleted);
 }

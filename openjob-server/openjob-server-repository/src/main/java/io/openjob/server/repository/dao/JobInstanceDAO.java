@@ -22,6 +22,13 @@ public interface JobInstanceDAO {
     Long save(JobInstance jobInstance);
 
     /**
+     * Delete by id
+     *
+     * @param id id
+     */
+    void deleteById(Long id);
+
+    /**
      * Update
      *
      * @param id     id
@@ -38,6 +45,14 @@ public interface JobInstanceDAO {
      * @return Integer
      */
     Integer updateLastReportTimeByIds(List<Long> ids, Long lastReportTime);
+
+    /**
+     * Get by id.
+     *
+     * @param id id
+     * @return JobInstance
+     */
+    JobInstance getById(Long id);
 
     /**
      * Get failover list.
@@ -73,8 +88,8 @@ public interface JobInstanceDAO {
     /**
      * Get one by id and status.
      *
-     * @param jobId  jobId
-     * @param id     id
+     * @param jobId      jobId
+     * @param id         id
      * @param statusList statusList
      * @return JobInstance
      */

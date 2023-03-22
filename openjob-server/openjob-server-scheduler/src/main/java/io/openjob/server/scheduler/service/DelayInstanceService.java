@@ -1,7 +1,6 @@
 package io.openjob.server.scheduler.service;
 
 import io.openjob.common.request.WorkerDelayAddRequest;
-import io.openjob.common.request.WorkerDelayItemPullRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.request.WorkerDelayTopicPullRequest;
@@ -9,7 +8,6 @@ import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.response.ServerDelayTopicPullResponse;
-import io.openjob.server.scheduler.dto.DelayDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
@@ -19,16 +17,12 @@ import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
-import io.openjob.server.scheduler.util.CacheUtil;
-import io.openjob.server.scheduler.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -56,7 +50,7 @@ public class DelayInstanceService {
         // Pull delay instance.
         pullRequest.getPullItems().forEach(item -> {
             DelayItemPullRequestDTO delayItemPullRequestDTO = SchedulerMapper.INSTANCE.toDelayItemPullRequestDTO(item);
-            List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(delayItemPullRequestDTO);
+            List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(pullRequest.getWorkerAddress(), delayItemPullRequestDTO);
             responses.addAll(SchedulerMapper.INSTANCE.toServerDelayPullResponseList(responseList));
         });
 

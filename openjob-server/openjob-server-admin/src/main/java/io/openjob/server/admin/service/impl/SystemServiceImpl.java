@@ -1,9 +1,9 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.server.admin.request.system.AdminSystemUpdateRequest;
+import io.openjob.server.admin.request.system.SystemUpdateRequest;
 import io.openjob.server.admin.service.SystemService;
-import io.openjob.server.admin.vo.system.AdminSystemUpdateVO;
-import io.openjob.server.admin.vo.system.AdminSystemVO;
+import io.openjob.server.admin.vo.system.SystemUpdateVO;
+import io.openjob.server.admin.vo.system.SystemVO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.SystemDAO;
 import io.openjob.server.repository.entity.System;
@@ -23,14 +23,14 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public AdminSystemVO getLatest() {
+    public SystemVO getLatest() {
         System adminSystem = this.systemDAO.getOne();
-        return BeanMapperUtil.map(adminSystem, AdminSystemVO.class);
+        return BeanMapperUtil.map(adminSystem, SystemVO.class);
     }
 
     @Override
-    public AdminSystemUpdateVO update(AdminSystemUpdateRequest request) {
+    public SystemUpdateVO update(SystemUpdateRequest request) {
         this.systemDAO.updateById(BeanMapperUtil.map(request, System.class));
-        return new AdminSystemUpdateVO();
+        return new SystemUpdateVO();
     }
 }

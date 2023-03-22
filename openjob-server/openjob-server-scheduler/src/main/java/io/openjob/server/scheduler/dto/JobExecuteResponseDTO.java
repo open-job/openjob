@@ -1,4 +1,4 @@
-package io.openjob.server.admin.vo.namespace;
+package io.openjob.server.scheduler.dto;
 
 import lombok.Data;
 
@@ -7,5 +7,5 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class UpdateNamespaceStatusVO {
+public class JobExecuteResponseDTO {
 }

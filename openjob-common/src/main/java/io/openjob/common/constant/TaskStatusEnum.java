@@ -57,6 +57,14 @@ public enum TaskStatusEnum {
     );
 
     /**
+     * Complete status
+     */
+    public static final List<Integer> FINISH_LIST = Arrays.asList(
+            SUCCESS.status,
+            FAILED.status
+    );
+
+    /**
      * All status.
      */
     public static final List<Integer> ALL = Arrays.asList(
@@ -79,6 +87,10 @@ public enum TaskStatusEnum {
                 .filter(s -> s.getStatus().equals(status))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("TaskStatusEnum parseValue(%s) failed!", status)));
+    }
+
+    public static Boolean isRunning(Integer status) {
+        return RUNNING.getStatus().equals(status);
     }
 
     /**

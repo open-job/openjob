@@ -1,9 +1,13 @@
 package io.openjob.server.admin.service;
 
-import io.openjob.server.admin.request.job.KillJobInstanceRequest;
+import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
 import io.openjob.server.admin.request.job.ListJobInstanceRequest;
-import io.openjob.server.admin.vo.job.KillJobInstanceVO;
+import io.openjob.server.admin.request.job.ListProcessorLogRequest;
+import io.openjob.server.admin.request.job.StopJobInstanceRequest;
+import io.openjob.server.admin.vo.job.DeleteJobInstanceVO;
 import io.openjob.server.admin.vo.job.ListJobInstanceVO;
+import io.openjob.server.admin.vo.job.ListProcessorLogVO;
+import io.openjob.server.admin.vo.job.StopJobInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 
 /**
@@ -26,5 +30,21 @@ public interface JobInstanceService {
      * @param killRequest killRequest
      * @return return
      */
-    KillJobInstanceVO killInstance(KillJobInstanceRequest killRequest);
+    StopJobInstanceVO stopInstance(StopJobInstanceRequest killRequest);
+
+    /**
+     * Delete job instance.
+     *
+     * @param request request
+     * @return DeleteJobInstanceVO
+     */
+    DeleteJobInstanceVO deleteInstance(DeleteJobInstanceRequest request);
+
+    /**
+     * Get processor log.
+     *
+     * @param request request
+     * @return ListProcessorLogVO
+     */
+    ListProcessorLogVO getProcessorList(ListProcessorLogRequest request);
 }

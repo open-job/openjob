@@ -1,4 +1,4 @@
-package io.openjob.server.scheduler.dto;
+package io.openjob.server.admin.vo.job;
 
 import lombok.Data;
 
@@ -7,5 +7,5 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class JobStartResponseDTO {
+public class DeleteJobInstanceVO {
 }

@@ -2,6 +2,7 @@ package io.openjob.server.repository.dao;
 
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
+import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 
 import java.util.List;
@@ -31,13 +32,29 @@ public interface DelayInstanceDAO {
     List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size);
 
     /**
+     * Get by task id.
+     *
+     * @param taskId taskId
+     * @return DelayInstance
+     */
+    DelayInstance getByTaskId(String taskId);
+
+    /**
+     * Get topic count
+     *
+     * @param topics   topics
+     * @param statuses statuses
+     * @return List
+     */
+    List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses);
+
+    /**
      * Update deleted
      *
-     * @param id      id
+     * @param taskid  taskid
      * @param deleted deleted
-     * @return Long
      */
-    Long updateDeleted(Long id, Integer deleted);
+    void updateDeleted(String taskid, Integer deleted);
 
     /**
      * Get page list

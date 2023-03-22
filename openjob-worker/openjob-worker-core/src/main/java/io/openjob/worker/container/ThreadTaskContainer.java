@@ -2,13 +2,11 @@ package io.openjob.worker.container;
 
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.context.JobContext;
-import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +70,7 @@ public class ThreadTaskContainer extends BaseTaskContainer {
         request.setWorkerAddress("");
         request.setMasterActorPath(startRequest.getMasterAkkaPath());
         request.setStatus(TaskStatusEnum.FAILED.getStatus());
-        request.setResult("stop");
+        request.setResult("stopped");
 
         TaskStatusReporter.report(request);
     }

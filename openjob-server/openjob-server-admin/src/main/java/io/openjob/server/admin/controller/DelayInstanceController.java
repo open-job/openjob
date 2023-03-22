@@ -1,10 +1,16 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
+import io.openjob.server.admin.request.delay.DeleteDelayInstanceRequest;
+import io.openjob.server.admin.request.delay.DeleteDelayRequest;
+import io.openjob.server.admin.request.delay.ListDelayInstanceLogRequest;
 import io.openjob.server.admin.request.delay.ListDelayInstanceRequest;
-import io.openjob.server.admin.request.job.DeleteDelayInstanceVO;
+import io.openjob.server.admin.request.delay.StopDelayInstanceRequest;
+import io.openjob.server.admin.vo.delay.DeleteDelayInstanceVO;
 import io.openjob.server.admin.service.DelayInstanceService;
+import io.openjob.server.admin.vo.delay.ListDelayInstanceLogVO;
 import io.openjob.server.admin.vo.delay.ListDelayInstanceVO;
+import io.openjob.server.admin.vo.delay.StopDelayInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +48,19 @@ public class DelayInstanceController {
 
     @ApiOperation("Delete delay instance")
     @PostMapping("/delete")
-    public Result<DeleteDelayInstanceVO> delete(@Valid @RequestBody DeleteDelayInstanceVO request) {
+    public Result<DeleteDelayInstanceVO> delete(@Valid @RequestBody DeleteDelayInstanceRequest request) {
         return Result.success(this.delayInstanceService.delete(request));
+    }
+
+    @ApiOperation("Delete delay instance")
+    @PostMapping("/stop")
+    public Result<StopDelayInstanceVO> stop(@Valid @RequestBody StopDelayInstanceRequest request) {
+        return Result.success(this.delayInstanceService.stop(request));
+    }
+
+    @ApiOperation("List delay instance log")
+    @GetMapping("/list-processor-log")
+    public Result<ListDelayInstanceLogVO> listProcessorLog(@Valid @ModelAttribute ListDelayInstanceLogRequest request) {
+        return Result.success(this.delayInstanceService.listProcessorLog(request));
     }
 }
