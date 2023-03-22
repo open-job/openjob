@@ -20,12 +20,34 @@
   * Namespace design, support rich permission management, accurate to the button level.
 * Alarm monitoring
   * Comprehensive monitoring indicators, rich and timely alarm methods, convenient operation and maintenance personnel to quickly locate and solve online problems.
-## Document
+## Maven dependency
+```xml
+<openjob.worker.version>1.0.0</openjob.worker.version>
+<dependency>
+    <groupId>io.openjob.worker</groupId>
+    <artifactId>openjob-worker-core</artifactId>
+    <version>${openjob.worker.version}</version>
+</dependency>
+
+<!--If your project base on `Spring Boot`, you can directly use the following dependencies-->
+<dependency>
+    <groupId>io.openjob.worker</groupId>
+    <artifactId>openjob-worker-spring-boot-starter</artifactId>
+    <version>${openjob.worker.version}</version>
+</dependency>
+```
+## Documentation
 - [Official website](https://openjob.io)
 - [Official documentation](https://openjob.io/docs/intro)
 ## Live demo
 - Find the [live demo](https://demo.openjob.io) on our website.
 ## Contact
-- Mail: openjob@vip.qq.com,swoft@qq.com
+* Mail list:
+  * openjob@vip.qq.com
+  * swoft@qq.com
+- Online chat:
+
 ## License
-Please see [LICENSE](LICENSE)
+Openjob is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
+
+
