@@ -1,10 +1,10 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.system.AdminSystemUpdateRequest;
+import io.openjob.server.admin.request.system.SystemUpdateRequest;
 import io.openjob.server.admin.service.SystemService;
-import io.openjob.server.admin.vo.system.AdminSystemUpdateVO;
-import io.openjob.server.admin.vo.system.AdminSystemVO;
+import io.openjob.server.admin.vo.system.SystemUpdateVO;
+import io.openjob.server.admin.vo.system.SystemVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +34,13 @@ public class SystemController {
 
     @ApiOperation("Get the latest System information")
     @GetMapping("/config")
-    public Result<AdminSystemVO> getLatest() {
+    public Result<SystemVO> getLatest() {
         return Result.success(this.systemService.getLatest());
     }
 
     @ApiOperation("Update the System information")
     @PostMapping("/update")
-    public Result<AdminSystemUpdateVO> update(@Valid @RequestBody AdminSystemUpdateRequest request) {
+    public Result<SystemUpdateVO> update(@Valid @RequestBody SystemUpdateRequest request) {
         return Result.success(this.systemService.update(request));
     }
 }

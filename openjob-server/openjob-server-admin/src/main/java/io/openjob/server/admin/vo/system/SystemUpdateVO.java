@@ -1,7 +1,6 @@
 package io.openjob.server.admin.vo.system;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -10,5 +9,5 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "AdminSystemVO", description = "Admin System update VO")
-public class AdminSystemUpdateVO {
+public class SystemUpdateVO {
 }

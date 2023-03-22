@@ -20,11 +20,6 @@ public class SystemDTO {
     private Long clusterDelayVersion;
 
     /**
-     * Cluster supervisor slot.
-     */
-    private Integer clusterSupervisorSlot;
-
-    /**
      * Worker supervisor slot.
      */
     private Integer workerSupervisorSlot;

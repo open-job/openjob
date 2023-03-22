@@ -44,28 +44,48 @@ public class SystemDAOImpl implements SystemDAO {
         System old = this.getOne();
 
         // Max slot
-        if (Objects.nonNull(system.getMaxSlot())){
+        if (Objects.nonNull(system.getMaxSlot())) {
             old.setMaxSlot(system.getMaxSlot());
         }
 
         // Delay zset slot
-        if (Objects.nonNull(system.getDelayZsetSlot())){
+        if (Objects.nonNull(system.getDelayZsetSlot())) {
             old.setDelayZsetSlot(system.getDelayZsetSlot());
         }
 
         // Delay add list slot
-        if (Objects.nonNull(system.getDelayAddListSlot())){
+        if (Objects.nonNull(system.getDelayAddListSlot())) {
             old.setDelayAddListSlot(system.getDelayAddListSlot());
         }
 
         // Delay status list slot
-        if (Objects.nonNull(system.getDelayStatusListSlot())){
+        if (Objects.nonNull(system.getDelayStatusListSlot())) {
             old.setDelayStatusListSlot(system.getDelayStatusListSlot());
         }
 
         // Delay delete list slot
-        if (Objects.nonNull(system.getDelayDeleteListSlot())){
+        if (Objects.nonNull(system.getDelayDeleteListSlot())) {
             old.setDelayDeleteListSlot(system.getDelayDeleteListSlot());
+        }
+
+        // Job keep days
+        if (Objects.nonNull(system.getJobKeepDays())) {
+            old.setJobKeepDays(system.getJobKeepDays());
+        }
+
+        // Job delay days
+        if (Objects.nonNull(system.getDelayKeepDays())) {
+            old.setDelayKeepDays(system.getDelayKeepDays());
+        }
+
+        // Server keep days
+        if (Objects.nonNull(system.getServerKeepDays())) {
+            old.setServerKeepDays(system.getServerKeepDays());
+        }
+
+        // Worker keep days
+        if (Objects.nonNull(system.getWorkerKeepDays())) {
+            old.setWorkerKeepDays(system.getWorkerKeepDays());
         }
         systemRepository.save(old);
     }

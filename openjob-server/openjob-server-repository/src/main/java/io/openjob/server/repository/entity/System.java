@@ -40,12 +40,6 @@ public class System {
     private Long clusterDelayVersion;
 
     /**
-     * Cluster supervisor slot.
-     */
-    @Column(name = "cluster_supervisor_slot")
-    private Integer clusterSupervisorSlot;
-
-    /**
      * Worker supervisor slot.
      */
     @Column(name = "worker_supervisor_slot")
@@ -74,6 +68,18 @@ public class System {
      */
     @Column(name = "delay_delete_list_slot")
     private Integer delayDeleteListSlot;
+
+    @Column(name = "job_keep_days")
+    private Integer jobKeepDays;
+
+    @Column(name = "delay_keep_days")
+    private Integer delayKeepDays;
+
+    @Column(name = "server_keep_days")
+    private Integer serverKeepDays;
+
+    @Column(name = "worker_keep_days")
+    private Integer workerKeepDays;
 
     /**
      * Max slot

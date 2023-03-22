@@ -651,13 +651,16 @@ CREATE TABLE `system` (
                           `version` varchar(16) NOT NULL DEFAULT '0',
                           `cluster_version` bigint(20) unsigned NOT NULL DEFAULT '1',
                           `cluster_delay_version` bigint(20) unsigned NOT NULL DEFAULT '1',
-                          `cluster_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
                           `delay_add_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
                           `delay_status_list_slot` int(10) unsigned NOT NULL DEFAULT '2',
                           `delay_delete_list_slot` int(10) unsigned NOT NULL DEFAULT '1',
                           `max_slot` int(11) unsigned NOT NULL DEFAULT '256',
+                          `job_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `delay_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `server_keep_days` int(11) NOT NULL DEFAULT '30',
+                          `worker_keep_days` int(11) NOT NULL DEFAULT '30',
                           `deleted` tinyint(2) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                           `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                           `create_time` bigint(12) unsigned NOT NULL,
@@ -667,9 +670,9 @@ CREATE TABLE `system` (
 
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 
-INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `cluster_supervisor_slot`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_add_list_slot`, `delay_status_list_slot`, `delay_delete_list_slot`, `max_slot`, `create_time`, `update_time`)
+INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version`, `worker_supervisor_slot`, `delay_zset_slot`, `delay_add_list_slot`, `delay_status_list_slot`, `delay_delete_list_slot`, `max_slot`, `create_time`, `update_time`)
 VALUES
-    (1,'1.0.0',1,1,1,256,2,2,2,1,256,1663590330,1663590330);
+    (1,'1.0.0',1,1,256,2,2,2,1,256,1663590330,1663590330);
 
 
 DROP TABLE IF EXISTS `admin_session`;
