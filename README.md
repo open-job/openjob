@@ -2,7 +2,8 @@
 
 > **[中文](README-zh.md)**
 ## Introduction
-Openjob is a distributed, high-performance task scheduling framework that supports a variety of scheduled and delayed tasks. It adopts a decentralized design and supports wireless capacity expansion.## Feature
+Openjob is a distributed, high-performance task scheduling framework that supports a variety of scheduled and delayed tasks. It adopts a decentralized design and supports wireless capacity expansion.
+## Feature
 ##### High reliability
 Distributed stateless design, Master/Worker architecture, relying on only one database (MySQL/PostgreSQL/Oracle)
 ##### High performance
