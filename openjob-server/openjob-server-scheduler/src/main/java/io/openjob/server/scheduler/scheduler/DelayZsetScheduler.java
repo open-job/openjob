@@ -67,7 +67,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        this.executorService.shutdown();
         log.info("Range delay instance shutdown now!");
     }
 

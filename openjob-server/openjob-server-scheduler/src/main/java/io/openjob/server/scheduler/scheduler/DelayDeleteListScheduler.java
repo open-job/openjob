@@ -53,7 +53,7 @@ public class DelayDeleteListScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        this.executorService.shutdown();
         log.info("Delete List delay instance shutdown now!");
     }
 

@@ -53,7 +53,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        this.executorService.shutdown();
         log.info("Status List delay instance shutdown now!");
     }
 

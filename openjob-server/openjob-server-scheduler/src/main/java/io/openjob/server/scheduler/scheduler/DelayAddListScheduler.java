@@ -63,7 +63,7 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        this.executorService.shutdown();
         log.info("Add List delay instance shutdown now!");
     }
 
