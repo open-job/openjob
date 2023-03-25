@@ -5,6 +5,7 @@ import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.Delay;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -60,6 +61,14 @@ public interface DelayDAO {
      * @return Delay
      */
     Delay findByTopic(String topic);
+
+    /**
+     * Find by id
+     *
+     * @param id id
+     * @return Delay
+     */
+    Optional<Delay> findById(Long id);
 
     /**
      * Find by topics

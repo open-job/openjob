@@ -30,8 +30,9 @@ public interface DelayRepository extends JpaRepository<Delay, Long> {
     /**
      * Find by app id.
      *
-     * @param appId app id.
+     * @param appId   app id.
+     * @param deleted deleted
      * @return List
      */
-    List<Delay> findByAppId(Long appId);
+    List<Delay> findByAppIdAndDeleted(Long appId, Integer deleted);
 }

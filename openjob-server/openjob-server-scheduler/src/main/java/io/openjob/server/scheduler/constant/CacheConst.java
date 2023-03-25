@@ -17,6 +17,11 @@ public class CacheConst {
     public static final String DELAY_DETAIL_TOPIC_PREFIX = "delay:detail:topic";
 
     /**
+     * Delay prefix
+     */
+    public static final String DELAY_DETAIL_ID_PREFIX = "delay:detail:id";
+
+    /**
      * Delay detail prefix.
      */
     public static final String DELAY_DETAIL_TASKID_PREFIX = "delay:detail:taskid";

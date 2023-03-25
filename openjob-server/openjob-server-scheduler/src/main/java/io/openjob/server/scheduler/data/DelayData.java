@@ -47,6 +47,18 @@ public class DelayData {
         }, Duration.ofDays(1));
     }
 
+    public Delay getDelayById(Long id) {
+        String delayKey = CacheUtil.getDelayDetailIdKey(id);
+        return RedisUtil.orElseGet(delayKey, () -> {
+            Delay delay = this.delayDAO.findById(id)
+                    .orElseThrow(() -> new RuntimeException(String.format("Delay is not exist(%d)!", id)));
+            if (Objects.isNull(delay)) {
+                return new Delay();
+            }
+            return delay;
+        }, Duration.ofDays(1));
+    }
+
     /**
      * Get delay list.
      *

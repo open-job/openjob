@@ -74,6 +74,7 @@ public class DelayThreadTaskProcessor implements Runnable {
         WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
         workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
         workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
+        workerDelayTaskRequest.setDelayPid(this.jobContext.getDelayPid());
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(TaskStatusEnum.RUNNING.getStatus());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
@@ -83,6 +84,7 @@ public class DelayThreadTaskProcessor implements Runnable {
     private void reportFinallyTaskStatus(ProcessResult result) {
         WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
         workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
+        workerDelayTaskRequest.setDelayPid(this.jobContext.getDelayPid());
         workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(result.getStatus().getStatus());

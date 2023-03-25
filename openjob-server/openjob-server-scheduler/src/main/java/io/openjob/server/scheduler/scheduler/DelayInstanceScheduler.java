@@ -193,20 +193,20 @@ public class DelayInstanceScheduler {
         Map<String, List<DelayInstanceStatusRequestDTO>> zsetKeyMap = statusList.stream()
                 .collect(Collectors.groupingBy(DelayInstanceStatusRequestDTO::getZsetKey));
 
-        List<DelayInstanceStatusRequestDTO> notRunningList = statusList.stream()
-                .filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
+        List<DelayInstanceStatusRequestDTO> successList = statusList.stream()
+                .filter(d -> TaskStatusEnum.isSuccess(d.getStatus()))
                 .collect(Collectors.toList());
 
         // Detail cache keys.
-        List<String> notRunningDetailKeys = notRunningList.stream().map(d -> CacheUtil.getDelayDetailTaskIdKey(d.getTaskId()))
+        List<String> successDetailKeys = successList.stream().map(d -> CacheUtil.getDelayDetailTaskIdKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Worker address keys.
-        List<String> notRunningAddressKeys = notRunningList.stream().map(d -> CacheUtil.getDelayDetailWorkerAddressKey(d.getTaskId()))
+        List<String> successAddressKeys = successList.stream().map(d -> CacheUtil.getDelayDetailWorkerAddressKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Worker address keys.
-        List<String> notRunningRetryKeys = notRunningList.stream().map(d -> CacheUtil.getDelayRetryTimesKey(d.getTaskId()))
+        List<String> successRetryKeys = successList.stream().map(d -> CacheUtil.getDelayRetryTimesKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Delay status list key.
@@ -220,7 +220,7 @@ public class DelayInstanceScheduler {
 
                 // Remove from zset
                 zsetKeyMap.forEach((k, list) -> {
-                    List<String> completeStatusList = list.stream().filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
+                    List<String> completeStatusList = list.stream().filter(d -> TaskStatusEnum.isSuccess(d.getStatus()))
                             .map(DelayInstanceStatusRequestDTO::getTaskId)
                             .distinct().collect(Collectors.toList());
 
@@ -230,9 +230,9 @@ public class DelayInstanceScheduler {
                 });
 
                 // Delete detail.
-                notRunningDetailKeys.addAll(notRunningAddressKeys);
-                notRunningDetailKeys.addAll(notRunningRetryKeys);
-                operations.delete(notRunningDetailKeys);
+                successDetailKeys.addAll(successAddressKeys);
+                successDetailKeys.addAll(successRetryKeys);
+                operations.delete(successDetailKeys);
 
                 // Push delay status to list
                 operations.opsForList().rightPushAll(statusListKey, statusList.toArray());

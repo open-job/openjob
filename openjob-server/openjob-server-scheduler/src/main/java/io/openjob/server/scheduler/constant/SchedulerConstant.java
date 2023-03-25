@@ -26,5 +26,5 @@ public class SchedulerConstant {
     /**
      * Delay retry time(s)
      */
-    public static final Long DELAY_RETRY_AFTER = 30L;
+    public static final Long DELAY_RETRY_AFTER = 10L;
 }

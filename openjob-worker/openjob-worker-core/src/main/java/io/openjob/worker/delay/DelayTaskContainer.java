@@ -63,6 +63,7 @@ public class DelayTaskContainer {
             jobContext.setFailRetryTimes(i.getFailRetryTimes());
             jobContext.setDelayTaskId(i.getTaskId());
             jobContext.setDelayTopic(i.getTopic());
+            jobContext.setDelayPid(i.getDelayPid());
             Future<?> future = this.executorService.submit(new DelayThreadTaskProcessor(jobContext));
             DelayTaskManager.INSTANCE.addTask(i.getTaskId(), future, timestamp + i.getExecuteTimeout());
         });

@@ -44,6 +44,11 @@ public enum TaskStatusEnum {
      * Fail.
      */
     FAILED(25, "fail"),
+
+    /**
+     * Stop.
+     */
+    STOP(30, "stop"),
     ;
 
     /**
@@ -61,7 +66,8 @@ public enum TaskStatusEnum {
      */
     public static final List<Integer> FINISH_LIST = Arrays.asList(
             SUCCESS.status,
-            FAILED.status
+            FAILED.status,
+            STOP.status
     );
 
     /**
@@ -73,7 +79,8 @@ public enum TaskStatusEnum {
             FAILOVER.status,
             RUNNING.status,
             SUCCESS.status,
-            FAILED.status
+            FAILED.status,
+            STOP.status
     );
 
     /**
@@ -91,6 +98,10 @@ public enum TaskStatusEnum {
 
     public static Boolean isRunning(Integer status) {
         return RUNNING.getStatus().equals(status);
+    }
+
+    public static Boolean isSuccess(Integer status) {
+        return SUCCESS.getStatus().equals(status);
     }
 
     /**
