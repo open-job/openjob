@@ -39,6 +39,9 @@ public class ListDelayVO {
     @ApiModelProperty(value = "Ready", required = true)
     private Long ready;
 
+    @ApiModelProperty(value = "Fail count", required = true)
+    private Long failCount;
+
     @ApiModelProperty(value = "Description", required = true)
     private String description;
 

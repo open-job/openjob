@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.scheduler;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.ServerDelayInstanceStopRequest;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DelayUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.common.util.ServerUtil;
@@ -24,6 +25,7 @@ import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
+import io.openjob.server.scheduler.dto.TopicFailCounterDTO;
 import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
@@ -109,6 +111,28 @@ public class DelayInstanceScheduler {
             // Ready
             long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
             counterDTO.setReady(Count);
+            counters.add(counterDTO);
+        });
+        return counters;
+    }
+
+    /**
+     * Get topic fail count
+     *
+     * @param topics topics
+     * @return List
+     */
+    public List<TopicFailCounterDTO> getTopicFailCount(List<String> topics) {
+        List<TopicFailCounterDTO> counters = new ArrayList<>();
+        RedisTemplate<String, Object> template = RedisUtil.getTemplate();
+        topics.forEach(t -> {
+            String cacheListKey = CacheUtil.getTopicListKey(DelayUtil.getFailDelayTopic(t));
+            TopicFailCounterDTO counterDTO = new TopicFailCounterDTO();
+            counterDTO.setTopic(t);
+
+            // Ready
+            long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
+            counterDTO.setCount(Count);
             counters.add(counterDTO);
         });
         return counters;

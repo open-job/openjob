@@ -23,6 +23,7 @@ import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.scheduler.dto.TopicFailCounterDTO;
 import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,11 @@ public class DelayServiceImpl implements DelayService {
                 .stream()
                 .collect(Collectors.toMap(TopicReadyCounterDTO::getTopic, TopicReadyCounterDTO::getReady));
 
+        // Topic fail count
+        Map<String, Long> failMap = this.delayInstanceScheduler.getTopicFailCount(topics)
+                .stream()
+                .collect(Collectors.toMap(TopicFailCounterDTO::getTopic, TopicFailCounterDTO::getCount));
+
         // App list.
         List<Long> appIds = pageList.getList().stream()
                 .map(Delay::getAppId).distinct().collect(Collectors.toList());
@@ -122,6 +128,7 @@ public class DelayServiceImpl implements DelayService {
             // Total and Ready
             listDelayVO.setTotal(Optional.ofNullable(totalMap.get(d.getTopic())).orElse(0L));
             listDelayVO.setReady(readyMap.get(d.getTopic()));
+            listDelayVO.setFailCount(failMap.get(d.getTopic()));
             return listDelayVO;
         });
     }
@@ -146,7 +153,7 @@ public class DelayServiceImpl implements DelayService {
         failDelay.setPid(updateDelayRequest.getId());
         failDelay.setTopic(DelayUtil.getFailDelayTopic(updateDelayRequest.getTopic()));
         failDelay.setCid(0L);
-        this.delayDAO.update(delay);
+        this.delayDAO.update(failDelay);
         return new UpdateDelayVO();
     }
 }
