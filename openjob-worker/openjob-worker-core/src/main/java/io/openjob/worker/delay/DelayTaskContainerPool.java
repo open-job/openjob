@@ -1,6 +1,7 @@
 package io.openjob.worker.delay;
 
 import com.google.common.collect.Maps;
+import io.openjob.common.constant.CommonConstant;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -13,29 +14,9 @@ public class DelayTaskContainerPool {
 
     /**
      * Delay task pool.
-     * topic => DelayTaskContainer.
+     * delayId => DelayTaskContainer.
      */
     private static final Map<Long, DelayTaskContainer> DELAY_TASK_POOL = Maps.newConcurrentMap();
-
-    /**
-     * Whether topic is existed.
-     *
-     * @param delayId delayId
-     * @return Boolean
-     */
-    public static Boolean contains(Long delayId) {
-        return DELAY_TASK_POOL.containsKey(delayId);
-    }
-
-    /**
-     * Get delay task container.
-     *
-     * @param delayId delayId
-     * @return DelayTaskContainer
-     */
-    public static DelayTaskContainer get(Long delayId) {
-        return DELAY_TASK_POOL.get(delayId);
-    }
 
     /**
      * Get delay task container.
@@ -48,21 +29,7 @@ public class DelayTaskContainerPool {
         return DELAY_TASK_POOL.computeIfAbsent(delayId, creator);
     }
 
-    /**
-     * Get all delay task container.
-     *
-     * @return Map
-     */
-    public static Map<Long, DelayTaskContainer> getAllDelayTaskContainer() {
-        return DELAY_TASK_POOL;
-    }
-
-    /**
-     * Remove task container.
-     *
-     * @param topic topic
-     */
-    public static void remove(Long topic) {
-        DELAY_TASK_POOL.remove(topic);
+    public static void stop() {
+        DELAY_TASK_POOL.forEach((t, c) -> c.stop());
     }
 }

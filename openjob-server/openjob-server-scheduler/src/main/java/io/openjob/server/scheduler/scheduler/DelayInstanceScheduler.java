@@ -164,6 +164,7 @@ public class DelayInstanceScheduler {
         return this.delayData.getDelayInstanceList(taskIds).stream().map(di -> {
             DelayInstancePullResponseDTO responseDTO = new DelayInstancePullResponseDTO();
             responseDTO.setDelayId(delay.getId());
+            responseDTO.setDelayPid(delay.getPid());
             responseDTO.setTopic(di.getTopic());
             responseDTO.setDelayParams(di.getParams());
             responseDTO.setDelayExtra(di.getExtra());

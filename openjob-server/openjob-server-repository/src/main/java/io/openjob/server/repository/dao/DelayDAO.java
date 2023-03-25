@@ -23,10 +23,18 @@ public interface DelayDAO {
     /**
      * Update
      *
-     * @param delay
+     * @param delay delay
      * @return Long
      */
     Long update(Delay delay);
+
+    /**
+     * Update cid by id
+     *
+     * @param id  id
+     * @param cid cid
+     */
+    void updateCidById(Long id, Long cid);
 
     /**
      * Update status or deleted
@@ -34,14 +42,13 @@ public interface DelayDAO {
      * @param id      id
      * @param status  status
      * @param deleted deleted
-     * @return Long
      */
-    Long updateStatusOrDeleted(Long id, Integer status, Integer deleted);
+    void updateStatusOrDeleted(Long id, Integer status, Integer deleted);
 
     /**
      * Page list
      *
-     * @param delayPageDTO
+     * @param delayPageDTO delayPageDTO
      * @return PageDTO
      */
     PageDTO<Delay> pageList(DelayPageDTO delayPageDTO);

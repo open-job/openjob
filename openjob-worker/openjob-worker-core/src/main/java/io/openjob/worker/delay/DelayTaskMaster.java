@@ -51,6 +51,7 @@ public class DelayTaskMaster {
         ServerDelayTopicPullResponse response = FutureUtil.mustAsk(WorkerUtil.getServerDelayInstanceActor(), pullRequest, ServerDelayTopicPullResponse.class, 3000L);
         Long timestamp = DateUtil.timestamp();
 
+        // Delay topic
         List<Delay> saveTopicList = response.getTopicList().stream().map(t -> {
             Delay delay = new Delay();
             delay.setId(t.getId());

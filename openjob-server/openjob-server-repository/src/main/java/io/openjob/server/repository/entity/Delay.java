@@ -22,6 +22,12 @@ public class Delay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "pid")
+    private Long pid;
+
+    @Column(name = "cid")
+    private Long cid;
+
     @Column(name = "namespace_id")
     private Long namespaceId;
 
@@ -54,6 +60,12 @@ public class Delay {
 
     @Column(name = "topic")
     private String topic;
+
+    @Column(name = "fail_topic_enable")
+    private Integer failTopicEnable;
+
+    @Column(name = "fail_topic_concurrency")
+    private Integer failTopicConcurrency;
 
     /**
      * Delete status. 1=yes 2=no

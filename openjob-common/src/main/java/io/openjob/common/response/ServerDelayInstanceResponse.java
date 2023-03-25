@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class ServerDelayInstanceResponse implements Serializable {
     private String topic;
     private Long delayId;
+    private Long delayPid;
     private String taskId;
     private String delayParams;
     private String delayExtra;
@@ -21,4 +22,6 @@ public class ServerDelayInstanceResponse implements Serializable {
     private Integer executeTimeout;
     private Integer blockingSize;
     private Integer concurrency;
+    private Integer failTopicEnable;
+    private Integer failTopicConcurrency;
 }

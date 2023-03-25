@@ -3,6 +3,9 @@ package io.openjob.server.admin.request.delay;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -41,4 +44,11 @@ public class AddDelayRequest {
 
     @ApiModelProperty(value = "Blocking size", required = true)
     private Integer blockingSize;
+
+    @NotNull
+    @ApiModelProperty(value = "Fail topic enable", required = true)
+    private Integer failTopicEnable;
+
+    @ApiModelProperty(value = "Fail topic concurrency", required = true)
+    private Integer failTopicConcurrency;
 }
