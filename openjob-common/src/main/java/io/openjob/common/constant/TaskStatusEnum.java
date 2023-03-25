@@ -36,14 +36,14 @@ public enum TaskStatusEnum {
     RUNNING(15, "running"),
 
     /**
-     * Success.
-     */
-    SUCCESS(20, "success"),
-
-    /**
      * Fail.
      */
-    FAILED(25, "fail"),
+    FAILED(20, "fail"),
+
+    /**
+     * Success.
+     */
+    SUCCESS(25, "success"),
 
     /**
      * Stop.
@@ -65,8 +65,8 @@ public enum TaskStatusEnum {
      * Complete status
      */
     public static final List<Integer> FINISH_LIST = Arrays.asList(
-            SUCCESS.status,
             FAILED.status,
+            SUCCESS.status,
             STOP.status
     );
 
@@ -78,9 +78,17 @@ public enum TaskStatusEnum {
             INIT.status,
             FAILOVER.status,
             RUNNING.status,
-            SUCCESS.status,
             FAILED.status,
+            SUCCESS.status,
             STOP.status
+    );
+
+    /**
+     * Delay complete status
+     */
+    public static final List<Integer> DELAY_COMPLETE = Arrays.asList(
+            TaskStatusEnum.SUCCESS.getStatus(),
+            TaskStatusEnum.STOP.getStatus()
     );
 
     /**
@@ -102,6 +110,10 @@ public enum TaskStatusEnum {
 
     public static Boolean isSuccess(Integer status) {
         return SUCCESS.getStatus().equals(status);
+    }
+
+    public static Boolean isDelayComplete(Integer status) {
+        return DELAY_COMPLETE.contains(status);
     }
 
     /**

@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.scheduler;
 
 import com.google.common.collect.Lists;
 import io.openjob.common.SpringContext;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -177,10 +179,20 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                         List<DelayInstanceAddRequestDTO> pushTask = list.stream().filter(i -> {
                             Integer currentTimes = timesMap.get(i.getTaskId());
 
-                            // Delay task and arrive retry times.
-                            if (topicDelay.getPid().equals(0L) && currentTimes >= topicDelay.getFailRetryTimes()) {
-                                push2FailTopic.add(i);
-                                return false;
+                            // Enable fail topic
+                            if (CommonConstant.YES.equals(topicDelay.getFailTopicEnable())) {
+                                // Delay task and arrive retry times.
+                                if (topicDelay.getPid().equals(0L) && currentTimes >= topicDelay.getFailRetryTimes()) {
+                                    push2FailTopic.add(i);
+                                    return false;
+                                }
+                            } else {
+                                if (topicDelay.getPid().equals(0L) && currentTimes >= topicDelay.getFailRetryTimes()) {
+                                    // Remove task
+
+                                    log.warn("Task has arrived retry times! taskId={}", i.getTaskId());
+                                    return false;
+                                }
                             }
                             return true;
                         }).collect(Collectors.toList());
@@ -209,7 +221,10 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                         // Update score(score=score+timeout)
                         pushTask.forEach(d -> {
                             int retryTimes = timesMap.get(d.getTaskId());
-                            double retryTime = topicDelay.getExecuteTimeout() + (long) topicDelay.getFailRetryInterval() * retryTimes + SchedulerConstant.DELAY_RETRY_AFTER;
+                            double retryTime = DateUtil.timestamp()
+                                    + topicDelay.getExecuteTimeout()
+                                    + (long) topicDelay.getFailRetryInterval() * retryTimes
+                                    + SchedulerConstant.DELAY_RETRY_AFTER;
                             operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime);
                         });
                     });
@@ -228,9 +243,13 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                         return;
                     }
 
+                    log.info("test==={}", list);
+
+                    RedisTemplate<String, Object> template = RedisUtil.getTemplate();
                     Delay delay = SpringContext.getBean(DelayData.class).getDelayById(failDelayId);
                     String cacheListKey = CacheUtil.getTopicListKey(delay.getTopic());
-                    RedisUtil.getTemplate().opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
+                    list.forEach(d -> template.opsForList().remove(cacheListKey, 0, d.getTaskId()));
+                    template.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
                 }
             });
         }

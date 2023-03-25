@@ -12,7 +12,12 @@ import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -104,19 +109,25 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                 return;
             }
 
-            // Update list.
-            List<DelayInstance> updateList = popObjects.stream().map(o -> {
+            Map<String, DelayInstance> listMap = new HashMap<>();
+            popObjects.forEach(o -> {
                 DelayInstanceStatusRequestDTO delayStatus = (DelayInstanceStatusRequestDTO) o;
+                DelayInstance mapInstance = listMap.get(delayStatus.getTaskId());
                 DelayInstance delayInstance = new DelayInstance();
                 delayInstance.setTaskId(delayStatus.getTaskId());
                 delayInstance.setStatus(delayStatus.getStatus());
                 delayInstance.setWorkerAddress(delayStatus.getWorkerAddress());
                 delayInstance.setCompleteTime(delayStatus.getCompleteTime());
-                return delayInstance;
-            }).collect(Collectors.toList());
+
+                // Fixed many status for one task id.
+                // Select max status.
+                if (Objects.isNull(mapInstance) || mapInstance.getStatus() < delayStatus.getStatus()) {
+                    listMap.put(delayStatus.getTaskId(), delayInstance);
+                }
+            });
 
             // Batch update.
-            this.delayInstanceDAO.batchUpdateStatus(updateList);
+            this.delayInstanceDAO.batchUpdateStatus(new ArrayList<>(listMap.values()));
         }
     }
 }

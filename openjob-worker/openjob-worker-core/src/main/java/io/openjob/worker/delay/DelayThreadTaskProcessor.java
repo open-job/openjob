@@ -57,9 +57,11 @@ public class DelayThreadTaskProcessor implements Runnable {
             result = this.baseProcessor.process(this.jobContext);
             logger.info("Delay processor completed! taskId={}", this.jobContext.getDelayTaskId());
         } catch (InterruptedException ex) {
-            logger.info("Delay processor is interrupted! taskId={}", this.jobContext.getDelayTaskId());
+            logger.info("Delay processor is interrupted(stop or timeout)! taskId={}", this.jobContext.getDelayTaskId());
+            result.setStatus(TaskStatusEnum.STOP);
+            result.setResult(ex.getMessage());
         } catch (Throwable ex) {
-            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), ex);
+            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), new RuntimeException(ex));
             result.setResult(ex.getMessage());
         } finally {
             DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
@@ -78,6 +80,7 @@ public class DelayThreadTaskProcessor implements Runnable {
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(TaskStatusEnum.RUNNING.getStatus());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
+        workerDelayTaskRequest.setCompleteTime(0L);
         DelayStatusReporter.report(workerDelayTaskRequest);
     }
 

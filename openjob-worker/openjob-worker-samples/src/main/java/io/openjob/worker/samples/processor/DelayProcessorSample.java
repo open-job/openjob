@@ -21,10 +21,11 @@ public class DelayProcessorSample implements JavaProcessor {
         logger.info("Delay run {} {} {}", context.getDelayTaskId(), context.getDelayParams(), context.getDelayExtra());
         log.info("Delay run {} {} {}", context.getDelayTaskId(), context.getDelayParams(), context.getDelayExtra());
 
-        for (int i = 0; i < 16; i++) {
-            logger.info("JavaProcessorTest execute success! taskId={}", context.getDelayTaskId());
-            Thread.sleep(2000L);
-        }
-        return new ProcessResult(true);
+        throw new RuntimeException("test");
+//        for (int i = 0; i < 16; i++) {
+//            logger.info("JavaProcessorTest execute success! taskId={}", context.getDelayTaskId());
+//            Thread.sleep(2000L);
+//        }
+//        return new ProcessResult(true);
     }
 }
