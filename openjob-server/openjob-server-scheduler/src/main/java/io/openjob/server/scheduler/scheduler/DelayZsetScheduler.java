@@ -15,13 +15,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,8 +170,6 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                     // Push by topic
                     detailListMap.forEach((t, list) -> {
                         Delay topicDelay = delayMap.get(t).get(0);
-                        String cacheListKey = CacheUtil.getTopicListKey(t);
-
                         // Find can be push task
                         List<DelayInstanceAddRequestDTO> push2FailTopic = Lists.newArrayList();
                         List<DelayInstanceAddRequestDTO> pushTask = list.stream().filter(i -> {
@@ -197,59 +193,60 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                             return true;
                         }).collect(Collectors.toList());
 
-                        // Push task to fail topic.
-                        this.push2FailTopic(push2FailTopic, topicDelay.getCid());
-
-                        // Empty
-                        if (CollectionUtils.isEmpty(pushTask)) {
-                            return;
+                        // Not empty
+                        // Push task to fail topic and inc fail task score
+                        if (!CollectionUtils.isEmpty(push2FailTopic)) {
+                            push2ListAndIncScore(operations, pushTask, topicDelay, true);
                         }
 
-                        // Remove task id.
-                        // Fixed retry task id.
-                        pushTask.forEach(i -> {
-                            operations.opsForList().remove(cacheListKey, 0, i.getTaskId());
-
-                            // Retry times.
-                            String delayRetryTimesKey = CacheUtil.getDelayRetryTimesKey(i.getTaskId());
-                            operations.opsForValue().increment(delayRetryTimesKey);
-                        });
-
-                        // Add task id to queue.
-                        operations.opsForList().rightPushAll(cacheListKey, pushTask.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
-
-                        // Update score(score=score+timeout)
-                        pushTask.forEach(d -> {
-                            int retryTimes = timesMap.get(d.getTaskId());
-                            double retryTime = DateUtil.timestamp()
-                                    + topicDelay.getExecuteTimeout()
-                                    + (long) topicDelay.getFailRetryInterval() * retryTimes
-                                    + SchedulerConstant.DELAY_RETRY_AFTER;
-                            operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime);
-                        });
+                        // Not empty
+                        // Push task to topic and inc task score
+                        if (!CollectionUtils.isEmpty(pushTask)) {
+                            push2ListAndIncScore(operations, pushTask, topicDelay, false);
+                        }
                     });
 
                     operations.exec();
                     return null;
                 }
 
-                /**
-                 * Push to fail topic
-                 * @param list list
-                 * @param failDelayId failDelayId
-                 */
-                private void push2FailTopic(List<DelayInstanceAddRequestDTO> list, Long failDelayId) {
-                    if (CollectionUtils.isEmpty(list)) {
-                        return;
+                private void push2ListAndIncScore(RedisOperations<String, Object> operations,
+                                                  List<DelayInstanceAddRequestDTO> pushTask,
+                                                  Delay topicDelay,
+                                                  Boolean isFailTopic) {
+                    // List cache key.
+                    String cacheListKey = getListCacheKey(topicDelay, isFailTopic);
+
+                    // Remove task id.
+                    // Fixed retry task id.
+                    pushTask.forEach(i -> {
+                        operations.opsForList().remove(cacheListKey, 0, i.getTaskId());
+
+                        // Retry times.
+                        String delayRetryTimesKey = CacheUtil.getDelayRetryTimesKey(i.getTaskId());
+                        operations.opsForValue().increment(delayRetryTimesKey);
+                    });
+
+                    // Add task id to queue.
+                    operations.opsForList().rightPushAll(cacheListKey, pushTask.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
+
+                    // Update score(score=score+timeout)
+                    pushTask.forEach(d -> {
+                        int retryTimes = timesMap.get(d.getTaskId());
+                        double retryTime = topicDelay.getExecuteTimeout()
+                                + (long) topicDelay.getFailRetryInterval() * retryTimes
+                                + SchedulerConstant.DELAY_RETRY_AFTER;
+                        operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime);
+                    });
+                }
+
+                private String getListCacheKey(Delay topicDelay, Boolean isFailTopic) {
+                    String cacheListKey = CacheUtil.getTopicListKey(topicDelay.getTopic());
+                    if (isFailTopic) {
+                        Delay delay = SpringContext.getBean(DelayData.class).getDelayById(topicDelay.getCid());
+                        cacheListKey = CacheUtil.getTopicListKey(delay.getTopic());
                     }
-
-                    log.info("test==={}", list);
-
-                    RedisTemplate<String, Object> template = RedisUtil.getTemplate();
-                    Delay delay = SpringContext.getBean(DelayData.class).getDelayById(failDelayId);
-                    String cacheListKey = CacheUtil.getTopicListKey(delay.getTopic());
-                    list.forEach(d -> template.opsForList().remove(cacheListKey, 0, d.getTaskId()));
-                    template.opsForList().rightPushAll(cacheListKey, list.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
+                    return cacheListKey;
                 }
             });
         }

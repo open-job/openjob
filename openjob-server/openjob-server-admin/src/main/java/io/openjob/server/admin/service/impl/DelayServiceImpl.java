@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -92,11 +93,8 @@ public class DelayServiceImpl implements DelayService {
                 .map(Delay::getTopic).distinct().collect(Collectors.toList());
 
         // Topic total count
-        List<Integer> statuses = Arrays.asList(
-                TaskStatusEnum.UNKNOWN.getStatus(),
-                TaskStatusEnum.INIT.getStatus(),
-                TaskStatusEnum.FAILOVER.getStatus(),
-                TaskStatusEnum.RUNNING.getStatus()
+        List<Integer> statuses = Collections.singletonList(
+                TaskStatusEnum.INIT.getStatus()
         );
         Map<String, Long> totalMap = this.delayInstanceDAO.getTopicTotalCount(topics, statuses).stream()
                 .collect(Collectors.toMap(DelayInstanceTotalDTO::getTopic, DelayInstanceTotalDTO::getTotal));
