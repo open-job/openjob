@@ -134,8 +134,11 @@ public class DelaySlotUtil {
             return new ArrayList<>(slots);
         }
 
+        Set<Long> nodeSlots = ClusterContext.getCurrentSlots();
         for (int i = 1; i < currentSlot + 1; i++) {
-            slots.add((long) i);
+            if (nodeSlots.contains((long) i)) {
+                slots.add((long) i);
+            }
         }
         return new ArrayList<>(slots);
     }

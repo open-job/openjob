@@ -34,8 +34,12 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentStatusListSlots();
-        int maxSize = slots.size() > 0 ? slots.size() : 1;
+        // Not slots on current node.
+        if (CollectionUtils.isEmpty(slots)){
+            return;
+        }
 
+        int maxSize = slots.size();
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
                 maxSize,
@@ -58,6 +62,11 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
+        // Not slots on current node.
+        if (Objects.isNull(executorService)) {
+            return;
+        }
+
         this.executorService.shutdown();
         log.info("Status List delay instance shutdown now!");
     }

@@ -43,8 +43,12 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
-        int maxSize = slots.size() > 0 ? slots.size() : 1;
+        // Not slots on current node.
+        if (CollectionUtils.isEmpty(slots)) {
+            return;
+        }
 
+        int maxSize = slots.size();
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
                 maxSize,
@@ -67,6 +71,11 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
+        // Not slots on current node.
+        if (Objects.isNull(executorService)) {
+            return;
+        }
+
         this.executorService.shutdown();
         log.info("Range delay instance shutdown now!");
     }
@@ -226,6 +235,10 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
                         String delayRetryTimesKey = CacheUtil.getDelayRetryTimesKey(i.getTaskId());
                         operations.opsForValue().increment(delayRetryTimesKey);
                     });
+
+                    if (CollectionUtils.isEmpty(pushTask)){
+                        return;
+                    }
 
                     // Add task id to queue.
                     operations.opsForList().rightPushAll(cacheListKey, pushTask.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
