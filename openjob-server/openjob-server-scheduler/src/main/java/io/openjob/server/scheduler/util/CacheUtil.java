@@ -36,6 +36,10 @@ public class CacheUtil {
         return String.format("%s:%d", CacheConst.DELAY_ZSET_PREFIX, slotId);
     }
 
+    public static String getFailZsetKey(Long slotId) {
+        return String.format("%s:%d", CacheConst.DELAY_FAIL_ZSET_PREFIX, slotId);
+    }
+
     public static String getAddListKey(Long slotId) {
         return String.format("%s:%d", CacheConst.DELAY_ADD_LIST_PREFIX, slotId);
     }

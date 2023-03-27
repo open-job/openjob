@@ -28,6 +28,17 @@ public class DelaySlotUtil {
     }
 
     /**
+     * Get current zset slots.
+     *
+     * @return List
+     */
+    public static List<Long> getFailCurrentZsetSlots() {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        return getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
+    }
+
+    /**
      * Get current add list slots.
      *
      * @return List

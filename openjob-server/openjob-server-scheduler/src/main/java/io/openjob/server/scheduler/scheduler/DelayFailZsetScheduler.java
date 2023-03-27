@@ -1,9 +1,10 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.util.DelayUtil;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Component;
@@ -20,12 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
-@Log4j2
+@Slf4j
 @Component
-public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
+public class DelayFailZsetScheduler extends AbstractDelayZsetScheduler {
     @Override
     public void start() {
-        List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
+        List<Long> slots = DelaySlotUtil.getFailCurrentZsetSlots();
         // Not slots on current node.
         if (CollectionUtils.isEmpty(slots)) {
             return;
@@ -39,17 +40,17 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                 30,
                 TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(maxSize),
-                r -> new Thread(r, String.format("delay-zset-%s", threadId.getAndIncrement()))
+                r -> new Thread(r, String.format("delay-fail-zset-%s", threadId.getAndIncrement()))
         );
 
         slots.forEach(s -> {
-            ZsetRunnable zsetRunnable = new ZsetRunnable(s);
+            FailZsetRunnable zsetRunnable = new FailZsetRunnable(s);
             runnableList.put(s, zsetRunnable);
             executorService.submit(zsetRunnable);
         });
 
         executorService.allowCoreThreadTimeOut(true);
-        log.info("Range Delay instance slots{}", slots);
+        log.info("Range Fail Delay instance slots{}", slots);
     }
 
     @Override
@@ -60,63 +61,64 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
         }
 
         this.executorService.shutdown();
-        log.info("Range delay instance shutdown now!");
+        log.info("Range fail delay instance shutdown now!");
     }
 
     @Override
     public void refresh() {
-        List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
-        this.refreshSlots(slots, ZsetRunnable::new);
+        List<Long> slots = DelaySlotUtil.getFailCurrentZsetSlots();
+        this.refreshSlots(slots, FailZsetRunnable::new);
 
-        log.info("Refresh range delay instance slots{}", slots);
+        log.info("Refresh fail range delay instance slots{}", slots);
     }
 
-    static class ZsetRunnable extends AbstractZsetRunnable {
+    static class FailZsetRunnable extends AbstractZsetRunnable {
 
         /**
          * New ZsetRunnable.
          *
          * @param currentSlotId current slot id.
          */
-        public ZsetRunnable(Long currentSlotId) {
+        public FailZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
         }
 
         @Override
         public void run() {
             // Cache key.
-            String key = CacheUtil.getZsetKey(this.currentSlotId);
-            log.info("Range delay instance begin！slotId={}", this.currentSlotId);
+            String key = CacheUtil.getFailZsetKey(this.currentSlotId);
+            log.info("Range delay fail instance begin！slotId={}", this.currentSlotId);
 
             while (!finish.get()) {
                 try {
                     this.rangeDelayInstance(key);
                 } catch (InterruptedException interruptedException) {
-                    log.info("Range delay instance interrupted complete！slotId={}", this.currentSlotId);
+                    log.info("Range delay fail instance interrupted complete！slotId={}", this.currentSlotId);
                 } catch (BeanCreationNotAllowedException beanCreationNotAllowedException) {
                     // Fixed executor shutdown error.
-                    log.info("Range delay instance destroy complete！slotId={}", this.currentSlotId);
+                    log.info("Range delay fail instance destroy complete！slotId={}", this.currentSlotId);
                     break;
                 } catch (Throwable ex) {
-                    log.error("Range delay instance failed!", ex);
+                    log.error("Range delay fail instance failed!", ex);
                 }
             }
 
-            log.info("Range delay instance complete！slotId={}", this.currentSlotId);
-        }
-
-        @Override
-        protected void ignoreTaskList(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
+            log.info("Range delay fail instance complete！slotId={}", this.currentSlotId);
         }
 
         @Override
         protected Boolean isFailZset() {
-            return false;
+            return true;
         }
 
         @Override
         protected String getCacheKey(String topic) {
-            return CacheUtil.getTopicListKey(topic);
+            return CacheUtil.getTopicListKey(DelayUtil.getFailDelayTopic(topic));
+        }
+
+        @Override
+        protected void push2FailZset(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
+
         }
     }
 }

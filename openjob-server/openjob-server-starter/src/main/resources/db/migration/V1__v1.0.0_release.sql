@@ -656,6 +656,7 @@ CREATE TABLE `system` (
                           `cluster_delay_version` bigint(20) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
+                          `delay_fail_zset_slot` int(11) NOT NULL DEFAULT '2',
                           `delay_add_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
                           `delay_status_list_slot` int(10) unsigned NOT NULL DEFAULT '2',
                           `delay_delete_list_slot` int(10) unsigned NOT NULL DEFAULT '1',

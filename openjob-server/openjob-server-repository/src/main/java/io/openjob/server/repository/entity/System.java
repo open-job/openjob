@@ -52,6 +52,12 @@ public class System {
     private Integer delayZsetSlot;
 
     /**
+     * Delay fail zset slot
+     */
+    @Column(name = "delay_fail_zset_slot")
+    private Integer delayFailZsetSlot;
+
+    /**
      * Delay list slot.
      */
     @Column(name = "delay_add_list_slot")
