@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler {
     public static abstract class AbstractZsetRunnable extends AbstractRunnable {
-        private final DelayData delayData;
+        protected final DelayData delayData;
+        protected Boolean isFailZset = false;
 
         /**
          * New ZsetRunnable.
@@ -44,15 +45,20 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             this.delayData = SpringContext.getBean(DelayData.class);
         }
 
-        protected abstract Boolean isFailZset();
-
         protected abstract String getCacheKey(String topic);
 
-        protected void push2FailZset(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
+        /**
+         * Push to fail zset
+         *
+         * @param operations operations
+         * @param originZsetKey    origin zset key
+         * @param list       task list
+         */
+        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, List<DelayInstanceAddRequestDTO> list) {
 
         }
 
-        protected void ignoreTaskList(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
+        protected void ignoreTaskList(RedisOperations<String, Object> operations, String zsetKey, List<DelayInstanceAddRequestDTO> list) {
 
         }
 
@@ -113,7 +119,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
                 @Override
                 public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                     operations.multi();
-                    push2FailZsetMap.forEach((t, list) -> push2FailZset(operations, t, list));
+                    push2FailZsetMap.forEach((t, list) -> push2FailZset(operations, key, list));
 
                     push2TopicMap.forEach((t, list) -> {
                         // List cache key.
@@ -121,7 +127,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
                         push2ListAndIncScore(operations, key, timesMap, list, topicDelay);
                     });
 
-                    ignoreMap.forEach((t, list) -> ignoreTaskList(operations, t, list));
+                    ignoreMap.forEach((t, list) -> ignoreTaskList(operations, key, list));
                     operations.exec();
                     return null;
                 }
@@ -137,7 +143,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
                 List<DelayInstanceAddRequestDTO> pushTask = list.stream().filter(i -> {
                     Integer currentTimes = timesMap.get(i.getTaskId());
 
-                    if (isFailZset()) {
+                    if (this.isFailZset) {
                         return true;
                     }
 

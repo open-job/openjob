@@ -132,6 +132,21 @@ public class DelaySlotUtil {
     }
 
     /**
+     * Get zset slot id.
+     *
+     * @param key key
+     * @return Long
+     */
+    public static Long getFailZsetSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayFailZsetMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
+        return slots.get(index);
+    }
+
+    /**
      * Get current slots.
      *
      * @param maxSlot     max slot

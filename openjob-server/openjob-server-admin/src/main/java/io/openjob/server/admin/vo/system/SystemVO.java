@@ -34,6 +34,9 @@ public class SystemVO {
     @ApiModelProperty(value = "delay zset slot")
     private Integer delayZsetSlot;
 
+    @ApiModelProperty(value = "delay fail zset slot")
+    private Integer delayFailZsetSlot;
+
     @ApiModelProperty(value = "delay add list slot")
     private Integer delayAddListSlot;
 

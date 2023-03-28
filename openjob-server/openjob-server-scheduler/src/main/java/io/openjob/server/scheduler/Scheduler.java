@@ -3,6 +3,7 @@ package io.openjob.server.scheduler;
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.scheduler.DelayAddListScheduler;
 import io.openjob.server.scheduler.scheduler.DelayDeleteListScheduler;
+import io.openjob.server.scheduler.scheduler.DelayFailZsetScheduler;
 import io.openjob.server.scheduler.scheduler.DelayStatusListScheduler;
 import io.openjob.server.scheduler.scheduler.DelayZsetScheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class Scheduler {
     private final WheelManager wheelManager;
     private final DelayZsetScheduler delayZsetScheduler;
+    private final DelayFailZsetScheduler delayFailZsetScheduler;
     private final DelayAddListScheduler delayAddListScheduler;
     private final DelayStatusListScheduler delayStatusListScheduler;
     private final DelayDeleteListScheduler delayDeleteListScheduler;
@@ -27,12 +29,14 @@ public class Scheduler {
     @Autowired
     public Scheduler(WheelManager wheelManager,
                      DelayZsetScheduler delayZsetScheduler,
+                     DelayFailZsetScheduler delayFailZsetScheduler,
                      DelayAddListScheduler delayAddListScheduler,
                      DelayStatusListScheduler delayStatusListScheduler,
                      DelayDeleteListScheduler delayDeleteListScheduler,
                      SchedulerProperties schedulerProperties) {
         this.wheelManager = wheelManager;
         this.delayZsetScheduler = delayZsetScheduler;
+        this.delayFailZsetScheduler = delayFailZsetScheduler;
         this.delayAddListScheduler = delayAddListScheduler;
         this.delayStatusListScheduler = delayStatusListScheduler;
         this.delayDeleteListScheduler = delayDeleteListScheduler;
@@ -50,6 +54,9 @@ public class Scheduler {
         if (this.schedulerProperties.getDelay().getEnable()) {
             // Delay zset scheduler.
             this.delayZsetScheduler.start();
+
+            // Delay fail zset scheduler
+            this.delayFailZsetScheduler.start();
 
             // Delay add list scheduler.
             this.delayAddListScheduler.start();
@@ -77,6 +84,9 @@ public class Scheduler {
         if (this.schedulerProperties.getDelay().getEnable()) {
             // Delay zset scheduler.
             this.delayZsetScheduler.refresh();
+
+            // Delay fail zset scheduler
+            this.delayFailZsetScheduler.refresh();
 
             // Delay add list scheduler.
             this.delayAddListScheduler.refresh();

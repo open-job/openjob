@@ -53,6 +53,11 @@ public class SystemDAOImpl implements SystemDAO {
             old.setDelayZsetSlot(system.getDelayZsetSlot());
         }
 
+        // Delay fail zet slot.
+        if (Objects.nonNull(system.getDelayFailZsetSlot())) {
+            old.setDelayFailZsetSlot(system.getDelayFailZsetSlot());
+        }
+
         // Delay add list slot
         if (Objects.nonNull(system.getDelayAddListSlot())) {
             old.setDelayAddListSlot(system.getDelayAddListSlot());

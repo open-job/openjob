@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.factory;
 
 import io.openjob.server.scheduler.scheduler.DelayAddListScheduler;
 import io.openjob.server.scheduler.scheduler.DelayDeleteListScheduler;
+import io.openjob.server.scheduler.scheduler.DelayFailZsetScheduler;
 import io.openjob.server.scheduler.scheduler.DelayStatusListScheduler;
 import io.openjob.server.scheduler.scheduler.DelayZsetScheduler;
 import io.openjob.server.scheduler.wheel.WheelManager;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class SchedulerFactoryBean implements DisposableBean {
     private final WheelManager wheelManager;
     private final DelayZsetScheduler delayZsetScheduler;
+    private final DelayFailZsetScheduler delayFailZsetScheduler;
     private final DelayAddListScheduler delayAddListScheduler;
     private final DelayStatusListScheduler delayStatusListScheduler;
     private final DelayDeleteListScheduler delayDeleteListScheduler;
@@ -26,11 +28,13 @@ public class SchedulerFactoryBean implements DisposableBean {
     @Autowired
     public SchedulerFactoryBean(WheelManager wheelManager,
                                 DelayZsetScheduler delayZsetScheduler,
+                                DelayFailZsetScheduler delayFailZsetScheduler,
                                 DelayAddListScheduler delayAddListScheduler,
                                 DelayStatusListScheduler delayStatusListScheduler,
                                 DelayDeleteListScheduler delayDeleteListScheduler) {
         this.wheelManager = wheelManager;
         this.delayZsetScheduler = delayZsetScheduler;
+        this.delayFailZsetScheduler = delayFailZsetScheduler;
         this.delayAddListScheduler = delayAddListScheduler;
         this.delayStatusListScheduler = delayStatusListScheduler;
         this.delayDeleteListScheduler = delayDeleteListScheduler;
@@ -43,6 +47,9 @@ public class SchedulerFactoryBean implements DisposableBean {
 
         // Delay zset scheduler.
         this.delayZsetScheduler.stop();
+
+        // Delay fail zset scheduler
+        this.delayFailZsetScheduler.stop();
 
         // Delay add list scheduler.
         this.delayAddListScheduler.stop();

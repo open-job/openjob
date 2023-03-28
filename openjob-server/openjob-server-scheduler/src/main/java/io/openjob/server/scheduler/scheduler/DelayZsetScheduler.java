@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -106,12 +107,20 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
         }
 
         @Override
-        protected void ignoreTaskList(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
-        }
+        protected void ignoreTaskList(RedisOperations<String, Object> operations, String zsetKey, List<DelayInstanceAddRequestDTO> list) {
+            list.forEach(d -> {
+                // Cache keys
+                String taskId = d.getTaskId();
+                String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
+                String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
+                String addressKey = CacheUtil.getDelayDetailWorkerAddressKey(taskId);
+                String retryKey = CacheUtil.getDelayRetryTimesKey(taskId);
 
-        @Override
-        protected Boolean isFailZset() {
-            return false;
+                // Remove and delete keys
+                operations.delete(Arrays.asList(detailKey, addressKey, retryKey));
+                operations.opsForZSet().remove(zsetKey, taskId);
+                operations.opsForList().remove(listKey, 1, taskId);
+            });
         }
 
         @Override

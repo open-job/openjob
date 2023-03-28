@@ -1,6 +1,8 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.DelayUtil;
+import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
@@ -81,6 +83,7 @@ public class DelayFailZsetScheduler extends AbstractDelayZsetScheduler {
          */
         public FailZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
+            this.isFailZset = true;
         }
 
         @Override
@@ -107,18 +110,19 @@ public class DelayFailZsetScheduler extends AbstractDelayZsetScheduler {
         }
 
         @Override
-        protected Boolean isFailZset() {
-            return true;
-        }
-
-        @Override
         protected String getCacheKey(String topic) {
             return CacheUtil.getTopicListKey(DelayUtil.getFailDelayTopic(topic));
         }
 
         @Override
-        protected void push2FailZset(RedisOperations<String, Object> operations, String topic, List<DelayInstanceAddRequestDTO> list) {
-
+        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, List<DelayInstanceAddRequestDTO> list) {
+            long timestamp = DateUtil.timestamp() + SchedulerConstant.DELAY_RETRY_AFTER;
+            list.forEach(d -> {
+                String taskId = d.getTaskId();
+                String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
+                operations.opsForZSet().add(zsetKey, taskId, timestamp);
+                operations.opsForZSet().remove(originZsetKey, taskId);
+            });
         }
     }
 }

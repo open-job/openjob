@@ -25,6 +25,7 @@ public class SchedulerConstant {
 
     /**
      * Delay retry time(s)
+     * Fixed report status delay
      */
     public static final Long DELAY_RETRY_AFTER = 10L;
 }
