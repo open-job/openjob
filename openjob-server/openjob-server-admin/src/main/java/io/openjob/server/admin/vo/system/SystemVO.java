@@ -25,9 +25,6 @@ public class SystemVO {
     @ApiModelProperty(value = "cluster delay version")
     private Long clusterDelayVersion;
 
-    @ApiModelProperty(value = "cluster supervisor slot")
-    private Integer clusterSupervisorSlot;
-
     @ApiModelProperty(value = "worker supervisor slot")
     private Integer workerSupervisorSlot;
 

@@ -113,16 +113,5 @@ public class DelayFailZsetScheduler extends AbstractDelayZsetScheduler {
         protected String getCacheKey(String topic) {
             return CacheUtil.getTopicListKey(DelayUtil.getFailDelayTopic(topic));
         }
-
-        @Override
-        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, List<DelayInstanceAddRequestDTO> list) {
-            long timestamp = DateUtil.timestamp() + SchedulerConstant.DELAY_RETRY_AFTER;
-            list.forEach(d -> {
-                String taskId = d.getTaskId();
-                String zsetKey = CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
-                operations.opsForZSet().add(zsetKey, taskId, timestamp);
-                operations.opsForZSet().remove(originZsetKey, taskId);
-            });
-        }
     }
 }

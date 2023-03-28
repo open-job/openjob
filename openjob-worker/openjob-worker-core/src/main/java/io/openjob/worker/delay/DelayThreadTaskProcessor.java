@@ -93,7 +93,13 @@ public class DelayThreadTaskProcessor implements Runnable {
         workerDelayTaskRequest.setStatus(result.getStatus().getStatus());
         workerDelayTaskRequest.setResult(result.getResult());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
-        workerDelayTaskRequest.setCompleteTime(DateUtil.timestamp());
+
+        Long completeTime = 0L;
+        if (TaskStatusEnum.isDelayComplete(result.getStatus().getStatus())) {
+            completeTime = DateUtil.timestamp();
+        }
+
+        workerDelayTaskRequest.setCompleteTime(completeTime);
         DelayStatusReporter.report(workerDelayTaskRequest);
     }
 }

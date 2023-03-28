@@ -1,5 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.util.DateUtil;
+import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
@@ -16,6 +18,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -107,6 +110,29 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
         }
 
         @Override
+        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, String topic, List<DelayInstanceAddRequestDTO> list) {
+            String currentTopicKey = CacheUtil.getTopicListKey(topic);
+            long timestamp = DateUtil.timestamp() + SchedulerConstant.DELAY_RETRY_AFTER;
+
+            list.forEach(d -> {
+                String taskId = d.getTaskId();
+                String zsetKey = CacheUtil.getFailZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
+
+                // Remove topic list key.
+                operations.opsForList().remove(currentTopicKey, 0, d.getTaskId());
+
+                // Add to fail zset
+                operations.opsForZSet().add(zsetKey, taskId, timestamp);
+            });
+
+            // Remove normal zset
+            List<String> taskIds = list.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
+            operations.opsForZSet().remove(originZsetKey, taskIds.toArray());
+
+            log.warn("Push task to fail zset taskIds={}", taskIds);
+        }
+
+        @Override
         protected void ignoreTaskList(RedisOperations<String, Object> operations, String zsetKey, List<DelayInstanceAddRequestDTO> list) {
             list.forEach(d -> {
                 // Cache keys
@@ -118,9 +144,13 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
 
                 // Remove and delete keys
                 operations.delete(Arrays.asList(detailKey, addressKey, retryKey));
-                operations.opsForZSet().remove(zsetKey, taskId);
                 operations.opsForList().remove(listKey, 1, taskId);
             });
+
+            List<String> taskIds = list.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
+            operations.opsForZSet().remove(zsetKey, taskIds.toArray());
+
+            log.warn("Ignore taskIds={}", taskIds);
         }
 
         @Override

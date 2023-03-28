@@ -50,11 +50,12 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
         /**
          * Push to fail zset
          *
-         * @param operations operations
-         * @param originZsetKey    origin zset key
-         * @param list       task list
+         * @param operations    operations
+         * @param originZsetKey origin zset key
+         * @param topic         topic
+         * @param list          task list
          */
-        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, List<DelayInstanceAddRequestDTO> list) {
+        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, String topic, List<DelayInstanceAddRequestDTO> list) {
 
         }
 
@@ -119,7 +120,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
                 @Override
                 public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
                     operations.multi();
-                    push2FailZsetMap.forEach((t, list) -> push2FailZset(operations, key, list));
+                    push2FailZsetMap.forEach((t, list) -> push2FailZset(operations, key, t, list));
 
                     push2TopicMap.forEach((t, list) -> {
                         // List cache key.
