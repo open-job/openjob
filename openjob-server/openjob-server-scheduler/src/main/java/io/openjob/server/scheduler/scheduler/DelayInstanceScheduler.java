@@ -392,7 +392,7 @@ public class DelayInstanceScheduler {
             List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, taskId));
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
-            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Task was terminated by user"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Task was terminated by user!"));
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, workerAddress));
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));

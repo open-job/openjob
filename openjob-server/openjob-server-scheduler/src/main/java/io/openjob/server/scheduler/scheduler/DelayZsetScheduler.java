@@ -192,7 +192,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                     List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, tid));
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
-                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Delay task have reached the retry times. will be to discarded"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Delay task have reached the retry times. will be to discarded!"));
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, ""));
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
