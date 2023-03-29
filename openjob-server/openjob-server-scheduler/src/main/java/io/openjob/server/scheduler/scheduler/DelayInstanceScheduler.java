@@ -1,12 +1,18 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.ServerDelayInstanceStopRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.DelayUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.log.dao.LogDAO;
+import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.App;
@@ -41,8 +47,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,12 +68,14 @@ public class DelayInstanceScheduler {
     private final DelayData delayData;
     private final DelayInstanceDAO delayInstanceDAO;
     private final AppDAO appDAO;
+    private final LogDAO logDAO;
 
     @Autowired
-    public DelayInstanceScheduler(DelayData delayData, DelayInstanceDAO delayInstanceDAO, AppDAO appDAO) {
+    public DelayInstanceScheduler(DelayData delayData, DelayInstanceDAO delayInstanceDAO, AppDAO appDAO, LogDAO logDAO) {
         this.delayData = delayData;
         this.delayInstanceDAO = delayInstanceDAO;
         this.appDAO = appDAO;
+        this.logDAO = logDAO;
     }
 
     /**
@@ -214,7 +224,7 @@ public class DelayInstanceScheduler {
     public void report(List<DelayInstanceStatusRequestDTO> statusList) {
         // Append zset cache key.
         statusList.forEach((d) -> {
-            if (d.getDelayPid() == 0){
+            if (d.getDelayPid() == 0) {
                 d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId())));
                 return;
             }
@@ -308,6 +318,9 @@ public class DelayInstanceScheduler {
 
         // Delete from redis.
         this.removeFromCache(stopRequest.getTaskId());
+
+        // Append processor log.
+        this.appendProcessorLog(stopRequest.getTaskId(), String.valueOf(workerAddress));
         return response;
     }
 
@@ -371,5 +384,28 @@ public class DelayInstanceScheduler {
                 return null;
             }
         });
+    }
+
+    private void appendProcessorLog(String taskId, String workerAddress) {
+        try {
+            Long now = DateUtil.milliLongTime();
+            List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, taskId));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Task was terminated by user"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, workerAddress));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
+
+            ProcessorLog processorLog = new ProcessorLog();
+            processorLog.setTaskId(taskId);
+            processorLog.setWorkerAddress(workerAddress);
+            processorLog.setTime(now);
+            processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+
+            logDAO.batchAdd(Collections.singletonList(processorLog));
+        } catch (SQLException e) {
+            log.error("Batch add task log failed!", e);
+        }
     }
 }

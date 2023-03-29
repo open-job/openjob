@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.scheduler;
 import io.openjob.common.SpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.data.DelayData;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler {
     public static abstract class AbstractZsetRunnable extends AbstractRunnable {
+        protected final LogDAO logDAO;
         protected final DelayData delayData;
         protected Boolean isFailZset = false;
 
@@ -43,6 +45,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
         public AbstractZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
             this.delayData = SpringContext.getBean(DelayData.class);
+            this.logDAO = SpringContext.getBean(LogDAO.class);
         }
 
         protected abstract String getCacheKey(String topic);
@@ -142,10 +145,20 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             List<String> removeTaskIds = new ArrayList<>(timingMembers);
             List<String> cacheTaskIds = detailList.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
             removeTaskIds.removeAll(cacheTaskIds);
-            RedisUtil.getTemplate().opsForZSet().remove(key, removeTaskIds.toArray());
+
+            if (!CollectionUtils.isEmpty(removeTaskIds)) {
+                RedisUtil.getTemplate().opsForZSet().remove(key, removeTaskIds.toArray());
+
+                log.info("Remove tasks without details! taskIds={}", cacheTaskIds);
+            }
         }
 
-        private void getFailAndTopicAndIgnoreMap(Map<String, Integer> timesMap, Map<String, List<DelayInstanceAddRequestDTO>> detailListMap, Map<String, List<Delay>> delayMap, Map<String, List<DelayInstanceAddRequestDTO>> push2FailZsetMap, Map<String, List<DelayInstanceAddRequestDTO>> push2TopicMap, Map<String, List<DelayInstanceAddRequestDTO>> ignoreMap) {
+        private void getFailAndTopicAndIgnoreMap(Map<String, Integer> timesMap, Map<String,
+                List<DelayInstanceAddRequestDTO>> detailListMap,
+                                                 Map<String, List<Delay>> delayMap,
+                                                 Map<String, List<DelayInstanceAddRequestDTO>> push2FailZsetMap,
+                                                 Map<String, List<DelayInstanceAddRequestDTO>> push2TopicMap,
+                                                 Map<String, List<DelayInstanceAddRequestDTO>> ignoreMap) {
             // Push by topic
             detailListMap.forEach((t, list) -> {
                 Delay topicDelay = delayMap.get(t).get(0);

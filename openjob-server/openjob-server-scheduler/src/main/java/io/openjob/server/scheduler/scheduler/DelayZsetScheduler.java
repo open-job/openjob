@@ -1,24 +1,36 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.constant.LogFieldConstant;
+import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -151,11 +163,52 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
             operations.opsForZSet().remove(zsetKey, taskIds.toArray());
 
             log.warn("Ignore taskIds={}", taskIds);
+
+            // Update task status
+            String statusListKey = CacheUtil.getStatusListKey(DelaySlotUtil.getStatusListSlotId(UUID.randomUUID().toString()));
+            Stream<DelayInstanceStatusRequestDTO> statusList = list.stream().map(d -> {
+                DelayInstanceStatusRequestDTO delayInstanceStatusRequestDTO = new DelayInstanceStatusRequestDTO();
+                delayInstanceStatusRequestDTO.setTaskId(d.getTaskId());
+                delayInstanceStatusRequestDTO.setStatus(TaskStatusEnum.FAILED.getStatus());
+                delayInstanceStatusRequestDTO.setWorkerAddress("");
+                delayInstanceStatusRequestDTO.setCompleteTime(DateUtil.timestamp());
+                return delayInstanceStatusRequestDTO;
+            });
+            operations.opsForList().rightPushAll(statusListKey, statusList.toArray());
+
+            // Append processor log.
+            this.appendProcessorLog(taskIds);
         }
 
         @Override
         protected String getCacheKey(String topic) {
             return CacheUtil.getTopicListKey(topic);
+        }
+
+        private void appendProcessorLog(List<String> taskIds) {
+            try {
+                List<ProcessorLog> processorLogs = taskIds.stream().map(tid -> {
+                    Long now = DateUtil.milliLongTime();
+                    List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, tid));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Delay task have reached the retry times. will be to discarded"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, ""));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
+
+                    ProcessorLog processorLog = new ProcessorLog();
+                    processorLog.setTaskId(tid);
+                    processorLog.setWorkerAddress("");
+                    processorLog.setTime(now);
+                    processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+                    return processorLog;
+                }).collect(Collectors.toList());
+
+                logDAO.batchAdd(processorLogs);
+            } catch (SQLException e) {
+                log.error("Batch add task ignore log failed!", e);
+            }
         }
     }
 }
