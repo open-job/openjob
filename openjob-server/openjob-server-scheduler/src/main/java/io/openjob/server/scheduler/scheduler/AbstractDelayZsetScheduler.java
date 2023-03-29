@@ -102,6 +102,9 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             // Get delay instance detail list
             List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(timingMembers);
 
+            // Remove not have detail task ids.
+            this.removeNotHaveDetailTaskIds(key, timingMembers, detailList);
+
             // Group by topic.
             Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()
                     .collect(Collectors.groupingBy(DelayInstanceAddRequestDTO::getTopic));
@@ -133,6 +136,13 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
                     return null;
                 }
             });
+        }
+
+        private void removeNotHaveDetailTaskIds(String key, List<String> timingMembers, List<DelayInstanceAddRequestDTO> detailList) {
+            List<String> removeTaskIds = new ArrayList<>(timingMembers);
+            List<String> cacheTaskIds = detailList.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
+            removeTaskIds.removeAll(cacheTaskIds);
+            RedisUtil.getTemplate().opsForZSet().remove(key, removeTaskIds.toArray());
         }
 
         private void getFailAndTopicAndIgnoreMap(Map<String, Integer> timesMap, Map<String, List<DelayInstanceAddRequestDTO>> detailListMap, Map<String, List<Delay>> delayMap, Map<String, List<DelayInstanceAddRequestDTO>> push2FailZsetMap, Map<String, List<DelayInstanceAddRequestDTO>> push2TopicMap, Map<String, List<DelayInstanceAddRequestDTO>> ignoreMap) {

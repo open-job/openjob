@@ -213,7 +213,14 @@ public class DelayInstanceScheduler {
     @SuppressWarnings("unchecked")
     public void report(List<DelayInstanceStatusRequestDTO> statusList) {
         // Append zset cache key.
-        statusList.forEach((d) -> d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId()))));
+        statusList.forEach((d) -> {
+            if (d.getDelayPid() == 0){
+                d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId())));
+                return;
+            }
+
+            d.setZsetKey(CacheUtil.getFailZsetKey(DelaySlotUtil.getFailZsetSlotId(d.getTaskId())));
+        });
 
         // Group by zset cache key.
         Map<String, List<DelayInstanceStatusRequestDTO>> zsetKeyMap = statusList.stream()
