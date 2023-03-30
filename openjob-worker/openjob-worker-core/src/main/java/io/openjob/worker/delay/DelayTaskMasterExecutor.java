@@ -142,6 +142,7 @@ public class DelayTaskMasterExecutor implements Runnable {
                 return delayInstanceDTO;
             }).collect(Collectors.toList());
 
+            // Executor task list.
             delayTaskContainer.execute(instanceList);
         });
     }
@@ -155,16 +156,24 @@ public class DelayTaskMasterExecutor implements Runnable {
     private DelayTaskContainer getDelayTaskContainer(@Nonnull ServerDelayInstanceResponse firstDelay) {
         // Delay fail topic
         if (firstDelay.getDelayPid() > 0) {
-            return DelayTaskContainerPool.get(
+            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
                     firstDelay.getDelayId(),
                     id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getFailTopicConcurrency())
             );
+
+            // Update concurrency
+            delayTaskContainer.updateConcurrency(firstDelay.getFailTopicConcurrency());
+            return delayTaskContainer;
         }
 
         // Delay topic
-        return DelayTaskContainerPool.get(
+        DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
                 firstDelay.getDelayId(),
                 id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency())
         );
+
+        // Update concurrency
+        delayTaskContainer.updateConcurrency(firstDelay.getConcurrency());
+        return delayTaskContainer;
     }
 }

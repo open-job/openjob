@@ -4,6 +4,7 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -16,9 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class DelayTaskContainer {
     private final Long id;
     private final ThreadPoolExecutor executorService;
+    private final AtomicInteger maximumPoolSize = new AtomicInteger(0);
 
     /**
      * New delay task container.
@@ -33,7 +36,7 @@ public class DelayTaskContainer {
         // Task container thread pool
         LinkedBlockingDeque<Runnable> blockingDeque = new LinkedBlockingDeque<>(blockingSize);
         AtomicInteger threadId = new AtomicInteger(1);
-        executorService = new ThreadPoolExecutor(
+        this.executorService = new ThreadPoolExecutor(
                 1,
                 concurrency,
                 30,
@@ -41,7 +44,10 @@ public class DelayTaskContainer {
                 blockingDeque,
                 r -> new Thread(r, String.format("openjob-delay-container-%s", threadId.getAndIncrement()))
         );
-        executorService.allowCoreThreadTimeOut(true);
+        this.executorService.allowCoreThreadTimeOut(true);
+
+        // Set `maximumPoolSize`
+        this.executorService.setMaximumPoolSize(concurrency);
     }
 
     /**
@@ -75,7 +81,10 @@ public class DelayTaskContainer {
      * @param concurrency concurrency
      */
     public void updateConcurrency(Integer concurrency) {
-        this.executorService.setMaximumPoolSize(concurrency);
+        if (concurrency >= 1 && concurrency != this.maximumPoolSize.get()) {
+            this.executorService.setMaximumPoolSize(concurrency);
+            log.info("Refresh delay task executor service! delayId={}", this.id);
+        }
     }
 
     /**
