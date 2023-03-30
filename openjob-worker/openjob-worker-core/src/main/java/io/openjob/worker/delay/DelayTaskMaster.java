@@ -9,6 +9,7 @@ import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.entity.Delay;
 import io.openjob.worker.util.WorkerUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class DelayTaskMaster {
     private ExecutorService executorService;
 
@@ -63,7 +65,12 @@ public class DelayTaskMaster {
             return delay;
         }).collect(Collectors.toList());
 
+        // Delete old topic list.
+        Integer deleteRows = DelayDAO.INSTANCE.deleteAll();
+        log.info("Delay task master refresh! deleteRows={}", deleteRows);
+
         DelayDAO.INSTANCE.batchSave(saveTopicList);
+        log.info("Delay task master refresh! topicList={}", saveTopicList.stream().map(Delay::getTopic).collect(Collectors.toList()));
     }
 
     /**

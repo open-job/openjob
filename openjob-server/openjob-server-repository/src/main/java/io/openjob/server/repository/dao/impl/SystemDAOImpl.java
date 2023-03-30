@@ -40,6 +40,11 @@ public class SystemDAOImpl implements SystemDAO {
     }
 
     @Override
+    public Integer updateClusterDelayVersion(Long clusterDelayVersion) {
+        return this.systemRepository.updateClusterDelayVersion(DEFAULT_ID, clusterDelayVersion);
+    }
+
+    @Override
     public void updateById(System system) {
         System old = this.getOne();
 

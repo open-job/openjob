@@ -55,12 +55,10 @@ public interface DelayPersistence {
     List<Delay> findPullList() throws SQLException;
 
     /**
-     * Delete by ids.
+     * Delete all.
      *
-     * @param ids ids
      * @return Effect rows
      * @throws SQLException SQLException
      */
-    Integer deleteByIds(List<Long> ids) throws SQLException;
-
+    Integer deleteAll() throws SQLException;
 }

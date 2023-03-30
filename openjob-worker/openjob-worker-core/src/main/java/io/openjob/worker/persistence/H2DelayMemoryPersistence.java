@@ -159,18 +159,12 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
     }
 
     @Override
-    public Integer deleteByIds(List<Long> ids) throws SQLException {
-        String sql = "DELETE FROM delay_worker WHERE id = ?";
-
+    public Integer deleteAll() throws SQLException {
+        String sql = "DELETE FROM delay_worker";
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
             connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
-            for (Long id : ids) {
-                ps.setLong(1, id);
-                ps.addBatch();
-            }
-
             int[] counts = ps.executeBatch();
             connection.commit();
             connection.setAutoCommit(true);
