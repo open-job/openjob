@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -39,8 +40,12 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentAddListSlots();
-        int maxSize = slots.size() > 0 ? slots.size() : 1;
+        // Not slots on current node.
+        if (CollectionUtils.isEmpty(slots)) {
+            return;
+        }
 
+        int maxSize = slots.size();
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
                 maxSize,
@@ -63,7 +68,12 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        // Not slots on current node.
+        if (Objects.isNull(executorService)) {
+            return;
+        }
+
+        this.executorService.shutdown();
         log.info("Add List delay instance shutdown now!");
     }
 

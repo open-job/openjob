@@ -3,14 +3,25 @@ package io.openjob.server.admin.request.delay;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
 public class UpdateDelayRequest {
+    @NotNull
     @ApiModelProperty(value = "Delay primary id", required = true)
     private Long id;
+
+    @NotNull
+    @ApiModelProperty(value = "Delay pid", required = true)
+    private Long pid;
+
+    @NotNull
+    @ApiModelProperty(value = "Delay cid", required = true)
+    private Long cid;
 
     @ApiModelProperty(value = "Namespace id", required = true)
     private Long namespaceId;
@@ -44,4 +55,11 @@ public class UpdateDelayRequest {
 
     @ApiModelProperty(value = "Blocking size", required = true)
     private Integer blockingSize;
+
+    @NotNull
+    @ApiModelProperty(value = "Fail topic enable", required = true)
+    private Integer failTopicEnable;
+
+    @ApiModelProperty(value = "Fail topic concurrency", required = true)
+    private Integer failTopicConcurrency;
 }

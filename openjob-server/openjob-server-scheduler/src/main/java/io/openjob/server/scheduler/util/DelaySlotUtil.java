@@ -28,6 +28,17 @@ public class DelaySlotUtil {
     }
 
     /**
+     * Get current zset slots.
+     *
+     * @return List
+     */
+    public static List<Long> getFailCurrentZsetSlots() {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        return getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
+    }
+
+    /**
      * Get current add list slots.
      *
      * @return List
@@ -121,6 +132,21 @@ public class DelaySlotUtil {
     }
 
     /**
+     * Get zset slot id.
+     *
+     * @param key key
+     * @return Long
+     */
+    public static Long getFailZsetSlotId(String key) {
+        int maxSlot = ClusterContext.getSystem().getMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        int index = CrcUtil.crc16(key.getBytes()) % delayFailZsetMaxSlot;
+
+        List<Long> slots = getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
+        return slots.get(index);
+    }
+
+    /**
      * Get current slots.
      *
      * @param maxSlot     max slot
@@ -134,8 +160,11 @@ public class DelaySlotUtil {
             return new ArrayList<>(slots);
         }
 
+        Set<Long> nodeSlots = ClusterContext.getCurrentSlots();
         for (int i = 1; i < currentSlot + 1; i++) {
-            slots.add((long) i);
+            if (nodeSlots.contains((long) i)) {
+                slots.add((long) i);
+            }
         }
         return new ArrayList<>(slots);
     }

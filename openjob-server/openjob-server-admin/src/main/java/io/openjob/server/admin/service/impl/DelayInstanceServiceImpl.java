@@ -24,6 +24,7 @@ import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStopResponseDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,10 +74,12 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
     public StopDelayInstanceVO stop(StopDelayInstanceRequest request) {
         DelayInstanceStopRequestDTO delayInstanceStopRequestDTO = new DelayInstanceStopRequestDTO();
         delayInstanceStopRequestDTO.setTaskId(request.getTaskId());
-        this.delayInstanceScheduler.stop(delayInstanceStopRequestDTO);
+        DelayInstanceStopResponseDTO stop = this.delayInstanceScheduler.stop(delayInstanceStopRequestDTO);
 
         // Update status
-        return new StopDelayInstanceVO();
+        StopDelayInstanceVO stopDelayInstanceVO = new StopDelayInstanceVO();
+        stopDelayInstanceVO.setResult(stop.getResult());
+        return stopDelayInstanceVO;
     }
 
     @Override

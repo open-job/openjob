@@ -16,6 +16,10 @@ public class CacheUtil {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_TOPIC_PREFIX, topic);
     }
 
+    public static String getDelayDetailIdKey(Long id) {
+        return String.format("%s:%d", CacheConst.DELAY_DETAIL_ID_PREFIX, id);
+    }
+
     public static String getDelayDetailTaskIdKey(String taskId) {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_TASKID_PREFIX, taskId);
     }
@@ -30,6 +34,10 @@ public class CacheUtil {
 
     public static String getZsetKey(Long slotId) {
         return String.format("%s:%d", CacheConst.DELAY_ZSET_PREFIX, slotId);
+    }
+
+    public static String getFailZsetKey(Long slotId) {
+        return String.format("%s:%d", CacheConst.DELAY_FAIL_ZSET_PREFIX, slotId);
     }
 
     public static String getAddListKey(Long slotId) {

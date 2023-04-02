@@ -91,16 +91,13 @@ public class DelayDAO {
     }
 
     /**
-     * Delete by ids.
-     *
-     * @param ids ids
-     * @return Integer
+     * Delete all.
      */
-    public Integer deleteByIds(List<Long> ids) {
+    public Integer deleteAll() {
         try {
-            return this.delayPersistence.deleteByIds(ids);
+            return this.delayPersistence.deleteAll();
         } catch (SQLException e) {
-            log.error("Delay delete ids failed!", e);
+            log.error("Delay delete all topic list", e);
             return 0;
         }
     }

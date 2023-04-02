@@ -6,7 +6,6 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dto.DelayPageDTO;
 import io.openjob.server.repository.entity.Delay;
-import io.openjob.server.repository.entity.Namespace;
 import io.openjob.server.repository.repository.DelayRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -58,13 +58,27 @@ public class DelayDAOImpl implements DelayDAO {
                     d.setExecuteTimeout(delay.getExecuteTimeout());
                     d.setConcurrency(delay.getConcurrency());
                     d.setBlockingSize(delay.getBlockingSize());
+                    d.setFailTopicEnable(delay.getFailTopicEnable());
+                    d.setFailTopicConcurrency(delay.getFailTopicConcurrency());
+                    d.setUpdateTime(DateUtil.timestamp());
                     this.delayRepository.save(d);
                 });
         return delay.getId();
     }
 
     @Override
-    public Long updateStatusOrDeleted(Long id, Integer status, Integer deleted) {
+    public void updateCidById(Long id, Long cid) {
+        this.delayRepository.findById(id)
+                .ifPresent(d -> {
+                    if (Objects.nonNull(cid)) {
+                        d.setCid(cid);
+                    }
+                    this.delayRepository.save(d);
+                });
+    }
+
+    @Override
+    public void updateStatusOrDeleted(Long id, Integer status, Integer deleted) {
         this.delayRepository.findById(id)
                 .ifPresent(d -> {
                     if (Objects.nonNull(deleted)) {
@@ -73,7 +87,6 @@ public class DelayDAOImpl implements DelayDAO {
                     }
                     this.delayRepository.save(d);
                 });
-        return id;
     }
 
     @Override
@@ -81,6 +94,7 @@ public class DelayDAOImpl implements DelayDAO {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
         Delay delay = new Delay();
+        delay.setPid(0L);
         delay.setDeleted(CommonConstant.NO);
 
         // Namespace
@@ -129,12 +143,17 @@ public class DelayDAOImpl implements DelayDAO {
     }
 
     @Override
+    public Optional<Delay> findById(Long id) {
+        return this.delayRepository.findById(id);
+    }
+
+    @Override
     public List<Delay> findByTopics(List<String> topics) {
         return this.delayRepository.findByTopicIn(topics);
     }
 
     @Override
     public List<Delay> findByAppId(Long appId) {
-        return this.delayRepository.findByAppId(appId);
+        return this.delayRepository.findByAppIdAndDeleted(appId, CommonConstant.NO);
     }
 }

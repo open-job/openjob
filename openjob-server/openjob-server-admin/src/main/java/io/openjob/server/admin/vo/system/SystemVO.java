@@ -25,14 +25,14 @@ public class SystemVO {
     @ApiModelProperty(value = "cluster delay version")
     private Long clusterDelayVersion;
 
-    @ApiModelProperty(value = "cluster supervisor slot")
-    private Integer clusterSupervisorSlot;
-
     @ApiModelProperty(value = "worker supervisor slot")
     private Integer workerSupervisorSlot;
 
     @ApiModelProperty(value = "delay zset slot")
     private Integer delayZsetSlot;
+
+    @ApiModelProperty(value = "delay fail zset slot")
+    private Integer delayFailZsetSlot;
 
     @ApiModelProperty(value = "delay add list slot")
     private Integer delayAddListSlot;

@@ -18,6 +18,10 @@ public class SystemUpdateRequest {
     private Integer delayZsetSlot;
 
     @NotNull
+    @ApiModelProperty(value = "delay fail zset slot")
+    private Integer delayFailZsetSlot;
+
+    @NotNull
     @ApiModelProperty(value = "delay add list slot")
     private Integer delayAddListSlot;
 

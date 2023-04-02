@@ -1,14 +1,9 @@
 package io.openjob.server.scheduler.scheduler;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.server.scheduler.contract.DelayScheduler;
-import io.openjob.server.scheduler.data.DelayData;
-import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
-import io.openjob.server.scheduler.util.RedisUtil;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +41,15 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         // Add slots.
         Set<Long> addSlots = new HashSet<>(currentSlots);
         addSlots.removeAll(runningSlots);
+
+        // First to start executor service.
+        if (Objects.isNull(this.executorService)) {
+            if (!CollectionUtils.isEmpty(addSlots)) {
+                this.start();
+            }
+            return;
+        }
+
         addSlots.forEach(as -> {
             AbstractRunnable listRunnable = Optional.ofNullable(this.runnableList.get(as))
                     .orElseGet(() -> function.apply(as));

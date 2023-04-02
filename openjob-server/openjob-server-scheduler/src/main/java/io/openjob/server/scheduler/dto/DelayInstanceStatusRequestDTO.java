@@ -20,6 +20,11 @@ public class DelayInstanceStatusRequestDTO {
     private Long delayId;
 
     /**
+     * Delay pid
+     */
+    private Long delayPid;
+
+    /**
      * Task id.
      */
     private String taskId;

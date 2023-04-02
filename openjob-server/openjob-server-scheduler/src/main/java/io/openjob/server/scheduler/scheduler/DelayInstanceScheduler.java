@@ -1,11 +1,18 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.ServerDelayInstanceStopRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.DelayUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.log.dao.LogDAO;
+import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.App;
@@ -24,6 +31,7 @@ import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
+import io.openjob.server.scheduler.dto.TopicFailCounterDTO;
 import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
 import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
@@ -39,8 +47,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,12 +68,14 @@ public class DelayInstanceScheduler {
     private final DelayData delayData;
     private final DelayInstanceDAO delayInstanceDAO;
     private final AppDAO appDAO;
+    private final LogDAO logDAO;
 
     @Autowired
-    public DelayInstanceScheduler(DelayData delayData, DelayInstanceDAO delayInstanceDAO, AppDAO appDAO) {
+    public DelayInstanceScheduler(DelayData delayData, DelayInstanceDAO delayInstanceDAO, AppDAO appDAO, LogDAO logDAO) {
         this.delayData = delayData;
         this.delayInstanceDAO = delayInstanceDAO;
         this.appDAO = appDAO;
+        this.logDAO = logDAO;
     }
 
     /**
@@ -109,6 +121,28 @@ public class DelayInstanceScheduler {
             // Ready
             long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
             counterDTO.setReady(Count);
+            counters.add(counterDTO);
+        });
+        return counters;
+    }
+
+    /**
+     * Get topic fail count
+     *
+     * @param topics topics
+     * @return List
+     */
+    public List<TopicFailCounterDTO> getTopicFailCount(List<String> topics) {
+        List<TopicFailCounterDTO> counters = new ArrayList<>();
+        RedisTemplate<String, Object> template = RedisUtil.getTemplate();
+        topics.forEach(t -> {
+            String cacheListKey = CacheUtil.getTopicListKey(DelayUtil.getFailDelayTopic(t));
+            TopicFailCounterDTO counterDTO = new TopicFailCounterDTO();
+            counterDTO.setTopic(t);
+
+            // Ready
+            long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
+            counterDTO.setCount(Count);
             counters.add(counterDTO);
         });
         return counters;
@@ -164,6 +198,7 @@ public class DelayInstanceScheduler {
         return this.delayData.getDelayInstanceList(taskIds).stream().map(di -> {
             DelayInstancePullResponseDTO responseDTO = new DelayInstancePullResponseDTO();
             responseDTO.setDelayId(delay.getId());
+            responseDTO.setDelayPid(delay.getPid());
             responseDTO.setTopic(di.getTopic());
             responseDTO.setDelayParams(di.getParams());
             responseDTO.setDelayExtra(di.getExtra());
@@ -173,6 +208,8 @@ public class DelayInstanceScheduler {
             responseDTO.setExecuteTimeout(delay.getExecuteTimeout());
             responseDTO.setConcurrency(delay.getConcurrency());
             responseDTO.setBlockingSize(delay.getBlockingSize());
+            responseDTO.setFailTopicEnable(delay.getFailTopicEnable());
+            responseDTO.setFailTopicConcurrency(delay.getFailTopicConcurrency());
             responseDTO.setTaskId(di.getTaskId());
             return responseDTO;
         }).collect(Collectors.toList());
@@ -186,26 +223,33 @@ public class DelayInstanceScheduler {
     @SuppressWarnings("unchecked")
     public void report(List<DelayInstanceStatusRequestDTO> statusList) {
         // Append zset cache key.
-        statusList.forEach((d) -> d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId()))));
+        statusList.forEach((d) -> {
+            if (d.getDelayPid() == 0) {
+                d.setZsetKey(CacheUtil.getZsetKey(DelaySlotUtil.getZsetSlotId(d.getTaskId())));
+                return;
+            }
+
+            d.setZsetKey(CacheUtil.getFailZsetKey(DelaySlotUtil.getFailZsetSlotId(d.getTaskId())));
+        });
 
         // Group by zset cache key.
         Map<String, List<DelayInstanceStatusRequestDTO>> zsetKeyMap = statusList.stream()
                 .collect(Collectors.groupingBy(DelayInstanceStatusRequestDTO::getZsetKey));
 
-        List<DelayInstanceStatusRequestDTO> notRunningList = statusList.stream()
-                .filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
+        List<DelayInstanceStatusRequestDTO> completeList = statusList.stream()
+                .filter(d -> TaskStatusEnum.isDelayComplete(d.getStatus()))
                 .collect(Collectors.toList());
 
         // Detail cache keys.
-        List<String> notRunningDetailKeys = notRunningList.stream().map(d -> CacheUtil.getDelayDetailTaskIdKey(d.getTaskId()))
+        List<String> completeDetailKeys = completeList.stream().map(d -> CacheUtil.getDelayDetailTaskIdKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Worker address keys.
-        List<String> notRunningAddressKeys = notRunningList.stream().map(d -> CacheUtil.getDelayDetailWorkerAddressKey(d.getTaskId()))
+        List<String> completeAddressKeys = completeList.stream().map(d -> CacheUtil.getDelayDetailWorkerAddressKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Worker address keys.
-        List<String> notRunningRetryKeys = notRunningList.stream().map(d -> CacheUtil.getDelayRetryTimesKey(d.getTaskId()))
+        List<String> completeRetryKeys = completeList.stream().map(d -> CacheUtil.getDelayRetryTimesKey(d.getTaskId()))
                 .collect(Collectors.toList());
 
         // Delay status list key.
@@ -219,7 +263,7 @@ public class DelayInstanceScheduler {
 
                 // Remove from zset
                 zsetKeyMap.forEach((k, list) -> {
-                    List<String> completeStatusList = list.stream().filter(d -> !TaskStatusEnum.isRunning(d.getStatus()))
+                    List<String> completeStatusList = list.stream().filter(d -> TaskStatusEnum.isDelayComplete(d.getStatus()))
                             .map(DelayInstanceStatusRequestDTO::getTaskId)
                             .distinct().collect(Collectors.toList());
 
@@ -229,9 +273,9 @@ public class DelayInstanceScheduler {
                 });
 
                 // Delete detail.
-                notRunningDetailKeys.addAll(notRunningAddressKeys);
-                notRunningDetailKeys.addAll(notRunningRetryKeys);
-                operations.delete(notRunningDetailKeys);
+                completeDetailKeys.addAll(completeAddressKeys);
+                completeDetailKeys.addAll(completeRetryKeys);
+                operations.delete(completeDetailKeys);
 
                 // Push delay status to list
                 operations.opsForList().rightPushAll(statusListKey, statusList.toArray());
@@ -274,6 +318,9 @@ public class DelayInstanceScheduler {
 
         // Delete from redis.
         this.removeFromCache(stopRequest.getTaskId());
+
+        // Append processor log.
+        this.appendProcessorLog(stopRequest.getTaskId(), String.valueOf(workerAddress));
         return response;
     }
 
@@ -337,5 +384,28 @@ public class DelayInstanceScheduler {
                 return null;
             }
         });
+    }
+
+    private void appendProcessorLog(String taskId, String workerAddress) {
+        try {
+            Long now = DateUtil.milliLongTime();
+            List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, taskId));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Task was terminated by user!"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, workerAddress));
+            fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
+
+            ProcessorLog processorLog = new ProcessorLog();
+            processorLog.setTaskId(taskId);
+            processorLog.setWorkerAddress(workerAddress);
+            processorLog.setTime(now);
+            processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+
+            logDAO.batchAdd(Collections.singletonList(processorLog));
+        } catch (SQLException e) {
+            log.error("Batch add task log failed!", e);
+        }
     }
 }

@@ -22,6 +22,11 @@ public class WorkerDelayTaskRequest implements Serializable {
     private Long delayId;
 
     /**
+     * Delay pid
+     */
+    private Long delayPid;
+
+    /**
      * Task id.
      */
     private String taskId;

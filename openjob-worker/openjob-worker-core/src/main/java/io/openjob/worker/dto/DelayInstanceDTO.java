@@ -11,6 +11,7 @@ public class DelayInstanceDTO {
     private String topic;
     private String taskId;
     private Long delayId;
+    private Long delayPid;
     private String delayParams;
     private String delayExtra;
     private String processorInfo;

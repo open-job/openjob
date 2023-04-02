@@ -37,6 +37,10 @@ public class LogFormatUtil {
      * @return String
      */
     public static String formatLocation(String location) {
+        if (StringUtils.isEmpty(location) || "-".equals(location)){
+            return "-";
+        }
+
         String substring = location.substring(0, location.indexOf("("));
         String packageString = location.substring(0, substring.lastIndexOf("."));
         String lineNo = location.substring(location.lastIndexOf(":")).replace(")", "");

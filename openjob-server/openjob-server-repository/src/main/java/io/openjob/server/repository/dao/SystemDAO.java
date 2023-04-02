@@ -23,9 +23,18 @@ public interface SystemDAO {
      */
     Integer updateClusterVersion(Long clusterVersion);
 
+    /**
+     * Update cluster delay version
+     *
+     * @param clusterDelayVersion clusterDelayVersion
+     * @return Integer
+     */
+    Integer updateClusterDelayVersion(Long clusterDelayVersion);
+
 
     /**
      * update by id
+     *
      * @param system update Params
      */
     void updateById(System system);

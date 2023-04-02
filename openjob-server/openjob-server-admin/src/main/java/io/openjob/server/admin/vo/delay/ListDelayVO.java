@@ -12,6 +12,12 @@ public class ListDelayVO {
     @ApiModelProperty(value = "Delay primary id", required = true)
     private Long id;
 
+    @ApiModelProperty(value = "Delay pid", required = true)
+    private Long pid;
+
+    @ApiModelProperty(value = "Delay cid", required = true)
+    private Long cid;
+
     @ApiModelProperty(value = "Namespace id", required = true)
     private Long namespaceId;
 
@@ -32,6 +38,9 @@ public class ListDelayVO {
 
     @ApiModelProperty(value = "Ready", required = true)
     private Long ready;
+
+    @ApiModelProperty(value = "Fail count", required = true)
+    private Long failCount;
 
     @ApiModelProperty(value = "Description", required = true)
     private String description;
@@ -56,4 +65,10 @@ public class ListDelayVO {
 
     @ApiModelProperty(value = "Create time", required = true)
     private Long createTime;
+
+    @ApiModelProperty(value = "Fail topic enable", required = true)
+    private Integer failTopicEnable;
+
+    @ApiModelProperty(value = "Fail topic concurrency", required = true)
+    private Integer failTopicConcurrency;
 }

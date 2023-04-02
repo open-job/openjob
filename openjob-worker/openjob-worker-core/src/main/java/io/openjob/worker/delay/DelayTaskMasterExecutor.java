@@ -18,6 +18,7 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -124,15 +125,12 @@ public class DelayTaskMasterExecutor implements Runnable {
     private void execute(Map<Long, List<ServerDelayInstanceResponse>> topicIdMap) {
         topicIdMap.forEach((t, instanceResponses) -> {
             ServerDelayInstanceResponse firstDelay = instanceResponses.get(0);
-            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
-                    firstDelay.getDelayId(),
-                    id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency())
-            );
-
+            DelayTaskContainer delayTaskContainer = this.getDelayTaskContainer(firstDelay);
             List<DelayInstanceDTO> instanceList = instanceResponses.stream().map(i -> {
                 DelayInstanceDTO delayInstanceDTO = new DelayInstanceDTO();
                 delayInstanceDTO.setTopic(i.getTopic());
                 delayInstanceDTO.setDelayId(i.getDelayId());
+                delayInstanceDTO.setDelayPid(i.getDelayPid());
                 delayInstanceDTO.setDelayParams(i.getDelayParams());
                 delayInstanceDTO.setDelayExtra(i.getDelayExtra());
                 delayInstanceDTO.setProcessorInfo(i.getProcessorInfo());
@@ -144,7 +142,38 @@ public class DelayTaskMasterExecutor implements Runnable {
                 return delayInstanceDTO;
             }).collect(Collectors.toList());
 
+            // Executor task list.
             delayTaskContainer.execute(instanceList);
         });
+    }
+
+    /**
+     * Get delay container
+     *
+     * @param firstDelay firstDelay
+     * @return DelayTaskContainer
+     */
+    private DelayTaskContainer getDelayTaskContainer(@Nonnull ServerDelayInstanceResponse firstDelay) {
+        // Delay fail topic
+        if (firstDelay.getDelayPid() > 0) {
+            DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
+                    firstDelay.getDelayId(),
+                    id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getFailTopicConcurrency())
+            );
+
+            // Update concurrency
+            delayTaskContainer.updateConcurrency(firstDelay.getFailTopicConcurrency());
+            return delayTaskContainer;
+        }
+
+        // Delay topic
+        DelayTaskContainer delayTaskContainer = DelayTaskContainerPool.get(
+                firstDelay.getDelayId(),
+                id -> new DelayTaskContainer(firstDelay.getDelayId(), firstDelay.getBlockingSize(), firstDelay.getConcurrency())
+        );
+
+        // Update concurrency
+        delayTaskContainer.updateConcurrency(firstDelay.getConcurrency());
+        return delayTaskContainer;
     }
 }

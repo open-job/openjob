@@ -1,37 +1,36 @@
 package io.openjob.server.scheduler.scheduler;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.constant.LogFieldConstant;
+import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
-import io.openjob.server.scheduler.data.DelayData;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
+import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
-import io.openjob.server.scheduler.util.RedisUtil;
-import io.swagger.models.auth.In;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import scala.Int;
 
-import javax.annotation.Nonnull;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -39,12 +38,16 @@ import java.util.stream.Collectors;
  */
 @Log4j2
 @Component
-public class DelayZsetScheduler extends AbstractDelayScheduler {
+public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
     @Override
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentZsetSlots();
-        int maxSize = slots.size() > 0 ? slots.size() : 1;
+        // Not slots on current node.
+        if (CollectionUtils.isEmpty(slots)) {
+            return;
+        }
 
+        int maxSize = slots.size();
         AtomicInteger threadId = new AtomicInteger(1);
         executorService = new ThreadPoolExecutor(
                 maxSize,
@@ -67,7 +70,12 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
 
     @Override
     public void stop() {
-        this.executorService.shutdownNow();
+        // Not slots on current node.
+        if (Objects.isNull(executorService)) {
+            return;
+        }
+
+        this.executorService.shutdown();
         log.info("Range delay instance shutdown now!");
     }
 
@@ -79,8 +87,7 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
         log.info("Refresh range delay instance slots{}", slots);
     }
 
-    static class ZsetRunnable extends AbstractRunnable {
-        private final DelayData delayData;
+    static class ZsetRunnable extends AbstractZsetRunnable {
 
         /**
          * New ZsetRunnable.
@@ -89,7 +96,6 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
          */
         public ZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
-            this.delayData = SpringContext.getBean(DelayData.class);
         }
 
         @Override
@@ -115,111 +121,94 @@ public class DelayZsetScheduler extends AbstractDelayScheduler {
             log.info("Range delay instance complete！slotId={}", this.currentSlotId);
         }
 
-        /**
-         * Range delay instance.
-         *
-         * @param key zset cache key.
-         * @throws InterruptedException interruptedException
-         */
-        private void rangeDelayInstance(String key) throws InterruptedException {
-            // Range delay instance from zset.
-            Set<Object> rangeObjects = RedisUtil.getTemplate().opsForZSet().rangeByScore(key, 0, DateUtil.timestamp(), 0, 50);
+        @Override
+        protected void push2FailZset(RedisOperations<String, Object> operations, String originZsetKey, String topic, List<DelayInstanceAddRequestDTO> list) {
+            String currentTopicKey = CacheUtil.getTopicListKey(topic);
+            long timestamp = DateUtil.timestamp() + SchedulerConstant.DELAY_RETRY_AFTER;
 
-            // Delay instance is empty.
-            if (CollectionUtils.isEmpty(rangeObjects)) {
-                Thread.sleep(500);
-                return;
-            }
+            list.forEach(d -> {
+                String taskId = d.getTaskId();
+                String zsetKey = CacheUtil.getFailZsetKey(DelaySlotUtil.getZsetSlotId(taskId));
 
-            // Push to list and remove from zset
-            this.pushAndRemoveDelayInstance(key, rangeObjects);
+                // Remove topic list key.
+                operations.opsForList().remove(currentTopicKey, 0, d.getTaskId());
+
+                // Add to fail zset
+                operations.opsForZSet().add(zsetKey, taskId, timestamp);
+            });
+
+            // Remove normal zset
+            List<String> taskIds = list.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
+            operations.opsForZSet().remove(originZsetKey, taskIds.toArray());
+
+            log.warn("Push task to fail zset taskIds={}", taskIds);
         }
 
-        /**
-         * Push to list and remove from zset
-         *
-         * @param key          zset cache key.
-         * @param rangeObjects range objects.
-         */
-        @SuppressWarnings("unchecked")
-        private void pushAndRemoveDelayInstance(String key, Set<Object> rangeObjects) {
-            // Timing zset members.
-            List<String> timingMembers = rangeObjects.stream().map(String::valueOf)
-                    .collect(Collectors.toList());
+        @Override
+        protected void ignoreTaskList(RedisOperations<String, Object> operations, String zsetKey, List<DelayInstanceAddRequestDTO> list) {
+            list.forEach(d -> {
+                // Cache keys
+                String taskId = d.getTaskId();
+                String detailKey = CacheUtil.getDelayDetailTaskIdKey(taskId);
+                String listKey = CacheUtil.getAddListKey(DelaySlotUtil.getAddListSlotId(taskId));
+                String addressKey = CacheUtil.getDelayDetailWorkerAddressKey(taskId);
+                String retryKey = CacheUtil.getDelayRetryTimesKey(taskId);
 
-            // Retry times.
-            // First retry times is zero.
-            List<String> retryKeys = timingMembers.stream().map(CacheUtil::getDelayRetryTimesKey)
-                    .collect(Collectors.toList());
-            List<Object> times = RedisUtil.getTemplate().opsForValue().multiGet(retryKeys);
-            Map<String, Integer> timesMap = new HashMap<>();
-            for (int i = 0; i < retryKeys.size(); i++) {
-                if (Objects.isNull(times)) {
-                    continue;
-                }
-                timesMap.put(timingMembers.get(i), (Integer) Optional.ofNullable(times.get(i)).orElse(0));
-            }
-
-            // Get delay instance detail list
-            List<DelayInstanceAddRequestDTO> detailList = this.delayData.getDelayInstanceList(timingMembers);
-
-            // Group by topic.
-            Map<String, List<DelayInstanceAddRequestDTO>> detailListMap = detailList.stream()
-                    .collect(Collectors.groupingBy(DelayInstanceAddRequestDTO::getTopic));
-
-            Map<String, List<Delay>> delayMap = this.delayData.getDelayList(new ArrayList<>(detailListMap.keySet())).stream()
-                    .collect(Collectors.groupingBy(Delay::getTopic));
-
-            // Execute by pipelined.
-            RedisUtil.getTemplate().executePipelined(new SessionCallback<List<Object>>() {
-                @Override
-                public List<Object> execute(@Nonnull RedisOperations operations) throws DataAccessException {
-                    operations.multi();
-
-                    // Push by topic
-                    detailListMap.forEach((t, list) -> {
-                        Delay topicDelay = delayMap.get(t).get(0);
-                        String cacheListKey = CacheUtil.getTopicListKey(t);
-
-                        // Find can be push task
-                        List<DelayInstanceAddRequestDTO> pushTask = list.stream().filter(i -> {
-                            Integer currentTimes = timesMap.get(i.getTaskId());
-                            if (currentTimes >= topicDelay.getFailRetryTimes()) {
-                                log.warn("Task will be ignore,retryTimes={} taskId={}", currentTimes, i.getTaskId());
-                                return false;
-                            }
-                            return true;
-                        }).collect(Collectors.toList());
-
-                        // Empty
-                        if (CollectionUtils.isEmpty(pushTask)) {
-                            return;
-                        }
-
-                        // Remove task id.
-                        // Fixed retry task id.
-                        pushTask.forEach(i -> {
-                            operations.opsForList().remove(cacheListKey, 0, i.getTaskId());
-
-                            // Retry times.
-                            String delayRetryTimesKey = CacheUtil.getDelayRetryTimesKey(i.getTaskId());
-                            operations.opsForValue().increment(delayRetryTimesKey);
-                        });
-
-                        // Add task id to queue.
-                        operations.opsForList().rightPushAll(cacheListKey, pushTask.stream().map(DelayInstanceAddRequestDTO::getTaskId).toArray());
-
-                        // Update score(score=score+timeout)
-                        if (Objects.nonNull(topicDelay)) {
-                            double retryTime = topicDelay.getExecuteTimeout() + topicDelay.getFailRetryInterval() + SchedulerConstant.DELAY_RETRY_AFTER;
-                            pushTask.forEach(d -> operations.opsForZSet().incrementScore(key, d.getTaskId(), retryTime));
-                        }
-                    });
-
-                    operations.exec();
-                    return null;
-                }
+                // Remove and delete keys
+                operations.delete(Arrays.asList(detailKey, addressKey, retryKey));
+                operations.opsForList().remove(listKey, 1, taskId);
             });
+
+            List<String> taskIds = list.stream().map(DelayInstanceAddRequestDTO::getTaskId).collect(Collectors.toList());
+            operations.opsForZSet().remove(zsetKey, taskIds.toArray());
+
+            log.warn("Ignore taskIds={}", taskIds);
+
+            // Update task status
+            String statusListKey = CacheUtil.getStatusListKey(DelaySlotUtil.getStatusListSlotId(UUID.randomUUID().toString()));
+            Stream<DelayInstanceStatusRequestDTO> statusList = list.stream().map(d -> {
+                DelayInstanceStatusRequestDTO delayInstanceStatusRequestDTO = new DelayInstanceStatusRequestDTO();
+                delayInstanceStatusRequestDTO.setTaskId(d.getTaskId());
+                delayInstanceStatusRequestDTO.setStatus(TaskStatusEnum.FAILED.getStatus());
+                delayInstanceStatusRequestDTO.setWorkerAddress("");
+                delayInstanceStatusRequestDTO.setCompleteTime(DateUtil.timestamp());
+                return delayInstanceStatusRequestDTO;
+            });
+            operations.opsForList().rightPushAll(statusListKey, statusList.toArray());
+
+            // Append processor log.
+            this.appendProcessorLog(taskIds);
+        }
+
+        @Override
+        protected String getCacheKey(String topic) {
+            return CacheUtil.getTopicListKey(topic);
+        }
+
+        private void appendProcessorLog(List<String> taskIds) {
+            try {
+                List<ProcessorLog> processorLogs = taskIds.stream().map(tid -> {
+                    Long now = DateUtil.milliLongTime();
+                    List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, tid));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LOCATION, "-"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.MESSAGE, "Delay task have reached the retry times. will be to discarded!"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.LEVEL, "WARN"));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, ""));
+                    fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
+
+                    ProcessorLog processorLog = new ProcessorLog();
+                    processorLog.setTaskId(tid);
+                    processorLog.setWorkerAddress("");
+                    processorLog.setTime(now);
+                    processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+                    return processorLog;
+                }).collect(Collectors.toList());
+
+                logDAO.batchAdd(processorLogs);
+            } catch (SQLException e) {
+                log.error("Batch add task ignore log failed!", e);
+            }
         }
     }
 }

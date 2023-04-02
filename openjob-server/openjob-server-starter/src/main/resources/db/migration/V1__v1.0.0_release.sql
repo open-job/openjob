@@ -33,6 +33,7 @@ DROP TABLE IF EXISTS `delay`;
 
 CREATE TABLE `delay` (
                          `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                         `pid` bigint(20) NOT NULL DEFAULT '0',
                          `namespace_id` bigint(20) NOT NULL,
                          `app_id` bigint(20) NOT NULL,
                          `name` varchar(128) NOT NULL DEFAULT '',
@@ -44,6 +45,8 @@ CREATE TABLE `delay` (
                          `concurrency` int(11) unsigned NOT NULL DEFAULT '2',
                          `blocking_size` int(11) unsigned NOT NULL DEFAULT '20',
                          `topic` varchar(128) NOT NULL DEFAULT '',
+                         `fail_topic_enable` tinyint(2) NOT NULL DEFAULT '1',
+                         `fail_topic_concurrency` int(11) NOT NULL DEFAULT '1',
                          `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
                          `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
                          `create_time` bigint(12) NOT NULL,
@@ -653,6 +656,7 @@ CREATE TABLE `system` (
                           `cluster_delay_version` bigint(20) unsigned NOT NULL DEFAULT '1',
                           `worker_supervisor_slot` int(11) unsigned NOT NULL DEFAULT '16',
                           `delay_zset_slot` int(11) unsigned NOT NULL DEFAULT '4',
+                          `delay_fail_zset_slot` int(11) NOT NULL DEFAULT '2',
                           `delay_add_list_slot` int(11) unsigned NOT NULL DEFAULT '2',
                           `delay_status_list_slot` int(10) unsigned NOT NULL DEFAULT '2',
                           `delay_delete_list_slot` int(10) unsigned NOT NULL DEFAULT '1',

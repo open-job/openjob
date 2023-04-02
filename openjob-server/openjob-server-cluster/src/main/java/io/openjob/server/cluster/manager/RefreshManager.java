@@ -71,10 +71,15 @@ public class RefreshManager {
         systemDTO.setClusterVersion(currentVersion);
         systemDTO.setWorkerSupervisorSlot(currentSystem.getWorkerSupervisorSlot());
         systemDTO.setDelayZsetMaxSlot(currentSystem.getDelayZsetSlot());
+        systemDTO.setDelayFailZsetMaxSlot(currentSystem.getDelayFailZsetSlot());
         systemDTO.setDelayAddListMaxSlot(currentSystem.getDelayAddListSlot());
         systemDTO.setDelayStatusListMaxSlot(currentSystem.getDelayStatusListSlot());
         systemDTO.setDelayDeleteListMaxSlot(currentSystem.getDelayDeleteListSlot());
         systemDTO.setClusterDelayVersion(currentSystem.getClusterDelayVersion());
+        systemDTO.setJobKeepDays(currentSystem.getJobKeepDays());
+        systemDTO.setDelayKeepDays(currentSystem.getDelayKeepDays());
+        systemDTO.setServerKeepDays(currentSystem.getServerKeepDays());
+        systemDTO.setWorkerKeepDays(currentSystem.getWorkerKeepDays());
 
         ClusterContext.refreshSystem(systemDTO);
         log.info("Refresh cluster version({}) {} ", currentSystem.getClusterVersion(), systemDTO);

@@ -40,6 +40,11 @@ public class SystemDAOImpl implements SystemDAO {
     }
 
     @Override
+    public Integer updateClusterDelayVersion(Long clusterDelayVersion) {
+        return this.systemRepository.updateClusterDelayVersion(DEFAULT_ID, clusterDelayVersion);
+    }
+
+    @Override
     public void updateById(System system) {
         System old = this.getOne();
 
@@ -51,6 +56,11 @@ public class SystemDAOImpl implements SystemDAO {
         // Delay zset slot
         if (Objects.nonNull(system.getDelayZsetSlot())) {
             old.setDelayZsetSlot(system.getDelayZsetSlot());
+        }
+
+        // Delay fail zet slot.
+        if (Objects.nonNull(system.getDelayFailZsetSlot())) {
+            old.setDelayFailZsetSlot(system.getDelayFailZsetSlot());
         }
 
         // Delay add list slot

@@ -2,6 +2,8 @@ package io.openjob.server.scheduler.dto;
 
 import lombok.Data;
 
+import javax.persistence.Column;
+
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
@@ -11,6 +13,7 @@ public class DelayInstancePullResponseDTO {
     private String topic;
     private String taskId;
     private Long delayId;
+    private Long delayPid;
     private String delayParams;
     private String delayExtra;
     private String processorInfo;
@@ -19,4 +22,6 @@ public class DelayInstancePullResponseDTO {
     private Integer executeTimeout;
     private Integer blockingSize;
     private Integer concurrency;
+    private Integer failTopicEnable;
+    private Integer failTopicConcurrency;
 }

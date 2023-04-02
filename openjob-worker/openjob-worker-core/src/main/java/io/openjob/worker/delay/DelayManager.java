@@ -73,7 +73,7 @@ public class DelayManager {
         this.delayTaskMaster.stop();
 
         // Stop task container.
-        DelayTaskContainerPool.getAllDelayTaskContainer().forEach((t, c) -> c.stop());
+        DelayTaskContainerPool.stop();
 
         // Delay task manager.
         DelayTaskManager.INSTANCE.stop();
