@@ -50,6 +50,6 @@ public class DelayScheduler {
         systemDTO.setClusterDelayVersion(delayVersion);
 
         ClusterContext.refreshSystem(systemDTO);
-        log.info("Refresh delay version({}) {} ", systemDTO.getClusterDelayVersion(), systemDTO);
+        log.info("Refresh delay version(cluster={} delay={}) {} ", clusterVersion, delayVersion, systemDTO);
     }
 }
