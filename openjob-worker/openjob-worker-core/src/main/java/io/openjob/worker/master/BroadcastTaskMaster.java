@@ -8,14 +8,12 @@ import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.init.WorkerContext;
-import io.openjob.worker.processor.BaseProcessor;
-import io.openjob.worker.processor.JobProcessor;
+import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
 
 import java.util.Collections;
-import java.util.function.Function;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -41,10 +39,9 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
         try {
             JobContext jobContext = this.getBaseJobContext();
             jobContext.setTaskName(WorkerConstant.BROADCAST_NAME);
-            BaseProcessor process = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());
-            if (process instanceof JobProcessor) {
-                ((JobProcessor) process).preProcess(jobContext);
-            }
+            ProcessorHandler processorHandler = ProcessorUtil.getProcessor(this.jobInstanceDTO.getProcessorInfo());
+            assert processorHandler != null;
+            processorHandler.preProcess(jobContext);
         } catch (Exception e) {
             e.printStackTrace();
         }

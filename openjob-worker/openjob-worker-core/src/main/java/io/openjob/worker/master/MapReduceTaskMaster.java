@@ -11,6 +11,7 @@ import io.openjob.worker.entity.Task;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.MapReduceProcessor;
 import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
@@ -19,15 +20,18 @@ import io.openjob.worker.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Slf4j
 public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     /**
@@ -130,9 +134,16 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     protected void reduce() {
-        BaseProcessor processor = ProcessorUtil.getProcess(this.jobInstanceDTO.getProcessorInfo());
-        if (processor instanceof MapReduceProcessor) {
-            MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processor;
+        // Not find
+        ProcessorHandler processorHandler = ProcessorUtil.getProcessor(this.jobInstanceDTO.getProcessorInfo());
+        if (Objects.isNull(processorHandler) || Objects.isNull(processorHandler.getBaseProcessor())) {
+            log.error("Not find processor! processorInfo={}", this.jobInstanceDTO.getProcessorInfo());
+            return;
+        }
+
+        // Do reduce
+        if (processorHandler.getBaseProcessor() instanceof MapReduceProcessor) {
+            MapReduceProcessor mapReduceProcessor = (MapReduceProcessor) processorHandler.getBaseProcessor();
             JobContext jobContext = getReduceJobContext();
             ProcessResult processResult = new ProcessResult(false);
             try {
