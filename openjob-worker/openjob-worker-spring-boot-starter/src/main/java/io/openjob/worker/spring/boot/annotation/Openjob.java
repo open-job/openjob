@@ -14,4 +14,32 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Openjob {
+
+    /**
+     * Job name
+     *
+     * @return String
+     */
+    String value();
+
+    /**
+     * Pre job
+     *
+     * @return String
+     */
+    String pre() default "";
+
+    /**
+     * Post job
+     *
+     * @return String
+     */
+    String post() default "";
+
+    /**
+     * Stop job
+     *
+     * @return String
+     */
+    String stop() default "";
 }

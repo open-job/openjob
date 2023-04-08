@@ -2,6 +2,7 @@ package io.openjob.worker.processor;
 
 import com.google.common.collect.Lists;
 import io.openjob.worker.context.JobContext;
+import lombok.Data;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Objects;
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
+@Data
 public class ProcessorHandler implements JobProcessor {
     private BaseProcessor baseProcessor;
     private Object target;
@@ -19,16 +21,11 @@ public class ProcessorHandler implements JobProcessor {
     private Method postMethod;
     private Method stopMethod;
 
-    public ProcessorHandler(BaseProcessor baseProcessor) {
-        this.baseProcessor = baseProcessor;
+    public ProcessorHandler() {
     }
 
-    public ProcessorHandler(Object target, Method method, Method pre, Method post, Method stop) {
-        this.target = target;
-        this.processMethod = method;
-        this.preMethod = pre;
-        this.postMethod = post;
-        this.stopMethod = stop;
+    public ProcessorHandler(BaseProcessor baseProcessor) {
+        this.baseProcessor = baseProcessor;
     }
 
     @Override
@@ -81,10 +78,6 @@ public class ProcessorHandler implements JobProcessor {
         }
 
         return (ProcessResult) this.postMethod.invoke(this.target, this.getMethodParams(this.postMethod, context));
-    }
-
-    public BaseProcessor getBaseProcessor() {
-        return baseProcessor;
     }
 
     /**

@@ -4,6 +4,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.Nullable;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -25,8 +26,16 @@ public class SpringContext implements ApplicationContextAware {
         return applicationContext.getBean(name, type);
     }
 
+    public static Boolean containsBean(String name) {
+        return applicationContext.containsBean(name);
+    }
+
     public static Object getBean(String name) {
         return applicationContext.getBean(name);
+    }
+
+    public static String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
+        return applicationContext.getBeanNamesForType(type, includeNonSingletons, allowEagerInit);
     }
 
     public static ApplicationContext getApplicationContext() {
