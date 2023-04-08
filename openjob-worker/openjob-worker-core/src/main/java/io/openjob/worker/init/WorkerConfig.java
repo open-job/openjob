@@ -1,14 +1,11 @@
 package io.openjob.worker.init;
 
-import com.google.common.collect.Sets;
 import io.openjob.common.util.IpUtil;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -48,6 +45,11 @@ public class WorkerConfig {
     private static String serverHost;
 
     /**
+     * Server port
+     */
+    private static Integer serverPort;
+
+    /**
      * Init
      */
     public void init() {
@@ -62,6 +64,7 @@ public class WorkerConfig {
         workerAddress = String.format("%s:%d", workerHostName, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
         serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+        serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
     }
 
     public static String getWorkerHostName() {
@@ -86,5 +89,9 @@ public class WorkerConfig {
 
     public static String getServerHost() {
         return serverHost;
+    }
+
+    public static Integer getServerPort() {
+        return serverPort;
     }
 }
