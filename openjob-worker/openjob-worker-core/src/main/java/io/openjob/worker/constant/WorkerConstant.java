@@ -13,11 +13,6 @@ public class WorkerConstant {
     public static final String SERVER_PORT = "server.port";
 
     /**
-     * Routing
-     */
-    public static final String ROUTING_HEARTBEAT = "heartbeat";
-
-    /**
      * Worker config key.
      */
     public static final String WORKER_HOSTNAME = "worker.hostname";
