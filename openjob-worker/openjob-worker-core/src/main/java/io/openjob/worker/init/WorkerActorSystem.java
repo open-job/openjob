@@ -64,7 +64,7 @@ public class WorkerActorSystem {
 
         // At least once persistent actor.
         int persistentNum = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_PERSISTENT_ACTOR_NUM, WorkerConstant.DEFAULT_WORKER_PERSISTENT_ACTOR_NUM);
-        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, 1)
+        Props persistentProps = Props.create(WorkerPersistentRoutingActor.class, persistentNum)
                 .withDispatcher(WorkerAkkaConstant.DISPATCHER_PERSISTENT_ROUTING);
         persistentRoutingRef = actorSystem.actorOf(persistentProps, WorkerAkkaConstant.ACTOR_PERSISTENT_ROUTING);
 

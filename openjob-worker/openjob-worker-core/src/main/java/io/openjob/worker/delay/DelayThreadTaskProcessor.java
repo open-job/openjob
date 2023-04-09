@@ -6,8 +6,8 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.init.WorkerConfig;
-import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ public class DelayThreadTaskProcessor implements Runnable {
 
     protected JobContext jobContext;
 
-    protected BaseProcessor baseProcessor;
+    protected ProcessorHandler processorHandler;
 
     public DelayThreadTaskProcessor(JobContext jobContext) {
         this.jobContext = jobContext;
@@ -49,12 +49,12 @@ public class DelayThreadTaskProcessor implements Runnable {
                 throw new RuntimeException(String.format("Delay processor info can not be null! taskId=%s topic=%s", taskId, topic));
             }
 
-            this.baseProcessor = ProcessorUtil.getProcess(processorInfo);
-            if (Objects.isNull(this.baseProcessor)) {
+            this.processorHandler = ProcessorUtil.getProcessor(processorInfo);
+            if (Objects.isNull(this.processorHandler)) {
                 throw new RuntimeException(String.format("Delay processor is not exist! taskId=%s topic=%s", taskId, topic));
             }
 
-            result = this.baseProcessor.process(this.jobContext);
+            result = this.processorHandler.process(this.jobContext);
             logger.info("Delay processor completed! taskId={}", this.jobContext.getDelayTaskId());
         } catch (InterruptedException ex) {
             logger.info("Delay processor is interrupted(stop or timeout)! taskId={}", this.jobContext.getDelayTaskId());

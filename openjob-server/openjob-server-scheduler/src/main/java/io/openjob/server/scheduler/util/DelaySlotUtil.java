@@ -23,7 +23,7 @@ public class DelaySlotUtil {
      */
     public static List<Long> getCurrentZsetSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetMaxSlot();
+        int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetSlot();
         return getCurrentSlots(maxSlot, delayZsetMaxSlot);
     }
 
@@ -34,7 +34,7 @@ public class DelaySlotUtil {
      */
     public static List<Long> getFailCurrentZsetSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetSlot();
         return getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
     }
 
@@ -45,7 +45,7 @@ public class DelaySlotUtil {
      */
     public static List<Long> getCurrentAddListSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListSlot();
         return getCurrentSlots(maxSlot, delayListMaxSlot);
     }
 
@@ -56,7 +56,7 @@ public class DelaySlotUtil {
      */
     public static List<Long> getCurrentStatusListSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListSlot();
         return getCurrentSlots(maxSlot, delayListMaxSlot);
     }
 
@@ -67,7 +67,7 @@ public class DelaySlotUtil {
      */
     public static List<Long> getCurrentDeleteListSlots() {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListSlot();
         return getCurrentSlots(maxSlot, delayListMaxSlot);
     }
 
@@ -79,7 +79,7 @@ public class DelaySlotUtil {
      */
     public static Long getAddListSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
@@ -94,7 +94,7 @@ public class DelaySlotUtil {
      */
     public static Long getStatusListSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
@@ -109,7 +109,7 @@ public class DelaySlotUtil {
      */
     public static Long getDeleteListSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListMaxSlot();
+        int delayListMaxSlot = ClusterContext.getSystem().getDelayDeleteListSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
@@ -124,7 +124,7 @@ public class DelaySlotUtil {
      */
     public static Long getZsetSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetMaxSlot();
+        int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayZsetMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayZsetMaxSlot);
@@ -139,7 +139,7 @@ public class DelaySlotUtil {
      */
     public static Long getFailZsetSlotId(String key) {
         int maxSlot = ClusterContext.getSystem().getMaxSlot();
-        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetMaxSlot();
+        int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetSlot();
         int index = CrcUtil.crc16(key.getBytes()) % delayFailZsetMaxSlot;
 
         List<Long> slots = getCurrentSlots(maxSlot, delayFailZsetMaxSlot);

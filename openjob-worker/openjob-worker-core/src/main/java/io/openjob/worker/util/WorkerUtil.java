@@ -93,7 +93,7 @@ public class WorkerUtil {
     }
 
     public static String getServerAddress() {
-        return String.format("%s:%d", WorkerConfig.getServerHost(), OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT));
+        return String.format("%s:%d", WorkerConfig.getServerHost(), WorkerConfig.getServerPort());
     }
 
     public static String getWorkerActorPath(String address, String path) {

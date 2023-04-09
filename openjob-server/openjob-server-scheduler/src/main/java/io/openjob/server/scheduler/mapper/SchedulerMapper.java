@@ -6,7 +6,9 @@ import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.common.request.WorkerDelayTopicPullRequest;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayTopicResponse;
+import io.openjob.server.common.dto.SystemDTO;
 import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.repository.entity.System;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
@@ -81,4 +83,12 @@ public interface SchedulerMapper {
      * @return DelayInstanceAddRequestDTO
      */
     DelayInstanceAddRequestDTO toDelayInstanceAddRequestDTO(WorkerDelayAddRequest workerDelayAddRequest);
+
+    /**
+     * To system dto
+     *
+     * @param system system
+     * @return SystemDTO
+     */
+    SystemDTO toSystemDTO(System system);
 }

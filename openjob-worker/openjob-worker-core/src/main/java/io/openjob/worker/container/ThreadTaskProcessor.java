@@ -3,9 +3,8 @@ package io.openjob.worker.container;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.context.JobContext;
-import io.openjob.worker.processor.BaseProcessor;
-import io.openjob.worker.processor.JobProcessor;
 import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
@@ -23,7 +22,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
     protected JobContext jobContext;
 
-    protected BaseProcessor baseProcessor;
+    protected ProcessorHandler processorHandler;
 
 
     public ThreadTaskProcessor(JobContext jobContext) {
@@ -55,19 +54,13 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         try {
             // Java
             if (ProcessorTypeEnum.PROCESSOR.getType().equals(this.jobContext.getProcessorType())) {
-                this.baseProcessor = ProcessorUtil.getProcess(this.jobContext.getProcessorInfo());
+                this.processorHandler = ProcessorUtil.getProcessor(this.jobContext.getProcessorInfo());
             }
 
-            if (Objects.nonNull(this.baseProcessor)) {
-                if (this.baseProcessor instanceof JobProcessor) {
-                    JobProcessor jobProcessor = (JobProcessor) this.baseProcessor;
-
-                    jobProcessor.preProcess(this.jobContext);
-                    result = this.baseProcessor.process(this.jobContext);
-                    jobProcessor.postProcess(this.jobContext);
-                } else {
-                    result = this.baseProcessor.process(this.jobContext);
-                }
+            if (Objects.nonNull(this.processorHandler)) {
+                this.processorHandler.preProcess(this.jobContext);
+                result = this.processorHandler.process(this.jobContext);
+                this.processorHandler.postProcess(this.jobContext);
 
                 logger.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
             } else {
@@ -90,9 +83,9 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
     @Override
     public void stop() {
-        if (Objects.nonNull(this.baseProcessor)) {
+        if (Objects.nonNull(this.processorHandler)) {
             try {
-                this.baseProcessor.stop(this.jobContext);
+                this.processorHandler.stop(this.jobContext);
                 logger.info("Task processor stopped!");
             } catch (Throwable ex) {
                 logger.error("Processor stop exception!", ex);

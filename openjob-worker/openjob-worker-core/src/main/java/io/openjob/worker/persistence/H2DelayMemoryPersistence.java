@@ -163,12 +163,8 @@ public class H2DelayMemoryPersistence implements DelayPersistence {
         String sql = "DELETE FROM delay_worker";
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
-            connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
-            int[] counts = ps.executeBatch();
-            connection.commit();
-            connection.setAutoCommit(true);
-            return counts.length;
+            return ps.executeUpdate();
         } finally {
             if (Objects.nonNull(ps)) {
                 ps.close();

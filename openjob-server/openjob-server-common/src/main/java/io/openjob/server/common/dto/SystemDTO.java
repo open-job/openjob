@@ -32,27 +32,27 @@ public class SystemDTO {
     /**
      * Delay set slot
      */
-    private Integer delayZsetMaxSlot;
+    private Integer delayZsetSlot;
 
     /**
      * Delay fail set slot
      */
-    private Integer delayFailZsetMaxSlot;
+    private Integer delayFailZsetSlot;
 
     /**
      * Delay add list slot
      */
-    private Integer delayAddListMaxSlot;
+    private Integer delayAddListSlot;
 
     /**
      * Delay status slot
      */
-    private Integer delayStatusListMaxSlot;
+    private Integer delayStatusListSlot;
 
     /**
      * Delay delete list slot
      */
-    private Integer delayDeleteListMaxSlot;
+    private Integer delayDeleteListSlot;
 
     /**
      * Job keep days
