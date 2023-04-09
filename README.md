@@ -1,4 +1,12 @@
-![logo](https://raw.githubusercontent.com/stelin/openjob/main/public/image/logo.png)
+<p align="center">
+  <a href="https://docsify.js.org">
+    <img alt="docsify" src="./public/image/logo.png">
+  </a>
+</p>
+
+<p align="center">
+  A distributed task scheduling framework.
+</p>
 
 > **[中文](README-zh.md)**
 ## Introduction
