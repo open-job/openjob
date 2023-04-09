@@ -1,4 +1,5 @@
-![logo](https://raw.githubusercontent.com/stelin/openjob/main/public/image/logo.jpg)
+![logo](https://raw.githubusercontent.com/stelin/openjob/main/public/image/logo.svg)
+
 > **[中文](README-zh.md)**
 ## Introduction
 **Openjob** is a distributed, high-performance task scheduling framework that supports a variety of scheduled and delayed tasks. It adopts a decentralized design and supports wireless capacity expansion.
