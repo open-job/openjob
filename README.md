@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://docsify.js.org">
-    <img alt="docsify" src="./public/image/logo.png">
+  <a href="https://openjob.io">
+    <img alt="openjob" src="./public/image/logo.png">
   </a>
 </p>
 
