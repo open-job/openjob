@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/stelin/openjob/main/public/image/logo.svg)
+![logo](https://raw.githubusercontent.com/stelin/openjob/main/public/image/logo.png)
 
 > **[中文](README-zh.md)**
 ## Introduction
