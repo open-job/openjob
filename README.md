@@ -52,7 +52,6 @@
 - Find the [live demo](https://demo.openjob.io) on our website.
 ## Contact
 * Mail list:
-  * openjob@vip.qq.com
   * swoft@qq.com
 - Online chat:
 
