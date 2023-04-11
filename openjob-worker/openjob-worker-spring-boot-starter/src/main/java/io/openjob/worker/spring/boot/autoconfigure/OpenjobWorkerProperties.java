@@ -11,26 +11,87 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "openjob")
 public class OpenjobWorkerProperties {
     /**
-     * Heartbeat interval(s)
+     * Server configuration
      */
-    private Integer heartbeatInterval;
-
     private Server server = new Server();
+
+    /**
+     * Worker configuration
+     */
+    private Worker worker = new Worker();
+
+    /**
+     * Actor configuration
+     */
     private Actor actor = new Actor();
+
+    /**
+     * Delay configuration
+     */
     private Delay delay = new Delay();
 
     @Data
     public static class Server {
+
+        /**
+         * Default is IP
+         */
         private String host;
+
+        /**
+         * Default is 25520
+         */
         private Integer port;
     }
 
     @Data
+    public static class Worker {
+        /**
+         * Heartbeat interval(s)
+         */
+        private Integer heartbeatInterval;
+
+        /**
+         * Default is IP
+         */
+        private String host;
+
+        /**
+         * Default is 25588
+         */
+        private String port;
+
+        /**
+         * Worker application name
+         */
+        private String appName;
+    }
+
+    @Data
     public static class Actor {
+        /**
+         * Heartbeat num
+         */
         private Integer heartbeatNum;
+
+        /**
+         * Task master num.
+         */
         private Integer taskMasterNum;
+
+        /**
+         * Task container num.
+         */
         private Integer taskContainerNum;
+
+        /**
+         * Persistent num
+         */
         private Integer persistentNum;
+
+        /**
+         * Delay master num
+         */
         private Integer delayMasterNum;
     }
 

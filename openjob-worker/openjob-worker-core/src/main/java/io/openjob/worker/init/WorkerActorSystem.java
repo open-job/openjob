@@ -7,7 +7,6 @@ import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.openjob.common.constant.AkkaConstant;
-import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.actor.DelayTaskMasterActor;
 import io.openjob.worker.actor.TaskContainerActor;
 import io.openjob.worker.actor.TaskMasterActor;
@@ -16,7 +15,6 @@ import io.openjob.worker.actor.WorkerPersistentRoutingActor;
 import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.util.ConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -46,7 +44,7 @@ public class WorkerActorSystem {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
-        newConfig.put("akka.remote.artery.canonical.hostname", WorkerConfig.getWorkerHostName());
+        newConfig.put("akka.remote.artery.canonical.hostname", WorkerConfig.getWorkerHost());
         newConfig.put("akka.remote.artery.canonical.port", String.valueOf(WorkerConfig.getWorkerPort()));
 
 

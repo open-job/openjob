@@ -15,7 +15,7 @@ public class WorkerConstant {
     /**
      * Worker config key.
      */
-    public static final String WORKER_HOSTNAME = "worker.hostname";
+    public static final String WORKER_HOST = "worker.host";
     public static final String WORKER_PORT = "worker.port";
     public static final String WORKER_APP_NAME = "worker.app.name";
     public static final String WORKER_DELAY_ENABLE = "worker.delay.enable";
@@ -36,7 +36,7 @@ public class WorkerConstant {
      */
     public static final String DEFAULT_WORKER_AKKA_CONFIG_FILENAME = "akka-worker.conf";
     public static final Integer DEFAULT_SERVER_PORT = 25520;
-    public static final Integer DEFAULT_WORKER_PORT = 25531;
+    public static final Integer DEFAULT_WORKER_PORT = 25588;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM = 32;
