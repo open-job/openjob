@@ -9,27 +9,26 @@ public class WorkerConstant {
     /**
      * Server config key.
      */
-    public static final String SERVER_HOST = "server.host";
-    public static final String SERVER_PORT = "server.port";
+    public static final String SERVER_HOST = "openjob.server.host";
+    public static final String SERVER_PORT = "openjob.server.port";
 
     /**
      * Worker config key.
      */
-    public static final String WORKER_HOST = "worker.host";
-    public static final String WORKER_PORT = "worker.port";
-    public static final String WORKER_APP_NAME = "worker.app.name";
-    public static final String WORKER_DELAY_ENABLE = "worker.delay.enable";
-    public static final String WORKER_AKKA_CONFIG_FILE = "worker.akka.file";
-    public static final String WORKER_HEARTBEAT_ACTOR_NUM = "worker.heartbeat.actor.num";
-    public static final String WORKER_TASK_MASTER_ACTOR_NUM = "worker.task.master.actor.num";
-    public static final String WORKER_TASK_CONTAINER_ACTOR_NUM = "worker.task.container.actor.num";
-    public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "worker.persistent.actor.num";
-    public static final String WORKER_HEARTBEAT_INTERVAL = "worker.heartbeat.interval";
-
-    public static final String WORKER_DELAY_MASTER_ACTOR_NUM = "worker.delay.master.actor.num";
-    public static final String WORKER_DELAY_PULL_SIZE = "worker.delay.pull.size";
-    public static final String WORKER_DELAY_PULL_SLEEP = "worker.delay.pull.sleep";
-    public static final String WORKER_DELAY_PULL_STEP = "worker.delay.pull.step";
+    public static final String WORKER_HOST = "openjob.worker.host";
+    public static final String WORKER_PORT = "openjob.worker.port";
+    public static final String WORKER_APP_NAME = "openjob.worker.app.name";
+    public static final String WORKER_DELAY_ENABLE = "openjob.worker.delay.enable";
+    public static final String WORKER_AKKA_CONFIG_FILE = "openjob.worker.akka.file";
+    public static final String WORKER_HEARTBEAT_ACTOR_NUM = "openjob.worker.heartbeat.actor.num";
+    public static final String WORKER_TASK_MASTER_ACTOR_NUM = "openjob.worker.task.master.actor.num";
+    public static final String WORKER_TASK_CONTAINER_ACTOR_NUM = "openjob.worker.task.container.actor.num";
+    public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "openjob.worker.persistent.actor.num";
+    public static final String WORKER_HEARTBEAT_INTERVAL = "openjob.worker.heartbeat.interval";
+    public static final String WORKER_DELAY_MASTER_ACTOR_NUM = "openjob.worker.delay.master.actor.num";
+    public static final String WORKER_DELAY_PULL_SIZE = "openjob.worker.delay.pull.size";
+    public static final String WORKER_DELAY_PULL_SLEEP = "openjob.worker.delay.pull.sleep";
+    public static final String WORKER_DELAY_PULL_STEP = "openjob.worker.delay.pull.step";
 
     /**
      * Default worker config.

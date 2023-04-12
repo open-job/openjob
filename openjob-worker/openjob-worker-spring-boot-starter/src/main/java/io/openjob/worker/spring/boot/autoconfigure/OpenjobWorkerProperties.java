@@ -8,8 +8,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.0
  */
 @Data
-@ConfigurationProperties(prefix = "openjob")
+@ConfigurationProperties(prefix = "spring.openjob")
 public class OpenjobWorkerProperties {
+
+    /**
+     * Default is enable
+     */
+    private Boolean enable = true;
+
     /**
      * Server configuration
      */
