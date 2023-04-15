@@ -24,4 +24,12 @@ public class ProcessResult {
         this.status = status ? TaskStatusEnum.SUCCESS : TaskStatusEnum.FAILED;
         this.result = result;
     }
+
+    public static ProcessResult success(){
+        return new ProcessResult(true);
+    }
+
+    public static ProcessResult fail(){
+        return new ProcessResult(false);
+    }
 }
