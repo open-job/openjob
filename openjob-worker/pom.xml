@@ -17,6 +17,7 @@
         <module>openjob-worker-agent</module>
         <module>openjob-worker-spring-boot-starter</module>
         <module>openjob-worker-samples</module>
+        <module>openjob-worker-spring-boot-samples</module>
     </modules>
 
     <properties>
