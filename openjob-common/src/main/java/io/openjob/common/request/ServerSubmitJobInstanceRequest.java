@@ -13,7 +13,10 @@ import java.util.List;
 public class ServerSubmitJobInstanceRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private Long workflowId;
     private String processorType;
     private String processorInfo;

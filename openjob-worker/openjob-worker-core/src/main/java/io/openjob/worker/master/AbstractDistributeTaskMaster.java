@@ -135,7 +135,10 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         jobContext.setJobId(this.jobInstanceDTO.getJobId());
         jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         jobContext.setTaskId(this.acquireTaskId());
+        jobContext.setJobParamType(this.jobInstanceDTO.getJobParamType());
         jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
+        jobContext.setJobExtendParamsType(this.jobInstanceDTO.getJobExtendParamsType());
+        jobContext.setJobExtendParams(this.jobInstanceDTO.getJobExtendParams());
         jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
         jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
         jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());

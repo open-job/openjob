@@ -48,7 +48,10 @@ public class TaskMasterActor extends BaseActor {
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         jobInstanceDTO.setJobId(submitReq.getJobId());
         jobInstanceDTO.setJobInstanceId(submitReq.getJobInstanceId());
+        jobInstanceDTO.setJobParamType(submitReq.getJobParamType());
         jobInstanceDTO.setJobParams(submitReq.getJobParams());
+        jobInstanceDTO.setJobExtendParamsType(submitReq.getJobExtendParamsType());
+        jobInstanceDTO.setJobExtendParams(submitReq.getJobExtendParams());
         jobInstanceDTO.setWorkflowId(submitReq.getWorkflowId());
         jobInstanceDTO.setExecuteType(submitReq.getExecuteType());
         jobInstanceDTO.setProcessorType(submitReq.getProcessorType());

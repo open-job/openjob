@@ -22,7 +22,10 @@ public class JobContext {
     private Long jobId;
     private Long jobInstanceId;
     private Long taskId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private String taskName;
     private String executeType;
     private String processorType;

@@ -228,7 +228,10 @@ public class JobSchedulingService {
     private AbstractTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
         schedulerTask.setJobId(js.getJobId());
+        schedulerTask.setJobParamType(js.getParamsType());
         schedulerTask.setJobParams(js.getParams());
+        schedulerTask.setJobExtendParamsType(js.getExtendParamsType());
+        schedulerTask.setJobExtendParams(js.getExtendParams());
         schedulerTask.setAppid(js.getAppId());
         schedulerTask.setWorkflowId(0L);
         schedulerTask.setProcessorInfo(js.getProcessorInfo());

@@ -12,7 +12,10 @@ import java.util.List;
 public class JobInstanceDTO {
     private Long jobId;
     private Long jobInstanceId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private String executeType;
     private Long workflowId;
     private String processorType;

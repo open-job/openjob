@@ -36,7 +36,10 @@ public class MasterStartContainerRequest implements Serializable {
     private Integer shardingNum;
 
     private Long circleId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private String executeType;
     private Long workflowId;
     private String processorType;

@@ -105,7 +105,10 @@ public class TaskContainerActor extends BaseActor {
         jobContext.setJobId(startReq.getJobId());
         jobContext.setJobInstanceId(startReq.getJobInstanceId());
         jobContext.setTaskId(startReq.getTaskId());
+        jobContext.setJobParamType(startReq.getJobParamType());
         jobContext.setJobParams(startReq.getJobParams());
+        jobContext.setJobExtendParamsType(startReq.getJobExtendParamsType());
+        jobContext.setJobExtendParams(startReq.getJobExtendParams());
         jobContext.setProcessorType(startReq.getProcessorType());
         jobContext.setProcessorInfo(startReq.getProcessorInfo());
         jobContext.setFailRetryInterval(startReq.getFailRetryInterval());

@@ -25,7 +25,10 @@ import java.util.Objects;
 @Setter
 public class SchedulerTimerTask extends AbstractTimerTask {
     protected Long jobId;
+    protected String jobParamType;
     protected String jobParams;
+    protected String jobExtendParamsType;
+    protected String jobExtendParams;
     protected Long appid;
     protected Long workflowId;
     protected String processorType;
