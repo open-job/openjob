@@ -1,5 +1,6 @@
 package io.openjob.worker.spring.boot.autoconfigure;
 
+import io.openjob.common.SpringContext;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.spring.boot.OpenjobSpringWorker;
@@ -21,6 +22,11 @@ import java.util.Objects;
 @EnableConfigurationProperties(value = {OpenjobWorkerProperties.class})
 public class OpenjobWorkerAutoConfiguration {
     private final OpenjobWorkerProperties properties;
+
+    @Bean
+    public SpringContext springContext() {
+        return new SpringContext();
+    }
 
     @Autowired
     public OpenjobWorkerAutoConfiguration(OpenjobWorkerProperties properties) {
