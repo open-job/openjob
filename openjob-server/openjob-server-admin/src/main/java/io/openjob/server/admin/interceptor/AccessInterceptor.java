@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
-import io.openjob.server.admin.dto.AdminUserSessionDTO;
 import io.openjob.server.admin.service.AdminUserService;
-import io.openjob.server.admin.vo.part.PermItemVO;
 import io.openjob.server.repository.entity.AdminUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 请求访问拦截器
@@ -127,29 +123,6 @@ public class AccessInterceptor implements HandlerInterceptor {
         }
 
         return false;
-    }
-
-    private Boolean checkUserPerm(String route, AdminUserSessionDTO user) {
-        if (Objects.isNull(user)) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
-        }
-
-        if (user.getSupperAdmin() || notAuthRoutes.contains(route)) {
-            return true;
-        }
-
-        if (CollectionUtils.isEmpty(user.getPerms())) {
-            return false;
-        }
-
-        // match by route path.
-        PermItemVO perm = user.getPerms()
-                .stream()
-                .filter(item -> Objects.equals(item.getPath(), route))
-                .findAny()
-                .orElse(null);
-
-        return Objects.nonNull(perm);
     }
 
     private void returnJson(HttpServletResponse response, AdminHttpStatusEnum statusEnum) throws IOException {

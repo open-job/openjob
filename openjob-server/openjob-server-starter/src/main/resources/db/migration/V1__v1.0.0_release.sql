@@ -678,22 +678,6 @@ INSERT INTO `system` (`id`, `version`, `cluster_version`, `cluster_delay_version
 VALUES
     (1,'1.0.0',1,1,256,2,2,2,1,256,1663590330,1663590330);
 
-
-DROP TABLE IF EXISTS `admin_session`;
-CREATE TABLE `admin_session` (
-                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                              `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'User Id',
-                              `username` varchar(48) NOT NULL DEFAULT '' COMMENT 'User name',
-                              `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session token',
-                              `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                              `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                              `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                              `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                              INDEX `idx_user_id` (`user_id`),
-                              UNIQUE `uni_token` (`token`),
-                              PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin user session caches';
-
 DROP TABLE IF EXISTS `admin_user`;
 CREATE TABLE `admin_user` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
@@ -781,53 +765,3 @@ values  (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "iconfont icon-shouye", "
         (1001, 0, 2, 'namespace.delete', '/admin/namespace/delete', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
         (1002, 0, 2, 'namespace.update', '/admin/namespace/update', '{}', 2, 0, 2, 0, 1669972320, 1669972320),
         (1003, 0, 2, 'namespace.update.status', '/admin/namespace/update-status', '{}', 2, 0, 2, 0, 1669972320, 1669972320);
-
-DROP TABLE IF EXISTS `notify_template`;
-CREATE TABLE `notify_template` (
-                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                   `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Template name. eg: Wechat, DingTalk, Wecom, Feishu',
-                                   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'notify type. 1 webhook 2 email 3 sms',
-                                   `level` varchar(16) NOT NULL DEFAULT 'error' COMMENT 'Level. 1 notice 2 warning 3 error',
-                                   `events` JSON COMMENT 'notify events list. JSON: [task_fail, task_suc, task_cancel, task_skip]',
-                                   `contact_ids` JSON COMMENT 'related contact ids. JSON [12, 34]',
-                                   `group_ids` JSON COMMENT 'related group ids. JSON [12, 34]',
-                                   `webhook` varchar(128) NOT NULL DEFAULT '' COMMENT 'Webhook URL',
-                                   `content` varchar(2048) NOT NULL DEFAULT '' COMMENT 'Template contents',
-                                   `extra` JSON COMMENT 'Extra info. eg: third platform token',
-                                   `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'Creator user ID',
-                                   `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                   `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                   `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                   `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                   INDEX `idx_name` (`name`),
-                                   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify template table';
-
-DROP TABLE IF EXISTS `notify_contact`;
-CREATE TABLE `notify_contact` (
-                                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                  `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'User name',
-                                  `phone` varchar(24) NOT NULL DEFAULT '' COMMENT 'Phone',
-                                  `email` varchar(64) NOT NULL DEFAULT '' COMMENT 'Email address',
-                                  `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
-                                  `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                  `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                  `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                  `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                  INDEX `idx_name` (`name`),
-                                  INDEX `idx_phone` (`phone`),
-                                  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job notify contact';
-
-DROP TABLE IF EXISTS `notify_group`;
-CREATE TABLE `notify_group` (
-                                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
-                                `name` varchar(128) NOT NULL DEFAULT '' COMMENT 'Group name',
-                                `contact_ids` varchar(2048) NOT NULL DEFAULT '' COMMENT '[12, 34]',
-                                `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'Status. 1=OK 2=disabled',
-                                `deleted` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
-                                `delete_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Delete time',
-                                `update_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Update time',
-                                `create_time` bigint(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Create time',
-                                PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Notify contact group';

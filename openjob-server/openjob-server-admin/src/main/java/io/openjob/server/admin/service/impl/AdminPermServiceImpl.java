@@ -21,12 +21,9 @@ import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.dao.AdminRoleDAO;
 import io.openjob.server.repository.dao.AdminUserDAO;
-import io.openjob.server.repository.data.AdminPermissionData;
-import io.openjob.server.repository.dto.AdminPermissionDTO;
 import io.openjob.server.repository.entity.AdminPermission;
 import io.openjob.server.repository.entity.AdminRole;
 import io.openjob.server.repository.entity.AdminUser;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,13 +45,11 @@ public class AdminPermServiceImpl implements AdminPermService {
 
     private final AdminRoleDAO adminRoleDAO;
     private final AdminUserDAO adminUserDAO;
-    private final AdminPermissionData adminPermData;
     private final AdminPermissionDAO adminPermissionDAO;
 
 
     @Autowired
-    public AdminPermServiceImpl(AdminPermissionData adminPermData, AdminPermissionDAO adminPermissionDAO, AdminRoleDAO adminRoleDAO, AdminUserDAO adminUserDAO) {
-        this.adminPermData = adminPermData;
+    public AdminPermServiceImpl(AdminPermissionDAO adminPermissionDAO, AdminRoleDAO adminRoleDAO, AdminUserDAO adminUserDAO) {
         this.adminPermissionDAO = adminPermissionDAO;
         this.adminRoleDAO = adminRoleDAO;
         this.adminUserDAO = adminUserDAO;
@@ -62,41 +57,22 @@ public class AdminPermServiceImpl implements AdminPermService {
 
     @Override
     public AdminPermAddVO add(AdminPermAddRequest reqDTO) {
-        AdminPermissionDTO entDTO = new AdminPermissionDTO();
-        BeanUtils.copyProperties(reqDTO, entDTO);
-
-        AdminPermAddVO retVo = new AdminPermAddVO();
-        retVo.setId(adminPermData.add(entDTO));
-        return retVo;
+        return null;
     }
 
     @Override
     public AdminPermUpdateVO update(AdminPermUpdateRequest reqDTO) {
-        AdminPermissionDTO entDTO = new AdminPermissionDTO();
-        BeanUtils.copyProperties(reqDTO, entDTO);
-
-        AdminPermUpdateVO retVo = new AdminPermUpdateVO();
-        adminPermData.updateById(entDTO);
-        return retVo;
+        return null;
     }
 
     @Override
     public AdminPermUpdateVO delete(AdminPermDeleteRequest reqDTO) {
-        AdminPermissionDTO entDTO = new AdminPermissionDTO();
-        entDTO.setId(reqDTO.getId());
-        entDTO.setDeleted(CommonConstant.YES);
-
-        AdminPermUpdateVO retVo = new AdminPermUpdateVO();
-        adminPermData.updateById(entDTO);
-
-        return retVo;
+        return null;
     }
 
     @Override
     public AdminPermQueryVO query(AdminPermQueryRequest reqDTO) {
-        AdminPermissionDTO entDTO = adminPermData.getById(reqDTO.getId());
-
-        return BeanMapperUtil.map(entDTO, AdminPermQueryVO.class);
+        return null;
     }
 
     @Override
