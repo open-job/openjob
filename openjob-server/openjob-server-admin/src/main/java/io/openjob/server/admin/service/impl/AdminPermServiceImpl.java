@@ -2,20 +2,11 @@ package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.CommonUtil;
-import io.openjob.server.admin.request.perm.AdminPermAddRequest;
-import io.openjob.server.admin.request.perm.AdminPermDeleteRequest;
-import io.openjob.server.admin.request.perm.AdminPermListRequest;
-import io.openjob.server.admin.request.perm.AdminPermQueryRequest;
-import io.openjob.server.admin.request.perm.AdminPermUpdateRequest;
 import io.openjob.server.admin.request.perm.AdminPermissionMenusRequest;
 import io.openjob.server.admin.service.AdminPermService;
 import io.openjob.server.admin.vo.part.MenuItemVO;
 import io.openjob.server.admin.vo.part.MenuMetaVO;
-import io.openjob.server.admin.vo.perm.AdminPermAddVO;
-import io.openjob.server.admin.vo.perm.AdminPermQueryVO;
-import io.openjob.server.admin.vo.perm.AdminPermUpdateVO;
 import io.openjob.server.admin.vo.perm.AdminPermissionMenusVO;
-import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
@@ -53,31 +44,6 @@ public class AdminPermServiceImpl implements AdminPermService {
         this.adminPermissionDAO = adminPermissionDAO;
         this.adminRoleDAO = adminRoleDAO;
         this.adminUserDAO = adminUserDAO;
-    }
-
-    @Override
-    public AdminPermAddVO add(AdminPermAddRequest reqDTO) {
-        return null;
-    }
-
-    @Override
-    public AdminPermUpdateVO update(AdminPermUpdateRequest reqDTO) {
-        return null;
-    }
-
-    @Override
-    public AdminPermUpdateVO delete(AdminPermDeleteRequest reqDTO) {
-        return null;
-    }
-
-    @Override
-    public AdminPermQueryVO query(AdminPermQueryRequest reqDTO) {
-        return null;
-    }
-
-    @Override
-    public PageDTO<AdminPermQueryVO> getPageList(AdminPermListRequest reqDTO) {
-        return null;
     }
 
     @Override
