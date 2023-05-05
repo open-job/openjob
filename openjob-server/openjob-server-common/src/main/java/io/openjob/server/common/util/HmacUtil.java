@@ -53,25 +53,19 @@ public class HmacUtil {
     }
 
     /**
-     * 实现Hmac系列的加密算法HmacSHA1、HmacMD5等
-     * - from <a href="https://skaygo.blog.csdn.net/article/details/121705023">csdn blog</a>
-     *
-     * @param input     需要加密的输入参数
-     * @param key       密钥
-     * @param algorithm 选择加密算法
-     * @return 加密后的值
+     * @param input     input
+     * @param key       key
+     * @param algorithm algorithm
+     * @return encrypt value
      **/
     public static String encrypt(String input, String key, String algorithm) {
         String cipher;
 
         try {
             byte[] data = key.getBytes(StandardCharsets.UTF_8);
-            // 根据给定的字节数组构造一个密钥，第二个参数指定一个密钥的算法名称，生成HmacSHA1专属密钥
             SecretKey secretKey = new SecretKeySpec(data, algorithm);
 
-            // 生成一个指定Mac算法的Mac对象
             Mac mac = Mac.getInstance(algorithm);
-            // 用给定密钥初始化Mac对象
             mac.init(secretKey);
 
             byte[] text = input.getBytes(StandardCharsets.UTF_8);
@@ -95,10 +89,10 @@ public class HmacUtil {
     }
 
     /**
-     * byte数组转16进制字符串
+     * bytes to hex string
      *
-     * @param bytes byte数组
-     * @return hex字符串
+     * @param bytes byte array
+     * @return hex string
      */
     public static String bytesToHexStr(byte[] bytes) {
         StringBuilder hexStr = new StringBuilder();

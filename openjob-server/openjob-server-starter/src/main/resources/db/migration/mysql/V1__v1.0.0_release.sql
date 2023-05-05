@@ -78,8 +78,7 @@ CREATE TABLE `admin_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin roles with perms';
 
 INSERT INTO `admin_role` (`id`, `name`, `desc`, `admin`, `menu_ids`, `perm_ids`, `namespace_ids`, `app_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES  (1, 'Admin', 'Administrator role', 1, '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 0, 1670255999, 1670255999),
-    (2, 'Developer', 'Developer role', 2, '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 0, 1670255999, 1670255999);
+VALUES  (1, 'Admin', 'Administrator role', 1, '[]', '[]', '[]', '[]', 2, 0, 1670255999, 1670255999);
 
 # Dump of table admin_user
 # ------------------------------------------------------------
@@ -105,8 +104,7 @@ CREATE TABLE `admin_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
 INSERT INTO `admin_user` (`id`, `username`, `nickname`, `passwd`, `session_key`, `session_expire_at`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
-VALUES  (1, 'admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', 0, '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
-        (2, 'openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', 0, '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
+VALUES  (1, 'openjob', 'Administrator', '144f039395e24903a08926b978340a1554660c4da724d0700e3dceac9573675f', '79f74383e2c92ae01e172ced4c9267d5', 0, '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999);
 
 # Dump of table app
 # ------------------------------------------------------------
