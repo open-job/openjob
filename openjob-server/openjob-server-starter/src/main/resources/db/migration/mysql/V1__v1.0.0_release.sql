@@ -33,8 +33,8 @@ CREATE TABLE `admin_permission` (
                                     KEY `idx_path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin user permissions';
 
-insert into admin_permission (id, pid, type, name, path, meta, hidden, sort, deleted, delete_time, update_time, create_time)
-values  (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "iconfont icon-shouye", "roles": ["admin"], "title": "message.router.dashboard", "isLink": "", "isAffix": false, "isIframe": false, "component": "/home/index.vue", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+INSERT INTO `admin_permission` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES  (1, 0, 1, 'dashboard', '/dashboard', '{"icon": "iconfont icon-shouye", "roles": ["admin"], "title": "message.router.dashboard", "isLink": "", "isAffix": false, "isIframe": false, "component": "/home/index.vue", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
         (20, 0, 1, 'namespace', '/admin/namespace/list', '{"icon": "ele-Edit", "roles": ["admin"], "title": "message.router.namespace", "isLink": "", "isAffix": false, "isIframe": false, "component": "/namespace/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
         (40, 0, 1, 'application', '/admin/app/list', '{"icon": "ele-Operation", "roles": ["admin"], "title": "message.router.application", "isLink": "", "isAffix": false, "isIframe": false, "component": "/app/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
         (60, 0, 1, 'cronJob', '/a', '{"icon": "ele-AlarmClock", "roles": ["admin"], "title": "message.router.cronJob", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
@@ -78,12 +78,8 @@ CREATE TABLE `admin_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin roles with perms';
 
 INSERT INTO `admin_role` (`id`, `name`, `desc`, `admin`, `menu_ids`, `perm_ids`, `namespace_ids`, `app_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
-insert into admin_role (id, name, desc, admin, menu_ids, perm_ids, namespace_ids, app_ids, deleted, delete_time, update_time, create_time)
-values  (1, 'Admin', 'Administrator role', 1, '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 0, 1670255999, 1670255999),
+VALUES  (1, 'Admin', 'Administrator role', 1, '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 0, 1670255999, 1670255999),
     (2, 'Developer', 'Developer role', 2, '[1, 5]', '[11, 12, 13, 14, 15]', '[]', '[]', 2, 0, 1670255999, 1670255999);
-
-/*!40000 ALTER TABLE `admin_role` ENABLE KEYS */;
-
 
 # Dump of table admin_user
 # ------------------------------------------------------------
@@ -108,8 +104,8 @@ CREATE TABLE `admin_user` (
                               KEY `idx_name` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Job admin users';
 
-insert into admin_user (id, username, nickname, passwd, session_key, session_expire_at, token, role_ids, deleted, delete_time, update_time, create_time)
-values  (1, 'admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', 0, '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
+INSERT INTO `admin_user` (`id`, `username`, `nickname`, `passwd`, `session_key`, `session_expire_at`, `token`, `role_ids`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES  (1, 'admin', 'Administrator', 'c881f5068a2d066023dfd404d9a75e4f1708a9df6dc9c451900fc72d986f7ba9', '79f74383e2c92ae01e172ced4c9267d5', 0, '79f74383e2c92ae01e172ced4c9267d5', '[1]', 2, 0, 1670255999, 1670255999),
         (2, 'openjob', 'OpenJob User', 'c0d4247cd38f62f975ba32c9f1e58926f6a99c223f642524c53917810c95d39b', '2cebdf15d414b6713672475a21f995a0', 0, '2cebdf15d414b6713672475a21f995a0', '[2]', 2, 0, 1670255999, 1670255999);
 
 # Dump of table app
@@ -790,13 +786,3 @@ CREATE TABLE `worker` (
                           KEY `udx_address` (`address`),
                           KEY `idx_namespace_id_app_id` (`namespace_id`,`app_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
