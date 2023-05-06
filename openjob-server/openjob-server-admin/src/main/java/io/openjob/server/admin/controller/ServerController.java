@@ -9,6 +9,7 @@ import io.openjob.server.admin.vo.server.ServerListVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ public class ServerController {
 
     private final ServerService serverService;
 
+    @Autowired
     public ServerController(ServerService serverService) {
         this.serverService = serverService;
     }

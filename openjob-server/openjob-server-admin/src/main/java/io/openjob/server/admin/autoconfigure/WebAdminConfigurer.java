@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author inhere <inhere@okzl.com>
  */
 @Configuration
-public class AdminInterceptorConfig implements WebMvcConfigurer {
+public class WebAdminConfigurer implements WebMvcConfigurer {
 
     private final AccessInterceptor accessInterceptor;
 
-    @Autowired
-    public AdminInterceptorConfig(AccessInterceptor accessInterceptor) {
+    @Autowired()
+    public WebAdminConfigurer(AccessInterceptor accessInterceptor) {
         this.accessInterceptor = accessInterceptor;
     }
 

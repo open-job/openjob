@@ -14,9 +14,4 @@ public class AdminUserProperties {
      * passwd salt
      */
     private String passwdSalt;
-
-    private Integer cacheInitSize;
-
-    private Long cacheMaxSize;
-
 }

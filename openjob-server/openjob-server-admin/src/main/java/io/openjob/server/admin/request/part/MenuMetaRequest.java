@@ -7,7 +7,7 @@ import lombok.Data;
  * @author inhere
  */
 @Data
-public class MenuMeta {
+public class MenuMetaRequest {
     @ApiModelProperty(value = "icon name")
     private String icon;
 
