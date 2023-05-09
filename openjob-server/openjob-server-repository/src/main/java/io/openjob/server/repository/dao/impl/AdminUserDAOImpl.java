@@ -4,7 +4,6 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
-import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

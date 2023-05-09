@@ -3,7 +3,6 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.server.repository.dao.AdminRoleDAO;
 import io.openjob.server.repository.entity.AdminRole;
 import io.openjob.server.repository.repository.AdminRoleRepository;
-import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
