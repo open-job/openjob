@@ -16,4 +16,3 @@ public interface AdminUserService {
      */
     AdminUser getBySessionKey(String sessionKey);
 }
-

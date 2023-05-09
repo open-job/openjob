@@ -17,4 +17,3 @@ public interface AdminPermService {
      */
     AdminPermissionMenusVO getMenus(AdminPermissionMenusRequest request);
 }
-

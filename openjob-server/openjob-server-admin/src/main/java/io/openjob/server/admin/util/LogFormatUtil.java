@@ -17,6 +17,12 @@ public class LogFormatUtil {
 
     public final static String LOG_FORMAT = "%-23s %-7s %-40s : %s";
 
+    /**
+     * Format show log message
+     *
+     * @param processorLog processorLog
+     * @return String
+     */
     public static String formatLog(ProcessorLog processorLog) {
         Map<String, String> fieldMap = processorLog.getFields().stream()
                 .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
@@ -37,7 +43,7 @@ public class LogFormatUtil {
      * @return String
      */
     public static String formatLocation(String location) {
-        if (StringUtils.isEmpty(location) || "-".equals(location)){
+        if (StringUtils.isEmpty(location) || "-".equals(location)) {
             return "-";
         }
 
