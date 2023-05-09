@@ -194,7 +194,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
         });
 
         // Update sql.
-        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, `status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),"
+                        + "`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, "
+                        + "`status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
                 addressWhenThen,
                 completeWhenThen,
                 DateUtil.timestamp(),

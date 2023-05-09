@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 public class StandaloneAnnotationProcessor {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
+    /**
+     * Annotation processor
+     *
+     * @param context context
+     * @return ProcessResult
+     */
     @Openjob("annotationProcessor")
     public ProcessResult annotationProcessor(JobContext context) {
         String logMessage = "Standalone processor execute success! jobParamsType={} jobParams={} jobExtendParamsType={} jobExtendParams={}";

@@ -18,4 +18,9 @@ public class AdminConstant {
      * Request uid key.
      */
     public static final String REQUEST_UID_KEY = "uid";
+
+    /**
+     * Max time expression
+     */
+    public static final Integer MAX_TIME_EXPRESSION = 7;
 }

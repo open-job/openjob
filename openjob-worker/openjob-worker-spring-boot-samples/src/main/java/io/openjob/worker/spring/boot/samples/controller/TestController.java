@@ -20,6 +20,11 @@ public class TestController {
         this.delayTemplate = delayTemplate;
     }
 
+    /**
+     * Delay test
+     *
+     * @return String
+     */
     @GetMapping("/test/index")
     public String index() {
         DelayMessage delayMessage = new DelayMessage();

@@ -44,6 +44,9 @@ public class AdminController {
         return Result.success(this.adminLoginService.login(request));
     }
 
+    /**
+     * Login user info
+     */
     @ApiOperation("Login user")
     @GetMapping("/user-info")
     public Result<LoginUserInfoVO> loginUserInfo(@RequestBody LoginUserInfoRequest request, @RequestHeader HttpHeaders headers) {
@@ -52,6 +55,9 @@ public class AdminController {
         return Result.success(this.adminLoginService.loginUserInfo(request, sessKey));
     }
 
+    /**
+     * Login out
+     */
     @ApiOperation("User logout")
     @PostMapping("/logout")
     public Result<AdminUserLogoutVO> logout(@RequestBody(required = false) AdminUserLogoutRequest request, @RequestHeader HttpHeaders headers) {

@@ -23,6 +23,7 @@ public interface JavaProcessor extends JobProcessor {
      *
      * @param context job context.
      * @return ProcessResult
+     * @throws Exception exception
      */
     ProcessResult process(JobContext context) throws Exception;
 

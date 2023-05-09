@@ -31,7 +31,7 @@ public class DelayDeleteListScheduler extends AbstractDelayScheduler {
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentDeleteListSlots();
         // Not slots on current node.
-        if (CollectionUtils.isEmpty(slots)){
+        if (CollectionUtils.isEmpty(slots)) {
             return;
         }
 

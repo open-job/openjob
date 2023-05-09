@@ -64,7 +64,8 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
                 logger.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
             } else {
-                logger.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!", this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
+                logger.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!",
+                        this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
             }
         } catch (InterruptedException ex) {
             // Stop processor.

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin <swoft@qq.com>
@@ -35,7 +33,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentStatusListSlots();
         // Not slots on current node.
-        if (CollectionUtils.isEmpty(slots)){
+        if (CollectionUtils.isEmpty(slots)) {
             return;
         }
 
@@ -118,7 +116,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                 return;
             }
 
-            Map<String, DelayInstance> listMap = new HashMap<>();
+            Map<String, DelayInstance> listMap = new HashMap<>(32);
             popObjects.forEach(o -> {
                 DelayInstanceStatusRequestDTO delayStatus = (DelayInstanceStatusRequestDTO) o;
                 DelayInstance mapInstance = listMap.get(delayStatus.getTaskId());

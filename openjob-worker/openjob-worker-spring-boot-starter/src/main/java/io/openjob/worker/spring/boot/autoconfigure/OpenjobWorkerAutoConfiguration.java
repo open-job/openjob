@@ -35,6 +35,9 @@ public class OpenjobWorkerAutoConfiguration {
         this.properties = properties;
     }
 
+    /**
+     * Init
+     */
     @PostConstruct
     public void init() {
         // Server

@@ -29,6 +29,12 @@ public class JobInstanceScheduler {
         this.jobInstanceDAO = jobInstanceDAO;
     }
 
+    /**
+     * Stop
+     *
+     * @param stopRequest stopRequest
+     * @return JobInstanceStopResponseDTO
+     */
     public JobInstanceStopResponseDTO stop(JobInstanceStopRequestDTO stopRequest) {
         JobInstanceStopResponseDTO jobInstanceStopResponseDTO = new JobInstanceStopResponseDTO();
         JobInstance jobInstance = this.jobInstanceDAO.getById(stopRequest.getJobInstanceId());

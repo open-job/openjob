@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class LogFormatUtil {
+    /**
+     * Default location
+     */
+    private static final String DEFAULT_LOCATION = "-";
 
-    public final static String LOG_FORMAT = "%-23s %-7s %-40s : %s";
+    public static final String LOG_FORMAT = "%-23s %-7s %-40s : %s";
 
     /**
      * Format show log message
@@ -43,8 +47,8 @@ public class LogFormatUtil {
      * @return String
      */
     public static String formatLocation(String location) {
-        if (StringUtils.isEmpty(location) || "-".equals(location)) {
-            return "-";
+        if (StringUtils.isEmpty(location) || DEFAULT_LOCATION.equals(location)) {
+            return DEFAULT_LOCATION;
         }
 
         String substring = location.substring(0, location.indexOf("("));

@@ -86,7 +86,6 @@ public class AccessInterceptor implements HandlerInterceptor {
         if (!isNoLoginRoute(route)) {
             String sessKey = request.getHeader(AdminConstant.HEADER_SESSION_KEY);
             if (StringUtils.isEmpty(sessKey)) {
-//                this.responseJson(response, AdminHttpStatusEnum.UNAUTHORIZED);
                 AdminHttpStatusEnum.UNAUTHORIZED.throwException();
                 return false;
             }
@@ -116,23 +115,5 @@ public class AccessInterceptor implements HandlerInterceptor {
         }
 
         return false;
-    }
-
-    /**
-     * Response json
-     *
-     * @param response   response
-     * @param statusEnum statusEnum
-     * @throws IOException IOException
-     */
-    private void responseJson(HttpServletResponse response, AdminHttpStatusEnum statusEnum) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-        Result<Object> result = new Result<>(new Object(), statusEnum.getValue(), statusEnum.getMessage());
-
-        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(statusEnum.getValue());
-        response.getWriter().print(mapper.writeValueAsString(result));
     }
 }

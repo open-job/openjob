@@ -3,6 +3,7 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ExecuteJobRequest;
@@ -105,7 +106,7 @@ public class JobServiceImpl implements JobService {
 
         try {
             Date date = null;
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < AdminConstant.MAX_TIME_EXPRESSION; i++) {
                 date = Optional.ofNullable(date).orElseGet(Date::new);
                 CronExpression cronExpression = new CronExpression(request.getTimeExpression());
                 long nextTime = cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
@@ -143,7 +144,7 @@ public class JobServiceImpl implements JobService {
                 listJobVO.setAppName(app.getName());
             }
 
-            if (!TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())){
+            if (!TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
                 listJobVO.setTimeExpressionValue(Long.valueOf(j.getTimeExpression()));
             }
             return listJobVO;

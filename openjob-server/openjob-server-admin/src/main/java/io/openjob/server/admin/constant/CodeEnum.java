@@ -12,6 +12,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum CodeEnum implements CodeExceptionAssert {
 
+    /**
+     * App name not exist
+     */
     NAME_EXIST(100, "App name must be globally unique!");
 
     /**

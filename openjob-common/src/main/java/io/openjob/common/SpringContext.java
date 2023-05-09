@@ -26,13 +26,14 @@ public class SpringContext implements ApplicationContextAware {
         return applicationContext.getBean(name, type);
     }
 
+    public static Object getBean(String name) {
+        return applicationContext.getBean(name);
+    }
+
     public static Boolean containsBean(String name) {
         return applicationContext.containsBean(name);
     }
 
-    public static Object getBean(String name) {
-        return applicationContext.getBean(name);
-    }
 
     public static String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
         return applicationContext.getBeanNamesForType(type, includeNonSingletons, allowEagerInit);

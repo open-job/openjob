@@ -47,6 +47,12 @@ public class DelayData {
         }, Duration.ofDays(1));
     }
 
+    /**
+     * Get delay
+     *
+     * @param id id
+     * @return Delay
+     */
     public Delay getDelayById(Long id) {
         String delayKey = CacheUtil.getDelayDetailIdKey(id);
         return RedisUtil.orElseGet(delayKey, () -> {

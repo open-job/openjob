@@ -43,6 +43,7 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * Find by task id.
      *
      * @param taskId task id.
+     * @return DelayInstance
      */
     DelayInstance findByTaskId(String taskId);
 }

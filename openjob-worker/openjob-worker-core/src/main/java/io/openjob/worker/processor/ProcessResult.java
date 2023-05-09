@@ -25,11 +25,11 @@ public class ProcessResult {
         this.result = result;
     }
 
-    public static ProcessResult success(){
+    public static ProcessResult success() {
         return new ProcessResult(true);
     }
 
-    public static ProcessResult fail(){
+    public static ProcessResult fail() {
         return new ProcessResult(false);
     }
 }

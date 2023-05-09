@@ -104,7 +104,7 @@ public class TaskMasterActor extends BaseActor {
      */
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
         TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
-        if (Objects.nonNull(taskMaster)){
+        if (Objects.nonNull(taskMaster)) {
             taskMaster.updateStatus(batchTaskStatusReq);
         }
 

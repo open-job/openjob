@@ -119,8 +119,8 @@ public class DelayInstanceScheduler {
             counterDTO.setTopic(t);
 
             // Ready
-            long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
-            counterDTO.setReady(Count);
+            long count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
+            counterDTO.setReady(count);
             counters.add(counterDTO);
         });
         return counters;
@@ -141,8 +141,8 @@ public class DelayInstanceScheduler {
             counterDTO.setTopic(t);
 
             // Ready
-            long Count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
-            counterDTO.setCount(Count);
+            long count = Optional.ofNullable(template.opsForList().size(cacheListKey)).orElse(0L);
+            counterDTO.setCount(count);
             counters.add(counterDTO);
         });
         return counters;
