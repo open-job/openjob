@@ -57,7 +57,7 @@ public class AdminPermissionDAOImpl implements AdminPermissionDAO {
     @Override
     public Page<AdminPermission> getPageList(Integer page, Integer size) {
         // TIP: page start from 0 on JPA.
-        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+        PageRequest pageReq = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createTime"));
 
         return adminPermRepository.findAll(pageReq);
     }

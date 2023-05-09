@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface AdminRoleRepository extends JpaRepository<AdminRole, Long> {
     /**
-     * find by ID In given list
+     * Find by ID In given list
      *
      * @param ids ids
      * @return list
