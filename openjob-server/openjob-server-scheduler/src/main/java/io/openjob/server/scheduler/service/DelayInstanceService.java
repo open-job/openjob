@@ -66,7 +66,7 @@ public class DelayInstanceService {
      * @return ServerDelayAddResponse
      */
     public ServerDelayAddResponse addDelayInstance(WorkerDelayAddRequest addRequest) {
-        ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse(addRequest.getDeliveryId());
+        ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse();
         DelayInstanceAddRequestDTO addRequestDTO = SchedulerMapper.INSTANCE.toDelayInstanceAddRequestDTO(addRequest);
         DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceScheduler.add(addRequestDTO);
         serverDelayAddResponse.setTaskId(addResponseDTO.getTaskId());
