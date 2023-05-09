@@ -105,6 +105,10 @@ public class OpenjobWorkerAutoConfiguration {
                 && Objects.nonNull(this.properties.getDelay().getPullStep())) {
             System.setProperty(WorkerConstant.WORKER_DELAY_PULL_STEP, String.valueOf(this.properties.getDelay().getPullStep()));
         }
+        if (StringUtils.isEmpty(System.getProperty(WorkerConstant.WORKER_DELAY_TIMEOUT))
+                && Objects.nonNull(this.properties.getDelay().getTimeout())) {
+            System.setProperty(WorkerConstant.WORKER_DELAY_TIMEOUT, String.valueOf(this.properties.getDelay().getTimeout()));
+        }
     }
 
     @Bean

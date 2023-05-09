@@ -8,18 +8,17 @@ import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.dto.DelayInstanceDTO;
 import io.openjob.worker.entity.Delay;
 import io.openjob.worker.init.WorkerConfig;
-import io.openjob.worker.util.OpenjobConfigUtil;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +35,8 @@ public class DelayTaskMasterExecutor implements Runnable {
     private final Long pullStep;
 
     public DelayTaskMasterExecutor() {
-        this.pullStep = OpenjobConfigUtil.getDelayPullStep();
-        this.pullSleep = OpenjobConfigUtil.getDelayPullSleep();
+        this.pullStep = OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_STEP, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_STEP);
+        this.pullSleep = OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_PULL_SLEEP, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_SLEEP);
     }
 
     @Override
@@ -57,11 +56,12 @@ public class DelayTaskMasterExecutor implements Runnable {
         List<WorkerDelayItemPullRequest> pullTopicItems = Lists.newArrayList();
         Set<Long> pullTopicIds = new HashSet<>();
 
+        int maxPullSize = OpenjobConfig.getInteger(WorkerConstant.WORKER_DELAY_PULL_SIZE, WorkerConstant.DEFAULT_WORKER_DELAY_PULL_SIZE);
+
         // Find pull topic.
         DelayDAO.INSTANCE.findPullList()
                 .forEach(d -> {
-                    int size = OpenjobConfigUtil.getDelayPullSize();
-                    int pullSize = d.getPullSize() > size ? size : d.getPullSize();
+                    int pullSize = d.getPullSize() > maxPullSize ? maxPullSize : d.getPullSize();
                     pullTopicItems.add(new WorkerDelayItemPullRequest(d.getTopic(), pullSize));
                     pullTopicIds.add(d.getId());
                 });

@@ -122,5 +122,10 @@ public class OpenjobWorkerProperties {
          * Pull step(ms)
          */
         public Long pullStep;
+
+        /**
+         * Timeout(ms)
+         */
+        public Long timeout;
     }
 }

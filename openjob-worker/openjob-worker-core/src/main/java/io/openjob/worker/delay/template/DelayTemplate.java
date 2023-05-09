@@ -3,6 +3,8 @@ package io.openjob.worker.delay.template;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.exception.DelayException;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.Data;
@@ -23,7 +25,18 @@ public class DelayTemplate {
     /**
      * Delay timeout(ms)
      */
-    private Long timeout = 3000L;
+    private Long timeout;
+
+    public DelayTemplate() {
+        this.timeout = OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_TIMEOUT, WorkerConstant.DEFAULT_WORKER_DELAY_TIMEOUT);
+    }
+
+    /**
+     * @param timeout timeout
+     */
+    public DelayTemplate(Long timeout) {
+        this.timeout = timeout;
+    }
 
     /**
      * Send delay message
