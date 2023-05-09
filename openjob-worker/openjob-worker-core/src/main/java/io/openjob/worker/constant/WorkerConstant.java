@@ -40,7 +40,7 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
-    public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 6;
+    public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 30;
     public static final Integer DEFAULT_WORKER_DELAY_MASTER_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_DELAY_PULL_SIZE = 8;
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;

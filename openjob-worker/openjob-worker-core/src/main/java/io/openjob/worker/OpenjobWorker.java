@@ -41,8 +41,12 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        this.init();
+    public void afterPropertiesSet() {
+        try {
+            this.init();
+        } catch (Throwable throwable) {
+            log.error("Openjob worker initialize failed!", throwable);
+        }
     }
 
     /**

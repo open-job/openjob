@@ -1,21 +1,13 @@
-package io.openjob.common.request;
+package io.openjob.worker.delay.template;
 
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @author stelin <swoft@qq.com>
  * @since 1.0.0
  */
 @Data
-public class WorkerDelayAddRequest implements Serializable {
-
-    /**
-     * Deliver id.
-     */
-    private Long deliveryId;
-
+public class DelayMessage {
     /**
      * Delay task unique id.
      * If is null or blank, will to auto generate.
@@ -38,7 +30,7 @@ public class WorkerDelayAddRequest implements Serializable {
     private String extra;
 
     /**
-     * Delay task execute time.
+     * Delay task execute time(s).
      */
     private Long executeTime;
 }

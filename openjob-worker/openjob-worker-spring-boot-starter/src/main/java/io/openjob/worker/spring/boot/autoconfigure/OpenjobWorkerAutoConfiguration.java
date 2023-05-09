@@ -3,9 +3,12 @@ package io.openjob.worker.spring.boot.autoconfigure;
 import io.openjob.common.SpringContext;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.worker.delay.template.DelayTemplate;
 import io.openjob.worker.spring.boot.OpenjobSpringWorker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -114,5 +117,12 @@ public class OpenjobWorkerAutoConfiguration {
     @ConditionalOnProperty(prefix = "spring.openjob", name = "enable", havingValue = "true", matchIfMissing = true)
     public OpenjobSpringWorker openjobSpringWorker() {
         return new OpenjobSpringWorker();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "spring.openjob.delay", name = "enable", havingValue = "true")
+    public DelayTemplate delayTemplate() {
+        return new DelayTemplate();
     }
 }
