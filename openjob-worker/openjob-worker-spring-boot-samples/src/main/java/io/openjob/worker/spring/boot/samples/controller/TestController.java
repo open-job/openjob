@@ -1,8 +1,8 @@
 package io.openjob.worker.spring.boot.samples.controller;
 
 import io.openjob.common.util.DateUtil;
-import io.openjob.worker.delay.template.DelayMessage;
-import io.openjob.worker.delay.template.DelayTemplate;
+import io.openjob.worker.delay.DelayMessage;
+import io.openjob.worker.delay.DelayTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,4 +1,4 @@
-package io.openjob.worker.delay.template;
+package io.openjob.worker.delay;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package io.openjob.worker.delay.template;
+package io.openjob.worker.delay;
 
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
