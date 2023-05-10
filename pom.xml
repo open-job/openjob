@@ -208,8 +208,6 @@
                         <ruleset>rulesets/java/ali-orm.xml</ruleset>
                         <ruleset>rulesets/java/ali-other.xml</ruleset>
                         <ruleset>rulesets/java/ali-set.xml</ruleset>
-                        <!-- custom rules -->
-                        <ruleset>${maven.multiModuleProjectDirectory}/config/pmd/exclude-ruleset.xml</ruleset>
                     </rulesets>
 
                     <excludes>
