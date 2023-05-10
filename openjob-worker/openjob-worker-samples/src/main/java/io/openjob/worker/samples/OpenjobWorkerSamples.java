@@ -6,7 +6,7 @@ import io.openjob.worker.samples.processor.DelayProcessorSample;
 import io.openjob.worker.samples.processor.MapReduceProcessorSample;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @see JavaProcessorSample
  * @see DelayProcessorSample
  * @see MapReduceProcessorSample

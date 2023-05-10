@@ -9,7 +9,7 @@ import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.util.AddressUtil;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class StandaloneTaskMaster extends AbstractTaskMaster {

@@ -5,7 +5,7 @@ import io.openjob.common.constant.CommonConstant;
 import java.util.Objects;
 
 /**
- * @author inhere <in.798@qq.com>
+ * @author inhere in.798@qq.com
  * @since 1.0.0
  */
 public class CommonUtil {

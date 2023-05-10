@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class TaskConsumerTest {

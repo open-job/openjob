@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Sql(scripts = "classpath:db/schema/delay_instance.sql")

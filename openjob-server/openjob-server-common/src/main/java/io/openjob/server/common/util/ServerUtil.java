@@ -7,7 +7,7 @@ import io.openjob.common.constant.AkkaConstant;
 import io.openjob.server.common.constant.ServerActorConstant;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class ServerUtil {

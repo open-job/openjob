@@ -3,7 +3,7 @@ package io.openjob.server.common.exception;
 import java.text.MessageFormat;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public interface CodeExceptionAssert extends BaseExceptionAssert {

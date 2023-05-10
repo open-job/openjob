@@ -8,7 +8,7 @@ import java.util.List;
 import io.openjob.common.constant.InstanceStatusEnum;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Data

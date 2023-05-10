@@ -7,7 +7,7 @@ import scala.PartialFunction;
 import scala.runtime.BoxedUnit;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j

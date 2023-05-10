@@ -16,7 +16,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Configuration

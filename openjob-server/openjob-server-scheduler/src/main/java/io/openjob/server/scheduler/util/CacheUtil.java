@@ -4,7 +4,7 @@ package io.openjob.server.scheduler.util;
 import io.openjob.server.scheduler.constant.CacheConst;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class CacheUtil {

@@ -3,7 +3,7 @@ package io.openjob.worker.util;
 import io.openjob.worker.context.JobContext;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class ThreadLocalUtil {

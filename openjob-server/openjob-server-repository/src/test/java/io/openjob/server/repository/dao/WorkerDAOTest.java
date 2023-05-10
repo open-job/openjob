@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Sql(scripts = "classpath:db/schema/worker.sql")

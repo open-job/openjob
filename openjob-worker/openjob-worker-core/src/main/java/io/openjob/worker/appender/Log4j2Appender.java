@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Plugin(name = "OpenjobLog4j2Appender", category = "Core", elementType = "appender", printObject = true)

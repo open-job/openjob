@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author inhere <in.798@qq.com>
+ * @author inhere in.798@qq.com
  */
 @Data
 public class PageDTO<T> {

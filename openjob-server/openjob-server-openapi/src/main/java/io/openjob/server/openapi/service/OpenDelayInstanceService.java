@@ -4,7 +4,7 @@ import io.openjob.server.openapi.request.DelayInstanceAddRequest;
 import io.openjob.server.openapi.vo.DelayInstanceAddVO;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public interface OpenDelayInstanceService {

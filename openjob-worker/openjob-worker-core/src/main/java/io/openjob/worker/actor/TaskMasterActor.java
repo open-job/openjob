@@ -17,7 +17,7 @@ import io.openjob.worker.request.ProcessorMapTaskRequest;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class TaskMasterActor extends BaseActor {

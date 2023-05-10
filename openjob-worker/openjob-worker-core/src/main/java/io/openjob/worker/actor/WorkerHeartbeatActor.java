@@ -5,7 +5,7 @@ import io.openjob.common.request.ServerWorkerHeartbeatRequest;
 import io.openjob.common.response.Result;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class WorkerHeartbeatActor extends AbstractActor {

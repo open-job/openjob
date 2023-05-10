@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j

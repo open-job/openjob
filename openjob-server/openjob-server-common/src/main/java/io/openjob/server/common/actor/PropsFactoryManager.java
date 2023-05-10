@@ -4,7 +4,7 @@ import akka.actor.AbstractExtensionId;
 import akka.actor.ExtendedActorSystem;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class PropsFactoryManager extends AbstractExtensionId<PropsFactory> {

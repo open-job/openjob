@@ -4,7 +4,7 @@ import io.openjob.common.util.RuntimeUtil;
 import org.springframework.stereotype.Component;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Component

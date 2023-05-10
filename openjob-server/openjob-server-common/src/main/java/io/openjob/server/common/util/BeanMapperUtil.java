@@ -5,7 +5,7 @@ import org.springframework.beans.BeanUtils;
 import java.util.Objects;
 
 /**
- * @author inhere <in.798@qq.com>
+ * @author inhere in.798@qq.com
  */
 public class BeanMapperUtil {
     /**
