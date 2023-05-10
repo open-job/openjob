@@ -14,21 +14,64 @@
     <artifactId>openjob</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
-    <description>openjob project pom.xml file</description>
+
+    <name>Openjob Build ${version}</name>
+    <description>Openjob build with Maven</description>
+
     <modules>
         <module>openjob-common</module>
         <module>openjob-worker</module>
         <module>openjob-server</module>
     </modules>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Openjob</name>
+        <url>https://github.com/open-job</url>
+    </organization>
+
+    <url>https://openjob.io/</url>
+
+    <developers>
+        <developer>
+            <id>Openjob</id>
+            <name>Openjob</name>
+            <url>https://openjob.io/</url>
+            <email>swoft@qq.com</email>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/open-job/openjob/issues</url>
+    </issueManagement>
+
+    <scm>
+        <url>git@github.com:open-job/openjob.git</url>
+        <connection>scm:git@github.com:open-job/openjob.git</connection>
+        <developerConnection>scm:git@github.com:open-job/openjob.git</developerConnection>
+    </scm>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <scala.binary.version>2.13</scala.binary.version>
+        <akka.version>2.6.19</akka.version>
+        <guava.version>31.1-jre</guava.version>
+        <joda.version>2.11.1</joda.version>
         <checkstyle.version>3.1.2</checkstyle.version>
         <pmd.version>3.14.0</pmd.version>
         <p3c.pmd.version>2.1.0</p3c.pmd.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -36,7 +79,7 @@
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-bom_${scala.binary.version}</artifactId>
-                <version>2.6.19</version>
+                <version>${akka.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -57,13 +100,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.11.1</version>
+            <version>${joda.version}</version>
         </dependency>
 
         <dependency>
@@ -199,4 +242,73 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <charset>${project.build.sourceEncoding}</charset>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Staging -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus-staging-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>oss-openjob</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <!-- GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- Distribution management -->
+    <distributionManagement>
+        <repository>
+            <id>oss-openjob</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>oss-openjob</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
