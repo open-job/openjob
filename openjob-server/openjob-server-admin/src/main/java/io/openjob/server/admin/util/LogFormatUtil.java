@@ -7,6 +7,8 @@ import io.openjob.server.log.dto.ProcessorLogField;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -31,13 +33,20 @@ public class LogFormatUtil {
         Map<String, String> fieldMap = processorLog.getFields().stream()
                 .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
         String location = fieldMap.get(LogFieldConstant.LOCATION);
-        return String.format(
+        String message = String.format(
                 LOG_FORMAT,
                 DateUtil.formatTimestamp(Long.parseLong(fieldMap.get(LogFieldConstant.TIME_STAMP))),
                 fieldMap.get(LogFieldConstant.LEVEL),
                 LogFormatUtil.formatLocation(location),
                 fieldMap.get(LogFieldConstant.MESSAGE)
         );
+
+        // Throwable
+        String throwable = fieldMap.get(LogFieldConstant.THROWABLE);
+        if (StringUtils.isEmpty(throwable)) {
+            return message;
+        }
+        return String.format("%s \n %s", message, throwable);
     }
 
     /**
