@@ -8,6 +8,7 @@ import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class ThreadTaskProcessor implements TaskProcessor, Runnable {
     private static final Logger logger = LoggerFactory.getLogger("openjob");
 
@@ -63,8 +65,11 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
                 this.processorHandler.postProcess(this.jobContext);
 
                 logger.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
+                log.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
             } else {
                 logger.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!",
+                        this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
+                log.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!",
                         this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
             }
         } catch (InterruptedException ex) {
@@ -74,9 +79,13 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             // Result
             result.setResult(ex.getMessage());
             logger.info("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
+            log.info("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
         } catch (Throwable ex) {
-            result.setResult(ex.getMessage());
-            logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), ex);
+            Throwable cause = Objects.nonNull(ex.getCause()) ? ex.getCause() : ex;
+
+            result.setResult(cause.getMessage());
+            logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
+            log.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
         } finally {
             this.reportTaskStatus(result, workerAddress);
         }
