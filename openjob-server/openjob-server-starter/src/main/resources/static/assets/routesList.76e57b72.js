@@ -1,0 +1,1 @@
+import{at as e}from"./vue.543fafcc.js";const o=e("routesList",{state:()=>({routesList:[],isColumnsMenuHover:!1,isColumnsNavHover:!1}),actions:{async setRoutesList(s){this.routesList=s},async setColumnsMenuHover(s){this.isColumnsMenuHover=s},async setColumnsNavHover(s){this.isColumnsNavHover=s}}});export{o as u};
