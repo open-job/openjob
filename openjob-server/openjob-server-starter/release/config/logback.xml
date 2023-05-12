@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
-    <springProperty scope="context" name="LOG_PATH" source="openjob.log.path" defaultValue="${openjob.home}/runtime"/>
+    <springProperty scope="context" name="LOG_PATH" source="openjob.log.path" defaultValue="${openjob.home}/logs"/>
 
     <!-- notice.log -->
     <appender name="notice" class="ch.qos.logback.core.rolling.RollingFileAppender">

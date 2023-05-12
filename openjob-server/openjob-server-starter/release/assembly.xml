@@ -6,6 +6,7 @@
     </formats>
 
     <fileSets>
+        <!-- target -->
         <fileSet>
             <directory>${basedir}/target</directory>
             <outputDirectory>target</outputDirectory>
@@ -15,9 +16,30 @@
             </includes>
         </fileSet>
 
+        <!-- bin -->
         <fileSet>
             <directory>${basedir}/release/bin</directory>
             <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+
+        <!-- config -->
+        <fileSet>
+            <directory>${basedir}/release/config</directory>
+            <outputDirectory>config</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+
+        <!-- logs -->
+        <fileSet>
+            <directory>${basedir}/release/logs</directory>
+            <outputDirectory>logs</outputDirectory>
             <fileMode>0755</fileMode>
             <includes>
                 <include>*</include>
