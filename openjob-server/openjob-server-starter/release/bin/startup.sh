@@ -48,7 +48,15 @@ export JAVA="$JAVA_HOME/bin/java"
 export BASE_DIR=`cd $(dirname $0)/..; pwd`
 export CUSTOM_ADDITIONAL_LOCATION=file:${BASE_DIR}/conf/
 
-JAVA_OPT="${JAVA_OPT} -server -Xms2g -Xmx2g -Xmn1g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
+JVM_XMX=$JVM_XMX
+JVM_XMS=$JVM_XMS
+JVM_XMN=$JVM_XMN
+JVM_XSS=$JVM_XSS
+JVM_MetaspaceSize=$JVM_MetaspaceSize
+JVM_MaxMetaspaceSize=$JVM_MaxMetaspaceSize
+JVM_MaxDirectMemorySize=$JVM_MaxDirectMemorySize
+
+JAVA_OPT="${JAVA_OPT} -server -Xmx${JVM_XMX:="2048m"} -Xms${JVM_XMS:="2048m"} -Xmn${JVM_XMN:="1024m"} -Xss${JVM_XSS:="512k"} -XX:MetaspaceSize=${JVM_MetaspaceSize:="128m"} -XX:MaxMetaspaceSize=${JVM_MaxMetaspaceSize:="256m"} -XX:MaxDirectMemorySize=${JVM_MaxDirectMemorySize:=1024m} -XX:-OmitStackTraceInFastThrow -XX:-UseAdaptiveSizePolicy"
 JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BASE_DIR}/logs/java_heapdump.hprof"
 JAVA_OPT="${JAVA_OPT} -XX:-UseLargePages"
 
