@@ -46,7 +46,7 @@ export SERVER="openjob-server"
 export JAVA_HOME
 export JAVA="$JAVA_HOME/bin/java"
 export BASE_DIR=`cd $(dirname $0)/..; pwd`
-export CUSTOM_ADDITIONAL_LOCATION=file:${BASE_DIR}/conf/
+export CUSTOM_ADDITIONAL_LOCATION=${OPENJOB_CONFIG_PATH:="file:${BASE_DIR}/conf/"}
 
 JVM_XMX=$JVM_XMX
 JVM_XMS=$JVM_XMS
