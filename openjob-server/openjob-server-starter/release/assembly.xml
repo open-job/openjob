@@ -1,8 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <assembly>
-    <id>release</id>
+    <id>${project.version}</id>
+    <!-- format -->
     <formats>
         <format>tar.gz</format>
+        <format>zip</format>
     </formats>
 
     <fileSets>
