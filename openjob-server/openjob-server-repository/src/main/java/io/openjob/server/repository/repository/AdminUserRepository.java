@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
     /**
-     * find user by username
+     * Find user by username
      *
      * @param username username
      * @return AdminUser
@@ -17,7 +17,7 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
     AdminUser findByUsername(String username);
 
     /**
-     * find user by token
+     * Find user by token
      *
      * @param token   token
      * @param deleted deleted
@@ -26,7 +26,7 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
     AdminUser findByTokenAndDeleted(String token, Integer deleted);
 
     /**
-     * find user by sessionKey
+     * Find user by sessionKey
      *
      * @param sessionKey session
      * @param deleted    deleted

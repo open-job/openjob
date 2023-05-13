@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public abstract class AbstractJdbcHikariClient implements Client {

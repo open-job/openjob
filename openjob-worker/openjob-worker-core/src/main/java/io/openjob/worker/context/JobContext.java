@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Data
@@ -22,7 +22,10 @@ public class JobContext {
     private Long jobId;
     private Long jobInstanceId;
     private Long taskId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private String taskName;
     private String executeType;
     private String processorType;

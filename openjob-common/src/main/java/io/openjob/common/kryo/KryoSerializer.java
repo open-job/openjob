@@ -4,7 +4,7 @@ import akka.serialization.JSerializer;
 import io.openjob.common.util.KryoUtil;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @see akka https://doc.akka.io/docs/akka/current/serialization.html
  * @since 1.0.0
  */

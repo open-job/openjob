@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -31,7 +31,7 @@ public class DelayDeleteListScheduler extends AbstractDelayScheduler {
     public void start() {
         List<Long> slots = DelaySlotUtil.getCurrentDeleteListSlots();
         // Not slots on current node.
-        if (CollectionUtils.isEmpty(slots)){
+        if (CollectionUtils.isEmpty(slots)) {
             return;
         }
 

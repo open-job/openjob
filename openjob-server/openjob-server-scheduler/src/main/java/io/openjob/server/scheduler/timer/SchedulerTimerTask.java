@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -25,7 +25,10 @@ import java.util.Objects;
 @Setter
 public class SchedulerTimerTask extends AbstractTimerTask {
     protected Long jobId;
+    protected String jobParamType;
     protected String jobParams;
+    protected String jobExtendParamsType;
+    protected String jobExtendParams;
     protected Long appid;
     protected Long workflowId;
     protected String processorType;

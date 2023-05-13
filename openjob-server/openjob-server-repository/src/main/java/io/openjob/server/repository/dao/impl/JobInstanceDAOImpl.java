@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Component

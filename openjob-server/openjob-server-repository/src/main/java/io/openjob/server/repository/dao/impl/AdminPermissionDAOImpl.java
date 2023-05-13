@@ -5,7 +5,6 @@ import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.entity.AdminPermission;
 import io.openjob.server.repository.repository.AdminPermissionRepository;
-import io.openjob.server.repository.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -57,7 +56,7 @@ public class AdminPermissionDAOImpl implements AdminPermissionDAO {
     @Override
     public Page<AdminPermission> getPageList(Integer page, Integer size) {
         // TIP: page start from 0 on JPA.
-        PageRequest pageReq = PageRequest.of(page - 1, size, EntityUtil.DEFAULT_SORT);
+        PageRequest pageReq = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createTime"));
 
         return adminPermRepository.findAll(pageReq);
     }

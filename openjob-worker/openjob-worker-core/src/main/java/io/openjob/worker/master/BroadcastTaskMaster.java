@@ -16,7 +16,7 @@ import io.openjob.worker.util.WorkerUtil;
 import java.util.Collections;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {

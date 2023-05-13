@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Constructor;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @see StandaloneTaskMaster
  * @see MapReduceTaskMaster
  * @see BroadcastTaskMaster

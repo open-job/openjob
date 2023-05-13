@@ -4,7 +4,7 @@ import io.openjob.server.common.constant.BaseEnum;
 import lombok.Getter;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Getter

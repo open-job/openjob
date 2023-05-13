@@ -14,9 +14,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>openjob-worker-core</module>
-        <module>openjob-worker-agent</module>
         <module>openjob-worker-spring-boot-starter</module>
-        <module>openjob-worker-samples</module>
     </modules>
 
     <properties>

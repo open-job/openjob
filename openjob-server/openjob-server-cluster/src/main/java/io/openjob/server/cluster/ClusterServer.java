@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import scala.concurrent.Future;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Component

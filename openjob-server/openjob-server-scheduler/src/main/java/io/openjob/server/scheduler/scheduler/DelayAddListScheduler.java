@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -157,8 +157,8 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
                 delayInstance.setStatus(TaskStatusEnum.INIT.getStatus());
-                delayInstance.setDelayParams(d.getParams());
-                delayInstance.setDelayExtra(d.getExtra());
+                delayInstance.setDelayParams(Optional.ofNullable(d.getParams()).orElse(""));
+                delayInstance.setDelayExtra(Optional.ofNullable(d.getExtra()).orElse(""));
                 delayInstance.setDeleted(CommonConstant.NO);
                 delayInstance.setDeleteTime(0L);
                 delayInstance.setExecuteTime(d.getExecuteTime());

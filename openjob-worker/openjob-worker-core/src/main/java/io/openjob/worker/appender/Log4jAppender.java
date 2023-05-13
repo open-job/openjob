@@ -14,7 +14,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class Log4jAppender extends AppenderSkeleton {

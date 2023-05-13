@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -41,8 +41,12 @@ public class OpenjobWorker implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        this.init();
+    public void afterPropertiesSet() {
+        try {
+            this.init();
+        } catch (Throwable throwable) {
+            log.error("Openjob worker initialize failed!", throwable);
+        }
     }
 
     /**

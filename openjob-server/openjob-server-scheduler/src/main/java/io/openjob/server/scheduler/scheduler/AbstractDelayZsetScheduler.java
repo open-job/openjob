@@ -27,12 +27,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
 public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler {
-    public static abstract class AbstractZsetRunnable extends AbstractRunnable {
+    public abstract static class AbstractZsetRunnable extends AbstractRunnable {
         protected final LogDAO logDAO;
         protected final DelayData delayData;
         protected Boolean isFailZset = false;
@@ -48,6 +48,12 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             this.logDAO = SpringContext.getBean(LogDAO.class);
         }
 
+        /**
+         * Get cache key
+         *
+         * @param topic topic
+         * @return String
+         */
         protected abstract String getCacheKey(String topic);
 
         /**
@@ -115,9 +121,9 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             Map<String, List<Delay>> delayMap = this.delayData.getDelayList(new ArrayList<>(detailListMap.keySet())).stream()
                     .collect(Collectors.groupingBy(Delay::getTopic));
 
-            Map<String, List<DelayInstanceAddRequestDTO>> push2FailZsetMap = new HashMap<>();
-            Map<String, List<DelayInstanceAddRequestDTO>> push2TopicMap = new HashMap<>();
-            Map<String, List<DelayInstanceAddRequestDTO>> ignoreMap = new HashMap<>();
+            Map<String, List<DelayInstanceAddRequestDTO>> push2FailZsetMap = new HashMap<>(32);
+            Map<String, List<DelayInstanceAddRequestDTO>> push2TopicMap = new HashMap<>(32);
+            Map<String, List<DelayInstanceAddRequestDTO>> ignoreMap = new HashMap<>(32);
 
             this.getFailAndTopicAndIgnoreMap(timesMap, detailListMap, delayMap, push2FailZsetMap, push2TopicMap, ignoreMap);
 
@@ -243,7 +249,7 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
             List<String> retryKeys = timingMembers.stream().map(CacheUtil::getDelayRetryTimesKey)
                     .collect(Collectors.toList());
             List<Object> times = RedisUtil.getTemplate().opsForValue().multiGet(retryKeys);
-            Map<String, Integer> timesMap = new HashMap<>();
+            Map<String, Integer> timesMap = new HashMap<>(32);
             for (int i = 0; i < retryKeys.size(); i++) {
                 if (Objects.isNull(times)) {
                     continue;

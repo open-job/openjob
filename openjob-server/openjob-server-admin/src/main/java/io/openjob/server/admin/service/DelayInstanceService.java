@@ -12,7 +12,7 @@ import io.openjob.server.admin.vo.delay.StopDelayInstanceVO;
 import io.openjob.server.common.vo.PageVO;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public interface DelayInstanceService {

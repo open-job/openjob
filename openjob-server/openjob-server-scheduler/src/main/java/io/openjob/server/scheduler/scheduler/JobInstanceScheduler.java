@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -29,6 +29,12 @@ public class JobInstanceScheduler {
         this.jobInstanceDAO = jobInstanceDAO;
     }
 
+    /**
+     * Stop
+     *
+     * @param stopRequest stopRequest
+     * @return JobInstanceStopResponseDTO
+     */
     public JobInstanceStopResponseDTO stop(JobInstanceStopRequestDTO stopRequest) {
         JobInstanceStopResponseDTO jobInstanceStopResponseDTO = new JobInstanceStopResponseDTO();
         JobInstance jobInstance = this.jobInstanceDAO.getById(stopRequest.getJobInstanceId());

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @SpringBootApplication()
@@ -16,6 +16,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class ServerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class);
+        SpringApplication.run(ServerApplication.class, args);
     }
 }

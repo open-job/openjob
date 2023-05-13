@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class CronExpressionTest {

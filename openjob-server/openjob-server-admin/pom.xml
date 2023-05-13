@@ -25,11 +25,5 @@
             <groupId>io.openjob</groupId>
             <artifactId>openjob-server-log</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>2.9.2</version>
-        </dependency>
     </dependencies>
 </project>

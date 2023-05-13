@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class TaskContainerActor extends BaseActor {
@@ -105,7 +105,10 @@ public class TaskContainerActor extends BaseActor {
         jobContext.setJobId(startReq.getJobId());
         jobContext.setJobInstanceId(startReq.getJobInstanceId());
         jobContext.setTaskId(startReq.getTaskId());
+        jobContext.setJobParamType(startReq.getJobParamType());
         jobContext.setJobParams(startReq.getJobParams());
+        jobContext.setJobExtendParamsType(startReq.getJobExtendParamsType());
+        jobContext.setJobExtendParams(startReq.getJobExtendParams());
         jobContext.setProcessorType(startReq.getProcessorType());
         jobContext.setProcessorInfo(startReq.getProcessorInfo());
         jobContext.setFailRetryInterval(startReq.getFailRetryInterval());

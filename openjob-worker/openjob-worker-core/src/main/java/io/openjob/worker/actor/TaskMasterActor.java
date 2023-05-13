@@ -17,7 +17,7 @@ import io.openjob.worker.request.ProcessorMapTaskRequest;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class TaskMasterActor extends BaseActor {
@@ -48,7 +48,10 @@ public class TaskMasterActor extends BaseActor {
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         jobInstanceDTO.setJobId(submitReq.getJobId());
         jobInstanceDTO.setJobInstanceId(submitReq.getJobInstanceId());
+        jobInstanceDTO.setJobParamType(submitReq.getJobParamType());
         jobInstanceDTO.setJobParams(submitReq.getJobParams());
+        jobInstanceDTO.setJobExtendParamsType(submitReq.getJobExtendParamsType());
+        jobInstanceDTO.setJobExtendParams(submitReq.getJobExtendParams());
         jobInstanceDTO.setWorkflowId(submitReq.getWorkflowId());
         jobInstanceDTO.setExecuteType(submitReq.getExecuteType());
         jobInstanceDTO.setProcessorType(submitReq.getProcessorType());
@@ -101,7 +104,7 @@ public class TaskMasterActor extends BaseActor {
      */
     public void handleContainerTaskStatus(ContainerBatchTaskStatusRequest batchTaskStatusReq) {
         TaskMaster taskMaster = TaskMasterPool.get(batchTaskStatusReq.getJobInstanceId());
-        if (Objects.nonNull(taskMaster)){
+        if (Objects.nonNull(taskMaster)) {
             taskMaster.updateStatus(batchTaskStatusReq);
         }
 

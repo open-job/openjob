@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.Nullable;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class SpringContext implements ApplicationContextAware {
@@ -26,13 +26,14 @@ public class SpringContext implements ApplicationContextAware {
         return applicationContext.getBean(name, type);
     }
 
+    public static Object getBean(String name) {
+        return applicationContext.getBean(name);
+    }
+
     public static Boolean containsBean(String name) {
         return applicationContext.containsBean(name);
     }
 
-    public static Object getBean(String name) {
-        return applicationContext.getBean(name);
-    }
 
     public static String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
         return applicationContext.getBeanNamesForType(type, includeNonSingletons, allowEagerInit);

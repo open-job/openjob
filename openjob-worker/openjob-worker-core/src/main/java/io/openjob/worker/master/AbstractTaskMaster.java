@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -202,7 +202,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected MasterStartContainerRequest getJobMasterStartContainerRequest() {
         MasterStartContainerRequest containerRequest = new MasterStartContainerRequest();
+        containerRequest.setJobParamType(this.jobInstanceDTO.getJobParamType());
         containerRequest.setJobParams(this.jobInstanceDTO.getJobParams());
+        containerRequest.setJobExtendParamsType(this.jobInstanceDTO.getJobExtendParamsType());
+        containerRequest.setJobExtendParams(this.jobInstanceDTO.getJobExtendParams());
         containerRequest.setExecuteType(this.jobInstanceDTO.getExecuteType());
         containerRequest.setWorkflowId(this.jobInstanceDTO.getWorkflowId());
         containerRequest.setProcessorType(this.jobInstanceDTO.getProcessorType());

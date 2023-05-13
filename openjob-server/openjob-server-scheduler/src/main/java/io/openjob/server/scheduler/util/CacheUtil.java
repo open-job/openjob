@@ -4,7 +4,7 @@ package io.openjob.server.scheduler.util;
 import io.openjob.server.scheduler.constant.CacheConst;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class CacheUtil {
@@ -24,11 +24,11 @@ public class CacheUtil {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_TASKID_PREFIX, taskId);
     }
 
-    public static String getDelayDetailWorkerAddressKey(String taskId){
+    public static String getDelayDetailWorkerAddressKey(String taskId) {
         return String.format("%s:%s", CacheConst.DELAY_DETAIL_WORKER_ADDRESS_PREFIX, taskId);
     }
 
-    public static String getDelayRetryTimesKey(String taskId){
+    public static String getDelayRetryTimesKey(String taskId) {
         return String.format("%s:%s", CacheConst.DELAY_TASK_RETRY_TIMES_PREFIX, taskId);
     }
 

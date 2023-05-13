@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Component
@@ -47,6 +47,12 @@ public class DelayData {
         }, Duration.ofDays(1));
     }
 
+    /**
+     * Get delay
+     *
+     * @param id id
+     * @return Delay
+     */
     public Delay getDelayById(Long id) {
         String delayKey = CacheUtil.getDelayDetailIdKey(id);
         return RedisUtil.orElseGet(delayKey, () -> {

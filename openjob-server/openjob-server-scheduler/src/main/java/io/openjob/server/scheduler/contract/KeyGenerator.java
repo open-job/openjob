@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.contract;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @FunctionalInterface

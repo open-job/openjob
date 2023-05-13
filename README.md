@@ -50,11 +50,21 @@
 - [Official documentation](https://openjob.io/docs/intro)
 ## Live demo
 - Find the [live demo](https://demo.openjob.io) on our website.
+  - username: openjob
+  - password: openjob.io
 ## Contact
 * Mail list:
-  * openjob@vip.qq.com
   * swoft@qq.com
 - Online chat:
+
+## Openjob ecosystem
+- [Openjob Website](https://github.com/open-job/openjob-website) - Openjob official website
+- [Openjob UI](https://github.com/open-job/openjob-ui) - UI for Openjob
+- [Openjob Samples](https://github.com/open-job/openjob-samples) - Samples for Openjob
+- [Openjob Docker](https://github.com/open-job/openjob-docker) - Openjob integration with docker
+
+## Contributors
+This project exists thanks to all the people who contribute. [[Contributors](https://github.com/open-job/openjob/graphs/contributors)].
 
 ## License
 Openjob is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.

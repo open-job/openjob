@@ -7,27 +7,46 @@ import io.openjob.server.log.dto.ProcessorLogField;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class LogFormatUtil {
+    /**
+     * Default location
+     */
+    private static final String DEFAULT_LOCATION = "-";
 
-    public final static String LOG_FORMAT = "%-23s %-7s %-40s : %s";
+    public static final String LOG_FORMAT = "%-23s %-7s %-40s : %s";
 
+    /**
+     * Format show log message
+     *
+     * @param processorLog processorLog
+     * @return String
+     */
     public static String formatLog(ProcessorLog processorLog) {
         Map<String, String> fieldMap = processorLog.getFields().stream()
                 .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
         String location = fieldMap.get(LogFieldConstant.LOCATION);
-        return String.format(
+        String message = String.format(
                 LOG_FORMAT,
                 DateUtil.formatTimestamp(Long.parseLong(fieldMap.get(LogFieldConstant.TIME_STAMP))),
                 fieldMap.get(LogFieldConstant.LEVEL),
                 LogFormatUtil.formatLocation(location),
                 fieldMap.get(LogFieldConstant.MESSAGE)
         );
+
+        // Throwable
+        String throwable = fieldMap.get(LogFieldConstant.THROWABLE);
+        if (StringUtils.isEmpty(throwable)) {
+            return message;
+        }
+        return String.format("%s \n %s", message, throwable);
     }
 
     /**
@@ -37,8 +56,8 @@ public class LogFormatUtil {
      * @return String
      */
     public static String formatLocation(String location) {
-        if (StringUtils.isEmpty(location) || "-".equals(location)){
-            return "-";
+        if (StringUtils.isEmpty(location) || DEFAULT_LOCATION.equals(location)) {
+            return DEFAULT_LOCATION;
         }
 
         String substring = location.substring(0, location.indexOf("("));

@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Getter
@@ -17,7 +17,7 @@ public class WorkerConfig {
     /**
      * Worker host name.
      */
-    private static String workerHostName;
+    private static String workerHost;
 
     /**
      * Worker port.
@@ -59,16 +59,16 @@ public class WorkerConfig {
             throw new RuntimeException(String.format("%s can not be null!", WorkerConstant.WORKER_APP_NAME));
         }
 
-        workerHostName = OpenjobConfig.getString(WorkerConstant.WORKER_HOSTNAME, IpUtil.getLocalAddress());
+        workerHost = OpenjobConfig.getString(WorkerConstant.WORKER_HOST, IpUtil.getLocalAddress());
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
-        workerAddress = String.format("%s:%d", workerHostName, workerPort);
+        workerAddress = String.format("%s:%d", workerHost, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
         serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
     }
 
-    public static String getWorkerHostName() {
-        return workerHostName;
+    public static String getWorkerHost() {
+        return workerHost;
     }
 
     public static Integer getWorkerPort() {

@@ -6,7 +6,7 @@ import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @SpringBootTest(classes = {H2Config.class, RepositoryApplication.class})

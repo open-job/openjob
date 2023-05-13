@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Slf4j
@@ -135,7 +135,10 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         jobContext.setJobId(this.jobInstanceDTO.getJobId());
         jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
         jobContext.setTaskId(this.acquireTaskId());
+        jobContext.setJobParamType(this.jobInstanceDTO.getJobParamType());
         jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
+        jobContext.setJobExtendParamsType(this.jobInstanceDTO.getJobExtendParamsType());
+        jobContext.setJobExtendParams(this.jobInstanceDTO.getJobExtendParams());
         jobContext.setProcessorType(this.jobInstanceDTO.getProcessorType());
         jobContext.setProcessorInfo(this.jobInstanceDTO.getProcessorInfo());
         jobContext.setFailRetryInterval(this.jobInstanceDTO.getFailRetryInterval());

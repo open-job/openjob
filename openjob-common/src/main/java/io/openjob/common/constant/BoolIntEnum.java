@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author inhere <in.798@qq.com>
+ * @author inhere in.798@qq.com
  * @since 1.0.0
  */
 @Getter

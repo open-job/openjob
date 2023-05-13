@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.UUID;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class TaskUtil {

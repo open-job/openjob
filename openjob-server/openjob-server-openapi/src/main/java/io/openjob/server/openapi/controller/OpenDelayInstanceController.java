@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @RestController
-@Api(value = "delay-instance", tags = "delay-instance")
+@Api(value = "Delay-instance", tags = "Delay-instance")
 @RequestMapping("/openapi/delay-instance")
 public class OpenDelayInstanceController {
 
@@ -30,7 +30,7 @@ public class OpenDelayInstanceController {
         this.instanceService = instanceService;
     }
 
-    @ApiOperation("Add delay instance.")
+    @ApiOperation("Add delay instance")
     @PostMapping("/add")
     public Result<DelayInstanceAddVO> add(@Valid @RequestBody DelayInstanceAddRequest addRequest) {
         return Result.success(this.instanceService.add(addRequest));

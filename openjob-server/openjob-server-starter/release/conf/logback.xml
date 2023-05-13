@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <springProperty scope="context" name="LOG_PATH" source="openjob.log.path" defaultValue="${openjob.home}/logs"/>
+
+    <!-- notice.log -->
+    <appender name="notice" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Notice filter(TRACE/INFO) -->
+        <filter class="io.openjob.server.filter.NoticeFilter"/>
+        <file>${LOG_PATH}/notice.log</file>
+        <append>true</append>
+
+        <!-- Rolling policy -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/notice.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>2GB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>7GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%date %level [%thread] %logger{36} [%file : %line] %msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- error.log -->
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Greater than and equal(OFF/FATAL/ERROR/WARN)  StandardLevel.class -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <file>${LOG_PATH}/error.log</file>
+        <append>true</append>
+
+        <!-- Rolling policy -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>2GB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>7GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%date %level [%thread] %logger{36} [%file : %line] %msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="notice"/>
+        <appender-ref ref="error"/>
+    </root>
+</configuration>

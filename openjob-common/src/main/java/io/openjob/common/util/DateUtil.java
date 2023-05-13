@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class DateUtil {

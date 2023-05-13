@@ -6,14 +6,17 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Data
 public class ServerSubmitJobInstanceRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
+    private String jobParamType;
     private String jobParams;
+    private String jobExtendParamsType;
+    private String jobExtendParams;
     private Long workflowId;
     private String processorType;
     private String processorInfo;

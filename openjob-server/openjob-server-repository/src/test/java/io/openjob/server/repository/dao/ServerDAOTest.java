@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Sql(scripts = "classpath:db/schema/server.sql")

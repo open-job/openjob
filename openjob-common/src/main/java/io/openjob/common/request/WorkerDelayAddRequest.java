@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author stelin <swoft@qq.com>
+ * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 @Data
@@ -15,11 +15,6 @@ public class WorkerDelayAddRequest implements Serializable {
      * Deliver id.
      */
     private Long deliveryId;
-
-    /**
-     * Namespace id.
-     */
-    private Long namespaceId;
 
     /**
      * Delay task unique id.
