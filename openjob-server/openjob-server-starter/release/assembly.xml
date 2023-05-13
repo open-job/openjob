@@ -28,8 +28,8 @@
 
         <!-- config -->
         <fileSet>
-            <directory>${basedir}/release/config</directory>
-            <outputDirectory>config</outputDirectory>
+            <directory>${basedir}/release/conf</directory>
+            <outputDirectory>conf</outputDirectory>
             <fileMode>0755</fileMode>
             <includes>
                 <include>*</include>
