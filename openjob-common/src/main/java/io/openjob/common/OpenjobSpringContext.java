@@ -10,12 +10,12 @@ import org.springframework.lang.Nullable;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-public class SpringContext implements ApplicationContextAware {
+public class OpenjobSpringContext implements ApplicationContextAware {
     private static ApplicationContext applicationContext = null;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
-        SpringContext.applicationContext = context;
+        OpenjobSpringContext.applicationContext = context;
     }
 
     public static <T> T getBean(Class<T> type) {

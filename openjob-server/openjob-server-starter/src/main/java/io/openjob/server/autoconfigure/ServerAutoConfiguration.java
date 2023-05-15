@@ -3,7 +3,7 @@ package io.openjob.server.autoconfigure;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.util.IpUtil;
 import io.openjob.server.cluster.ClusterServer;
@@ -41,8 +41,8 @@ public class ServerAutoConfiguration {
     }
 
     @Bean
-    public SpringContext springContext() {
-        return new SpringContext();
+    public OpenjobSpringContext openjobSpringContext() {
+        return new OpenjobSpringContext();
     }
 
     /**

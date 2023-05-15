@@ -1,6 +1,6 @@
 package io.openjob.worker.spring.boot;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.processor.ProcessorHandlerMapping;
@@ -24,14 +24,14 @@ import java.util.Objects;
 public class OpenjobSpringWorker implements SmartInitializingSingleton {
     @Override
     public void afterSingletonsInstantiated() {
-        if (Objects.isNull(SpringContext.getApplicationContext())) {
+        if (Objects.isNull(OpenjobSpringContext.getApplicationContext())) {
             return;
         }
 
         // All bean names.
-        String[] beanNames = SpringContext.getBeanNamesForType(Object.class, false, true);
+        String[] beanNames = OpenjobSpringContext.getBeanNamesForType(Object.class, false, true);
         for (String beanName : beanNames) {
-            Object bean = SpringContext.getBean(beanName);
+            Object bean = OpenjobSpringContext.getBean(beanName);
 
             // Find openjob annotation method
             Map<Method, Openjob> annotatedMethods = null;
@@ -81,7 +81,7 @@ public class OpenjobSpringWorker implements SmartInitializingSingleton {
         }
 
         // Bean has existed
-        if (SpringContext.containsBean(name)) {
+        if (OpenjobSpringContext.containsBean(name)) {
             throw new RuntimeException(String.format("Bean of the openjob name has existed! class=%s method=%s name=%s", bean.getClass(), method.getName(), name));
         }
 

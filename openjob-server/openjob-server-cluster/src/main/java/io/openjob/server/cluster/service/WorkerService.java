@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.service;
 
 import com.google.common.collect.Lists;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerStartRequest;
 import io.openjob.common.request.WorkerStopRequest;
@@ -65,7 +65,7 @@ public class WorkerService {
         App app = this.checkAppName(startRequest.getAppName());
 
         // Do worker start.
-        SpringContext.getBean(this.getClass()).doWorkerStart(startRequest, app);
+        OpenjobSpringContext.getBean(this.getClass()).doWorkerStart(startRequest, app);
 
         // Akka message for worker start.
         WorkerJoinDTO workerJoinDTO = new WorkerJoinDTO();
@@ -111,7 +111,7 @@ public class WorkerService {
         this.checkAppName(stopReq.getAppName());
 
         // Do worker stop.
-        SpringContext.getBean(this.getClass()).doWorkerStop(stopReq);
+        OpenjobSpringContext.getBean(this.getClass()).doWorkerStop(stopReq);
 
         // Akka message for worker start.
         WorkerFailDTO workerFailDTO = new WorkerFailDTO();

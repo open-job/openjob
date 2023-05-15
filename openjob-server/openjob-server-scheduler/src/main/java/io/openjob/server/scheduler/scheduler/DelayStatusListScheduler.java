@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.scheduler;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
@@ -82,7 +82,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
 
         public StatusListRunnable(Long currentSlotId) {
             super(currentSlotId);
-            this.delayInstanceDAO = SpringContext.getBean(DelayInstanceDAO.class);
+            this.delayInstanceDAO = OpenjobSpringContext.getBean(DelayInstanceDAO.class);
         }
 
         @Override

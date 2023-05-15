@@ -20,21 +20,21 @@ import java.util.UUID;
  */
 @Data
 @Slf4j
-public class DelayTemplate {
+public class OpenjobDelayTemplate {
 
     /**
      * Delay timeout(ms)
      */
     private Long timeout;
 
-    public DelayTemplate() {
+    public OpenjobDelayTemplate() {
         this.timeout = OpenjobConfig.getLong(WorkerConstant.WORKER_DELAY_TIMEOUT, WorkerConstant.DEFAULT_WORKER_DELAY_TIMEOUT);
     }
 
     /**
      * @param timeout timeout
      */
-    public DelayTemplate(Long timeout) {
+    public OpenjobDelayTemplate(Long timeout) {
         this.timeout = timeout;
     }
 

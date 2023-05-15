@@ -1,9 +1,9 @@
 package io.openjob.worker.spring.boot.autoconfigure;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.delay.DelayTemplate;
+import io.openjob.worker.delay.OpenjobDelayTemplate;
 import io.openjob.worker.spring.boot.OpenjobSpringWorker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,6 @@ import java.util.Objects;
 @EnableConfigurationProperties(value = {OpenjobWorkerProperties.class})
 public class OpenjobWorkerAutoConfiguration {
     private final OpenjobWorkerProperties properties;
-
-    @Bean
-    public SpringContext springContext() {
-        return new SpringContext();
-    }
 
     @Autowired
     public OpenjobWorkerAutoConfiguration(OpenjobWorkerProperties properties) {
@@ -114,12 +109,20 @@ public class OpenjobWorkerAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public OpenjobSpringContext openjobSpringContext() {
+        return new OpenjobSpringContext();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "spring.openjob", name = "enable", havingValue = "true", matchIfMissing = true)
     public OpenjobWorker openjobWorker() {
         return new OpenjobWorker();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "spring.openjob", name = "enable", havingValue = "true", matchIfMissing = true)
     public OpenjobSpringWorker openjobSpringWorker() {
         return new OpenjobSpringWorker();
@@ -128,7 +131,7 @@ public class OpenjobWorkerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "spring.openjob.delay", name = "enable", havingValue = "true")
-    public DelayTemplate delayTemplate() {
-        return new DelayTemplate();
+    public OpenjobDelayTemplate openjobDelayTemplate() {
+        return new OpenjobDelayTemplate();
     }
 }

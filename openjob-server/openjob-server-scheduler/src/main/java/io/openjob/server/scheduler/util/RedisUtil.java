@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.util;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.server.scheduler.contract.KeyGenerator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisCallback;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class RedisUtil {
     @SuppressWarnings("unchecked")
     public static RedisTemplate<String, Object> getTemplate() {
-        return SpringContext.getBean("redisTemplate", RedisTemplate.class);
+        return OpenjobSpringContext.getBean("redisTemplate", RedisTemplate.class);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RedisUtil {
         List<String> first = keyPairs.getFirst();
         List<T> second = keyPairs.getSecond();
         @SuppressWarnings("rawtypes")
-        RedisTemplate redisTemplate = SpringContext.getBean("redisTemplate", RedisTemplate.class);
+        RedisTemplate redisTemplate = OpenjobSpringContext.getBean("redisTemplate", RedisTemplate.class);
 
         // Multi get from cache.
         ValueOperations<String, R> operation = redisTemplate.opsForValue();

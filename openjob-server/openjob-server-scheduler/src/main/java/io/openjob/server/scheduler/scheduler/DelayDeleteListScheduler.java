@@ -1,9 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
-import io.openjob.server.repository.entity.DelayInstance;
-import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
@@ -81,7 +79,7 @@ public class DelayDeleteListScheduler extends AbstractDelayScheduler {
 
         public DeleteListRunnable(Long currentSlotId) {
             super(currentSlotId);
-            this.delayInstanceDAO = SpringContext.getBean(DelayInstanceDAO.class);
+            this.delayInstanceDAO = OpenjobSpringContext.getBean(DelayInstanceDAO.class);
         }
 
         @Override

@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.scheduler;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.log.dao.LogDAO;
@@ -44,8 +44,8 @@ public abstract class AbstractDelayZsetScheduler extends AbstractDelayScheduler 
          */
         public AbstractZsetRunnable(Long currentSlotId) {
             super(currentSlotId);
-            this.delayData = SpringContext.getBean(DelayData.class);
-            this.logDAO = SpringContext.getBean(LogDAO.class);
+            this.delayData = OpenjobSpringContext.getBean(DelayData.class);
+            this.logDAO = OpenjobSpringContext.getBean(LogDAO.class);
         }
 
         /**

@@ -1,6 +1,6 @@
 package io.openjob.server.scheduler.service;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
@@ -99,7 +99,7 @@ public class SchedulerTimerService {
             log.info("Dispatch task success! taskId={}", task.getTaskId());
 
             // Update by dispatcher.
-            SpringContext.getBean(SchedulerTimerService.class).updateByDispatcher(workerDTO.getAddress(), task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING, "Dispatch  task success!");
+            OpenjobSpringContext.getBean(SchedulerTimerService.class).updateByDispatcher(workerDTO.getAddress(), task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING, "Dispatch  task success!");
         } catch (Throwable ex) {
             // Add failover list.
             failoverList.add(workerDTO.getAddress());
