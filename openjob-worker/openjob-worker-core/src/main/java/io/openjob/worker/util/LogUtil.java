@@ -23,6 +23,11 @@ public class LogUtil {
         // Job context
         JobContext context = ThreadLocalUtil.getJobContext();
 
+        // Not job context
+        if (Objects.isNull(context)) {
+            return null;
+        }
+
         // Cron job.
         LogContentDTO logContent = new LogContentDTO();
         logContent.addWorkerAddressField(WorkerConfig.getWorkerAddress());

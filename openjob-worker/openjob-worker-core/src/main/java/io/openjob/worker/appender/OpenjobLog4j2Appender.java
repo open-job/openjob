@@ -21,6 +21,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.MDC;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Plugin(name = "OpenjobLog4j2Appender", category = "Core", elementType = "appender", printObject = true)
-public class Log4j2Appender extends AbstractAppender {
+public class OpenjobLog4j2Appender extends AbstractAppender {
     private DateTimeFormatter formatter;
 
     /**
@@ -39,7 +40,7 @@ public class Log4j2Appender extends AbstractAppender {
      * @param layout           layout
      * @param ignoreExceptions ignoreExceptions
      */
-    public Log4j2Appender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
+    public OpenjobLog4j2Appender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
         // Must use deprecated method.
         // Compatible with lower version.
         super(name, filter, layout, ignoreExceptions, Property.EMPTY_ARRAY);
@@ -48,6 +49,11 @@ public class Log4j2Appender extends AbstractAppender {
     @Override
     public void append(LogEvent event) {
         LogContentDTO logContent = LogUtil.getLogContent();
+
+        // Not job context
+        if (Objects.isNull(logContent)) {
+            return;
+        }
 
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeMillis());
@@ -107,7 +113,7 @@ public class Log4j2Appender extends AbstractAppender {
      * @return Log4j2Appender
      */
     @PluginFactory
-    public static Log4j2Appender create(
+    public static OpenjobLog4j2Appender create(
             @PluginAttribute("name") final String name,
             @PluginElement("Filter") final Filter filter,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
@@ -116,7 +122,7 @@ public class Log4j2Appender extends AbstractAppender {
             @PluginAttribute("timeZone") final String timeZone
     ) {
         boolean ignoreExceptions = Booleans.parseBoolean(ignore, false);
-        Log4j2Appender log4j2Appender = new Log4j2Appender(name, filter, layout, ignoreExceptions);
+        OpenjobLog4j2Appender log4j2Appender = new OpenjobLog4j2Appender(name, filter, layout, ignoreExceptions);
         String tf = Optional.ofNullable(timeFormat).orElse(LogConstant.DEFAULT_TIME_FORMAT);
         String tz = Optional.ofNullable(timeZone).orElse(LogConstant.DEFAULT_TIME_ZONE);
 
