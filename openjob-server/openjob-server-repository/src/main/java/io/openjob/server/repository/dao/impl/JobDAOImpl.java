@@ -50,6 +50,17 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
+    public Long updateNextExecuteTime(Long id, Long nextExecuteTime, Long updateTime) {
+        this.jobRepository.findById(id)
+                .ifPresent(j -> {
+                    j.setNextExecuteTime(nextExecuteTime);
+                    j.setUpdateTime(updateTime);
+                    this.jobRepository.save(j);
+                });
+        return id;
+    }
+
+    @Override
     public Long update(Job job) {
         this.jobRepository.findById(job.getId())
                 .ifPresent(j -> {

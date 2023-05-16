@@ -28,6 +28,16 @@ public interface JobDAO {
     Long update(Job job);
 
     /**
+     * Update
+     *
+     * @param id              id
+     * @param nextExecuteTime nextExecuteTime
+     * @param updateTime      updateTime
+     * @return Long
+     */
+    Long updateNextExecuteTime(Long id, Long nextExecuteTime, Long updateTime);
+
+    /**
      * Update by status or deleted.
      *
      * @param id      id

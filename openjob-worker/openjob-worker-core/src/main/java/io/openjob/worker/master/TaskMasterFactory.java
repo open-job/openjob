@@ -29,7 +29,7 @@ public class TaskMasterFactory {
                     .getConstructor(JobInstanceDTO.class, ActorContext.class);
             return constructor.newInstance(jobInstanceDTO, actorContext);
         } catch (Throwable ex) {
-            throw new RuntimeException("Task master is not exist! executeType=" + jobInstanceDTO.getExecuteType());
+            throw new RuntimeException("Task master is not exist! executeType=" + jobInstanceDTO.getExecuteType(), ex);
         }
     }
 }
