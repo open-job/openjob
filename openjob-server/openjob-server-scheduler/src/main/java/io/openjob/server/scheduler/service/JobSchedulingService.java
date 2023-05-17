@@ -10,6 +10,7 @@ import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.cron.CronExpression;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.entity.Job;
@@ -134,27 +135,18 @@ public class JobSchedulingService {
 
         // Update job next execute time.
         jobs.forEach(j -> {
-            try {
-                Long now = DateUtil.timestamp();
-
-                // Calculate next execute time.
-                long nextExecuteTime = this.calculateNextExecuteTime(j, now);
-
-                // Update next execute time.
-                j.setNextExecuteTime(nextExecuteTime);
-                j.setUpdateTime(now);
-
-                if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / SchedulerConstant.UNIT_MS)) {
-                    this.createJobInstance(Collections.singletonList(j));
-
-                    // Update next execute time.
-                    j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
+            // Cron job
+            if (TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
+                try {
+                    calculateCronTimeExpression(j);
+                } catch (ParseException parseException) {
+                    log.error("Cron expression({}) is invalid!", j.getTimeExpression());
                 }
+            }
 
-                // Update
-                jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
-            } catch (ParseException parseException) {
-                log.error("Cron expression({}) is invalid!", j.getTimeExpression());
+            // One time
+            if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
+                this.jobDAO.updateByStatusOrDeleted(j.getId(), JobStatusEnum.STOP.getStatus(), null, null);
             }
         });
     }
@@ -261,5 +253,26 @@ public class JobSchedulingService {
 
         // Fixed rate job.
         return job.getNextExecuteTime() + Long.parseLong(job.getTimeExpression());
+    }
+
+    private void calculateCronTimeExpression(Job j) throws ParseException {
+        Long now = DateUtil.timestamp();
+
+        // Calculate next execute time.
+        long nextExecuteTime = this.calculateNextExecuteTime(j, now);
+
+        // Update next execute time.
+        j.setNextExecuteTime(nextExecuteTime);
+        j.setUpdateTime(now);
+
+        if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / SchedulerConstant.UNIT_MS)) {
+            this.createJobInstance(Collections.singletonList(j));
+
+            // Update next execute time.
+            j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
+        }
+
+        // Update
+        jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
     }
 }

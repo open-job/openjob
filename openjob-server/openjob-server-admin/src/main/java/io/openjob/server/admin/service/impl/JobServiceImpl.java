@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.server.admin.constant.AdminConstant;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.job.AddJobRequest;
 import io.openjob.server.admin.request.job.DeleteJobRequest;
 import io.openjob.server.admin.request.job.ExecuteJobRequest;
@@ -24,6 +25,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
+import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
@@ -31,6 +33,7 @@ import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
 import io.openjob.server.scheduler.service.JobSchedulingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -47,6 +50,7 @@ import java.util.stream.Collectors;
  * @author zhenghongyang <sakuraovq@gmail.com>
  * @since 1.0.0
  */
+@Slf4j
 @Component
 public class JobServiceImpl implements JobService {
 
@@ -67,7 +71,13 @@ public class JobServiceImpl implements JobService {
             addJobRequest.setTimeExpression(String.valueOf(addJobRequest.getTimeExpressionValue()));
         }
 
-        long id = this.jobDAO.save(BeanMapperUtil.map(addJobRequest, Job.class));
+        // Running status to parse next execute time.
+        Job job = BeanMapperUtil.map(addJobRequest, Job.class);
+        if (TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
+            job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression()));
+        }
+
+        long id = this.jobDAO.save(job);
         return new AddJobVO().setId(id);
     }
 
@@ -77,19 +87,39 @@ public class JobServiceImpl implements JobService {
             updateJobRequest.setTimeExpression(String.valueOf(updateJobRequest.getTimeExpressionValue()));
         }
 
-        this.jobDAO.update(BeanMapperUtil.map(updateJobRequest, Job.class));
+        // Job
+        Job originJob = this.jobDAO.getById(updateJobRequest.getId());
+        Job updateJob = BeanMapperUtil.map(updateJobRequest, Job.class);
+
+        // Condition
+        boolean isUpdateCron = TimeExpressionTypeEnum.isCron(updateJob.getTimeExpressionType());
+        boolean isUpdateExpression = !updateJob.getTimeExpression().equals(originJob.getTimeExpression());
+        boolean isRunningStatus = JobStatusEnum.isRunning(updateJob.getStatus());
+
+        // Parse time expression
+        if (isRunningStatus && isUpdateCron && isUpdateExpression) {
+            updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression()));
+        }
+
+        this.jobDAO.update(updateJob);
         return new UpdateJobVO();
     }
 
     @Override
     public DeleteJobVO delete(DeleteJobRequest deleteJobRequest) {
-        this.jobDAO.updateByStatusOrDeleted(deleteJobRequest.getId(), null, CommonConstant.YES);
+        this.jobDAO.updateByStatusOrDeleted(deleteJobRequest.getId(), null, CommonConstant.YES, null);
         return new DeleteJobVO();
     }
 
     @Override
     public UpdateJobStatusVO updateStatus(UpdateJobStatusRequest request) {
-        this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null);
+        Long nextExecuteTime = null;
+        Job originJob = this.jobDAO.getById(request.getId());
+        if (TimeExpressionTypeEnum.isCron(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
+            nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression());
+        }
+
+        this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null, nextExecuteTime);
         return new UpdateJobStatusVO();
     }
 
@@ -149,5 +179,22 @@ public class JobServiceImpl implements JobService {
             }
             return listJobVO;
         });
+    }
+
+    /**
+     * Parse time expression
+     *
+     * @param timeExpression timeExpression
+     * @return Long
+     */
+    private Long parseTimeExpression(String timeExpression) {
+        try {
+            CronExpression cronExpression = new CronExpression(timeExpression);
+            return cronExpression.getNextValidTimeAfter(new Date()).toInstant().getEpochSecond();
+        } catch (ParseException e) {
+            CodeEnum.TIME_EXPRESSION_INVALID.throwException();
+            log.error("Parse time expression failed! timeExpression=" + timeExpression, e);
+            return null;
+        }
     }
 }

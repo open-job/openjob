@@ -51,4 +51,8 @@ public enum TimeExpressionTypeEnum {
     public static Boolean isSecondDelay(String type) {
         return SECOND_DELAY.getType().equals(type);
     }
+
+    public static Boolean isOneTime(String type) {
+        return ONE_TIME.getType().equals(type);
+    }
 }

@@ -40,12 +40,13 @@ public interface JobDAO {
     /**
      * Update by status or deleted.
      *
-     * @param id      id
-     * @param status  status
-     * @param deleted deleted
+     * @param id              id
+     * @param status          status
+     * @param deleted         deleted
+     * @param nextExecuteTime nextExecuteTime
      * @return Long
      */
-    Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted);
+    Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted, Long nextExecuteTime);
 
     /**
      * Get by id

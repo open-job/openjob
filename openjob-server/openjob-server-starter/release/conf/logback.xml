@@ -2,6 +2,18 @@
 <configuration scan="true" scanPeriod="10 seconds">
     <springProperty scope="context" name="LOG_PATH" source="openjob.log.path" defaultValue="${openjob.home}/logs"/>
 
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Greater than and equal(OFF/FATAL/ERROR/WARN)  StandardLevel.class -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>
+                %date %level [%thread] %logger{36} [%file : %line] %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
     <!-- notice.log -->
     <appender name="notice" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Notice filter(TRACE/INFO) -->
@@ -47,6 +59,7 @@
     </appender>
 
     <root>
+        <appender-ref ref="console"/>
         <appender-ref ref="notice"/>
         <appender-ref ref="error"/>
     </root>
