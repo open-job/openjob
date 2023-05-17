@@ -99,7 +99,12 @@ public class SchedulerTimerService {
             log.info("Dispatch task success! taskId={}", task.getTaskId());
 
             // Update by dispatcher.
-            OpenjobSpringContext.getBean(SchedulerTimerService.class).updateByDispatcher(workerDTO.getAddress(), task.getJobId(), task.getTaskId(), InstanceStatusEnum.RUNNING, "Dispatch  task success!");
+            OpenjobSpringContext.getBean(SchedulerTimerService.class)
+                    .updateByDispatcher(workerDTO.getAddress(),
+                            task.getJobId(),
+                            task.getTaskId(),
+                            InstanceStatusEnum.RUNNING,
+                            "Dispatch  task success!");
         } catch (Throwable ex) {
             // Add failover list.
             failoverList.add(workerDTO.getAddress());
