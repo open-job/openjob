@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
 import com.google.common.collect.Lists;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
@@ -91,8 +91,8 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
 
         public AddListRunnable(Long currentSlotId) {
             super(currentSlotId);
-            this.delayData = SpringContext.getBean(DelayData.class);
-            this.delayInstanceDAO = SpringContext.getBean(DelayInstanceDAO.class);
+            this.delayData = OpenjobSpringContext.getBean(DelayData.class);
+            this.delayInstanceDAO = OpenjobSpringContext.getBean(DelayInstanceDAO.class);
         }
 
         @Override

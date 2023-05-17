@@ -151,7 +151,8 @@ public class JobSchedulingService {
                     j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
                 }
 
-                jobDAO.save(j);
+                // Update
+                jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
             } catch (ParseException parseException) {
                 log.error("Cron expression({}) is invalid!", j.getTimeExpression());
             }

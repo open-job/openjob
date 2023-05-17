@@ -17,7 +17,7 @@ import java.util.Objects;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-public class Log4jAppender extends AppenderSkeleton {
+public class OpenjobLog4jAppender extends AppenderSkeleton {
     protected String timeZone = LogConstant.DEFAULT_TIME_ZONE;
 
     protected String timeFormat = LogConstant.DEFAULT_TIME_FORMAT;
@@ -34,6 +34,11 @@ public class Log4jAppender extends AppenderSkeleton {
     @Override
     protected void append(LoggingEvent event) {
         LogContentDTO logContent = LogUtil.getLogContent();
+
+        // Not job context
+        if (Objects.isNull(logContent)) {
+            return;
+        }
 
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeStamp());

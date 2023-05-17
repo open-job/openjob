@@ -15,11 +15,13 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Objects;
+
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
+public class OpenjobLogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
     protected String timeZone = LogConstant.DEFAULT_TIME_ZONE;
     protected String timeFormat = LogConstant.DEFAULT_TIME_FORMAT;
 
@@ -44,6 +46,11 @@ public class LogbackAppender<E> extends UnsynchronizedAppenderBase<E> {
 
         LoggingEvent event = (LoggingEvent) eventObject;
         LogContentDTO logContent = LogUtil.getLogContent();
+
+        // Not job context
+        if (Objects.isNull(logContent)) {
+            return;
+        }
 
         // Timezone
         DateTime dateTime = new DateTime(event.getTimeStamp());

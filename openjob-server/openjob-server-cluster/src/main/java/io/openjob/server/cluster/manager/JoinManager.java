@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.manager;
 
 import com.google.common.collect.Maps;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
@@ -56,7 +56,7 @@ public class JoinManager {
             // Do node join.
             boolean result = ClusterUtil.clusterNodeOperate(
                     this.clusterProperties.getSpreadRetryTimes(),
-                    () -> SpringContext.getBean(this.getClass()).doJoin(hostname, port));
+                    () -> OpenjobSpringContext.getBean(this.getClass()).doJoin(hostname, port));
 
             // Success to send cluster message.
             if (result) {

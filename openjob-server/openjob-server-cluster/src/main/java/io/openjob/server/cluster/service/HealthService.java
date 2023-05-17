@@ -3,7 +3,7 @@ package io.openjob.server.cluster.service;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
@@ -102,7 +102,7 @@ public class HealthService {
 
             // Node failed.
             // Record node fail message.
-            SpringContext.getBean(HealthService.class).checkFailReports(serverId, node);
+            OpenjobSpringContext.getBean(HealthService.class).checkFailReports(serverId, node);
         }
     }
 

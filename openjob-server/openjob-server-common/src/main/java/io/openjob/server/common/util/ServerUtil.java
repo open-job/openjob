@@ -2,7 +2,7 @@ package io.openjob.server.common.util;
 
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.server.common.constant.ServerActorConstant;
 
@@ -18,19 +18,19 @@ public class ServerUtil {
      * @return actor
      */
     public static ActorSelection getServerClusterActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getServerActorPath(address, ServerActorConstant.ACTOR_CLUSTER));
+        return OpenjobSpringContext.getBean(ActorSystem.class).actorSelection(getServerActorPath(address, ServerActorConstant.ACTOR_CLUSTER));
     }
 
     public static ActorSelection getServerHeartbeatActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getServerActorPath(address, ServerActorConstant.ACTOR_HEARTBEAT));
+        return OpenjobSpringContext.getBean(ActorSystem.class).actorSelection(getServerActorPath(address, ServerActorConstant.ACTOR_HEARTBEAT));
     }
 
     public static ActorSelection getWorkerTaskMasterActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_MASTER));
+        return OpenjobSpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_MASTER));
     }
 
     public static ActorSelection getWorkerDelayMasterActor(String address) {
-        return SpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_DELAY_MASTER));
+        return OpenjobSpringContext.getBean(ActorSystem.class).actorSelection(getWorkerActorPath(address, AkkaConstant.WORKER_ACTOR_DELAY_MASTER));
     }
 
     /**

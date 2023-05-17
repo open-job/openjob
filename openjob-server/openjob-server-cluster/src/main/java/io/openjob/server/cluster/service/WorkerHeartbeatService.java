@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.ServerHeartbeatResponse;
 import io.openjob.common.response.ServerHeartbeatSystemResponse;
@@ -50,7 +50,7 @@ public class WorkerHeartbeatService {
         }
 
         // Do heartbeat.
-        SpringContext.getBean(this.getClass()).doHeartbeat(heartbeatReq, worker);
+        OpenjobSpringContext.getBean(this.getClass()).doHeartbeat(heartbeatReq, worker);
 
         ServerHeartbeatResponse response = new ServerHeartbeatResponse();
         ServerHeartbeatSystemResponse systemResponse = new ServerHeartbeatSystemResponse();

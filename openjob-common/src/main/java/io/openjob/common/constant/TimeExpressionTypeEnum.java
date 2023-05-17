@@ -42,7 +42,7 @@ public enum TimeExpressionTypeEnum {
 
     private final String type;
 
-    public static final List<String> CRON_TYPES = Arrays.asList(CRON.type, FIXED_RATE.type, ONE_TIME.type);
+    public static final List<String> CRON_TYPES = Arrays.asList(CRON.type, ONE_TIME.type);
 
     public static Boolean isCron(String type) {
         return CRON.getType().equals(type);

@@ -1,6 +1,6 @@
 package io.openjob.worker.util;
 
-import io.openjob.common.SpringContext;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.processor.ProcessorHandlerMapping;
@@ -23,10 +23,10 @@ public class ProcessorUtil {
     public static ProcessorHandler getProcessor(String className) {
         // Spring context
         ProcessorHandler processorHandler = null;
-        if (Objects.nonNull(SpringContext.getApplicationContext())) {
+        if (Objects.nonNull(OpenjobSpringContext.getApplicationContext())) {
             try {
                 // Bean name
-                Object obj = SpringContext.getBean(className);
+                Object obj = OpenjobSpringContext.getBean(className);
                 if (obj instanceof BaseProcessor) {
                     return new ProcessorHandler((BaseProcessor) obj);
                 }
