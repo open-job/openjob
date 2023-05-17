@@ -75,6 +75,7 @@ public class JobDAOImpl implements JobDAO {
                     j.setParamsType(job.getParamsType());
                     j.setExtendParamsType(job.getExtendParamsType());
                     j.setExtendParams(job.getExtendParams());
+                    j.setNextExecuteTime(job.getNextExecuteTime());
                     j.setFailRetryInterval(job.getFailRetryInterval());
                     j.setFailRetryTimes(job.getFailRetryTimes());
                     j.setConcurrency(job.getConcurrency());
@@ -88,7 +89,7 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
-    public Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted) {
+    public Long updateByStatusOrDeleted(Long id, Integer status, Integer deleted, Long nextExecuteTime) {
         this.jobRepository.findById(id)
                 .ifPresent(j -> {
                     if (Objects.nonNull(status)) {
@@ -96,6 +97,9 @@ public class JobDAOImpl implements JobDAO {
                     }
                     if (Objects.nonNull(deleted)) {
                         j.setDeleted(deleted);
+                    }
+                    if (Objects.nonNull(nextExecuteTime)) {
+                        j.setNextExecuteTime(nextExecuteTime);
                     }
                     j.setUpdateTime(DateUtil.milliLongTime());
                     this.jobRepository.save(j);

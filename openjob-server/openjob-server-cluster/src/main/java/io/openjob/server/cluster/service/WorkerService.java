@@ -150,8 +150,6 @@ public class WorkerService {
      * Worker check
      */
     public void workerCheck() {
-        // Query all workers.
-        long timePos = DateUtil.timestamp() - ClusterConstant.WORKER_CHECK_PERIOD;
         Set<Long> currentSlots = ClusterContext.getCurrentSlots();
 
         // Query slot ids.
@@ -168,11 +166,12 @@ public class WorkerService {
                 .collect(Collectors.groupingBy(Worker::getStatus));
 
         // New join worker
+        long onlinePos = DateUtil.timestamp() - this.clusterProperties.getWorker().getOnlinePeriod();
         List<Worker> offlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.OFFLINE.getStatus())).orElseGet(ArrayList::new);
         offlineWorkers.forEach(w -> {
             // Join worker
             // Ignore just off the line
-            if (w.getUpdateTime() < timePos && w.getLastHeartbeatTime() > timePos) {
+            if (w.getUpdateTime() < onlinePos && w.getLastHeartbeatTime() > onlinePos) {
                 WorkerStartRequest workerStartRequest = new WorkerStartRequest();
                 workerStartRequest.setAddress(w.getAddress());
                 workerStartRequest.setAppName(w.getAppName());
@@ -184,10 +183,11 @@ public class WorkerService {
         });
 
         // New fail worker.
+        long offlinePos = DateUtil.timestamp() - this.clusterProperties.getWorker().getOfflinePeriod();
         List<Worker> onlineWorkers = Optional.ofNullable(workerMap.get(WorkerStatusEnum.ONLINE.getStatus())).orElseGet(ArrayList::new);
         onlineWorkers.forEach(w -> {
             // Fail worker
-            if (w.getLastHeartbeatTime() < timePos) {
+            if (w.getLastHeartbeatTime() < offlinePos) {
                 WorkerStopRequest workerStopRequest = new WorkerStopRequest();
                 workerStopRequest.setWorkerKey(w.getWorkerKey());
                 workerStopRequest.setAddress(w.getAddress());
