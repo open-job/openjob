@@ -47,7 +47,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
         App app = this.appDAO.getAppByName(addRequest.getName());
-        CodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
+        CodeEnum.APP_NAME_EXIST.assertIsTrue(Objects.isNull(app));
 
         Long id = this.appDAO.save(BeanMapperUtil.map(addRequest, App.class));
 
@@ -61,7 +61,7 @@ public class AppServiceImpl implements AppService {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
         if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())) {
-            CodeEnum.NAME_EXIST.throwException();
+            CodeEnum.APP_NAME_EXIST.throwException();
         }
 
         App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
