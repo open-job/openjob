@@ -19,11 +19,23 @@ import lombok.Getter;
 public enum CodeEnum implements CodeExceptionAssert {
     // Code list
     USER_EXIST(100, "User is exist!"),
-    NAMESPACE_EXIST(200, "App name must be globally unique!"),
+
+    // Namespace
     NAMESPACE_DELETE_INVALID(201, "Namespace can not be delete!"),
+
+    // Application
     APP_NAME_EXIST(300, "App name must be globally unique!"),
     APP_DELETE_INVALID(301, "Application can not be deleted!"),
-    TIME_EXPRESSION_INVALID(400, "Time expression is invalid");
+
+    // Job
+    TIME_EXPRESSION_INVALID(400, "Time expression is invalid"),
+    JOB_DELETE_INVALID(401, "Job can not be deleted!"),
+
+    // Delay
+    DELAY_TOPIC_EXIST(500, "Topic is exist!"),
+    DELAY_DELETE_INVALID(501, "Delay can not be deleted!"),
+    ;
+
 
     /**
      * Value

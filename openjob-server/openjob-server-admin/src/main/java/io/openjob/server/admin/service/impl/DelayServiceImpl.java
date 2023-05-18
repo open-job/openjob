@@ -3,6 +3,7 @@ package io.openjob.server.admin.service.impl;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DelayUtil;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.delay.AddDelayRequest;
 import io.openjob.server.admin.request.delay.DeleteDelayRequest;
 import io.openjob.server.admin.request.delay.ListDelayRequest;
@@ -65,6 +66,9 @@ public class DelayServiceImpl implements DelayService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public AddDelayVO add(AddDelayRequest addRequest) {
+        Delay byTopic = this.delayDAO.findByTopic(addRequest.getTopic());
+        CodeEnum.DELAY_TOPIC_EXIST.assertIsTrue(Objects.isNull(byTopic));
+
         // Delay
         Delay delay = BeanMapperUtil.map(addRequest, Delay.class);
         delay.setPid(0L);
@@ -150,6 +154,11 @@ public class DelayServiceImpl implements DelayService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UpdateDelayVO update(UpdateDelayRequest updateDelayRequest) {
+        Delay byTopic = this.delayDAO.findByTopic(updateDelayRequest.getTopic());
+        if (Objects.nonNull(byTopic) && !byTopic.getId().equals(updateDelayRequest.getId())) {
+            CodeEnum.DELAY_TOPIC_EXIST.throwException();
+        }
+
         // Delay
         Delay delay = BeanMapperUtil.map(updateDelayRequest, Delay.class);
         this.delayDAO.update(delay);
