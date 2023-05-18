@@ -65,6 +65,15 @@ public interface DelayInstanceDAO {
     PageDTO<DelayInstance> pageList(DelayInstancePageDTO instancePageDTO);
 
     /**
+     * Update status
+     *
+     * @param taskId taskId
+     * @param status status
+     * @return
+     */
+    Integer updateStatus(String taskId, Integer status);
+
+    /**
      * Batch update status.
      *
      * @param updateList status

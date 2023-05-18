@@ -43,6 +43,9 @@ public class DelayInstance {
     @Column(name = "delay_extra")
     private String delayExtra;
 
+    /**
+     * @see io.openjob.common.constant.TaskStatusEnum
+     */
     @Column(name = "status")
     private Integer status;
 

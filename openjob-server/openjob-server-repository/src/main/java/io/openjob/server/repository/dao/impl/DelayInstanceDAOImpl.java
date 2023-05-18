@@ -182,6 +182,11 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public Integer updateStatus(String taskId, Integer status) {
+        return this.delayInstanceRepository.updateStatusByTaskId(taskId, status);
+    }
+
+    @Override
     public Integer batchUpdateStatus(List<DelayInstance> updateList) {
         // When then sql.
         StringBuilder statusWhenThen = new StringBuilder();

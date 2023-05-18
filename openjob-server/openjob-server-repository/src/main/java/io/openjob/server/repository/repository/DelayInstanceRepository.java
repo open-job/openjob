@@ -47,4 +47,14 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @return DelayInstance
      */
     DelayInstance findByTaskId(String taskId);
+
+    /**
+     * @param taskId taskId
+     * @param status status
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update DelayInstance as d set d.status=?2 where d.taskId=?1")
+    Integer updateStatusByTaskId(String taskId, Integer status);
 }
