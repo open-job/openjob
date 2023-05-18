@@ -178,7 +178,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
 
     @Override
     public List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses) {
-        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses);
+        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses, CommonConstant.NO);
     }
 
     @Override
