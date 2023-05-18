@@ -1,6 +1,5 @@
 package io.openjob.worker.init;
 
-import ch.qos.logback.core.util.ContextUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.ServerHeartbeatResponse;
@@ -13,15 +12,14 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +35,11 @@ public class WorkerHeartbeat {
      * Worker heartbeat
      */
     private final ScheduledExecutorService heartbeatService;
+
+    /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
 
     /**
      * New WorkerHeartbeat
@@ -56,6 +59,11 @@ public class WorkerHeartbeat {
      * Init
      */
     public void init() {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
         heartbeatService.scheduleAtFixedRate(() -> {
             String workerAddress = WorkerConfig.getWorkerAddress();
@@ -78,6 +86,9 @@ public class WorkerHeartbeat {
             }
 
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     /**

@@ -4,6 +4,7 @@ import io.openjob.common.response.ServerHeartbeatSystemResponse;
 import io.openjob.worker.init.WorkerConfig;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,6 +25,11 @@ public class DelayManager {
     private final AtomicLong delayVersion = new AtomicLong(0);
 
     /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
+
+    /**
      * Delay starter.
      */
     public DelayManager() {
@@ -34,12 +40,20 @@ public class DelayManager {
      * Init
      */
     public void init() {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         if (WorkerConfig.getDelayEnable()) {
             this.delayTaskMaster.init();
 
             // Delay task manager.
             DelayTaskManager.INSTANCE.init();
         }
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     /**

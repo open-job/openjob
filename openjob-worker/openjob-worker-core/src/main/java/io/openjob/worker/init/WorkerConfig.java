@@ -6,6 +6,7 @@ import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin swoft@qq.com
@@ -50,9 +51,19 @@ public class WorkerConfig {
     private static Integer serverPort;
 
     /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
+
+    /**
      * Init
      */
     public void init() {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         if (Objects.isNull(appName)) {
@@ -65,6 +76,9 @@ public class WorkerConfig {
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
         serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     public static String getWorkerHost() {

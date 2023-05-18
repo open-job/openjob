@@ -1,15 +1,22 @@
 package io.openjob.worker;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.delay.DelayManager;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.init.WorkerConfig;
-import io.openjob.worker.init.WorkerHeartbeat;
 import io.openjob.worker.init.WorkerContext;
+import io.openjob.worker.init.WorkerHeartbeat;
 import io.openjob.worker.init.WorkerRegister;
 import io.openjob.worker.init.WorkerShutdown;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin swoft@qq.com
@@ -45,7 +52,7 @@ public class OpenjobWorker implements InitializingBean {
         try {
             this.init();
         } catch (Throwable throwable) {
-            log.error("Openjob worker initialize failed!", throwable);
+            log.error("Openjob worker after properties initialize failed!", throwable);
         }
     }
 
@@ -55,22 +62,50 @@ public class OpenjobWorker implements InitializingBean {
      * @throws Exception Exception
      */
     public synchronized void init() throws Exception {
-        // Initialize worker config.
-        this.workerConfig.init();
+        // Retry interval
+        int retryInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
 
-        // Initialize actor system.
-        this.workerActorSystem.init();
+        // Initialize executor
+        ScheduledThreadPoolExecutor initializeExecutor = new ScheduledThreadPoolExecutor(
+                1,
+                new ThreadFactoryBuilder().setNameFormat("Openjob-initialize-thread").build(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
 
-        // Register worker.
-        this.workerRegister.register();
+        //Initialize continuously until complete
+        initializeExecutor.scheduleWithFixedDelay(() -> {
+            // Initialize complete
+            if (this.doInitialize()) {
+                initializeExecutor.shutdown();
+                log.info("Openjob worker initialize complete!");
+            }
+        }, 0, retryInterval, TimeUnit.SECONDS);
+    }
 
-        // Initialize worker heartbeat.
-        this.workerHeartbeat.init();
+    public synchronized Boolean doInitialize() {
+        try {
+            // Initialize worker config.
+            this.workerConfig.init();
 
-        // Initialize delay.
-        this.delayManager.init();
+            // Initialize actor system.
+            this.workerActorSystem.init();
 
-        // Initialize shutdown.
-        this.workerShutdown.init();
+            // Register worker.
+            this.workerRegister.register();
+
+            // Initialize worker heartbeat.
+            this.workerHeartbeat.init();
+
+            // Initialize delay.
+            this.delayManager.init();
+
+            // Initialize shutdown.
+            this.workerShutdown.init();
+
+            return true;
+        } catch (Throwable ex) {
+            log.error("Openjob worker initialize failed!", ex);
+            return false;
+        }
     }
 }
