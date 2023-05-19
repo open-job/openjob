@@ -21,7 +21,7 @@ public enum CodeEnum implements CodeExceptionAssert {
     USER_EXIST(100, "User is exist!"),
 
     // Namespace
-    NAMESPACE_DELETE_INVALID(201, "Namespace can not be delete!"),
+    NAMESPACE_DELETE_INVALID(200, "Namespace can not be delete!"),
 
     // Application
     APP_NAME_EXIST(300, "App name must be globally unique!"),
