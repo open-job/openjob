@@ -143,8 +143,13 @@ public class DelayServiceImpl implements DelayService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DeleteDelayVO delete(DeleteDelayRequest deleteDelayRequest) {
-        this.delayDAO.updateStatusOrDeleted(deleteDelayRequest.getId(), null, CommonConstant.YES);
-        this.delayDAO.updateStatusOrDeleted(deleteDelayRequest.getCid(), null, CommonConstant.YES);
+        if (Objects.nonNull(this.delayInstanceDAO.getFirstByDelayId(deleteDelayRequest.getId()))) {
+            CodeEnum.DELAY_DELETE_INVALID.throwException();
+        }
+
+        // Delete
+        this.delayDAO.deleteById(deleteDelayRequest.getId());
+        this.delayDAO.deleteById(deleteDelayRequest.getCid());
 
         // Refresh delay version
         this.delayScheduler.refreshDelayVersion();

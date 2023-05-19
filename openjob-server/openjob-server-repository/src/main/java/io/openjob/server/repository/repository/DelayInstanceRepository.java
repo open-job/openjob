@@ -57,4 +57,13 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     @Modifying
     @Query(value = "update DelayInstance as d set d.status=?2 where d.taskId=?1")
     Integer updateStatusByTaskId(String taskId, Integer status);
+
+    /**
+     * Find first by delay id
+     *
+     * @param delayId delayId
+     * @param deleted deleted
+     * @return DelayInstance
+     */
+    DelayInstance findFirstByDelayIdAndDeleted(Long delayId, Integer deleted);
 }

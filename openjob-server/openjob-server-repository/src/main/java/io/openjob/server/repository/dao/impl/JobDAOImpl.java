@@ -82,7 +82,7 @@ public class JobDAOImpl implements JobDAO {
                     j.setExtendParams(job.getExtendParams());
 
                     // Update next execute time.
-                    if (Objects.nonNull(job.getNextExecuteTime())){
+                    if (Objects.nonNull(job.getNextExecuteTime())) {
                         j.setNextExecuteTime(job.getNextExecuteTime());
                     }
 
@@ -120,6 +120,18 @@ public class JobDAOImpl implements JobDAO {
     @Override
     public Job getById(Long id) {
         return this.jobRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Job getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
+        Job job = new Job();
+        job.setNamespaceId(namespaceId);
+        job.setDeleted(CommonConstant.NO);
+
+        if (Objects.nonNull(appId)) {
+            job.setAppId(appId);
+        }
+        return this.jobRepository.findOne(Example.of(job)).orElse(null);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.namespace.AddNamespaceRequest;
 import io.openjob.server.admin.request.namespace.DeleteNamespaceRequest;
 import io.openjob.server.admin.request.namespace.ListNamespaceRequest;
@@ -14,11 +15,13 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
+import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -28,10 +31,12 @@ import java.util.UUID;
 @Service
 public class NamespaceServiceImpl implements NamespaceService {
     private final NamespaceDAO namespaceDAO;
+    private final AppDAO appDAO;
 
     @Autowired
-    public NamespaceServiceImpl(NamespaceDAO namespaceDAO) {
+    public NamespaceServiceImpl(NamespaceDAO namespaceDAO, AppDAO appDAO) {
         this.namespaceDAO = namespaceDAO;
+        this.appDAO = appDAO;
     }
 
     @Override
@@ -53,6 +58,10 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Override
     public DeleteNamespaceVO delete(DeleteNamespaceRequest deleteNamespaceRequest) {
+        if (Objects.nonNull(this.appDAO.getFirstByNamespaceId(deleteNamespaceRequest.getId()))) {
+            CodeEnum.NAMESPACE_DELETE_INVALID.throwException();
+        }
+
         Namespace namespace = BeanMapperUtil.map(deleteNamespaceRequest, Namespace.class);
         namespace.setDeleted(CommonConstant.YES);
         this.namespaceDAO.update(namespace);

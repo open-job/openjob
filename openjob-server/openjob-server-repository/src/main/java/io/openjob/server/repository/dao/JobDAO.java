@@ -57,6 +57,15 @@ public interface JobDAO {
     Job getById(Long id);
 
     /**
+     * Get first by namespace id and appid
+     *
+     * @param namespaceId namespaceId
+     * @param appId       appId
+     * @return Job
+     */
+    Job getFirstByNamespaceAndAppid(Long namespaceId, Long appId);
+
+    /**
      * List scheduled jobs.
      *
      * @param slotIds slotIds

@@ -22,6 +22,13 @@ public interface DelayDAO {
     Long save(Delay delay);
 
     /**
+     * Delete by id
+     *
+     * @param id id
+     */
+    void deleteById(Long id);
+
+    /**
      * Update
      *
      * @param delay delay
@@ -85,4 +92,13 @@ public interface DelayDAO {
      * @return list
      */
     List<Delay> findByAppId(Long appId);
+
+    /**
+     * Get first by namespace id and appid
+     *
+     * @param namespaceId namespaceId
+     * @param appId       appId
+     * @return Delay
+     */
+    Delay getFirstByNamespaceAndAppid(Long namespaceId, Long appId);
 }

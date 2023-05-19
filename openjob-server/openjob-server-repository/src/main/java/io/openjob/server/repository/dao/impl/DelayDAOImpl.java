@@ -44,6 +44,11 @@ public class DelayDAOImpl implements DelayDAO {
     }
 
     @Override
+    public void deleteById(Long id) {
+        this.delayRepository.deleteById(id);
+    }
+
+    @Override
     public Long update(Delay delay) {
         this.delayRepository.findById(delay.getId())
                 .ifPresent(d -> {
@@ -87,6 +92,38 @@ public class DelayDAOImpl implements DelayDAO {
                     }
                     this.delayRepository.save(d);
                 });
+    }
+
+    @Override
+    public Delay findByTopic(String topic) {
+        return this.delayRepository.findByTopic(topic);
+    }
+
+    @Override
+    public Optional<Delay> findById(Long id) {
+        return this.delayRepository.findById(id);
+    }
+
+    @Override
+    public List<Delay> findByTopics(List<String> topics) {
+        return this.delayRepository.findByTopicIn(topics);
+    }
+
+    @Override
+    public List<Delay> findByAppId(Long appId) {
+        return this.delayRepository.findByAppIdAndDeleted(appId, CommonConstant.NO);
+    }
+
+    @Override
+    public Delay getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
+        Delay delay = new Delay();
+        delay.setNamespaceId(namespaceId);
+        delay.setDeleted(CommonConstant.NO);
+
+        if (Objects.nonNull(appId)) {
+            delay.setAppId(appId);
+        }
+        return this.delayRepository.findOne(Example.of(delay)).orElse(null);
     }
 
     @Override
@@ -135,25 +172,5 @@ public class DelayDAOImpl implements DelayDAO {
             pageDTO.setList(pageList.toList());
         }
         return pageDTO;
-    }
-
-    @Override
-    public Delay findByTopic(String topic) {
-        return this.delayRepository.findByTopic(topic);
-    }
-
-    @Override
-    public Optional<Delay> findById(Long id) {
-        return this.delayRepository.findById(id);
-    }
-
-    @Override
-    public List<Delay> findByTopics(List<String> topics) {
-        return this.delayRepository.findByTopicIn(topics);
-    }
-
-    @Override
-    public List<Delay> findByAppId(Long appId) {
-        return this.delayRepository.findByAppIdAndDeleted(appId, CommonConstant.NO);
     }
 }

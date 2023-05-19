@@ -3,6 +3,7 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
+import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 
 import java.util.List;
@@ -20,16 +21,6 @@ public interface DelayInstanceDAO {
      * @return save size.
      */
     Integer batchSave(List<DelayInstance> delayInstanceList);
-
-    /**
-     * List delay instance.
-     *
-     * @param slotIds slotIds
-     * @param time    time
-     * @param size    size
-     * @return List
-     */
-    List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size);
 
     /**
      * Get by task id.
@@ -88,4 +79,12 @@ public interface DelayInstanceDAO {
      * @return Integer
      */
     Integer deleteByTaskIds(List<String> taskIds);
+
+    /**
+     * Get first by delay id
+     *
+     * @param delayId delayId
+     * @return DelayInstance
+     */
+    DelayInstance getFirstByDelayId(Long delayId);
 }

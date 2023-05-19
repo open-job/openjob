@@ -63,10 +63,11 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @param slotsIds       slots ids
      * @param status         status
      * @param type           type
+     * @param deleted        deleted
      * @return List
      */
-    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNot(
-            Long lastReportTime, Set<Long> slotsIds, Integer status, String type);
+    List<JobInstance> findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNotAndDeleted(
+            Long lastReportTime, Set<Long> slotsIds, Integer status, String type, Integer deleted);
 
     /**
      * Find not dispatch list.
@@ -74,9 +75,10 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @param executeTime execute time
      * @param slotsIds    slots ids.
      * @param status      status.
+     * @param deleted     deleted
      * @return list
      */
-    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdInAndStatus(Long executeTime, Set<Long> slotsIds, Integer status);
+    List<JobInstance> findByExecuteTimeLessThanAndSlotsIdInAndStatusAndDeleted(Long executeTime, Set<Long> slotsIds, Integer status, Integer deleted);
 
     /**
      * Find first by id and status.
@@ -84,7 +86,17 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @param jobId      jobId
      * @param id         id
      * @param statusList statusList
+     * @param deleted    deleted
      * @return JobInstance
      */
-    JobInstance findFirstByJobIdAndIdNotAndStatusIn(Long jobId, Long id, List<Integer> statusList);
+    JobInstance findFirstByJobIdAndIdNotAndStatusInAndDeleted(Long jobId, Long id, List<Integer> statusList, Integer deleted);
+
+    /**
+     * Find first by job id and deleted
+     *
+     * @param jobId   jobId
+     * @param deleted deleted
+     * @return JobInstance
+     */
+    JobInstance findFirstByJobIdAndDeleted(Long jobId, Integer deleted);
 }

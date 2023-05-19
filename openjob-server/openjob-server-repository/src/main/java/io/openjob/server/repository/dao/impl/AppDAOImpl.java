@@ -44,6 +44,11 @@ public class AppDAOImpl implements AppDAO {
     }
 
     @Override
+    public void deleteById(Long id) {
+        this.appRepository.deleteById(id);
+    }
+
+    @Override
     public Long update(App app) {
         this.appRepository.findById(app.getId())
                 .ifPresent(a -> {
@@ -75,6 +80,16 @@ public class AppDAOImpl implements AppDAO {
     @Override
     public App getAppByName(String appName) {
         return appRepository.findAppByName(appName);
+    }
+
+    @Override
+    public App getById(Long id) {
+        return this.appRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public App getFirstByNamespaceId(Long namespaceId) {
+        return this.appRepository.findFirstByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
     }
 
     @Override
