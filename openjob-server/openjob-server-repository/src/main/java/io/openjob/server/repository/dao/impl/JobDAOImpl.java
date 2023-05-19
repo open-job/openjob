@@ -85,7 +85,7 @@ public class JobDAOImpl implements JobDAO {
                     if (Objects.nonNull(job.getNextExecuteTime())) {
                         j.setNextExecuteTime(job.getNextExecuteTime());
                     }
-
+                    j.setStatus(job.getStatus());
                     j.setFailRetryInterval(job.getFailRetryInterval());
                     j.setFailRetryTimes(job.getFailRetryTimes());
                     j.setConcurrency(job.getConcurrency());
