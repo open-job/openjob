@@ -177,7 +177,7 @@ public class WorkerService {
                 workerStartRequest.setAppName(w.getAppName());
                 workerStartRequest.setWorkerKey(w.getWorkerKey());
 
-                log.info("Scheduling worker start begin!");
+                log.info("Scheduling worker start begin! address={}", w.getAddress());
                 this.workerStart(workerStartRequest);
             }
         });
@@ -193,7 +193,7 @@ public class WorkerService {
                 workerStopRequest.setAddress(w.getAddress());
                 workerStopRequest.setAppName(w.getAppName());
 
-                log.info("Scheduling worker stop begin!");
+                log.info("Scheduling worker stop begin! address={}", w.getAddress());
                 this.workerStop(workerStopRequest);
             }
         });

@@ -94,6 +94,9 @@ public class JoinManager {
 
         // Refresh current slots.
         this.refreshManager.refreshCurrentSlots();
+
+        // Refresh app workers;
+        this.refreshManager.refreshAppWorkers();
         return true;
     }
 
