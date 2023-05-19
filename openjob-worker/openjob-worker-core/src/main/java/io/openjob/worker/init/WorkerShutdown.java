@@ -26,6 +26,9 @@ public class WorkerShutdown {
         this.openjobWorker = openjobWorker;
     }
 
+    /**
+     * Init
+     */
     public void init() {
         // Already initialized
         if (this.isInit.get()) {

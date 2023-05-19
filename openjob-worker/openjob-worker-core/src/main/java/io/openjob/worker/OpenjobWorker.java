@@ -82,6 +82,11 @@ public class OpenjobWorker implements InitializingBean {
         }, 0, retryInterval, TimeUnit.SECONDS);
     }
 
+    /**
+     * Do initialize
+     *
+     * @return Boolean
+     */
     public synchronized Boolean doInitialize() {
         try {
             // Initialize worker config.

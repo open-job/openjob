@@ -37,7 +37,8 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @param deleted  deleted
      * @return List
      */
-    @Query(value = "SELECT new io.openjob.server.repository.dto.DelayInstanceTotalDTO(d.topic, count(d.id)) from DelayInstance as d where d.topic in (?1) and d.status in (?2) and d.deleted=?3 group by d.topic")
+    @Query(value = "SELECT new io.openjob.server.repository.dto.DelayInstanceTotalDTO(d.topic, count(d.id)) from DelayInstance as d "
+            + "where d.topic in (?1) and d.status in (?2) and d.deleted=?3 group by d.topic")
     List<DelayInstanceTotalDTO> getDelayTotalCount(List<String> topics, List<Integer> statuses, Integer deleted);
 
     /**
@@ -49,6 +50,8 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     DelayInstance findByTaskId(String taskId);
 
     /**
+     * Update status by task id
+     *
      * @param taskId taskId
      * @param status status
      * @return Integer
