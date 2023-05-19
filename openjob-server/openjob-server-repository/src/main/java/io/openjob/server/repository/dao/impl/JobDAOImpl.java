@@ -124,14 +124,7 @@ public class JobDAOImpl implements JobDAO {
 
     @Override
     public Job getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
-        Job job = new Job();
-        job.setNamespaceId(namespaceId);
-        job.setDeleted(CommonConstant.NO);
-
-        if (Objects.nonNull(appId)) {
-            job.setAppId(appId);
-        }
-        return this.jobRepository.findOne(Example.of(job)).orElse(null);
+        return this.jobRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
     }
 
     @Override

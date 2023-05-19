@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -116,14 +117,7 @@ public class DelayDAOImpl implements DelayDAO {
 
     @Override
     public Delay getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
-        Delay delay = new Delay();
-        delay.setNamespaceId(namespaceId);
-        delay.setDeleted(CommonConstant.NO);
-
-        if (Objects.nonNull(appId)) {
-            delay.setAppId(appId);
-        }
-        return this.delayRepository.findOne(Example.of(delay)).orElse(null);
+        return this.delayRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
     }
 
     @Override
