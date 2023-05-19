@@ -5,6 +5,7 @@ import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
+import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,7 +59,7 @@ public class WorkerConfig {
     /**
      * Init
      */
-    public void init() {
+    public void init() throws UnknownHostException {
         // Already initialized
         if (this.isInit.get()) {
             return;
@@ -74,7 +75,10 @@ public class WorkerConfig {
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
         workerAddress = String.format("%s:%d", workerHost, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
-        serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+
+        // Server hostname
+        String serverHostname = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+        serverHost = IpUtil.getIpByHost(serverHostname);
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
 
         // Initialized
