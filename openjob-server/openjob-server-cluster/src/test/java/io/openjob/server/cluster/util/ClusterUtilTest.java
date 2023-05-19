@@ -14,6 +14,24 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class ClusterUtilTest {
+
+    @Test
+    public void testGetKnowServersByOnlyOne() {
+        Map<Long, Node> nodesMap = new HashMap<>(16);
+        Node currentNode = null;
+        Node node = new Node();
+        node.setStatus(1);
+        node.setServerId(1L);
+        node.setIp("127.0.0.1");
+        node.setAkkaAddress(String.format("127.0.0.1:%d", 1L));
+        nodesMap.put(1L, node);
+
+        currentNode = node;
+        List<Long> knowServers = ClusterUtil.getKnowServers(nodesMap, currentNode, 5);
+        List<Long> expect = new ArrayList<>();
+        Assertions.assertEquals(knowServers, expect);
+    }
+
     @Test
     public void testGetKnowServersByTwo() {
         Map<Long, Node> nodesMap = new HashMap<>(16);

@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,6 +42,11 @@ public class DelayDAOImpl implements DelayDAO {
         delay.setCreateTime(timestamp);
         delay.setUpdateTime(timestamp);
         return this.delayRepository.save(delay).getId();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        this.delayRepository.deleteById(id);
     }
 
     @Override
@@ -90,6 +96,31 @@ public class DelayDAOImpl implements DelayDAO {
     }
 
     @Override
+    public Delay findByTopic(String topic) {
+        return this.delayRepository.findByTopic(topic);
+    }
+
+    @Override
+    public Optional<Delay> findById(Long id) {
+        return this.delayRepository.findById(id);
+    }
+
+    @Override
+    public List<Delay> findByTopics(List<String> topics) {
+        return this.delayRepository.findByTopicIn(topics);
+    }
+
+    @Override
+    public List<Delay> findByAppId(Long appId) {
+        return this.delayRepository.findByAppIdAndDeleted(appId, CommonConstant.NO);
+    }
+
+    @Override
+    public Delay getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
+        return this.delayRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<Delay> pageList(DelayPageDTO delayPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
@@ -135,25 +166,5 @@ public class DelayDAOImpl implements DelayDAO {
             pageDTO.setList(pageList.toList());
         }
         return pageDTO;
-    }
-
-    @Override
-    public Delay findByTopic(String topic) {
-        return this.delayRepository.findByTopic(topic);
-    }
-
-    @Override
-    public Optional<Delay> findById(Long id) {
-        return this.delayRepository.findById(id);
-    }
-
-    @Override
-    public List<Delay> findByTopics(List<String> topics) {
-        return this.delayRepository.findByTopicIn(topics);
-    }
-
-    @Override
-    public List<Delay> findByAppId(Long appId) {
-        return this.delayRepository.findByAppIdAndDeleted(appId, CommonConstant.NO);
     }
 }

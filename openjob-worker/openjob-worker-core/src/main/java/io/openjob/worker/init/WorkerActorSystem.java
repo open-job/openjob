@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin swoft@qq.com
@@ -38,9 +39,19 @@ public class WorkerActorSystem {
     private static ActorRef persistentRoutingRef;
 
     /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
+
+    /**
      * Init
      */
     public void init() {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
@@ -88,6 +99,9 @@ public class WorkerActorSystem {
                     .withDispatcher(WorkerAkkaConstant.DISPATCHER_DELAY_MASTER);
             actorSystem.actorOf(delayMasterProps, AkkaConstant.WORKER_ACTOR_DELAY_MASTER);
         }
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     public static ActorSystem getActorSystem() {

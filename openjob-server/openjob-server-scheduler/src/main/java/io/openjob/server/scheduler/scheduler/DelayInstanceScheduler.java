@@ -295,6 +295,10 @@ public class DelayInstanceScheduler {
         DelayInstanceStopResponseDTO response = new DelayInstanceStopResponseDTO();
         DelayInstance byTaskId = this.delayInstanceDAO.getByTaskId(stopRequest.getTaskId());
         if (!TaskStatusEnum.isRunning(byTaskId.getStatus())) {
+            // Delete from redis
+            this.removeFromCache(stopRequest.getTaskId());
+
+            // Result
             response.setResult(1);
             return response;
         }
@@ -302,6 +306,10 @@ public class DelayInstanceScheduler {
         String addressKey = CacheUtil.getDelayDetailWorkerAddressKey(stopRequest.getTaskId());
         Object workerAddress = RedisUtil.getTemplate().opsForValue().get(addressKey);
         if (Objects.isNull(workerAddress)) {
+            // Delete from redis.
+            this.removeFromCache(stopRequest.getTaskId());
+
+            // Result
             response.setResult(2);
             return response;
         }

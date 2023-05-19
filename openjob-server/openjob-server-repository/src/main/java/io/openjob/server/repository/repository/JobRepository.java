@@ -21,4 +21,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @return jobs
      */
     List<Job> findBySlotsIdInAndStatusAndTimeExpressionTypeNotInAndNextExecuteTimeLessThanEqualAndDeleted(List<Long> slotIds, Integer status, List<String> types, Long time, Integer deleted);
+
+    /**
+     * Find first by namespace id and app id
+     *
+     * @param namespaceId namespaceId
+     * @param appId       appId
+     * @param deleted     deleted
+     * @return Job
+     */
+    Job findFirstByNamespaceIdAndAppIdAndDeleted(Long namespaceId, Long appId, Integer deleted);
 }

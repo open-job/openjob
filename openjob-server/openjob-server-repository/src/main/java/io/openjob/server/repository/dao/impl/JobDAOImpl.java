@@ -43,7 +43,12 @@ public class JobDAOImpl implements JobDAO {
         job.setDeleteTime(0L);
         job.setCreateTime(timestamp);
         job.setUpdateTime(timestamp);
-        job.setNextExecuteTime(0L);
+
+        //Save next execute time
+        if (Objects.isNull(job.getNextExecuteTime())) {
+            job.setNextExecuteTime(0L);
+        }
+
         job.setSlotsId(SlotsUtil.getSlotsId(String.valueOf(timestamp)));
         job.setWorkflowId(0L);
         return jobRepository.save(job).getId();
@@ -75,7 +80,12 @@ public class JobDAOImpl implements JobDAO {
                     j.setParamsType(job.getParamsType());
                     j.setExtendParamsType(job.getExtendParamsType());
                     j.setExtendParams(job.getExtendParams());
-                    j.setNextExecuteTime(job.getNextExecuteTime());
+
+                    // Update next execute time.
+                    if (Objects.nonNull(job.getNextExecuteTime())) {
+                        j.setNextExecuteTime(job.getNextExecuteTime());
+                    }
+                    j.setStatus(job.getStatus());
                     j.setFailRetryInterval(job.getFailRetryInterval());
                     j.setFailRetryTimes(job.getFailRetryTimes());
                     j.setConcurrency(job.getConcurrency());
@@ -110,6 +120,11 @@ public class JobDAOImpl implements JobDAO {
     @Override
     public Job getById(Long id) {
         return this.jobRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Job getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
+        return this.jobRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
     }
 
     @Override

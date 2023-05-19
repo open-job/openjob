@@ -28,12 +28,14 @@ import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.JobDAO;
+import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -56,12 +58,14 @@ public class JobServiceImpl implements JobService {
 
     private final JobDAO jobDAO;
     private final AppDAO appDAO;
+    private final JobInstanceDAO jobInstanceDAO;
     private final JobSchedulingService jobSchedulingService;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobSchedulingService jobSchedulingService) {
+    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobInstanceDAO jobInstanceDAO, JobSchedulingService jobSchedulingService) {
         this.jobDAO = jobDAO;
         this.appDAO = appDAO;
+        this.jobInstanceDAO = jobInstanceDAO;
         this.jobSchedulingService = jobSchedulingService;
     }
 
@@ -107,6 +111,10 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public DeleteJobVO delete(DeleteJobRequest deleteJobRequest) {
+        if (Objects.nonNull(this.jobInstanceDAO.getFirstByJobId(deleteJobRequest.getId()))) {
+            CodeEnum.JOB_DELETE_INVALID.throwException();
+        }
+
         this.jobDAO.updateByStatusOrDeleted(deleteJobRequest.getId(), null, CommonConstant.YES, null);
         return new DeleteJobVO();
     }

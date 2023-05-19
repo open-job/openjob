@@ -57,6 +57,7 @@ public class ClusterUtil {
         Map<Long, List<WorkerDTO>> appWorkers = workers.stream()
                 .map(w -> {
                     WorkerDTO workerDTO = new WorkerDTO();
+                    workerDTO.setNamespaceId(w.getNamespaceId());
                     workerDTO.setAppId(w.getAppId());
                     workerDTO.setWorkerKey(w.getWorkerKey());
                     workerDTO.setAddress(w.getAddress());
@@ -67,12 +68,13 @@ public class ClusterUtil {
                 .collect(Collectors.groupingBy(WorkerDTO::getAppId));
 
         ClusterContext.refreshAppWorkers(appWorkers);
+        log.info("Refresh app workers {}", appWorkers);
     }
 
     /**
      * Online workers.
      *
-     * @param appId         appId
+     * @param appId appId
      * @return Set
      */
     public static Set<String> getOnlineWorkers(Long appId) {

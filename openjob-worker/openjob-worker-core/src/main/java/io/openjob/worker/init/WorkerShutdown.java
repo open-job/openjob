@@ -1,13 +1,13 @@
 package io.openjob.worker.init;
 
 import io.openjob.common.request.WorkerStopRequest;
-import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.common.util.ResultUtil;
 import io.openjob.worker.OpenjobWorker;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin swoft@qq.com
@@ -17,20 +17,35 @@ import lombok.extern.slf4j.Slf4j;
 public class WorkerShutdown {
     private final OpenjobWorker openjobWorker;
 
+    /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
+
     public WorkerShutdown(OpenjobWorker openjobWorker) {
         this.openjobWorker = openjobWorker;
     }
 
+    /**
+     * Init
+     */
     public void init() {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     /**
      * Openjob worker stop.
      *
-     * @throws Exception exception
      */
-    private void stop() throws Exception {
+    private void stop() {
         String serverAddress = WorkerConfig.getServerHost();
         String workerAddress = WorkerConfig.getWorkerAddress();
         String appName = WorkerConfig.getAppName();

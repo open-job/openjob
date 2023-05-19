@@ -77,6 +77,8 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         DelayInstanceStopResponseDTO stop = this.delayInstanceScheduler.stop(delayInstanceStopRequestDTO);
 
         // Update status
+        this.delayInstanceDAO.updateStatus(request.getTaskId(), TaskStatusEnum.STOP.getStatus());
+
         StopDelayInstanceVO stopDelayInstanceVO = new StopDelayInstanceVO();
         stopDelayInstanceVO.setResult(stop.getResult());
         return stopDelayInstanceVO;

@@ -7,7 +7,6 @@ import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.entity.DelayInstance;
-import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +104,55 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public DelayInstance getByTaskId(String taskId) {
+        return this.delayInstanceRepository.findByTaskId(taskId);
+    }
+
+    @Override
+    public List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses) {
+        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses, CommonConstant.NO);
+    }
+
+    @Override
+    public DelayInstance getFirstByDelayId(Long delayId) {
+        return this.delayInstanceRepository.findFirstByDelayIdAndDeleted(delayId, CommonConstant.NO);
+    }
+
+    @Override
+    public Integer updateStatus(String taskId, Integer status) {
+        return this.delayInstanceRepository.updateStatusByTaskId(taskId, status);
+    }
+
+    @Override
+    public Integer batchUpdateStatus(List<DelayInstance> updateList) {
+        // When then sql.
+        StringBuilder statusWhenThen = new StringBuilder();
+        StringBuilder addressWhenThen = new StringBuilder();
+        StringBuilder completeWhenThen = new StringBuilder();
+        updateList.forEach(d -> {
+            statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
+            addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
+            completeWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getCompleteTime()));
+        });
+
+        // Update sql.
+        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),"
+                        + "`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, "
+                        + "`status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+                addressWhenThen,
+                completeWhenThen,
+                DateUtil.timestamp(),
+                statusWhenThen,
+                statusWhenThen);
+        return this.jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public Integer deleteByTaskIds(List<String> taskIds) {
+        return this.delayInstanceRepository.batchDeleteByTaskIds(taskIds, CommonConstant.YES, DateUtil.timestamp());
+    }
+
+    @Override
     public PageDTO<DelayInstance> pageList(DelayInstancePageDTO instancePageDTO) {
 
         Specification<DelayInstance> specification = (root, query, criteriaBuilder) -> {
@@ -163,50 +211,5 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
             pageDTO.setList(pageList.toList());
         }
         return pageDTO;
-    }
-
-    @Override
-    public List<DelayInstance> listDelayInstance(List<Long> slotIds, Integer time, Integer size) {
-        DelayInstance delayInstance = new DelayInstance();
-        return this.delayInstanceRepository.findAll(Example.of(delayInstance), PageRequest.of(0, size, Sort.by("id"))).toList();
-    }
-
-    @Override
-    public DelayInstance getByTaskId(String taskId) {
-        return this.delayInstanceRepository.findByTaskId(taskId);
-    }
-
-    @Override
-    public List<DelayInstanceTotalDTO> getTopicTotalCount(List<String> topics, List<Integer> statuses) {
-        return this.delayInstanceRepository.getDelayTotalCount(topics, statuses);
-    }
-
-    @Override
-    public Integer batchUpdateStatus(List<DelayInstance> updateList) {
-        // When then sql.
-        StringBuilder statusWhenThen = new StringBuilder();
-        StringBuilder addressWhenThen = new StringBuilder();
-        StringBuilder completeWhenThen = new StringBuilder();
-        updateList.forEach(d -> {
-            statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
-            addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
-            completeWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getCompleteTime()));
-        });
-
-        // Update sql.
-        String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),"
-                        + "`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, "
-                        + "`status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
-                addressWhenThen,
-                completeWhenThen,
-                DateUtil.timestamp(),
-                statusWhenThen,
-                statusWhenThen);
-        return this.jdbcTemplate.update(sql);
-    }
-
-    @Override
-    public Integer deleteByTaskIds(List<String> taskIds) {
-        return this.delayInstanceRepository.batchDeleteByTaskIds(taskIds, CommonConstant.YES, DateUtil.timestamp());
     }
 }

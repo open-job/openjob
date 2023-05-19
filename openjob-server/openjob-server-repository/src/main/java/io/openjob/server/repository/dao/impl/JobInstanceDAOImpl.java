@@ -5,12 +5,14 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.JobInstanceRepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -65,13 +67,13 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public List<JobInstance> getUnDispatchedList(Set<Long> slotsIds, Long executeTime, InstanceStatusEnum status) {
-        return this.jobInstanceRepository.findByExecuteTimeLessThanAndSlotsIdInAndStatus(executeTime, slotsIds, status.getStatus());
+        return this.jobInstanceRepository.findByExecuteTimeLessThanAndSlotsIdInAndStatusAndDeleted(executeTime, slotsIds, status.getStatus(), CommonConstant.NO);
     }
 
     @Override
     public List<JobInstance> getFailoverList(Set<Long> slotsIds, Long lastReportTime, InstanceStatusEnum statusEnum) {
-        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNot(
-                lastReportTime, slotsIds, statusEnum.getStatus(), TimeExpressionTypeEnum.ONE_TIME.name());
+        return this.jobInstanceRepository.findByLastReportTimeLessThanAndSlotsIdInAndStatusAndTimeExpressionTypeNotAndDeleted(
+                lastReportTime, slotsIds, statusEnum.getStatus(), TimeExpressionTypeEnum.ONE_TIME.name(), CommonConstant.NO);
     }
 
     @Override
@@ -81,7 +83,12 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList) {
-        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusIn(jobId, id, statusList);
+        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeleted(jobId, id, statusList, CommonConstant.NO);
+    }
+
+    @Override
+    public JobInstance getFirstByJobId(Long jobId) {
+        return this.jobInstanceRepository.findFirstByJobIdAndDeleted(jobId, CommonConstant.NO);
     }
 
     @Override

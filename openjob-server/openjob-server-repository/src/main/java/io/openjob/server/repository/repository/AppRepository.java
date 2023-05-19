@@ -16,4 +16,13 @@ public interface AppRepository extends JpaRepository<App, Long> {
      * @return App
      */
     App findAppByName(String name);
+
+    /**
+     * Find first by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return App
+     */
+    App findFirstByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
 }

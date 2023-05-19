@@ -96,6 +96,14 @@ public interface JobInstanceDAO {
     JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList);
 
     /**
+     * Get first by job id
+     *
+     * @param jobId jobId
+     * @return JobInstance
+     */
+    JobInstance getFirstByJobId(Long jobId);
+
+    /**
      * Get page list.
      *
      * @param jobInstancePageDTO jobInstancePageDTO

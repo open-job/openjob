@@ -34,10 +34,12 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      *
      * @param topics   topics
      * @param statuses statuses
+     * @param deleted  deleted
      * @return List
      */
-    @Query(value = "SELECT new io.openjob.server.repository.dto.DelayInstanceTotalDTO(d.topic, count(d.id)) from DelayInstance as d where d.topic in (?1) and d.status in (?2) group by d.topic")
-    List<DelayInstanceTotalDTO> getDelayTotalCount(List<String> topics, List<Integer> statuses);
+    @Query(value = "SELECT new io.openjob.server.repository.dto.DelayInstanceTotalDTO(d.topic, count(d.id)) from DelayInstance as d "
+            + "where d.topic in (?1) and d.status in (?2) and d.deleted=?3 group by d.topic")
+    List<DelayInstanceTotalDTO> getDelayTotalCount(List<String> topics, List<Integer> statuses, Integer deleted);
 
     /**
      * Find by task id.
@@ -46,4 +48,25 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @return DelayInstance
      */
     DelayInstance findByTaskId(String taskId);
+
+    /**
+     * Update status by task id
+     *
+     * @param taskId taskId
+     * @param status status
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update DelayInstance as d set d.status=?2 where d.taskId=?1")
+    Integer updateStatusByTaskId(String taskId, Integer status);
+
+    /**
+     * Find first by delay id
+     *
+     * @param delayId delayId
+     * @param deleted deleted
+     * @return DelayInstance
+     */
+    DelayInstance findFirstByDelayIdAndDeleted(Long delayId, Integer deleted);
 }

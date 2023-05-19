@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -88,6 +89,17 @@ public class IpUtil {
         } catch (Throwable ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * Get ip by host
+     *
+     * @param host host
+     * @return String
+     * @throws UnknownHostException UnknownHostException
+     */
+    public static String getIpByHost(String host) throws UnknownHostException {
+        return InetAddress.getByName(host).getHostAddress();
     }
 
     /**

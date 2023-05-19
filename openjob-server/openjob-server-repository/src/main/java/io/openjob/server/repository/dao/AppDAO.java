@@ -20,6 +20,13 @@ public interface AppDAO {
     Long save(App app);
 
     /**
+     * Delete by id
+     *
+     * @param id id
+     */
+    void deleteById(Long id);
+
+    /**
      * Update
      *
      * @param app app
@@ -34,6 +41,22 @@ public interface AppDAO {
      * @return App
      */
     App getAppByName(String appName);
+
+    /**
+     * Get by id
+     *
+     * @param id id
+     * @return App
+     */
+    App getById(Long id);
+
+    /**
+     * Get first by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @return App
+     */
+    App getFirstByNamespaceId(Long namespaceId);
 
     /**
      * Get by ids.

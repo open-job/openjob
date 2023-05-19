@@ -16,8 +16,12 @@ import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.repository.dao.AppDAO;
+import io.openjob.server.repository.dao.DelayDAO;
+import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.NamespaceDAO;
 import io.openjob.server.repository.entity.App;
+import io.openjob.server.repository.entity.Delay;
+import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,17 +41,22 @@ public class AppServiceImpl implements AppService {
 
     private final AppDAO appDAO;
     private final NamespaceDAO namespaceDAO;
+    private final JobDAO jobDAO;
+    private final DelayDAO delayDAO;
+
 
     @Autowired
-    public AppServiceImpl(AppDAO appDAO, NamespaceDAO namespaceDAO) {
+    public AppServiceImpl(AppDAO appDAO, NamespaceDAO namespaceDAO, JobDAO jobDAO, DelayDAO delayDAO) {
         this.appDAO = appDAO;
         this.namespaceDAO = namespaceDAO;
+        this.jobDAO = jobDAO;
+        this.delayDAO = delayDAO;
     }
 
     @Override
     public AddAppVO add(AddAppRequest addRequest) {
         App app = this.appDAO.getAppByName(addRequest.getName());
-        CodeEnum.NAME_EXIST.assertIsTrue(Objects.isNull(app));
+        CodeEnum.APP_NAME_EXIST.assertIsTrue(Objects.isNull(app));
 
         Long id = this.appDAO.save(BeanMapperUtil.map(addRequest, App.class));
 
@@ -61,7 +70,7 @@ public class AppServiceImpl implements AppService {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
         if (Objects.nonNull(nameApp) && !nameApp.getId().equals(updateRequest.getId())) {
-            CodeEnum.NAME_EXIST.throwException();
+            CodeEnum.APP_NAME_EXIST.throwException();
         }
 
         App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
@@ -71,9 +80,16 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public DeleteAppVO delete(DeleteAppRequest deleteAppRequest) {
-        App app = BeanMapperUtil.map(deleteAppRequest, App.class);
-        app.setDeleted(CommonConstant.YES);
-        this.appDAO.update(app);
+        App byId = this.appDAO.getById(deleteAppRequest.getId());
+
+        // Job/delay/workflow
+        Job firstJob = this.jobDAO.getFirstByNamespaceAndAppid(byId.getNamespaceId(), byId.getId());
+        Delay firstDelay = this.delayDAO.getFirstByNamespaceAndAppid(byId.getNamespaceId(), byId.getId());
+        if (Objects.nonNull(firstJob) || Objects.nonNull(firstDelay)) {
+            CodeEnum.APP_DELETE_INVALID.throwException();
+        }
+
+        this.appDAO.deleteById(deleteAppRequest.getId());
         return new DeleteAppVO();
     }
 

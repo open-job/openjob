@@ -5,7 +5,9 @@ import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import lombok.Getter;
 
+import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author stelin swoft@qq.com
@@ -50,9 +52,19 @@ public class WorkerConfig {
     private static Integer serverPort;
 
     /**
+     * Initialize status
+     */
+    private final AtomicBoolean isInit = new AtomicBoolean(false);
+
+    /**
      * Init
      */
-    public void init() {
+    public void init() throws UnknownHostException {
+        // Already initialized
+        if (this.isInit.get()) {
+            return;
+        }
+
         // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         if (Objects.isNull(appName)) {
@@ -63,8 +75,14 @@ public class WorkerConfig {
         workerPort = OpenjobConfig.getInteger(WorkerConstant.WORKER_PORT, WorkerConstant.DEFAULT_WORKER_PORT);
         workerAddress = String.format("%s:%d", workerHost, workerPort);
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
-        serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+
+        // Server hostname
+        String serverHostname = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
+        serverHost = IpUtil.getIpByHost(serverHostname);
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
+
+        // Initialized
+        this.isInit.set(true);
     }
 
     public static String getWorkerHost() {
