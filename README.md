@@ -53,8 +53,9 @@
   - username: openjob
   - password: openjob.io
 ## Contact
-* Mail list:
+- Mail list:
   * swoft@qq.com
+- Gitter: https://gitter.im/openjob/openjob
 - Online chat:
 
 ## Openjob ecosystem
