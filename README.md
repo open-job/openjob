@@ -54,6 +54,7 @@
   - password: openjob.io
 ## Contact
 - Gitter: https://gitter.im/openjob/openjob
+- Discord: https://discord.gg/ZUmX57fKa5
 - WeChat:
 - WeAccount:
 - Mail list:
