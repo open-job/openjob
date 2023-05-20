@@ -31,7 +31,7 @@
   * Comprehensive monitoring indicators, rich and timely alarm methods, convenient operation and maintenance personnel to quickly locate and solve online problems.
 ## Maven dependency
 ```xml
-<openjob.worker.version>1.0.0</openjob.worker.version>
+<openjob.worker.version>1.0.1</openjob.worker.version>
 <dependency>
     <groupId>io.openjob.worker</groupId>
     <artifactId>openjob-worker-core</artifactId>
