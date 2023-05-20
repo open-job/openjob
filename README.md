@@ -53,10 +53,11 @@
   - username: openjob
   - password: openjob.io
 ## Contact
+- Gitter: https://gitter.im/openjob/openjob
+- WeChat:
+- WeAccount:
 - Mail list:
   * swoft@qq.com
-- Gitter: https://gitter.im/openjob/openjob
-- Online chat:
 
 ## Openjob ecosystem
 - [Openjob Website](https://github.com/open-job/openjob-website) - Openjob official website
