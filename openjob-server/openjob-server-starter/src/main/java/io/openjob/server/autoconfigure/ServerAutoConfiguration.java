@@ -53,15 +53,24 @@ public class ServerAutoConfiguration {
      */
     @Bean
     public ActorSystem actorSystem(ApplicationContext applicationContext, AkkaProperties akkaProperties) {
-        String hostname = akkaProperties.getRemote().getHostname();
-        if (StringUtils.isEmpty(hostname)) {
-            hostname = IpUtil.getLocalAddress();
+        // Remote hostname
+        String remoteHostname = akkaProperties.getRemote().getHostname();
+        if (StringUtils.isEmpty(remoteHostname)) {
+            remoteHostname = IpUtil.getLocalAddress();
+        }
+
+        // Bind hostname
+        String bindHostname = akkaProperties.getBind().getHostname();
+        if (StringUtils.isEmpty(bindHostname)) {
+            bindHostname = IpUtil.getLocalAddress();
         }
 
         // Merge config
         Map<String, Object> newConfig = new HashMap<>(8);
-        newConfig.put("akka.remote.artery.canonical.hostname", hostname);
+        newConfig.put("akka.remote.artery.canonical.hostname", remoteHostname);
         newConfig.put("akka.remote.artery.canonical.port", String.valueOf(akkaProperties.getRemote().getPort()));
+        newConfig.put("akka.remote.artery.bind.hostname", bindHostname);
+        newConfig.put("akka.remote.artery.bind.port", String.valueOf(akkaProperties.getBind().getPort()));
 
         Config defaultConfig = ConfigFactory.load(AkkaConfigConstant.AKKA_CONFIG);
         Config mergedConfig = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
