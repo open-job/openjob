@@ -77,8 +77,7 @@ public class WorkerConfig {
         delayEnable = OpenjobConfig.getBoolean(WorkerConstant.WORKER_DELAY_ENABLE, false);
 
         // Server hostname
-        String serverHostname = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
-        serverHost = IpUtil.getIpByHost(serverHostname);
+        serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
 
         // Initialized

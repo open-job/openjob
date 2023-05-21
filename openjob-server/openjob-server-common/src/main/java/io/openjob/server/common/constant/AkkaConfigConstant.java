@@ -11,12 +11,12 @@ public class AkkaConfigConstant {
     public static final String AKKA_CONFIG = "openjob.conf";
 
     /**
-     * Akka remote hostname
+     * Akka bind hostname
      */
-    public static final String AKKA_REMOTE_HOSTNAME = "akka.remote.artery.canonical.hostname";
+    public static final String AKKA_BIND_HOSTNAME = "akka.remote.artery.bind.hostname";
 
     /**
-     * Akka remote port
+     * Akka bind port
      */
-    public static final String AKKA_REMOTE_PORT = "akka.remote.artery.canonical.port";
+    public static final String AKKA_BIND_PORT = "akka.remote.artery.bind.port";
 }
