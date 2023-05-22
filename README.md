@@ -56,9 +56,13 @@
 - Gitter: https://gitter.im/openjob/openjob
 - Discord: https://discord.gg/ZUmX57fKa5
 - WeChat Assistant:
-  ![WeChat](./public/image/wx.png)
+
+ <img alt="WeChat" width="200px" src="./public/image/wx.png">
+ 
 - WeAccount:
-  ![WeAccount](./public/image/gzh.jpg)
+
+<img alt="WeChat" width="200px" src="./public/image/gzh.jpg">
+
 - Mail list:
   * swoft@qq.com
 
