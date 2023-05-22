@@ -58,9 +58,13 @@ Openjob 是一款分布式高性能任务调度框架，支持多种定时任务
 - Gitter: https://gitter.im/openjob/openjob
 - Discord: https://discord.gg/ZUmX57fKa5
 - 微信群助手:
-  ![WeChat](./public/image/wx.png)
+  
+   <img alt="WeChat" width="200px" src="./public/image/wx.png">
+   
 - 微信公众号:
-  ![WeAccount](./public/image/gzh.jpg)
+  
+  <img alt="WeChat" width="200px" src="./public/image/gzh.jpg">
+  
 - 邮箱:
   * swoft@qq.com
 
