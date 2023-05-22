@@ -51,12 +51,18 @@ Openjob 是一款分布式高性能任务调度框架，支持多种定时任务
 ## 文档
 - [官网](https://openjob.io)
 - [文档](https://openjob.io/docs/intro)
-- [试用](https://demo.openjob.io)
+- [体验](https://demo.openjob.io)
+  - 用户名: openjob
+  - 账号: openjob.io
 ## 联系
-* Mail list:
+- Gitter: https://gitter.im/openjob/openjob
+- Discord: https://discord.gg/ZUmX57fKa5
+- 微信群助手:
+  ![WeChat](./public/image/wx.png)
+- 微信公众号:
+  ![WeAccount](./public/image/gzh.jpg)
+- 邮箱:
   * swoft@qq.com
-- Online chat:
-  - [Gitter](https://gitter.im/openjob/openjob)
 
 ## 协议
 Openjob is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
