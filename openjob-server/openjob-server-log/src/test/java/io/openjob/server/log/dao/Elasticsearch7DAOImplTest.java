@@ -1,11 +1,14 @@
 package io.openjob.server.log.dao;
 
+import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.dao.impl.Elasticsearch7DAOImpl;
 import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.dto.ProcessorLogFieldDTO;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +28,13 @@ public class Elasticsearch7DAOImplTest {
         ProcessorLogDTO processorLogDTO = new ProcessorLogDTO();
         processorLogDTO.setTime(DateUtil.milliLongTime());
         processorLogDTO.setWorkerAddress("worker2Address");
-        processorLogDTO.setTaskId("task2Id");
+        processorLogDTO.setTaskId("taskId");
 
         List<ProcessorLogFieldDTO> fieldList = new ArrayList<>();
         ProcessorLogFieldDTO processorLogFieldDTO = new ProcessorLogFieldDTO("name", "jobbId");
+        ProcessorLogFieldDTO processorLogFieldDTO2 = new ProcessorLogFieldDTO(LogFieldConstant.MESSAGE, "elasticsearch7 test");
         fieldList.add(processorLogFieldDTO);
+        fieldList.add(processorLogFieldDTO2);
         processorLogDTO.setFields(fieldList);
         jobInstanceTaskLogs.add(processorLogDTO);
 
@@ -39,8 +44,15 @@ public class Elasticsearch7DAOImplTest {
     }
 
     @Test
-    public void testQueryByPage() throws Exception {
-        elasticsearch7DAO.queryByPage("task2Id",0L,10L);
+    public void testQueryByScroll() throws Exception {
+        List<ProcessorLogDTO> processorLogDTOList = elasticsearch7DAO.queryByScroll("taskId", 0L, 3);
+        Assertions.assertNotNull(processorLogDTOList);
+    }
+
+    @Test
+    public void testQueryByPageSize() throws Exception {
+        PageDTO<ProcessorLogDTO> pageDTO = elasticsearch7DAO.queryByPageSize("taskId", "test", 1, 3);
+        Assertions.assertNotNull(pageDTO);
     }
 
     @BeforeAll

@@ -100,7 +100,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         Integer isComplete = CommonConstant.NO;
         try {
             String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 0L, 0L);
-            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByPage(taskId, request.getTime(), request.getSize());
+            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByScroll(taskId, request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
                 // Processor list and nextTime.

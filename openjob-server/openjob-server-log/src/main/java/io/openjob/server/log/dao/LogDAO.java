@@ -1,5 +1,6 @@
 package io.openjob.server.log.dao;
 
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
 
 import java.sql.SQLException;
@@ -28,7 +29,7 @@ public interface LogDAO {
      * @return List
      * @throws SQLException SQLException
      */
-    List<ProcessorLogDTO> queryByPage(String taskUniqueId, Long time, Long size) throws Exception;
+    List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception;
 
     /**
      * Query by page size
@@ -37,10 +38,10 @@ public interface LogDAO {
      * @param searchKey    searchKey
      * @param page         page
      * @param size         size
-     * @return List
+     * @return PageDTO
      * @throws Exception Exception
      */
-    List<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Long page, Long size) throws Exception;
+    PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) throws Exception;
 
     /**
      * Delete log before days

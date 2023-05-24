@@ -90,7 +90,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         AtomicLong nextTime = new AtomicLong(0L);
         Integer isComplete = CommonConstant.NO;
         try {
-            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByPage(request.getTaskId(), request.getTime(), request.getSize());
+            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByScroll(request.getTaskId(), request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
                 // Processor list and nextTime.

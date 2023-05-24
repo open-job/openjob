@@ -1,6 +1,8 @@
 package io.openjob.server.log.dao.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openjob.common.constant.LogFieldConstant;
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.common.util.JsonUtil;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.dao.LogDAO;
@@ -8,6 +10,7 @@ import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.dto.ProcessorLogElasticDTO;
 import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -17,6 +20,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -24,7 +29,13 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -54,11 +65,26 @@ public class Elasticsearch7DAOImpl implements LogDAO {
                 processorLogElasticDTO.setTaskId(p.getTaskId());
                 processorLogElasticDTO.setWorkerAddress(p.getWorkerAddress());
                 processorLogElasticDTO.setTime(p.getTime());
-                processorLogElasticDTO.setFields(p.getFields().stream().collect(Collectors.toMap(ProcessorLogFieldDTO::getName, ProcessorLogFieldDTO::getValue)));
+
+                // Field map
+                Map<String, String> fieldMap = new HashMap<>(32);
+                p.getFields().forEach(plf -> {
+                    if (LogFieldConstant.MESSAGE.equals(plf.getName())) {
+                        processorLogElasticDTO.setMessage(plf.getValue());
+                        return;
+                    }
+
+                    if (LogFieldConstant.THROWABLE.equals(plf.getName())) {
+                        processorLogElasticDTO.setThrowable(plf.getValue());
+                        return;
+                    }
+
+                    fieldMap.put(plf.getName(), plf.getValue());
+                });
+                processorLogElasticDTO.setFields(fieldMap);
 
                 // Json
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonLog = objectMapper.writeValueAsString(processorLogElasticDTO);
+                String jsonLog = JsonUtil.encode(processorLogElasticDTO);
 
                 // Index request
                 IndexRequest indexRequest = new IndexRequest(this.getCreateIndex());
@@ -75,7 +101,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     }
 
     @Override
-    public List<ProcessorLogDTO> queryByPage(String taskUniqueId, Long time, Long size) throws Exception {
+    public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
         SearchRequest searchRequest = new SearchRequest(this.getSearchIndex());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
@@ -92,23 +118,73 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         boolBuilder.must(timeQueryBuilder);
 
         searchSourceBuilder.query(boolBuilder);
-        searchSourceBuilder.size(size.intValue());
+        searchSourceBuilder.size(size);
         searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
         searchRequest.source(searchSourceBuilder);
-        SearchResponse searchResponse = this.elasticsearch7Client.getClient().search(searchRequest, this.elasticsearch7Client.getRequestOptions());
-
-        SearchHit[] searchHit = searchResponse.getHits().getHits();
-        if (searchHit.length > 0) {
-            for (SearchHit hit : searchHit) {
-                System.out.println(hit.getSourceAsString());
-            }
-        }
-        return null;
+        return this.queryResult(searchRequest, 0, size).getList();
     }
 
     @Override
-    public List<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Long page, Long size) throws Exception {
-        return null;
+    public PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest(this.getSearchIndex());
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        // Bool query builder
+        BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
+
+        // `taskId=?` and ( message=? or throwable=?)
+        // Append `.keyword` to exact Match
+        boolBuilder.must(QueryBuilders.termQuery("taskId" + ".keyword", taskUniqueId));
+        if (StringUtils.isNotBlank(searchKey)) {
+            MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(searchKey, LogFieldConstant.MESSAGE, LogFieldConstant.THROWABLE);
+            multiMatchQueryBuilder.operator(Operator.OR);
+            boolBuilder.must(multiMatchQueryBuilder);
+        }
+
+        // From
+        searchSourceBuilder.query(boolBuilder);
+        searchSourceBuilder.from((page - 1) * size);
+        searchSourceBuilder.size(size);
+        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
+        searchRequest.source(searchSourceBuilder);
+        return this.queryResult(searchRequest, page, size);
+    }
+
+    private PageDTO<ProcessorLogDTO> queryResult(SearchRequest searchRequest, Integer page, Integer size) throws IOException {
+        SearchResponse searchResponse = this.elasticsearch7Client.getClient().search(searchRequest, this.elasticsearch7Client.getRequestOptions());
+        SearchHit[] searchHit = searchResponse.getHits().getHits();
+
+        // Processor log list
+        List<ProcessorLogDTO> processorLogList = Arrays.stream(searchHit).map(h -> {
+            String sourceJson = h.getSourceAsString();
+            ProcessorLogElasticDTO processorLogElasticDTO = JsonUtil.decode(sourceJson, ProcessorLogElasticDTO.class);
+
+            // Append search field
+            Map<String, String> fieldsMap = processorLogElasticDTO.getFields();
+            fieldsMap.put(LogFieldConstant.MESSAGE, Optional.ofNullable(processorLogElasticDTO.getMessage()).orElse(""));
+            fieldsMap.put(LogFieldConstant.THROWABLE, Optional.ofNullable(processorLogElasticDTO.getThrowable()).orElse(""));
+
+            // Processor log
+            ProcessorLogDTO processorLogDTO = new ProcessorLogDTO();
+            processorLogDTO.setTime(processorLogElasticDTO.getTime());
+            processorLogDTO.setWorkerAddress(processorLogElasticDTO.getWorkerAddress());
+            processorLogDTO.setTaskId(processorLogElasticDTO.getTaskId());
+
+            // Processor log field
+            List<ProcessorLogFieldDTO> fieldList = new ArrayList<>();
+            fieldsMap.forEach((n, v) -> fieldList.add(new ProcessorLogFieldDTO(n, v)));
+            processorLogDTO.setFields(fieldList);
+            return processorLogDTO;
+        }).collect(Collectors.toList());
+
+        // Page
+        PageDTO<ProcessorLogDTO> pageDTO = new PageDTO<>();
+        pageDTO.setPage(page);
+        pageDTO.setSize(size);
+        pageDTO.setList(processorLogList);
+        pageDTO.setTotal(searchResponse.getHits().getTotalHits().value);
+        return pageDTO;
     }
 
     @Override

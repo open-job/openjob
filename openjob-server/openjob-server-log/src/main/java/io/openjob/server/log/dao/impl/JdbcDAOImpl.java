@@ -3,6 +3,7 @@ package io.openjob.server.log.dao.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
@@ -61,7 +62,7 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     @Override
-    public List<ProcessorLogDTO> queryByPage(String taskUniqueId, Long time, Long size) throws Exception {
+    public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
         ResultSet rs = null;
         String sql = "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? limit ?";
         try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -83,7 +84,7 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     @Override
-    public List<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Long page, Long size) throws Exception {
+    public PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) {
         return null;
     }
 
