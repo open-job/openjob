@@ -11,24 +11,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonUtil {
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    /**
+     * Json encode
+     *
+     * @param object object
+     * @return String
+     */
     public static String encode(Object object) {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Json encode failed!", e);
         }
-        return null;
     }
 
+    /**
+     * Json decode
+     *
+     * @param json          json
+     * @param typeReference typeReference
+     * @param <T>           T
+     * @return T
+     */
     public static <T> T decode(String json, TypeReference<T> typeReference) {
         try {
             return OBJECT_MAPPER.readValue(json, typeReference);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Json decode failed!", e);
         }
-        return null;
     }
 
+    /**
+     * Json decode
+     *
+     * @param json        json
+     * @param targetClass targetClass
+     * @param <T>         T
+     * @return T
+     */
     public static <T> T decode(String json, Class<T> targetClass) {
         try {
             return OBJECT_MAPPER.readValue(json, targetClass);

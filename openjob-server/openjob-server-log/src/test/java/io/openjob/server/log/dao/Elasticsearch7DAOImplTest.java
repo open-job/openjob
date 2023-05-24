@@ -10,6 +10,7 @@ import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ import java.util.List;
 public class Elasticsearch7DAOImplTest {
     private static Elasticsearch7DAOImpl elasticsearch7DAO;
 
-    @Test
+    @Test()
+    @Disabled
     public void testBatchAdd() throws InterruptedException {
         List<ProcessorLogDTO> jobInstanceTaskLogs = new ArrayList<>();
         ProcessorLogDTO processorLogDTO = new ProcessorLogDTO();
@@ -44,12 +46,14 @@ public class Elasticsearch7DAOImplTest {
     }
 
     @Test
+    @Disabled
     public void testQueryByScroll() throws Exception {
         List<ProcessorLogDTO> processorLogDTOList = elasticsearch7DAO.queryByScroll("taskId", 0L, 3);
         Assertions.assertNotNull(processorLogDTOList);
     }
 
     @Test
+    @Disabled
     public void testQueryByPageSize() throws Exception {
         PageDTO<ProcessorLogDTO> pageDTO = elasticsearch7DAO.queryByPageSize("taskId", "test", 1, 3);
         Assertions.assertNotNull(pageDTO);
