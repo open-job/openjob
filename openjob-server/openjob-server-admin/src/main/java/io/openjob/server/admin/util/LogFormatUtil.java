@@ -2,13 +2,11 @@ package io.openjob.server.admin.util;
 
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.log.dto.ProcessorLog;
-import io.openjob.server.log.dto.ProcessorLogField;
+import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -29,9 +27,9 @@ public class LogFormatUtil {
      * @param processorLog processorLog
      * @return String
      */
-    public static String formatLog(ProcessorLog processorLog) {
+    public static String formatLog(ProcessorLogDTO processorLog) {
         Map<String, String> fieldMap = processorLog.getFields().stream()
-                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
+                .collect(Collectors.toMap(ProcessorLogFieldDTO::getName, ProcessorLogFieldDTO::getValue));
         String location = fieldMap.get(LogFieldConstant.LOCATION);
         String message = String.format(
                 LOG_FORMAT,

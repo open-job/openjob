@@ -11,7 +11,7 @@ import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.log.dao.LogDAO;
-import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
@@ -47,7 +47,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Nonnull;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -405,14 +404,14 @@ public class DelayInstanceScheduler {
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, workerAddress));
             fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
 
-            ProcessorLog processorLog = new ProcessorLog();
+            ProcessorLogDTO processorLog = new ProcessorLogDTO();
             processorLog.setTaskId(taskId);
             processorLog.setWorkerAddress(workerAddress);
             processorLog.setTime(now);
             processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
 
             logDAO.batchAdd(Collections.singletonList(processorLog));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("Batch add task log failed!", e);
         }
     }

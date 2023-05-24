@@ -9,9 +9,9 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-public class ProcessorLog {
+public class ProcessorLogDTO {
     private String taskId;
     private String workerAddress;
-    private List<ProcessorLogField> fields;
+    private List<ProcessorLogFieldDTO> fields;
     private Long time;
 }

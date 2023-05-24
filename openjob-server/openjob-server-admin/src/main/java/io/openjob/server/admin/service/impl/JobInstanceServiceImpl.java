@@ -21,7 +21,7 @@ import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
-import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -101,7 +100,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         Integer isComplete = CommonConstant.NO;
         try {
             String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 0L, 0L);
-            List<ProcessorLog> processorLogs = this.logDAO.queryByPage(taskId, request.getTime(), request.getSize());
+            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByPage(taskId, request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
                 // Processor list and nextTime.
@@ -118,7 +117,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

@@ -22,7 +22,10 @@ public class H2Client extends AbstractJdbcHikariClient {
      */
     public H2Client(LogProperties.H2Properties h2Properties) {
         this.h2Properties = h2Properties;
+    }
 
+    @Override
+    public void afterPropertiesSet() {
         // Driver
         LogProperties.JdbcProperties properties = h2Properties.getProperties();
         if (Objects.isNull(properties.getDriver())) {

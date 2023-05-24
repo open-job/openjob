@@ -1,9 +1,11 @@
 package io.openjob.server.log.autoconfigure;
 
+import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.client.H2Client;
 import io.openjob.server.log.client.MysqlClient;
 import io.openjob.server.log.constant.LogStorageConstant;
 import io.openjob.server.log.dao.LogDAO;
+import io.openjob.server.log.dao.impl.Elasticsearch7DAOImpl;
 import io.openjob.server.log.dao.impl.H2LogDAOImpl;
 import io.openjob.server.log.dao.impl.MysqlLogDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,19 @@ public class LogAutoConfiguration {
         @Bean
         public LogDAO h2LogDAO(MysqlClient mysqlClient) {
             return new MysqlLogDAOImpl(mysqlClient);
+        }
+    }
+
+    @ConditionalOnProperty(prefix = "openjob.log.storage", name = "selector", havingValue = LogStorageConstant.ELASTICSEARCH7)
+    public class Elasticsearch7autoconfiguration {
+        @Bean
+        public Elasticsearch7Client mysqlClient() {
+            return new Elasticsearch7Client(logProperties.getStorage().getElasticsearch7());
+        }
+
+        @Bean
+        public LogDAO h2LogDAO(Elasticsearch7Client elasticsearch7Client, LogProperties.Elasticsearch7Properties properties) {
+            return new Elasticsearch7DAOImpl(elasticsearch7Client, properties);
         }
     }
 }

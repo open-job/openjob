@@ -7,11 +7,11 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class ProcessorLogField {
+public class ProcessorLogFieldDTO {
     private String name;
     private String value;
 
-    public ProcessorLogField(String name, String value) {
+    public ProcessorLogFieldDTO(String name, String value) {
         this.name = name;
         this.value = value;
     }
