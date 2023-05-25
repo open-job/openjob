@@ -4,24 +4,21 @@ import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.mapper.LogMapper;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
-import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -187,7 +184,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
 
         private void appendProcessorLog(List<String> taskIds) {
             try {
-                List<ProcessorLog> processorLogs = taskIds.stream().map(tid -> {
+                List<ProcessorLogDTO> processorLogs = taskIds.stream().map(tid -> {
                     Long now = DateUtil.milliLongTime();
                     List<WorkerJobInstanceTaskLogFieldRequest> fields = new ArrayList<>();
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TASK_ID, tid));
@@ -197,7 +194,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.WORKER_ADDRESS, ""));
                     fields.add(new WorkerJobInstanceTaskLogFieldRequest(LogFieldConstant.TIME_STAMP, now.toString()));
 
-                    ProcessorLog processorLog = new ProcessorLog();
+                    ProcessorLogDTO processorLog = new ProcessorLogDTO();
                     processorLog.setTaskId(tid);
                     processorLog.setWorkerAddress("");
                     processorLog.setTime(now);
@@ -206,7 +203,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                 }).collect(Collectors.toList());
 
                 logDAO.batchAdd(processorLogs);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("Batch add task ignore log failed!", e);
             }
         }

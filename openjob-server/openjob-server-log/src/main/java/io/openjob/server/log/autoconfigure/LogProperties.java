@@ -21,10 +21,7 @@ public class LogProperties {
         private H2Properties h2 = new H2Properties();
         private MysqlProperties mysql = new MysqlProperties();
         private TidbProperties tidb = new TidbProperties();
-        private ElasticsearchProperties elasticsearch = new ElasticsearchProperties();
         private Elasticsearch7Properties elasticsearch7 = new Elasticsearch7Properties();
-        private SlsProperties sls = new SlsProperties();
-        private ClsProperties cls = new ClsProperties();
     }
 
     @Data
@@ -43,29 +40,15 @@ public class LogProperties {
     }
 
     @Data
-    public static class ElasticsearchProperties {
-
-    }
-
-    @Data
     public static class Elasticsearch7Properties {
-
-    }
-
-    /**
-     * Aliyun sls
-     */
-    @Data
-    public static class SlsProperties {
-
-    }
-
-    /**
-     * Qcloud cls
-     */
-    @Data
-    public static class ClsProperties {
-
+        private String clusterNodes;
+        private String username;
+        private String password;
+        private String protocol = "http";
+        private Integer connectTimeout = 3000;
+        private Integer socketTimeout = 3000;
+        private Integer responseTimeout = 3000;
+        private Integer bufferLimit = 104857600;
     }
 
     @Data

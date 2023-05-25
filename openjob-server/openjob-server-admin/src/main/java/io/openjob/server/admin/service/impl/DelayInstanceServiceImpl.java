@@ -18,7 +18,7 @@ import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
-import io.openjob.server.log.dto.ProcessorLog;
+import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.entity.DelayInstance;
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -91,7 +90,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         AtomicLong nextTime = new AtomicLong(0L);
         Integer isComplete = CommonConstant.NO;
         try {
-            List<ProcessorLog> processorLogs = this.logDAO.queryByPage(request.getTaskId(), request.getTime(), request.getSize());
+            List<ProcessorLogDTO> processorLogs = this.logDAO.queryByScroll(request.getTaskId(), request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {
                 // Processor list and nextTime.
@@ -108,7 +107,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

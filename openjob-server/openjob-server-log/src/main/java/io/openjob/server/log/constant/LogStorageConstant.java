@@ -8,8 +8,5 @@ public class LogStorageConstant {
     public static final String H2 = "h2";
     public static final String MYSQL = "mysql";
     public static final String TIDB = "tidb";
-    public static final String ELASTICSEARCH = "elasticsearch";
     public static final String ELASTICSEARCH7 = "elasticsearch7";
-    public static final String SLS = "sls";
-    public static final String CLS = "cls";
 }

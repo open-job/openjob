@@ -19,7 +19,10 @@ public class MysqlClient extends AbstractJdbcHikariClient {
      */
     public MysqlClient(LogProperties.MysqlProperties mysqlProperties) {
         this.mysqlProperties = mysqlProperties;
+    }
 
+    @Override
+    public void afterPropertiesSet() {
         // Driver
         LogProperties.JdbcProperties properties = mysqlProperties.getProperties();
         if (Objects.isNull(properties.getDriver())) {

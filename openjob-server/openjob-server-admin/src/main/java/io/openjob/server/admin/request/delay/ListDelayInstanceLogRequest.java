@@ -29,5 +29,5 @@ public class ListDelayInstanceLogRequest {
     private Long time = 0L;
 
     @ApiModelProperty(value = "Page size", required = true)
-    private Long size = 20L;
+    private Integer size = 20;
 }

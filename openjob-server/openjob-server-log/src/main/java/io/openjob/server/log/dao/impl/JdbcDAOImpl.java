@@ -3,10 +3,11 @@ package io.openjob.server.log.dao.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
-import io.openjob.server.log.dto.ProcessorLog;
-import io.openjob.server.log.dto.ProcessorLogField;
+import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +31,7 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     @Override
-    public void batchAdd(List<ProcessorLog> processorLogList) throws SQLException {
+    public void batchAdd(List<ProcessorLogDTO> processorLogList) throws Exception {
         String sql = "INSERT INTO `processor_log` ("
                 + "`task_id`,"
                 + "`worker_address`,"
@@ -42,7 +43,7 @@ public class JdbcDAOImpl implements LogDAO {
         try (Connection connection = this.jdbcHikariClient.getConnection()) {
             ps = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
-            for (ProcessorLog processorLog : processorLogList) {
+            for (ProcessorLogDTO processorLog : processorLogList) {
                 ps.setString(1, processorLog.getTaskId());
                 ps.setString(2, processorLog.getWorkerAddress());
                 ps.setString(3, this.getContent(processorLog.getFields()));
@@ -61,7 +62,7 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     @Override
-    public List<ProcessorLog> queryByPage(String taskUniqueId, Long time, Long size) throws SQLException {
+    public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
         ResultSet rs = null;
         String sql = "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? limit ?";
         try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -70,7 +71,7 @@ public class JdbcDAOImpl implements LogDAO {
             ps.setLong(3, size);
             rs = ps.executeQuery();
 
-            List<ProcessorLog> taskLogList = new ArrayList<>();
+            List<ProcessorLogDTO> taskLogList = new ArrayList<>();
             while (rs.next()) {
                 taskLogList.add(convert(rs));
             }
@@ -82,9 +83,19 @@ public class JdbcDAOImpl implements LogDAO {
         }
     }
 
-    private String getContent(List<ProcessorLogField> fields) {
+    @Override
+    public PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) {
+        return null;
+    }
+
+    @Override
+    public void deleteByDays(Integer beforeDays) {
+
+    }
+
+    private String getContent(List<ProcessorLogFieldDTO> fields) {
         Map<String, String> fieldMap = fields.stream()
-                .collect(Collectors.toMap(ProcessorLogField::getName, ProcessorLogField::getValue));
+                .collect(Collectors.toMap(ProcessorLogFieldDTO::getName, ProcessorLogFieldDTO::getValue));
 
         // Format log fields
         try {
@@ -95,8 +106,8 @@ public class JdbcDAOImpl implements LogDAO {
         }
     }
 
-    private ProcessorLog convert(ResultSet rs) throws SQLException {
-        ProcessorLog taskLog = new ProcessorLog();
+    private ProcessorLogDTO convert(ResultSet rs) throws SQLException {
+        ProcessorLogDTO taskLog = new ProcessorLogDTO();
         taskLog.setTaskId(rs.getString("task_id"));
         taskLog.setWorkerAddress(rs.getString("worker_address"));
         taskLog.setTime(rs.getLong("time"));
@@ -108,8 +119,8 @@ public class JdbcDAOImpl implements LogDAO {
             Map<String, String> fieldMap = mapper.readValue(content, new TypeReference<Map<String, String>>() {
             });
 
-            List<ProcessorLogField> fieldsList = new ArrayList<>();
-            fieldMap.forEach((name, value) -> fieldsList.add(new ProcessorLogField(name, value)));
+            List<ProcessorLogFieldDTO> fieldsList = new ArrayList<>();
+            fieldMap.forEach((name, value) -> fieldsList.add(new ProcessorLogFieldDTO(name, value)));
             taskLog.setFields(fieldsList);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

@@ -19,6 +19,7 @@ public abstract class AbstractJdbcHikariClient implements Client {
 
     /**
      * Init
+     *
      * @param properties properties
      */
     public void init(LogProperties.JdbcProperties properties) {
@@ -39,6 +40,7 @@ public abstract class AbstractJdbcHikariClient implements Client {
 
     /**
      * Init table.
+     *
      * @throws SQLException SQLException
      */
     public void initTable() throws SQLException {
@@ -63,7 +65,7 @@ public abstract class AbstractJdbcHikariClient implements Client {
      * @return Connection
      */
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return this.dataSource.getConnection();
     }
 
     @Override
@@ -73,6 +75,6 @@ public abstract class AbstractJdbcHikariClient implements Client {
 
     @Override
     public void shutdown() {
-
+        this.dataSource.close();
     }
 }

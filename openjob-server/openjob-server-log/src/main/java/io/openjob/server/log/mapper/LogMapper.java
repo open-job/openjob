@@ -1,7 +1,7 @@
 package io.openjob.server.log.mapper;
 
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
-import io.openjob.server.log.dto.ProcessorLogField;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -21,5 +21,5 @@ public interface LogMapper {
      * @param list list
      * @return List
      */
-    List<ProcessorLogField> toProcessorLogFieldList(List<WorkerJobInstanceTaskLogFieldRequest> list);
+    List<ProcessorLogFieldDTO> toProcessorLogFieldList(List<WorkerJobInstanceTaskLogFieldRequest> list);
 }
