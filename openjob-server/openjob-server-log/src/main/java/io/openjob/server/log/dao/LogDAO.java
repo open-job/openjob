@@ -16,7 +16,7 @@ public interface LogDAO {
      * Batch add.
      *
      * @param jobInstanceTaskLogs jobInstanceTaskLogs
-     * @throws SQLException SQLException
+     * @throws Exception Exception
      */
     void batchAdd(List<ProcessorLogDTO> jobInstanceTaskLogs) throws Exception;
 
@@ -27,7 +27,7 @@ public interface LogDAO {
      * @param time         time
      * @param size         size
      * @return List
-     * @throws SQLException SQLException
+     * @throws Exception Exception
      */
     List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception;
 
@@ -47,6 +47,7 @@ public interface LogDAO {
      * Delete log before days
      *
      * @param beforeDays beforeDays
+     * @throws Exception Exception
      */
-    void deleteByDays(Integer beforeDays);
+    void deleteByDays(Integer beforeDays) throws Exception;
 }

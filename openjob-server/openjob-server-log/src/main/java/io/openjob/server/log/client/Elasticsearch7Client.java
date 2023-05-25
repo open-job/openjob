@@ -22,6 +22,10 @@ import java.util.Objects;
  * @since 1.0.2
  */
 public class Elasticsearch7Client implements Client {
+    /**
+     * Host split count
+     */
+    private static final Integer HOST_SPLIT_COUNT = 2;
 
     private final LogProperties.Elasticsearch7Properties properties;
     private RestHighLevelClient client;
@@ -94,7 +98,7 @@ public class Elasticsearch7Client implements Client {
 
         return Arrays.stream(this.properties.getClusterNodes().split(",")).map(cn -> {
             String[] clusterSplit = cn.split(":");
-            if (clusterSplit.length != 2) {
+            if (clusterSplit.length != HOST_SPLIT_COUNT) {
                 throw new RuntimeException(String.format("Elasticsearch7 `clusterNodes` is invalid(clusterNode=%s)!", cn));
             }
             return new HttpHost(clusterSplit[0], Integer.parseInt(clusterSplit[1]), this.properties.getProtocol());
