@@ -2,9 +2,9 @@ package io.openjob.server.scheduler.scheduler;
 
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.SystemDTO;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.repository.dao.SystemDAO;
 import io.openjob.server.repository.entity.System;
-import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public class DelayScheduler {
         // Refresh system.
         clusterVersion++;
         delayVersion++;
-        SystemDTO systemDTO = SchedulerMapper.INSTANCE.toSystemDTO(currentSystem);
+        SystemDTO systemDTO = BeanMapperUtil.map(currentSystem, SystemDTO.class);
         systemDTO.setClusterVersion(clusterVersion);
         systemDTO.setClusterDelayVersion(delayVersion);
 

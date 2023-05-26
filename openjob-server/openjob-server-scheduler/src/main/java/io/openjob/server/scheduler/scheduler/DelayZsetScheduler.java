@@ -4,8 +4,9 @@ import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.log.dto.ProcessorLogDTO;
-import io.openjob.server.log.mapper.LogMapper;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
@@ -198,7 +199,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                     processorLog.setTaskId(tid);
                     processorLog.setWorkerAddress("");
                     processorLog.setTime(now);
-                    processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+                    processorLog.setFields(BeanMapperUtil.mapList(fields, WorkerJobInstanceTaskLogFieldRequest.class, ProcessorLogFieldDTO.class));
                     return processorLog;
                 }).collect(Collectors.toList());
 

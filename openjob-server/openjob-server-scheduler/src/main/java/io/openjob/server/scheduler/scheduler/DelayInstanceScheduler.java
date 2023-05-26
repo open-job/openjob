@@ -9,10 +9,11 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.DelayUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.TaskUtil;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
-import io.openjob.server.log.mapper.LogMapper;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.entity.App;
@@ -33,7 +34,6 @@ import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
 import io.openjob.server.scheduler.dto.TopicFailCounterDTO;
 import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
-import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.util.CacheUtil;
 import io.openjob.server.scheduler.util.DelaySlotUtil;
 import io.openjob.server.scheduler.util.RedisUtil;
@@ -160,7 +160,7 @@ public class DelayInstanceScheduler {
         }
 
         List<DelayTopicPullDTO> pullTopics = this.delayData.getListByAppId(app.getId()).stream()
-                .map(SchedulerMapper.INSTANCE::toDelayTopicPullDTO)
+                .map((d) -> BeanMapperUtil.map(d, DelayTopicPullDTO.class))
                 .collect(Collectors.toList());
 
         DelayTopicPullResponseDTO response = new DelayTopicPullResponseDTO();
@@ -408,7 +408,7 @@ public class DelayInstanceScheduler {
             processorLog.setTaskId(taskId);
             processorLog.setWorkerAddress(workerAddress);
             processorLog.setTime(now);
-            processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+            processorLog.setFields(BeanMapperUtil.mapList(fields, WorkerJobInstanceTaskLogFieldRequest.class, ProcessorLogFieldDTO.class));
 
             logDAO.batchAdd(Collections.singletonList(processorLog));
         } catch (Exception e) {

@@ -22,6 +22,11 @@
         <module>openjob-server-dispatcher</module>
     </modules>
 
+    <properties>
+        <orika.version>1.5.4</orika.version>
+        <flyway.version>7.15.0</flyway.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -66,9 +71,15 @@
             </dependency>
 
             <dependency>
+                <groupId>ma.glasnost.orika</groupId>
+                <artifactId>orika-core</artifactId>
+                <version>${orika.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.15.0</version>
+                <version>${flyway.version}</version>
             </dependency>
 
             <dependency>

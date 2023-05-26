@@ -4,9 +4,10 @@ import com.google.common.collect.Lists;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskLogRequest;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
-import io.openjob.server.log.mapper.LogMapper;
+import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class JobInstanceTaskLogService {
             processorLog.setTaskId(taskId);
             processorLog.setWorkerAddress(workerAddress);
             processorLog.setTime(Long.valueOf(timeStamp));
-            processorLog.setFields(LogMapper.INSTANCE.toProcessorLogFieldList(fields));
+            processorLog.setFields(BeanMapperUtil.mapList(fields, WorkerJobInstanceTaskLogFieldRequest.class, ProcessorLogFieldDTO.class));
             return processorLog;
         }).collect(Collectors.toList());
 
