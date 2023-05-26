@@ -78,12 +78,8 @@ public class DelaySlotUtil {
      * @return Long
      */
     public static Long getAddListSlotId(String key) {
-        int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayListMaxSlot = ClusterContext.getSystem().getDelayAddListSlot();
-        int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
-
-        List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
-        return slots.get(index);
+        return (long) CrcUtil.crc16(key.getBytes()) % delayListMaxSlot + 1;
     }
 
     /**
@@ -93,12 +89,8 @@ public class DelaySlotUtil {
      * @return Long
      */
     public static Long getStatusListSlotId(String key) {
-        int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayListMaxSlot = ClusterContext.getSystem().getDelayStatusListSlot();
-        int index = CrcUtil.crc16(key.getBytes()) % delayListMaxSlot;
-
-        List<Long> slots = getCurrentSlots(maxSlot, delayListMaxSlot);
-        return slots.get(index);
+        return (long) CrcUtil.crc16(key.getBytes()) % delayListMaxSlot + 1;
     }
 
     /**
@@ -123,12 +115,8 @@ public class DelaySlotUtil {
      * @return Long
      */
     public static Long getZsetSlotId(String key) {
-        int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayZsetMaxSlot = ClusterContext.getSystem().getDelayZsetSlot();
-        int index = CrcUtil.crc16(key.getBytes()) % delayZsetMaxSlot;
-
-        List<Long> slots = getCurrentSlots(maxSlot, delayZsetMaxSlot);
-        return slots.get(index);
+        return (long) CrcUtil.crc16(key.getBytes()) % delayZsetMaxSlot;
     }
 
     /**
@@ -138,12 +126,8 @@ public class DelaySlotUtil {
      * @return Long
      */
     public static Long getFailZsetSlotId(String key) {
-        int maxSlot = ClusterContext.getSystem().getMaxSlot();
         int delayFailZsetMaxSlot = ClusterContext.getSystem().getDelayFailZsetSlot();
-        int index = CrcUtil.crc16(key.getBytes()) % delayFailZsetMaxSlot;
-
-        List<Long> slots = getCurrentSlots(maxSlot, delayFailZsetMaxSlot);
-        return slots.get(index);
+        return (long) CrcUtil.crc16(key.getBytes()) % delayFailZsetMaxSlot + 1;
     }
 
     /**

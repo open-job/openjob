@@ -15,7 +15,7 @@ public class SlotsUtil {
      * @return Long
      */
     public static Long getSlotsId(String key) {
-        return (long) (CrcUtil.crc16(key.getBytes()) % ClusterContext.getSystem().getMaxSlot());
+        return (long) (CrcUtil.crc16(key.getBytes()) % ClusterContext.getSystem().getMaxSlot()) + 1;
     }
 
     /**
@@ -25,6 +25,6 @@ public class SlotsUtil {
      * @return Long
      */
     public static Long getWorkerSupervisorSlotsId(String key) {
-        return (long) (CrcUtil.crc16(key.getBytes()) % ClusterContext.getSystem().getWorkerSupervisorSlot());
+        return (long) (CrcUtil.crc16(key.getBytes()) % ClusterContext.getSystem().getWorkerSupervisorSlot()) + 1;
     }
 }
