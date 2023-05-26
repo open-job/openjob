@@ -3,19 +3,22 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.request.WorkerDelayStatusRequest;
+import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.common.request.WorkerDelayTopicPullRequest;
 import io.openjob.common.response.ServerDelayAddResponse;
 import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.response.ServerDelayTopicPullResponse;
+import io.openjob.common.response.ServerDelayTopicResponse;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstancePullResponseDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStatusRequestDTO;
 import io.openjob.server.scheduler.dto.DelayItemPullRequestDTO;
+import io.openjob.server.scheduler.dto.DelayTopicPullDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullRequestDTO;
 import io.openjob.server.scheduler.dto.DelayTopicPullResponseDTO;
-import io.openjob.server.scheduler.mapper.SchedulerMapper;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +52,9 @@ public class DelayInstanceService {
 
         // Pull delay instance.
         pullRequest.getPullItems().forEach(item -> {
-            DelayItemPullRequestDTO delayItemPullRequestDTO = SchedulerMapper.INSTANCE.toDelayItemPullRequestDTO(item);
+            DelayItemPullRequestDTO delayItemPullRequestDTO = BeanMapperUtil.map(item, DelayItemPullRequestDTO.class);
             List<DelayInstancePullResponseDTO> responseList = this.delayInstanceScheduler.pullByTopic(pullRequest.getWorkerAddress(), delayItemPullRequestDTO);
-            responses.addAll(SchedulerMapper.INSTANCE.toServerDelayPullResponseList(responseList));
+            responses.addAll(BeanMapperUtil.mapList(responseList, DelayInstancePullResponseDTO.class, ServerDelayInstanceResponse.class));
         });
 
         ServerDelayPullResponse delayPullResponse = new ServerDelayPullResponse();
@@ -67,7 +70,7 @@ public class DelayInstanceService {
      */
     public ServerDelayAddResponse addDelayInstance(WorkerDelayAddRequest addRequest) {
         ServerDelayAddResponse serverDelayAddResponse = new ServerDelayAddResponse();
-        DelayInstanceAddRequestDTO addRequestDTO = SchedulerMapper.INSTANCE.toDelayInstanceAddRequestDTO(addRequest);
+        DelayInstanceAddRequestDTO addRequestDTO = BeanMapperUtil.map(addRequest, DelayInstanceAddRequestDTO.class);
         DelayInstanceAddResponseDTO addResponseDTO = this.delayInstanceScheduler.add(addRequestDTO);
         serverDelayAddResponse.setTaskId(addResponseDTO.getTaskId());
         return serverDelayAddResponse;
@@ -80,10 +83,11 @@ public class DelayInstanceService {
      * @return ServerDelayTopicPullResponse
      */
     public ServerDelayTopicPullResponse pullTopicList(WorkerDelayTopicPullRequest pullRequest) {
-        DelayTopicPullRequestDTO delayTopicPullRequestDTO = SchedulerMapper.INSTANCE.toDelayTopicPullRequestDTO(pullRequest);
+        DelayTopicPullRequestDTO delayTopicPullRequestDTO = BeanMapperUtil.map(pullRequest, DelayTopicPullRequestDTO.class);
+
         DelayTopicPullResponseDTO topicListDTO = this.delayInstanceScheduler.pullTopicList(delayTopicPullRequestDTO);
         ServerDelayTopicPullResponse response = new ServerDelayTopicPullResponse();
-        response.setTopicList(SchedulerMapper.INSTANCE.toServerDelayTopicResponseList(topicListDTO.getTopicList()));
+        response.setTopicList(BeanMapperUtil.mapList(topicListDTO.getTopicList(), DelayTopicPullDTO.class, ServerDelayTopicResponse.class));
         return response;
     }
 
@@ -93,7 +97,8 @@ public class DelayInstanceService {
      * @param workerDelayStatusRequest workerDelayStatusRequest
      */
     public void handleDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
-        List<DelayInstanceStatusRequestDTO> statusList = SchedulerMapper.INSTANCE.toDelayInstanceStatusList(workerDelayStatusRequest.getTaskList());
+        List<DelayInstanceStatusRequestDTO> statusList = BeanMapperUtil.mapList(workerDelayStatusRequest.getTaskList(), WorkerDelayTaskRequest.class, DelayInstanceStatusRequestDTO.class);
+
         this.delayInstanceScheduler.report(statusList);
     }
 }

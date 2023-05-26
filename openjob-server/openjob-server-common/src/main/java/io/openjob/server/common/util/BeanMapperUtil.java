@@ -1,76 +1,46 @@
 package io.openjob.server.common.util;
 
-import org.springframework.beans.BeanUtils;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+import ma.glasnost.orika.metadata.TypeFactory;
 
-import java.util.Objects;
+import java.util.List;
 
 /**
  * @author inhere in.798@qq.com
  */
 public class BeanMapperUtil {
+
     /**
-     * copy source object to target object on source is non-null.
-     *
-     * @param source source
-     * @param target target
-     * @return target
+     * Mapper factory
      */
-    public static <T> T mapObject(Object source, T target) {
-        if (Objects.nonNull(source)) {
-            BeanUtils.copyProperties(source, target);
-        }
-        return target;
+    private static final MapperFactory NOT_NULL_MAPPER_FACTORY = new DefaultMapperFactory.Builder().mapNulls(false).build();
+
+
+    private BeanMapperUtil() {
+
     }
 
     /**
-     * map source object to class. if source is null, will return null.
+     * Map object
      *
-     * @param source      source
-     * @param targetClass targetClass
-     * @param <T>         class
+     * @param source           source
+     * @param destinationClass targetClass
      * @return object or null
      */
-    public static <T> T mapOrNull(Object source, Class<T> targetClass) {
-        return map(source, targetClass, false);
+    public static <S, D> D map(S source, Class<D> destinationClass) {
+        return NOT_NULL_MAPPER_FACTORY.getMapperFacade().map(source, destinationClass);
     }
 
     /**
-     * map source object to class. if source is null, will return new target object.
+     * Map list
      *
-     * @param source      source
-     * @param targetClass targetClass
-     * @param <T>         class
-     * @return object or null
+     * @param sourceList       sourceList
+     * @param sourceClass      sourceClass
+     * @param destinationClass destinationClass
+     * @return List
      */
-    public static <T> T map(Object source, Class<T> targetClass) {
-        return map(source, targetClass, true);
-    }
-
-    /**
-     * map source object to class
-     *
-     * @param source      source
-     * @param targetClass targetClass
-     * @param <T>         class
-     * @return object
-     */
-    public static <T> T map(Object source, Class<T> targetClass, Boolean newIt) {
-        boolean srcIsNull = Objects.isNull(source);
-        if (srcIsNull && !newIt) {
-            return null;
-        }
-
-        T target;
-        try {
-            target = targetClass.getDeclaredConstructor().newInstance();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-
-        if (!srcIsNull) {
-            BeanUtils.copyProperties(source, target);
-        }
-
-        return target;
+    public static <S, D> List<D> mapList(Iterable<S> sourceList, Class<S> sourceClass, Class<D> destinationClass) {
+        return NOT_NULL_MAPPER_FACTORY.getMapperFacade().mapAsList(sourceList, TypeFactory.valueOf(sourceClass), TypeFactory.valueOf(destinationClass));
     }
 }
