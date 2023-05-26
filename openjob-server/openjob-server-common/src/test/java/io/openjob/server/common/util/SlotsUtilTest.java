@@ -12,16 +12,40 @@ import java.util.UUID;
  * @since 1.0.2
  */
 public class SlotsUtilTest {
+
+    @Test
+    public void testGetSlotsId() {
+        this.genSlotsId(1);
+        this.genSlotsId(256);
+    }
+
     @Test
     public void testGetWorkerSupervisorSlotsId() {
+        this.genWorkerSupervisorSlotsId(1);
+        this.genWorkerSupervisorSlotsId(6);
+    }
+
+    private void genWorkerSupervisorSlotsId(Integer maxSlot) {
         SystemDTO systemDTO = new SystemDTO();
-        systemDTO.setWorkerSupervisorSlot(6);
+        systemDTO.setWorkerSupervisorSlot(maxSlot);
         ClusterContext.refreshSystem(systemDTO);
 
         for (int i = 0; i < 1000; i++) {
             long slotId = SlotsUtil.getWorkerSupervisorSlotsId(UUID.randomUUID().toString());
             Assertions.assertTrue(slotId >= 1);
-            Assertions.assertTrue(slotId <= 6);
+            Assertions.assertTrue(slotId <= maxSlot);
+        }
+    }
+
+    private void genSlotsId(Integer maxSlot) {
+        SystemDTO systemDTO = new SystemDTO();
+        systemDTO.setMaxSlot(maxSlot);
+        ClusterContext.refreshSystem(systemDTO);
+
+        for (int i = 0; i < 1000; i++) {
+            long slotId = SlotsUtil.getSlotsId(UUID.randomUUID().toString());
+            Assertions.assertTrue(slotId >= 1);
+            Assertions.assertTrue(slotId <= maxSlot);
         }
     }
 }
