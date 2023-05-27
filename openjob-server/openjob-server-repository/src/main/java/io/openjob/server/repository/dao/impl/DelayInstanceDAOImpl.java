@@ -60,8 +60,10 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 + "`deleted`, "
                 + "`delete_time`, "
                 + "`create_time`, "
+                + "`create_time_date`, "
+                + "`create_time_hour`, "
                 + "`update_time`) "
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -79,7 +81,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 ps.setInt(10, d.getDeleted());
                 ps.setLong(11, d.getDeleteTime());
                 ps.setLong(12, d.getCreateTime());
-                ps.setLong(13, d.getUpdateTime());
+                ps.setInt(13, DateUtil.formatDateByTimestamp(d.getCreateTime()));
+                ps.setInt(14, DateUtil.formatHourByTimestamp(d.getCreateTime()));
+                ps.setLong(15, d.getUpdateTime());
             }
 
             @Override

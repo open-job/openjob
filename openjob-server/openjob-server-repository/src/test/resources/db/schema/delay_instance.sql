@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `delay_instance`
     `execute_time` bigint(12) NOT NULL,
     `deleted`      tinyint(12) NOT NULL DEFAULT '2' COMMENT 'Delete status. 1=yes 2=no',
     `create_time`  bigint(12) NOT NULL,
+    `create_time_date` int(11) NOT NULL DEFAULT '0' COMMENT 'Time date`20230527`',
+    `create_time_hour` int(11) NOT NULL DEFAULT '0' COMMENT 'Time hour`2023052701`',
     `update_time`  bigint(12) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `udx_task_id` (`task_id`)

@@ -2,12 +2,27 @@ package io.openjob.common.util;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
 public class DateUtil {
+
+    /**
+     * Date formatter
+     */
+    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    /**
+     * Hour formatter
+     */
+    private final static DateTimeFormatter HOUR_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
+
+
     private DateUtil() {
 
     }
@@ -51,9 +66,31 @@ public class DateUtil {
     }
 
     /**
-     * 当前毫秒时间(Long)
+     * Current mills(Long)
      */
     public static Long milliLongTime() {
         return instant().toEpochMilli();
+    }
+
+    /**
+     * Date format
+     *
+     * @param timestamp timestamp
+     * @return Integer
+     */
+    public static Integer formatDateByTimestamp(Long timestamp) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
+        return Integer.valueOf(localDateTime.format(DATE_FORMATTER));
+    }
+
+    /**
+     * Hour format
+     *
+     * @param timestamp timestamp
+     * @return Integer
+     */
+    public static Integer formatHourByTimestamp(Long timestamp) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
+        return Integer.valueOf(localDateTime.format(HOUR_FORMATTER));
     }
 }

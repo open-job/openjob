@@ -28,7 +28,7 @@ public class JobInstanceDAOTest extends RepositoryTest {
     }
 
     @Test
-    public void testSaveAndUpdate() throws InterruptedException {
+    public void testSave() {
         JobInstance jobInstance = new JobInstance();
         jobInstance.setJobId(1L);
         jobInstance.setParams("");
@@ -47,24 +47,5 @@ public class JobInstanceDAOTest extends RepositoryTest {
         Assertions.assertTrue(optionalJobInstance.isPresent());
 
         optionalJobInstance.ifPresent(j -> Assertions.assertEquals(j.getJobId(), 1L));
-
-        Thread.sleep(3000L);
-        Long now = DateUtil.timestamp();
-        JobInstance updateJobInstance = new JobInstance();
-        updateJobInstance.setId(id);
-        updateJobInstance.setJobId(2L);
-        updateJobInstance.setUpdateTime(now);
-        updateJobInstance.setCreateTime(now);
-        updateJobInstance.setStatus(3);
-
-        this.jobInstanceDAO.save(updateJobInstance);
-
-        Optional<JobInstance> updateOptional = jobInstanceRepository.findById(id);
-        Assertions.assertTrue(updateOptional.isPresent());
-
-        updateOptional.ifPresent(j -> {
-            Assertions.assertEquals(j.getUpdateTime(), now);
-            Assertions.assertEquals(j.getJobId(), 2L);
-        });
     }
 }

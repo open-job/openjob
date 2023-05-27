@@ -41,6 +41,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public Long save(JobInstance jobInstance) {
+        jobInstance.setCreateTimeDate(DateUtil.formatDateByTimestamp(jobInstance.getCreateTime()));
+        jobInstance.setCreateTimeHour(DateUtil.formatHourByTimestamp(jobInstance.getCreateTime()));
         return this.jobInstanceRepository.save(jobInstance).getId();
     }
 
