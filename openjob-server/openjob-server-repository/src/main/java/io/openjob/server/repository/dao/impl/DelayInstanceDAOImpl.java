@@ -6,6 +6,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -154,6 +155,22 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     @Override
     public Integer deleteByTaskIds(List<String> taskIds) {
         return this.delayInstanceRepository.batchDeleteByTaskIds(taskIds, CommonConstant.YES, DateUtil.timestamp());
+    }
+
+    @Override
+    public Long countTotalByNamespace(Long namespaceId) {
+        return this.delayInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime) {
+        return this.delayInstanceRepository.countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted
+                (namespaceId, startTime, endTime, CommonConstant.NO);
+    }
+
+    @Override
+    public List<GroupCountDTO> countByNamespaceGroupByHourTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        return this.delayInstanceRepository.getDelayGroupByHour(namespaceId, startTime, endTime, status, CommonConstant.NO);
     }
 
     @Override

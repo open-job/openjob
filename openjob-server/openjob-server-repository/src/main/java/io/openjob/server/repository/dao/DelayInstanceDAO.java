@@ -3,6 +3,7 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 
@@ -87,4 +88,33 @@ public interface DelayInstanceDAO {
      * @return DelayInstance
      */
     DelayInstance getFirstByDelayId(Long delayId);
+
+    /**
+     * Count total
+     *
+     * @param namespaceId namespaceId
+     * @return Long
+     */
+    Long countTotalByNamespace(Long namespaceId);
+
+    /**
+     * Count by create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @return Long
+     */
+    Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime);
+
+    /**
+     * Group by hour time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status      status
+     * @return List
+     */
+    List<GroupCountDTO> countByNamespaceGroupByHourTime(Long namespaceId, Long startTime, Long endTime, Integer status);
 }
