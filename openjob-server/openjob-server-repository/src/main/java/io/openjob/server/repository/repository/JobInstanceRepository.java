@@ -1,5 +1,6 @@
 package io.openjob.server.repository.repository;
 
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -99,4 +100,28 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @return JobInstance
      */
     JobInstance findFirstByJobIdAndDeleted(Long jobId, Integer deleted);
+
+    /**
+     * Count total
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
+
+    /**
+     * Group by hour time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status      status
+     * @param deleted     deleted
+     * @return List
+     */
+    @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(j.createTimeHour, count(j.id)) from JobInstance as j "
+            + "where j.namespaceId=?1 and j.createTime >= ?2 and j.createTime<=?3 and j.status=?4 and j.deleted=?5")
+    List<GroupCountDTO> getJobInstanceGroupByHour(Long namespaceId, Long startTime, Long endTime, Integer status, Integer deleted);
+
 }

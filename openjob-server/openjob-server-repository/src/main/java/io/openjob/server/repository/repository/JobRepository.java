@@ -31,4 +31,25 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @return Job
      */
     Job findFirstByNamespaceIdAndAppIdAndDeleted(Long namespaceId, Long appId, Integer deleted);
+
+    /**
+     * Count by namespace
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
+
+    /**
+     * Count by namespace and create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted(Long namespaceId, Long startTime, Long endTime, Integer deleted);
+
 }

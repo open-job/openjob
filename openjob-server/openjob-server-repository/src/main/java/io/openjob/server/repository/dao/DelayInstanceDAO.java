@@ -103,9 +103,10 @@ public interface DelayInstanceDAO {
      * @param namespaceId namespaceId
      * @param startTime   startTime
      * @param endTime     endTime
+     * @param status     status
      * @return Long
      */
-    Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime);
+    Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status);
 
     /**
      * Group by hour time

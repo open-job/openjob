@@ -2,8 +2,10 @@ package io.openjob.common.util;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -92,5 +94,12 @@ public class DateUtil {
     public static Integer formatHourByTimestamp(Long timestamp) {
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
         return Integer.valueOf(localDateTime.format(HOUR_FORMATTER));
+    }
+
+    public static Long getZeroTimestamp() {
+        return LocalDate.now()
+                .atStartOfDay(ZoneOffset.ofHours(8))
+                .toInstant()
+                .getEpochSecond();
     }
 }

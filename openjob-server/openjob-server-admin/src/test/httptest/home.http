@@ -1,0 +1,5 @@
+### Get home task data
+GET http://127.0.0.1:8080/admin/home/task-data?namespaceId=1
+accept: */*
+Content-Type: application/json
+Session: 79f74383e2c92ae01e172ced4c9267d5

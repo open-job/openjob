@@ -2,6 +2,7 @@ package io.openjob.server.repository.dao;
 
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 
@@ -110,4 +111,34 @@ public interface JobInstanceDAO {
      * @return PageDTO
      */
     PageDTO<JobInstance> pageList(JobInstancePageDTO jobInstancePageDTO);
+
+    /**
+     * Count total
+     *
+     * @param namespaceId namespaceId
+     * @return Long
+     */
+    Long countTotalByNamespace(Long namespaceId);
+
+    /**
+     * Count by create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status     status
+     * @return Long
+     */
+    Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status);
+
+    /**
+     * Group by hour time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status      status
+     * @return List
+     */
+    List<GroupCountDTO> countByNamespaceGroupByHourTime(Long namespaceId, Long startTime, Long endTime, Integer status);
 }

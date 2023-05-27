@@ -1,12 +1,24 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.delay.AddDelayRequest;
-import io.openjob.server.admin.vo.delay.AddDelayVO;
+import io.openjob.server.admin.request.home.DelayCircleRequest;
+import io.openjob.server.admin.request.home.DelayPercentageRequest;
+import io.openjob.server.admin.request.home.JobCircleRequest;
+import io.openjob.server.admin.request.home.JobPercentageRequest;
+import io.openjob.server.admin.request.home.SystemDataRequest;
+import io.openjob.server.admin.request.home.TaskDataRequest;
+import io.openjob.server.admin.service.HomeService;
+import io.openjob.server.admin.vo.home.DelayCircleVO;
+import io.openjob.server.admin.vo.home.DelayPercentageVO;
+import io.openjob.server.admin.vo.home.JobCircleVO;
+import io.openjob.server.admin.vo.home.JobPercentageVO;
+import io.openjob.server.admin.vo.home.SystemDataVO;
+import io.openjob.server.admin.vo.home.TaskDataVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,39 +32,47 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/admin/home")
 public class HomeController {
+
+    private final HomeService homeService;
+
+    @Autowired
+    public HomeController(HomeService homeService) {
+        this.homeService = homeService;
+    }
+
     @ApiOperation("One line data")
-    @PostMapping("/tak-data")
-    public Result<AddDelayVO> taskDay(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/task-data")
+    public Result<TaskDataVO> taskData(@Valid @ModelAttribute TaskDataRequest taskDataRequest) {
+        return Result.success(this.homeService.taskData(taskDataRequest));
     }
 
     @ApiOperation("Two line data")
-    @PostMapping("/system-data")
-    public Result<AddDelayVO> systemData(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/system-data")
+    public Result<SystemDataVO> systemData(@Valid @ModelAttribute SystemDataRequest systemDataRequest) {
+        return Result.success(this.homeService.systemData(systemDataRequest));
     }
 
     @ApiOperation("Job circle")
-    @PostMapping("/job-circle")
-    public Result<AddDelayVO> jobCircle(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/job-circle")
+    public Result<JobCircleVO> jobCircle(@Valid @ModelAttribute JobCircleRequest jobCircleRequest) {
+        return Result.success(this.homeService.jobCircle(jobCircleRequest));
     }
 
     @ApiOperation("Job percentage")
-    @PostMapping("/job-percentage")
-    public Result<AddDelayVO> jobPercentage(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/job-percentage")
+    public Result<JobPercentageVO> jobPercentage(@Valid @ModelAttribute JobPercentageRequest jobPercentageRequest) {
+        return Result.success(this.homeService.jobPercentage(jobPercentageRequest));
     }
 
     @ApiOperation("Delay circle")
-    @PostMapping("/delay-circle")
-    public Result<AddDelayVO> delayCircle(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/delay-circle")
+    public Result<DelayCircleVO> delayCircle(@Valid @ModelAttribute DelayCircleRequest delayCircleRequest) {
+        return Result.success(this.homeService.delayCircle(delayCircleRequest));
     }
 
     @ApiOperation("Delay percentage")
-    @PostMapping("/delay-percentage")
-    public Result<AddDelayVO> delayPercentage(@Valid @RequestBody AddDelayRequest addRequest) {
-        return Result.success(null);
+    @GetMapping("/delay-percentage")
+    public Result<DelayPercentageVO> delayPercentage(@Valid @ModelAttribute DelayPercentageRequest delayPercentageRequest) {
+        return Result.success(this.homeService.delayPercentage(delayPercentageRequest));
     }
 }

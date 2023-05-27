@@ -52,17 +52,6 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
 
     /**
-     * Count by create time
-     *
-     * @param namespaceId namespaceId
-     * @param startTime   startTime
-     * @param endTime     endTime
-     * @param deleted     deleted
-     * @return Long
-     */
-    Long countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted(Long namespaceId, Long startTime, Long endTime, Integer deleted);
-
-    /**
      * Group by hour time
      *
      * @param namespaceId namespaceId

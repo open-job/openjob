@@ -37,6 +37,26 @@ public interface DelayRepository extends JpaRepository<Delay, Long> {
     List<Delay> findByAppIdAndDeleted(Long appId, Integer deleted);
 
     /**
+     * Count by namespace
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
+
+    /**
+     * Count by namespace and create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted(Long namespaceId, Long startTime, Long endTime, Integer deleted);
+
+    /**
      * Find first by namespace and appid
      *
      * @param namespaceId namespaceId
