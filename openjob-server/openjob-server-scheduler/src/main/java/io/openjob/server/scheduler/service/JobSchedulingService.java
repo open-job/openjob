@@ -207,17 +207,7 @@ public class JobSchedulingService {
             jobInstance.setExtendParamsType(j.getExtendParamsType());
             jobInstance.setExtendParams(j.getExtendParams());
             jobInstance.setWorkflowId(j.getWorkflowId());
-
-            if (TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
-                // Cron
-                jobInstance.setExecuteTime(j.getNextExecuteTime());
-            } else if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
-                // One time
-                jobInstance.setExecuteTime(Long.valueOf(j.getTimeExpression()));
-            } else {
-                // Not supported
-                return;
-            }
+            jobInstance.setExecuteTime(j.getNextExecuteTime());
 
             Long instanceId = jobInstanceDAO.save(jobInstance);
             jobInstance.setId(instanceId);
