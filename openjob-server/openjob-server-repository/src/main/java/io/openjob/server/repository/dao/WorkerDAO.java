@@ -45,6 +45,15 @@ public interface WorkerDAO {
 
 
     /**
+     * Count by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @param status      status
+     * @return Long
+     */
+    Long countByNamespaceIdAndStatus(Long namespaceId, Integer status);
+
+    /**
      * page result
      *
      * @param workerPageDTO pageDTO

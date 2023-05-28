@@ -8,19 +8,8 @@ import lombok.Data;
  */
 @Data
 public class TaskDataVO {
-    private TaskDataItemVO job;
-    private TaskDataItemVO jobInstance;
-    private TaskDataItemVO delay;
-    private TaskDataItemVO delayInstance;
-
-    @Data
-    public static class TaskDataItemVO {
-        private Long total;
-        private Long newTotal;
-
-        public TaskDataItemVO(Long total, Long newTotal) {
-            this.total = total;
-            this.newTotal = newTotal;
-        }
-    }
+    private DataItemVO job;
+    private DataItemVO jobInstance;
+    private DataItemVO delay;
+    private DataItemVO delayInstance;
 }

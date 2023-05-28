@@ -67,6 +67,14 @@ public interface AppDAO {
     List<App> getByIds(List<Long> ids);
 
     /**
+     * Count by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @return Long
+     */
+    Long countByNamespaceId(Long namespaceId);
+
+    /**
      * List apps
      *
      * @param namespaceId namespaceId

@@ -52,6 +52,13 @@ public interface JobSlotsDAO {
     Integer updateByServerId(Long serverId);
 
     /**
+     * Count by all
+     *
+     * @return Long
+     */
+    Long countByAll();
+
+    /**
      * Job slot
      *
      * @param page page

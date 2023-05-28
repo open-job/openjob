@@ -37,4 +37,13 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     @Modifying
     @Query(value = "update Server as s set s.status=?2,s.updateTime=?3 where s.id=?1")
     Integer update(Long id, Integer status, Long updateTime);
+
+    /**
+     * Count by status
+     *
+     * @param status  status
+     * @param deleted deleted
+     * @return Long
+     */
+    Long countByStatusAndDeleted(Integer status, Integer deleted);
 }

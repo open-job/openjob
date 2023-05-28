@@ -8,4 +8,8 @@ import lombok.Data;
  */
 @Data
 public class SystemDataVO {
+    private DataItemVO app;
+    private DataItemVO server;
+    private DataItemVO worker;
+    private DataItemVO slot;
 }

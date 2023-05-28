@@ -25,4 +25,13 @@ public interface AppRepository extends JpaRepository<App, Long> {
      * @return App
      */
     App findFirstByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
+
+    /**
+     * Get count by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
 }

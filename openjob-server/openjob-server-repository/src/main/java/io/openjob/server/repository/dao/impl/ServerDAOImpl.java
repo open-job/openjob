@@ -81,6 +81,11 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
+    public Long countByStatus(Integer status) {
+        return this.serverRepository.countByStatusAndDeleted(status, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<Server> pageList(String searchAddress, Integer page, Integer size) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
@@ -96,7 +101,7 @@ public class ServerDAOImpl implements ServerDAO {
 
         // Condition
         Example<Server> example = Example.of(server, matching);
-        Page<Server> pageResult = serverRepository.findAll(example,pageable);
+        Page<Server> pageResult = serverRepository.findAll(example, pageable);
 
         PageDTO<Server> paging = new PageDTO<>();
         if (!pageResult.isEmpty()) {
