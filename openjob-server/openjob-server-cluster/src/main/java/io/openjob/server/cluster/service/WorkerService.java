@@ -215,7 +215,7 @@ public class WorkerService {
     private App checkAppName(String appName) {
         App app = appDAO.getAppByName(appName);
         if (Objects.isNull(app)) {
-            throw new RuntimeException(String.format("app(%s) do not exist!", appName));
+            throw new RuntimeException(String.format("Register application(%s) do not exist!", appName));
         }
         return app;
     }
@@ -231,6 +231,9 @@ public class WorkerService {
             //Must update last heartbeat time.
             worker.setLastHeartbeatTime(now);
             worker.setUpdateTime(now);
+
+            // Update latest app name
+            worker.setAppName(startReq.getAppName());
             workerDAO.save(worker);
             return;
         }
