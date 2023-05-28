@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.data;
 
 import com.google.common.collect.Lists;
+import io.openjob.common.util.DelayUtil;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.constant.CacheConst;
@@ -13,8 +14,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +66,15 @@ public class DelayData {
             }
             return delay;
         }, Duration.ofDays(1));
+    }
+
+    public void deleteByTopicOrId(String topic, Long id, Long failDelayId) {
+        Set<String> keys = new HashSet<>();
+        keys.add(CacheUtil.getDelayDetailTopicKey(topic));
+        keys.add(CacheUtil.getDelayDetailTopicKey(DelayUtil.getFailDelayTopic(topic)));
+        keys.add(CacheUtil.getDelayDetailIdKey(id));
+        keys.add(CacheUtil.getDelayDetailIdKey(failDelayId));
+        RedisUtil.getTemplate().delete(keys);
     }
 
     /**
