@@ -46,4 +46,13 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
      * @return Long
      */
     Long countByStatusAndDeleted(Integer status, Integer deleted);
+
+    /**
+     * Delete sever by create time and status
+     *
+     * @param lastTime lastTime
+     * @param status   status
+     * @return Long
+     */
+    Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }

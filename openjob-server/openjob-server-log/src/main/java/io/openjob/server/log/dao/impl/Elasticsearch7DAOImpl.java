@@ -188,7 +188,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     }
 
     @Override
-    public void deleteByDays(Integer beforeDays) {
+    public void deleteByLastTime(Long lastTime) throws Exception {
 
     }
 

@@ -45,4 +45,13 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
      * @return Long
      */
     Long countByNamespaceIdAndStatusAndDeleted(Long namespaceId, Integer status, Integer deleted);
+
+    /**
+     * Delete sever by create time and status
+     *
+     * @param lastTime lastTime
+     * @param status   status
+     * @return Long
+     */
+    Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }

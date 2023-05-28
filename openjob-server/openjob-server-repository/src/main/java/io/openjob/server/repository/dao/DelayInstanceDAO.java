@@ -4,7 +4,6 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
 import io.openjob.server.repository.dto.GroupCountDTO;
-import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 
 import java.util.List;
@@ -107,6 +106,14 @@ public interface DelayInstanceDAO {
      * @return Long
      */
     Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status);
+
+    /**
+     * Delete by create time and status
+     * @param lastTime lastTime
+     * @param status status
+     * @return Long
+     */
+    Long deleteByCreateTimeAndNotStatus(Long lastTime, Integer status);
 
     /**
      * Group by hour time

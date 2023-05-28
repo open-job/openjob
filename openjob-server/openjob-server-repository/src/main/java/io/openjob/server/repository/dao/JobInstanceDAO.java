@@ -126,10 +126,18 @@ public interface JobInstanceDAO {
      * @param namespaceId namespaceId
      * @param startTime   startTime
      * @param endTime     endTime
-     * @param status     status
+     * @param status      status
      * @return Long
      */
     Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status);
+
+    /**
+     * Delete by create time and status
+     *
+     * @param lastTime lastTime
+     * @return Long
+     */
+    Long deleteByCreateTim(Long lastTime);
 
     /**
      * Group by hour time

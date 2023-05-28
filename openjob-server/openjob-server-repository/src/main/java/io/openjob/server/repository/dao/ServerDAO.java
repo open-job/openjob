@@ -79,6 +79,14 @@ public interface ServerDAO {
     Long countByStatus(Integer status);
 
     /**
+     * Delete by create time and status
+     * @param lastTime lastTime
+     * @param status status
+     * @return Long
+     */
+    Long deleteByCreateTimeAndStatus(Long lastTime, Integer status);
+
+    /**
      * page list servers
      *
      * @param searchAddress search address

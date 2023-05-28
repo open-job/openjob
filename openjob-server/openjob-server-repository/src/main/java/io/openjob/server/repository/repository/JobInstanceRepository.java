@@ -111,6 +111,14 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
 
     /**
+     * Delete sever by create time and status
+     *
+     * @param lastTime lastTime
+     * @return Long
+     */
+    Long deleteByCreateTimeLessThanEqual(Long lastTime);
+
+    /**
      * Group by hour time
      *
      * @param namespaceId namespaceId
