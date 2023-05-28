@@ -116,6 +116,16 @@ public class DelayDAOImpl implements DelayDAO {
     }
 
     @Override
+    public Long countByNamespace(Long namespaceId) {
+        return this.delayRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime) {
+        return this.delayRepository.countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted(namespaceId, startTime, endTime, CommonConstant.NO);
+    }
+
+    @Override
     public Delay getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
         return this.delayRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
     }

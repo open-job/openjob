@@ -139,6 +139,16 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
+    public Long countByNamespace(Long namespaceId) {
+        return this.jobRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime) {
+        return this.jobRepository.countByNamespaceIdAndCreateTimeGreaterThanEqualAndCreateTimeLessThanEqualAndDeleted(namespaceId, startTime, endTime, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<Job> pageList(JobPageDTO jobPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();

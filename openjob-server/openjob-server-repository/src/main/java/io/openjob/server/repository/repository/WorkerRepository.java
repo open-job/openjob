@@ -36,4 +36,13 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
      */
     List<Worker> findBySlotsIdIsIn(List<Long> slotIds);
 
+    /**
+     * Count by namespace id
+     *
+     * @param namespaceId namespaceId
+     * @param status      status
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndStatusAndDeleted(Long namespaceId, Integer status, Integer deleted);
 }

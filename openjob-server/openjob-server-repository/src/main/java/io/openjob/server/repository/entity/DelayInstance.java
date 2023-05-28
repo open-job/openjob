@@ -70,6 +70,18 @@ public class DelayInstance {
     @Column(name = "create_time")
     private Long createTime;
 
+    /**
+     * Create time hour
+     */
+    @Column(name = "create_time_hour")
+    private Integer createTimeHour;
+
+    /**
+     * Create time date
+     */
+    @Column(name = "create_time_date")
+    private Integer createTimeDate;
+
     @Column(name = "update_time")
     private Long updateTime;
 }

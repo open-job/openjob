@@ -115,6 +115,18 @@ public class JobInstance {
     private Long createTime;
 
     /**
+     * Create time hour
+     */
+    @Column(name = "create_time_hour")
+    private Integer createTimeHour;
+
+    /**
+     * Create time date
+     */
+    @Column(name = "create_time_date")
+    private Integer createTimeDate;
+
+    /**
      * Update time
      */
     @Column(name = "update_time")

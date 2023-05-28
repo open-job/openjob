@@ -98,6 +98,11 @@ public class AppDAOImpl implements AppDAO {
     }
 
     @Override
+    public Long countByNamespaceId(Long namespaceId) {
+        return this.appRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<App> pageList(Long namespaceId, String searchName, Integer page, Integer size) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();

@@ -83,6 +83,25 @@ public interface JobDAO {
     List<Job> listScheduledSecondJobs(List<Long> slotIds);
 
     /**
+     * Count by namespace
+     *
+     * @param namespaceId namespaceId
+     * @return Long
+     */
+    Long countByNamespace(Long namespaceId);
+
+    /**
+     * Count by namespace and create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @return Long
+     */
+    Long countByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime);
+
+
+    /**
      * Get page list.
      *
      * @param jobPageDTO jobPageDTO

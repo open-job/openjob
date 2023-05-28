@@ -6,6 +6,7 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -60,8 +61,10 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 + "`deleted`, "
                 + "`delete_time`, "
                 + "`create_time`, "
+                + "`create_time_date`, "
+                + "`create_time_hour`, "
                 + "`update_time`) "
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -79,7 +82,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 ps.setInt(10, d.getDeleted());
                 ps.setLong(11, d.getDeleteTime());
                 ps.setLong(12, d.getCreateTime());
-                ps.setLong(13, d.getUpdateTime());
+                ps.setInt(13, DateUtil.formatDateByTimestamp(d.getCreateTime()));
+                ps.setInt(14, DateUtil.formatHourByTimestamp(d.getCreateTime()));
+                ps.setLong(15, d.getUpdateTime());
             }
 
             @Override
@@ -153,6 +158,46 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public Long countTotalByNamespace(Long namespaceId) {
+        return this.delayInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+
+        Specification<DelayInstance> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> conditions = new ArrayList<>();
+
+            // Deleted
+            conditions.add(criteriaBuilder.equal(root.get("deleted").as(Integer.class), CommonConstant.NO));
+
+            // Namespace id.
+            conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), namespaceId));
+
+            // Begin time
+            conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), startTime));
+
+            // End time
+            conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), endTime));
+
+            // Status.
+            if (Objects.nonNull(status)) {
+                conditions.add(criteriaBuilder.equal(root.get("status").as(Integer.class), status));
+            }
+
+            Predicate[] conditionAry = new Predicate[conditions.size()];
+            return criteriaBuilder.and(conditions.toArray(conditionAry));
+        };
+
+        return this.delayInstanceRepository.count(specification);
+    }
+
+    @Override
+    public List<GroupCountDTO> countByNamespaceGroupByHourTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        return this.delayInstanceRepository.getDelayGroupByHour(namespaceId, startTime, endTime, status, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<DelayInstance> pageList(DelayInstancePageDTO instancePageDTO) {
 
         Specification<DelayInstance> specification = (root, query, criteriaBuilder) -> {
@@ -169,9 +214,9 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instancePageDTO.getBeginTime()));
             }
 
-            // Begin time
+            // End time
             if (Objects.nonNull(instancePageDTO.getBeginTime()) && instancePageDTO.getBeginTime() > 0) {
-                conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), instancePageDTO.getBeginTime()));
+                conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), instancePageDTO.getEndTime()));
             }
 
             // App id.

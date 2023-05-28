@@ -50,6 +50,11 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
+    public Long countByNamespaceIdAndStatus(Long namespaceId, Integer status) {
+        return this.workerRepository.countByNamespaceIdAndStatusAndDeleted(namespaceId, status, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<Worker> getPage(WorkerPageDTO workerPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();

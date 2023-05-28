@@ -1,6 +1,7 @@
 package io.openjob.server.repository.repository;
 
 import io.openjob.server.repository.dto.DelayInstanceTotalDTO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.entity.DelayInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -40,6 +41,29 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     @Query(value = "SELECT new io.openjob.server.repository.dto.DelayInstanceTotalDTO(d.topic, count(d.id)) from DelayInstance as d "
             + "where d.topic in (?1) and d.status in (?2) and d.deleted=?3 group by d.topic")
     List<DelayInstanceTotalDTO> getDelayTotalCount(List<String> topics, List<Integer> statuses, Integer deleted);
+
+    /**
+     * Count total
+     *
+     * @param namespaceId namespaceId
+     * @param deleted     deleted
+     * @return Long
+     */
+    Long countByNamespaceIdAndDeleted(Long namespaceId, Integer deleted);
+
+    /**
+     * Group by hour time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status      status
+     * @param deleted     deleted
+     * @return List
+     */
+    @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(d.createTimeHour, count(d.id)) from DelayInstance as d "
+            + "where d.namespaceId=?1 and d.createTime >= ?2 and d.createTime<=?3 and d.status=?4 and d.deleted=?5")
+    List<GroupCountDTO> getDelayGroupByHour(Long namespaceId, Long startTime, Long endTime, Integer status, Integer deleted);
 
     /**
      * Find by task id.

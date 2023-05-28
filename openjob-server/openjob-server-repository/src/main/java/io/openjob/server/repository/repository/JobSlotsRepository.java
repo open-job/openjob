@@ -38,4 +38,12 @@ public interface JobSlotsRepository extends JpaRepository<JobSlots, Long> {
     @Transactional(rollbackFor = Exception.class)
     @Query("update JobSlots set serverId=?1,updateTime=?2")
     Integer updateByServerId(Long serverId, Long updateTime);
+
+    /**
+     * Count by deleted
+     *
+     * @param deleted deleted
+     * @return Long
+     */
+    Long countByDeleted(Integer deleted);
 }

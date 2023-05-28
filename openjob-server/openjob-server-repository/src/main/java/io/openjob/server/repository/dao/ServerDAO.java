@@ -71,6 +71,14 @@ public interface ServerDAO {
     List<Server> listServerByIds(List<Long> serverIds);
 
     /**
+     * Count by status
+     *
+     * @param status status
+     * @return Long
+     */
+    Long countByStatus(Integer status);
+
+    /**
      * page list servers
      *
      * @param searchAddress search address

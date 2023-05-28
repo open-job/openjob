@@ -1,5 +1,6 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.JobSlotsDAO;
@@ -57,6 +58,11 @@ public class JobSlotsDAOImpl implements JobSlotsDAO {
     @Override
     public Integer updateByServerId(Long serverId) {
         return jobSlotsRepository.updateByServerId(serverId, DateUtil.timestamp());
+    }
+
+    @Override
+    public Long countByAll() {
+        return this.jobSlotsRepository.countByDeleted(CommonConstant.NO);
     }
 
     @Override

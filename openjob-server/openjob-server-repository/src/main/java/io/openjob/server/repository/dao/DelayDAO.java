@@ -94,6 +94,24 @@ public interface DelayDAO {
     List<Delay> findByAppId(Long appId);
 
     /**
+     * Count by namespace
+     *
+     * @param namespaceId namespaceId
+     * @return Long
+     */
+    Long countByNamespace(Long namespaceId);
+
+    /**
+     * Count by namespace and create time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @return Long
+     */
+    Long countByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime);
+
+    /**
      * Get first by namespace id and appid
      *
      * @param namespaceId namespaceId

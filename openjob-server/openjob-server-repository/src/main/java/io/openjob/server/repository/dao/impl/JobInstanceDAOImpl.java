@@ -5,14 +5,12 @@ import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.repository.JobInstanceRepository;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,7 +21,6 @@ import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -41,6 +38,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
 
     @Override
     public Long save(JobInstance jobInstance) {
+        jobInstance.setCreateTimeDate(DateUtil.formatDateByTimestamp(jobInstance.getCreateTime()));
+        jobInstance.setCreateTimeHour(DateUtil.formatHourByTimestamp(jobInstance.getCreateTime()));
         return this.jobInstanceRepository.save(jobInstance).getId();
     }
 
@@ -89,6 +88,44 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public JobInstance getFirstByJobId(Long jobId) {
         return this.jobInstanceRepository.findFirstByJobIdAndDeleted(jobId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countTotalByNamespace(Long namespaceId) {
+        return this.jobInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> conditions = new ArrayList<>();
+
+            // Deleted
+            conditions.add(criteriaBuilder.equal(root.get("deleted").as(Integer.class), CommonConstant.NO));
+
+            // Status
+            if (Objects.nonNull(status)) {
+                conditions.add(criteriaBuilder.equal(root.get("status").as(Integer.class), status));
+            }
+
+            // Namespace id.
+            conditions.add(criteriaBuilder.equal(root.get("namespaceId").as(Long.class), namespaceId));
+
+            // Begin time
+            conditions.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Long.class), startTime));
+
+            // End time
+            conditions.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Long.class), endTime));
+
+            Predicate[] conditionAry = new Predicate[conditions.size()];
+            return criteriaBuilder.and(conditions.toArray(conditionAry));
+        };
+        return this.jobInstanceRepository.count(specification);
+    }
+
+    @Override
+    public List<GroupCountDTO> countByNamespaceGroupByHourTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        return this.jobInstanceRepository.getJobInstanceGroupByHour(namespaceId, startTime, endTime, status, CommonConstant.NO);
     }
 
     @Override
