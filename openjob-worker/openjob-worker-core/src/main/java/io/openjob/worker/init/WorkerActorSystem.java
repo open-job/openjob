@@ -55,8 +55,14 @@ public class WorkerActorSystem {
         String akkaConfigFile = OpenjobConfig.getString(WorkerConstant.WORKER_AKKA_CONFIG_FILE, WorkerConstant.DEFAULT_WORKER_AKKA_CONFIG_FILENAME);
         Config defaultConfig = ConfigFactory.load(akkaConfigFile);
         Map<String, String> newConfig = new HashMap<>(16);
+
+        // Remote
         newConfig.put("akka.remote.artery.canonical.hostname", WorkerConfig.getWorkerHost());
         newConfig.put("akka.remote.artery.canonical.port", String.valueOf(WorkerConfig.getWorkerPort()));
+
+        // Persistence
+        newConfig.put("akka.persistence.journal.leveldb.dir", this.getPersistencePath("journal"));
+        newConfig.put("akka.persistence.snapshot-store.local.dir", this.getPersistencePath("snapshots"));
 
 
         Config config = ConfigFactory.parseMap(newConfig).withFallback(defaultConfig);
@@ -118,4 +124,13 @@ public class WorkerActorSystem {
         persistentRoutingRef.tell(msg, sender);
     }
 
+    /**
+     * Get persistence
+     *
+     * @param type type
+     * @return String
+     */
+    private String getPersistencePath(String type) {
+        return String.format("target/%s.%d/%s", WorkerConfig.getWorkerHost(), WorkerConfig.getWorkerPort(), type);
+    }
 }
