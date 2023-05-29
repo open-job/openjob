@@ -86,7 +86,7 @@ public class DelayServiceImpl implements DelayService {
         this.delayDAO.updateCidById(delayId, failDelayId);
 
         // Refresh delay version
-        this.delayScheduler.refreshDelayVersion();
+        this.delayScheduler.refreshDelayVersion(addRequest.getTopic(), delayId, failDelayId);
         return new AddDelayVO();
     }
 
@@ -147,12 +147,14 @@ public class DelayServiceImpl implements DelayService {
             CodeEnum.DELAY_DELETE_INVALID.throwException();
         }
 
+        // Refresh delay version
+        Delay delay = this.delayDAO.findById(deleteDelayRequest.getId())
+                .orElseThrow(() -> new RuntimeException("Delay is not exist! id=" + deleteDelayRequest.getId()));
+        this.delayScheduler.refreshDelayVersion(delay.getTopic(), delay.getId(), delay.getCid());
+
         // Delete
         this.delayDAO.deleteById(deleteDelayRequest.getId());
         this.delayDAO.deleteById(deleteDelayRequest.getCid());
-
-        // Refresh delay version
-        this.delayScheduler.refreshDelayVersion();
         return new DeleteDelayVO();
     }
 
@@ -169,7 +171,9 @@ public class DelayServiceImpl implements DelayService {
         this.delayDAO.update(delay);
 
         // Refresh delay version
-        this.delayScheduler.refreshDelayVersion();
+        Delay queryDelay = this.delayDAO.findById(updateDelayRequest.getId())
+                .orElseThrow(() -> new RuntimeException("Delay is not exist! id=" + updateDelayRequest.getId()));
+        this.delayScheduler.refreshDelayVersion(queryDelay.getTopic(), queryDelay.getId(), queryDelay.getCid());
 
         // Fail delay
         Delay failDelay = BeanMapperUtil.map(updateDelayRequest, Delay.class);

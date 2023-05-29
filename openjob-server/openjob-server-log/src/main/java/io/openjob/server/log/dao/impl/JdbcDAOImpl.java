@@ -8,6 +8,7 @@ import io.openjob.server.log.client.AbstractJdbcHikariClient;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.log.dto.ProcessorLogFieldDTO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class JdbcDAOImpl implements LogDAO {
     private final AbstractJdbcHikariClient jdbcHikariClient;
 
@@ -89,8 +91,13 @@ public class JdbcDAOImpl implements LogDAO {
     }
 
     @Override
-    public void deleteByDays(Integer beforeDays) {
-
+    public void deleteByLastTime(Long lastTime) throws Exception {
+        String sql = "delete from `processor_log` where `time` < ?";
+        try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, lastTime);
+            int logCount = ps.executeUpdate();
+            log.info("System data clear success!logCount={}", logCount);
+        }
     }
 
     private String getContent(List<ProcessorLogFieldDTO> fields) {

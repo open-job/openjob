@@ -86,6 +86,11 @@ public class ServerDAOImpl implements ServerDAO {
     }
 
     @Override
+    public Long deleteByCreateTimeAndStatus(Long lastTime, Integer status) {
+        return this.serverRepository.deleteByCreateTimeLessThanEqualAndStatus(lastTime, status);
+    }
+
+    @Override
     public PageDTO<Server> pageList(String searchAddress, Integer page, Integer size) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();

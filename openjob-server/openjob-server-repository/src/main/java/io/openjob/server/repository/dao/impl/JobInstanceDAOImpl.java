@@ -96,6 +96,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public Long deleteByCreateTim(Long lastTime) {
+        return this.jobInstanceRepository.deleteByCreateTimeLessThanEqual(lastTime);
+    }
+
+    @Override
     public Long countTotalByNamespaceAndCreateTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
         Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> conditions = new ArrayList<>();

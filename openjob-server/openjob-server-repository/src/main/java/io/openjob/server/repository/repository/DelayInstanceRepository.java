@@ -86,6 +86,15 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
     Integer updateStatusByTaskId(String taskId, Integer status);
 
     /**
+     * Delete sever by create time and status
+     *
+     * @param lastTime lastTime
+     * @param status   status
+     * @return Long
+     */
+    Long deleteByCreateTimeLessThanEqualAndStatusNot(Long lastTime, Integer status);
+
+    /**
      * Find first by delay id
      *
      * @param delayId delayId

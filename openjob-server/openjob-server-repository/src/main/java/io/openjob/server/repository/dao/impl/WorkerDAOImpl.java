@@ -55,6 +55,11 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
+    public Long deleteByCreateTimeAndStatus(Long lastTime, Integer status) {
+        return this.workerRepository.deleteByCreateTimeLessThanEqualAndStatus(lastTime, status);
+    }
+
+    @Override
     public PageDTO<Worker> getPage(WorkerPageDTO workerPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();

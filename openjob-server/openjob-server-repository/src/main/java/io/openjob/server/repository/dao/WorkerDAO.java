@@ -54,6 +54,14 @@ public interface WorkerDAO {
     Long countByNamespaceIdAndStatus(Long namespaceId, Integer status);
 
     /**
+     * Delete by create time and status
+     * @param lastTime lastTime
+     * @param status status
+     * @return Long
+     */
+    Long deleteByCreateTimeAndStatus(Long lastTime, Integer status);
+
+    /**
      * page result
      *
      * @param workerPageDTO pageDTO

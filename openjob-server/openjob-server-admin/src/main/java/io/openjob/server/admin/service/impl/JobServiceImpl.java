@@ -79,6 +79,8 @@ public class JobServiceImpl implements JobService {
         Job job = BeanMapperUtil.map(addJobRequest, Job.class);
         if (TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
             job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression()));
+        } else if (TimeExpressionTypeEnum.isOneTime(addJobRequest.getTimeExpressionType())) {
+            job.setNextExecuteTime(Long.valueOf(addJobRequest.getTimeExpression()));
         }
 
         long id = this.jobDAO.save(job);
@@ -97,12 +99,13 @@ public class JobServiceImpl implements JobService {
 
         // Condition
         boolean isUpdateCron = TimeExpressionTypeEnum.isCron(updateJob.getTimeExpressionType());
-        boolean isUpdateExpression = !updateJob.getTimeExpression().equals(originJob.getTimeExpression());
         boolean isRunningStatus = JobStatusEnum.isRunning(updateJob.getStatus());
 
         // Parse time expression
-        if (isRunningStatus && isUpdateCron && isUpdateExpression) {
+        if (isRunningStatus && isUpdateCron) {
             updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression()));
+        } else if (TimeExpressionTypeEnum.isOneTime(updateJobRequest.getTimeExpressionType())) {
+            updateJob.setNextExecuteTime(Long.valueOf(updateJobRequest.getTimeExpression()));
         }
 
         this.jobDAO.update(updateJob);

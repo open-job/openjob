@@ -11,7 +11,6 @@ import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.repository.DelayInstanceRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -160,6 +159,11 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     @Override
     public Long countTotalByNamespace(Long namespaceId) {
         return this.delayInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
+    }
+
+    @Override
+    public Long deleteByCreateTimeAndNotStatus(Long lastTime, Integer status) {
+        return this.delayInstanceRepository.deleteByCreateTimeLessThanEqualAndStatusNot(lastTime, status);
     }
 
     @Override

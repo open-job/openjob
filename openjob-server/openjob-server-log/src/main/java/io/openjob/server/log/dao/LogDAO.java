@@ -3,7 +3,6 @@ package io.openjob.server.log.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -44,10 +43,10 @@ public interface LogDAO {
     PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) throws Exception;
 
     /**
-     * Delete log before days
+     * Delete by last time
      *
-     * @param beforeDays beforeDays
+     * @param lastTime lastTime
      * @throws Exception Exception
      */
-    void deleteByDays(Integer beforeDays) throws Exception;
+    void deleteByLastTime(Long lastTime) throws Exception;
 }
