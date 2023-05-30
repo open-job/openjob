@@ -1,6 +1,7 @@
 package io.openjob.server.log.dao.impl;
 
 import io.openjob.common.constant.LogFieldConstant;
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.JsonUtil;
 import io.openjob.server.log.autoconfigure.LogProperties;
@@ -12,11 +13,17 @@ import io.openjob.server.log.dto.ProcessorLogFieldDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -48,6 +55,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Elasticsearch7DAOImpl implements LogDAO {
+    /**
+     * Index prefix
+     */
+    private static final String INDEX_PREFIX = "openjob";
+
     private final Elasticsearch7Client elasticsearch7Client;
     private final LogProperties.Elasticsearch7Properties properties;
 
@@ -102,7 +114,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
 
     @Override
     public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
-        SearchRequest searchRequest = new SearchRequest(this.getSearchIndex());
+        SearchRequest searchRequest = new SearchRequest(this.getIndex());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // Bool query builder
@@ -127,7 +139,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     @Override
     public PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest(this.getSearchIndex());
+        SearchRequest searchRequest = new SearchRequest(this.getIndex());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         // Bool query builder
@@ -189,7 +201,39 @@ public class Elasticsearch7DAOImpl implements LogDAO {
 
     @Override
     public void deleteByLastTime(Long lastTime) throws Exception {
+        RequestOptions requestOptions = this.elasticsearch7Client.getRequestOptions();
+        GetIndexRequest request = new GetIndexRequest(getIndex());
 
+        // Not exist index
+        boolean exists = this.elasticsearch7Client.getClient().indices().exists(request, requestOptions);
+        if (!exists) {
+            log.info("Elasticsearch7 index does not exist! index={}", getIndex());
+            return;
+        }
+
+        // Get index
+        GetIndexResponse getIndexResponse = this.elasticsearch7Client.getClient().indices().get(request, requestOptions);
+        Arrays.stream(getIndexResponse.getIndices()).forEach(i -> {
+            String[] indexSplit = i.split("_");
+            if (indexSplit.length != 2) {
+                return;
+            }
+
+            // Delete index
+            int lastDate = DateUtil.formatDateByTimestamp(lastTime);
+            int indexDate = Integer.parseInt(indexSplit[1]);
+            if (indexDate < lastDate) {
+                DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(i);
+                try {
+                    AcknowledgedResponse deleteResponse = this.elasticsearch7Client.getClient().indices().delete(deleteIndexRequest, requestOptions);
+                    if (deleteResponse.isAcknowledged()) {
+                        log.info("Elasticsearch7 delete index success! index={}", i);
+                    }
+                } catch (IOException e) {
+                    log.error("Elasticsearch7 delete index failed!", e);
+                }
+            }
+        });
     }
 
     public static class BulkListener implements ActionListener<BulkResponse> {
@@ -205,10 +249,10 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     }
 
     private String getCreateIndex() {
-        return String.format("openjob_%s", "20230522");
+        return String.format("%s_%d", INDEX_PREFIX, DateUtil.getNowFormatDate());
     }
 
-    private String getSearchIndex() {
-        return "openjob*";
+    private String getIndex() {
+        return String.format("%s*", INDEX_PREFIX);
     }
 }

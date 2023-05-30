@@ -33,4 +33,10 @@ public class DateUtilTest {
         Long todayZeroTime = todayZero.toInstant().getEpochSecond();
         Assertions.assertEquals(zeroTimestamp, todayZeroTime);
     }
+
+    @Test
+    public void testGetNowFormatDate() {
+        Integer nowFormatDate = DateUtil.getNowFormatDate();
+        Assertions.assertNotNull(nowFormatDate);
+    }
 }

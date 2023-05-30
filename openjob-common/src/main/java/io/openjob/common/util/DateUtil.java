@@ -86,6 +86,16 @@ public class DateUtil {
     }
 
     /**
+     * Get now format date
+     *
+     * @return Integer
+     */
+    public static Integer getNowFormatDate() {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant(), ZoneId.systemDefault());
+        return Integer.valueOf(localDateTime.format(DATE_FORMATTER));
+    }
+
+    /**
      * Hour format
      *
      * @param timestamp timestamp
