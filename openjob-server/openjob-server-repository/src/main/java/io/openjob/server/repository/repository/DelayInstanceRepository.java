@@ -92,6 +92,8 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @param status   status
      * @return Long
      */
+    @Modifying
+    @Transactional
     Long deleteByCreateTimeLessThanEqualAndStatusNot(Long lastTime, Integer status);
 
     /**

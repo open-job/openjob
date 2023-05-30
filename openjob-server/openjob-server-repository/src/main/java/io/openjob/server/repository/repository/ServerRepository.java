@@ -54,5 +54,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
      * @param status   status
      * @return Long
      */
+    @Modifying
+    @Transactional
     Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }

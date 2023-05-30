@@ -116,6 +116,8 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @param lastTime lastTime
      * @return Long
      */
+    @Modifying
+    @Transactional
     Long deleteByCreateTimeLessThanEqual(Long lastTime);
 
     /**
