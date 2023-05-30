@@ -66,7 +66,7 @@ public class JdbcDAOImpl implements LogDAO {
     @Override
     public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
         ResultSet rs = null;
-        String sql = "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? limit ?";
+        String sql = "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? ORDER BY `time` ASC limit ?";
         try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, taskUniqueId);
             ps.setLong(2, time);

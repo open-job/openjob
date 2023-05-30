@@ -16,7 +16,6 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -126,12 +125,12 @@ public class Elasticsearch7DAOImpl implements LogDAO {
 
         // `time >= ?`
         RangeQueryBuilder timeQueryBuilder = QueryBuilders.rangeQuery("time");
-        timeQueryBuilder.gte(time);
+        timeQueryBuilder.gt(time);
         boolBuilder.must(timeQueryBuilder);
 
         searchSourceBuilder.query(boolBuilder);
         searchSourceBuilder.size(size);
-        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
+        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.ASC));
         searchRequest.source(searchSourceBuilder);
         return this.queryResult(searchRequest, 0, size).getList();
     }
@@ -158,7 +157,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         searchSourceBuilder.query(boolBuilder);
         searchSourceBuilder.from((page - 1) * size);
         searchSourceBuilder.size(size);
-        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.DESC));
+        searchSourceBuilder.sort(new FieldSortBuilder("time").order(SortOrder.ASC));
         searchRequest.source(searchSourceBuilder);
         return this.queryResult(searchRequest, page, size);
     }
