@@ -10,8 +10,14 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.2
  */
 @Data
-public class DelayCircleRequest {
+public class JobChartRequest {
     @NotNull
     @ApiModelProperty(value = "App namespace id", required = true)
     private Long namespaceId;
+
+    @ApiModelProperty(value = "Job begin time.")
+    private Long beginTime;
+
+    @ApiModelProperty(value = "Job end time.")
+    private Long endTime;
 }

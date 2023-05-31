@@ -7,5 +7,5 @@ import lombok.Data;
  * @since 1.0.2
  */
 @Data
-public class DelayCircleVO {
+public class JobChartVO {
 }
