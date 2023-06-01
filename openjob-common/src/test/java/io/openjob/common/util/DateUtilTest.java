@@ -35,8 +35,26 @@ public class DateUtilTest {
     }
 
     @Test
+    public void testFormatTimestamp(){
+        String str = DateUtil.formatTimestamp(1685624782010L);
+        Assertions.assertEquals(str, "2023-06-01 21:06:22.010");
+    }
+
+    @Test
     public void testGetNowFormatDate() {
         Integer nowFormatDate = DateUtil.getNowFormatDate();
         Assertions.assertNotNull(nowFormatDate);
+    }
+
+    @Test
+    public void testFormatDate() {
+        String formatDate = DateUtil.formatDatePattern("20230601");
+        Assertions.assertEquals(formatDate, "2023-06-01");
+    }
+
+    @Test
+    public void testFormatHourPattern() {
+        String formatDate = DateUtil.formatHourPattern("2023060106");
+        Assertions.assertEquals(formatDate, "2023-06-01 06:00");
     }
 }

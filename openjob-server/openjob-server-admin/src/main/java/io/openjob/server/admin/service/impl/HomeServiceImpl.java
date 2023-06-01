@@ -142,7 +142,7 @@ public class HomeServiceImpl implements HomeService {
             // Date list data
             ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
                     .forEach(d -> {
-                        xData.add(String.valueOf(d));
+                        xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
                         successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
                     });
@@ -158,7 +158,7 @@ public class HomeServiceImpl implements HomeService {
             // Hour list data
             ChartUtil.getHourList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
                     .forEach(d -> {
-                        xData.add(String.valueOf(d));
+                        xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
                         successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
                     });
@@ -206,9 +206,9 @@ public class HomeServiceImpl implements HomeService {
             // Date list data
             ChartUtil.getDateList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
                     .forEach(d -> {
-                        xData.add(String.valueOf(d));
                         successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                        xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
                     });
         } else {
             // Query by hour
@@ -222,9 +222,9 @@ public class HomeServiceImpl implements HomeService {
             // Hour list data
             ChartUtil.getHourList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
                     .forEach(d -> {
-                        xData.add(String.valueOf(d));
                         successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                        xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
                     });
         }
 
