@@ -12,22 +12,54 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.2
  */
 public class ChartUtil {
+
+    /**
+     * Get date list
+     *
+     * @param beginTime beginTime
+     * @param endTime   endTime
+     * @return List
+     */
     public static List<Integer> getDateList(Long beginTime, Long endTime) {
-        List<Integer> dayList = new ArrayList<>();
-        int days = (int) Math.floor((endTime - beginTime) / TimeUnit.DAYS.toSeconds(1));
+        // Days
+        int days = (int) Math.floor((endTime - beginTime) * 1.0 / TimeUnit.DAYS.toSeconds(1));
+
+        // Date list
+        List<Integer> dateList = new ArrayList<>();
         for (int i = 1; i < days + 1; i++) {
             Calendar calendar = new Calendar.Builder().setInstant(endTime * TimeUnit.SECONDS.toMillis(1)).build();
             calendar.add(Calendar.DATE, -i);
             Integer dateTime = DateUtil.formatDateByTimestamp(calendar.getTime().toInstant().getEpochSecond());
-            dayList.add(dateTime);
+            dateList.add(dateTime);
         }
-        return dayList;
+
+        // Sort
+        dateList.sort(Integer::compareTo);
+        return dateList;
     }
 
-    public static List<Integer> getHourList(Long timestamp, Integer days) {
-        Calendar calendar = new Calendar.Builder().setInstant(timestamp * TimeUnit.SECONDS.toMillis(1)).build();
-        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - 1);
-        Integer dateTime = DateUtil.formatDateByTimestamp(calendar.getTime().toInstant().getEpochSecond());
-        return null;
+    /**
+     * Get hour list
+     *
+     * @param beginTime beginTime
+     * @param endTime   endTime
+     * @return List
+     */
+    public static List<Integer> getHourList(Long beginTime, Long endTime) {
+        // Hour
+        int hours = (int) Math.floor((endTime - beginTime) * 1.0 / TimeUnit.HOURS.toSeconds(1));
+
+        // Hour list
+        List<Integer> hourList = new ArrayList<>();
+        for (int i = 1; i < hours + 1; i++) {
+            Calendar calendar = new Calendar.Builder().setInstant(endTime * TimeUnit.SECONDS.toMillis(1)).build();
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - i);
+            Integer hourTime = DateUtil.formatHourByTimestamp(calendar.getTime().toInstant().getEpochSecond());
+            hourList.add(hourTime);
+        }
+
+        // Sort
+        hourList.sort(Integer::compareTo);
+        return hourList;
     }
 }

@@ -9,6 +9,7 @@ import io.openjob.server.admin.request.home.JobPercentageRequest;
 import io.openjob.server.admin.request.home.SystemDataRequest;
 import io.openjob.server.admin.request.home.TaskDataRequest;
 import io.openjob.server.admin.service.HomeService;
+import io.openjob.server.admin.util.ChartUtil;
 import io.openjob.server.admin.vo.home.DataItemVO;
 import io.openjob.server.admin.vo.home.DelayChartVO;
 import io.openjob.server.admin.vo.home.DelayPercentageVO;
@@ -30,9 +31,13 @@ import io.openjob.server.repository.dto.GroupCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -123,18 +128,49 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public JobChartVO jobChart(JobChartRequest jobChartRequest) {
+        JobChartVO jobChartVO = new JobChartVO();
+        List<String> xData = new ArrayList<>();
+        List<Long> successData = new ArrayList<>();
+        List<Long> failData = new ArrayList<>();
+
+        // Query by date
         if (this.isQueryByDay(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())) {
-            List<GroupCountDTO> successGroup = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
-                    jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus());
-            List<GroupCountDTO> failGroup = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
-                    jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus());
+            Map<Integer, Long> successDateMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failDateMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Date list data
+            ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(String.valueOf(d));
+                        successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                    });
         } else {
-            List<GroupCountDTO> successGroup = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
-                    jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus());
-            List<GroupCountDTO> failGroup = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
-                    jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus());
+            // Query by hour
+            Map<Integer, Long> successHourMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failHourMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Hour list data
+            ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(String.valueOf(d));
+                        successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                    });
         }
-        return null;
+
+        jobChartVO.setXData(xData);
+        jobChartVO.setSuccessData(successData);
+        jobChartVO.setFailData(failData);
+        return jobChartVO;
     }
 
 
