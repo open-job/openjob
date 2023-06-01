@@ -155,7 +155,7 @@ public class HomeServiceImpl implements HomeService {
                     .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
 
             // Hour list data
-            ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+            ChartUtil.getHourList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
                     .forEach(d -> {
                         xData.add(String.valueOf(d));
                         successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
@@ -192,6 +192,6 @@ public class HomeServiceImpl implements HomeService {
     }
 
     private Boolean isQueryByDay(Long beginTime, Long endTime) {
-        return (endTime - beginTime) % TimeUnit.DAYS.toSeconds(1) >= 3;
+        return (endTime - beginTime) / TimeUnit.DAYS.toSeconds(1) >= 3;
     }
 }
