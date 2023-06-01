@@ -160,4 +160,15 @@ public interface JobInstanceDAO {
      * @return List
      */
     List<GroupCountDTO> countByNamespaceGroupByDateTime(Long namespaceId, Long startTime, Long endTime, Integer status);
+
+
+    /**
+     * Group by status
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @return List
+     */
+    List<GroupCountDTO> countByNamespaceGroupByStatus(Long namespaceId, Long startTime, Long endTime);
 }

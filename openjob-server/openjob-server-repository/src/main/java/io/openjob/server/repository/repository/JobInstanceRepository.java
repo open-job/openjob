@@ -148,4 +148,16 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
             + "where j.namespaceId=?1 and j.createTime >= ?2 and j.createTime<=?3 and j.status=?4 and j.deleted=?5 GROUP BY j.createTimeDate ")
     List<GroupCountDTO> getJobInstanceGroupByDate(Long namespaceId, Long startTime, Long endTime, Integer status, Integer deleted);
 
+    /**
+     * Group by status
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param deleted     deleted
+     * @return List
+     */
+    @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(j.status, count(j.id)) from JobInstance as j "
+            + "where j.namespaceId=?1 and j.createTime >= ?2 and j.createTime<=?3 and j.deleted=?4 GROUP BY j.status ")
+    List<GroupCountDTO> getJobInstanceGroupStatus(Long namespaceId, Long startTime, Long endTime, Integer deleted);
 }

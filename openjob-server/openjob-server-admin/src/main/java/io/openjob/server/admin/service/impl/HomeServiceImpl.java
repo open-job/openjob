@@ -3,18 +3,14 @@ package io.openjob.server.admin.service.impl;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.request.home.DelayChartRequest;
-import io.openjob.server.admin.request.home.DelayPercentageRequest;
 import io.openjob.server.admin.request.home.JobChartRequest;
-import io.openjob.server.admin.request.home.JobPercentageRequest;
 import io.openjob.server.admin.request.home.SystemDataRequest;
 import io.openjob.server.admin.request.home.TaskDataRequest;
 import io.openjob.server.admin.service.HomeService;
 import io.openjob.server.admin.util.ChartUtil;
 import io.openjob.server.admin.vo.home.DataItemVO;
 import io.openjob.server.admin.vo.home.DelayChartVO;
-import io.openjob.server.admin.vo.home.DelayPercentageVO;
 import io.openjob.server.admin.vo.home.JobChartVO;
-import io.openjob.server.admin.vo.home.JobPercentageVO;
 import io.openjob.server.admin.vo.home.SystemDataVO;
 import io.openjob.server.admin.vo.home.TaskDataVO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
@@ -32,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author stelin swoft@qq.com
@@ -167,9 +163,25 @@ public class HomeServiceImpl implements HomeService {
                     });
         }
 
-        jobChartVO.setXData(xData);
+        // Status map
+        Map<Integer, Long> statusGroupMap = this.jobInstanceDAO.countByNamespaceGroupByStatus(jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+        // Percent list
+        long total = statusGroupMap.values().stream().mapToLong(Long::longValue).sum();
+        List<Long> percentList = Stream.of(
+                        InstanceStatusEnum.WAITING.getStatus(),
+                        InstanceStatusEnum.RUNNING.getStatus(),
+                        InstanceStatusEnum.SUCCESS.getStatus(),
+                        InstanceStatusEnum.FAIL.getStatus(),
+                        InstanceStatusEnum.STOP.getStatus()
+                ).map(s -> Math.round(Optional.ofNullable(statusGroupMap.get(s)).orElse(0L) * 10000.0 / total))
+                .collect(Collectors.toList());
+
+        jobChartVO.setAxisData(xData);
         jobChartVO.setSuccessData(successData);
         jobChartVO.setFailData(failData);
+        jobChartVO.setPercentList(percentList);
         return jobChartVO;
     }
 

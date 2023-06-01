@@ -15,9 +15,11 @@ public class DelayChartRequest {
     @ApiModelProperty(value = "App namespace id", required = true)
     private Long namespaceId;
 
+    @NotNull
     @ApiModelProperty(value = "Job begin time.")
     private Long beginTime;
 
+    @NotNull
     @ApiModelProperty(value = "Job end time.")
     private Long endTime;
 }

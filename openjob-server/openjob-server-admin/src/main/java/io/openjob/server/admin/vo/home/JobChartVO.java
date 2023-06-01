@@ -10,7 +10,8 @@ import java.util.List;
  */
 @Data
 public class JobChartVO {
-    private List<String> xData;
+    private List<String> axisData;
     private List<Long> successData;
     private List<Long> failData;
+    private List<Long> percentList;
 }
