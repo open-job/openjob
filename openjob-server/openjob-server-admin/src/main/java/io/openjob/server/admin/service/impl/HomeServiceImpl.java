@@ -1,6 +1,7 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.request.home.DelayChartRequest;
 import io.openjob.server.admin.request.home.JobChartRequest;
@@ -187,8 +188,66 @@ public class HomeServiceImpl implements HomeService {
 
 
     @Override
-    public DelayChartVO delayChart(DelayChartRequest DelayChartRequest) {
-        return null;
+    public DelayChartVO delayChart(DelayChartRequest delayChartRequest) {
+        DelayChartVO delayChartVO = new DelayChartVO();
+        List<String> xData = new ArrayList<>();
+        List<Long> successData = new ArrayList<>();
+        List<Long> failData = new ArrayList<>();
+
+        // Query by date
+        if (this.isQueryByDay(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())) {
+            Map<Integer, Long> successDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Date list data
+            ChartUtil.getDateList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(String.valueOf(d));
+                        successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                    });
+        } else {
+            // Query by hour
+            Map<Integer, Long> successHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Hour list data
+            ChartUtil.getHourList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(String.valueOf(d));
+                        successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                    });
+        }
+
+        // Status map
+        Map<Integer, Long> statusGroupMap = this.delayInstanceDAO.countByNamespaceGroupByStatus(delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+        // Percent list
+        long total = statusGroupMap.values().stream().mapToLong(Long::longValue).sum();
+        List<Long> percentList = Stream.of(
+                        TaskStatusEnum.INIT.getStatus(),
+                        TaskStatusEnum.RUNNING.getStatus(),
+                        TaskStatusEnum.SUCCESS.getStatus(),
+                        TaskStatusEnum.FAILED.getStatus(),
+                        TaskStatusEnum.STOP.getStatus()
+                ).map(s -> Math.round(Optional.ofNullable(statusGroupMap.get(s)).orElse(0L) * 10000.0 / total))
+                .collect(Collectors.toList());
+
+        delayChartVO.setAxisData(xData);
+        delayChartVO.setSuccessData(successData);
+        delayChartVO.setFailData(failData);
+        delayChartVO.setPercentList(percentList);
+        return delayChartVO;
     }
 
     private Boolean isQueryByDay(Long beginTime, Long endTime) {

@@ -10,8 +10,14 @@ accept: */*
 Content-Type: application/json
 Session: 79f74383e2c92ae01e172ced4c9267d5
 
-### Get system data
+### Get job chart
 GET http://127.0.0.1:8080/admin/home/job-chart?namespaceId=1&beginTime=1684252800&endTime=1686153600
+accept: */*
+Content-Type: application/json
+Session: 79f74383e2c92ae01e172ced4c9267d5
+
+### Get delay chart
+GET http://127.0.0.1:8080/admin/home/delay-chart?namespaceId=1&beginTime=1684252800&endTime=1686153600
 accept: */*
 Content-Type: application/json
 Session: 79f74383e2c92ae01e172ced4c9267d5

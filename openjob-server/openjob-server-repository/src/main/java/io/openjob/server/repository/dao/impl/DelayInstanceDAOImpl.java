@@ -202,6 +202,16 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     }
 
     @Override
+    public List<GroupCountDTO> countByNamespaceGroupByDateTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        return this.delayInstanceRepository.getDelayGroupByDate(namespaceId, startTime, endTime, status, CommonConstant.NO);
+    }
+
+    @Override
+    public List<GroupCountDTO> countByNamespaceGroupByStatus(Long namespaceId, Long startTime, Long endTime) {
+        return this.delayInstanceRepository.getDelayGroupByStatus(namespaceId, startTime, endTime, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<DelayInstance> pageList(DelayInstancePageDTO instancePageDTO) {
 
         Specification<DelayInstance> specification = (root, query, criteriaBuilder) -> {
