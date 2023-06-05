@@ -15,12 +15,12 @@ public class ChartUtilTest {
     @Test
     public void testGetDateList() {
         List<Integer> dateList = ChartUtil.getDateList(DateUtil.timestamp() - TimeUnit.DAYS.toSeconds(5), DateUtil.timestamp());
-        Assertions.assertEquals(dateList.size(), 5);
+        Assertions.assertEquals(dateList.size(), 5 + 1);
     }
 
     @Test
     public void testGetHourList() {
         List<Integer> hourList = ChartUtil.getHourList(DateUtil.timestamp() - TimeUnit.DAYS.toSeconds(3), DateUtil.timestamp());
-        Assertions.assertEquals(hourList.size(), 3 * 24);
+        Assertions.assertEquals(hourList.size(), 3 * 24 + 1);
     }
 }

@@ -26,7 +26,7 @@ public class ChartUtil {
 
         // Date list
         List<Integer> dateList = new ArrayList<>();
-        for (int i = 1; i < days + 1; i++) {
+        for (int i = 0; i < days + 1; i++) {
             Calendar calendar = new Calendar.Builder().setInstant(endTime * TimeUnit.SECONDS.toMillis(1)).build();
             calendar.add(Calendar.DATE, -i);
             Integer dateTime = DateUtil.formatDateByTimestamp(calendar.getTime().toInstant().getEpochSecond());
@@ -51,7 +51,7 @@ public class ChartUtil {
 
         // Hour list
         List<Integer> hourList = new ArrayList<>();
-        for (int i = 1; i < hours + 1; i++) {
+        for (int i = 0; i < hours + 1; i++) {
             Calendar calendar = new Calendar.Builder().setInstant(endTime * TimeUnit.SECONDS.toMillis(1)).build();
             calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - i);
             Integer hourTime = DateUtil.formatHourByTimestamp(calendar.getTime().toInstant().getEpochSecond());
