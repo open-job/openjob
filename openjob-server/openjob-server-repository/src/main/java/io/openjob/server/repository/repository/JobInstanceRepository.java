@@ -117,7 +117,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @return Long
      */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqual(Long lastTime);
 
     /**

@@ -68,6 +68,13 @@ public class DelayData {
         }, Duration.ofDays(1));
     }
 
+    /**
+     * Delete by topic or id.
+     *
+     * @param topic       topic
+     * @param id          id
+     * @param failDelayId failDelayId
+     */
     public void deleteByTopicOrId(String topic, Long id, Long failDelayId) {
         Set<String> keys = new HashSet<>();
         keys.add(CacheUtil.getDelayDetailTopicKey(topic));

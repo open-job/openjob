@@ -16,27 +16,27 @@ public class DateUtil {
     /**
      * Date formatter
      */
-    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     /**
      * Hour formatter
      */
-    private final static DateTimeFormatter HOUR_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
+    private static final DateTimeFormatter HOUR_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
 
     /**
      * Date formatter pattern
      */
-    private final static DateTimeFormatter DATE_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
      * Hour formatter pattern
      */
-    private final static DateTimeFormatter HOUR_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter HOUR_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
      * Mill formatter pattern
      */
-    private final static DateTimeFormatter MILL_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter MILL_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private DateUtil() {
 

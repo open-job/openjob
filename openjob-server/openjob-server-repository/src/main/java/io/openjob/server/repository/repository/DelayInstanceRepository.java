@@ -120,7 +120,7 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @return Long
      */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqualAndStatusNot(Long lastTime, Integer status);
 
     /**

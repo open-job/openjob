@@ -56,6 +56,6 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
      * @return Long
      */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }

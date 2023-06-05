@@ -59,6 +59,10 @@ public class Elasticsearch7DAOImpl implements LogDAO {
      */
     private static final String INDEX_PREFIX = "openjob";
 
+    /**
+     * Index split size
+     */
+    private static final Integer INDEX_SPLIT_SIZE = 2;
     private final Elasticsearch7Client elasticsearch7Client;
     private final LogProperties.Elasticsearch7Properties properties;
 
@@ -214,7 +218,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         GetIndexResponse getIndexResponse = this.elasticsearch7Client.getClient().indices().get(request, requestOptions);
         Arrays.stream(getIndexResponse.getIndices()).forEach(i -> {
             String[] indexSplit = i.split("_");
-            if (indexSplit.length != 2) {
+            if (indexSplit.length != INDEX_SPLIT_SIZE) {
                 return;
             }
 

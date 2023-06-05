@@ -55,6 +55,6 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
      * @return Long
      */
     @Modifying
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }
