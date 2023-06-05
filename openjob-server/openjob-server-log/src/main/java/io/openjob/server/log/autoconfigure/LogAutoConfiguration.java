@@ -57,13 +57,13 @@ public class LogAutoConfiguration {
     @ConditionalOnProperty(prefix = "openjob.log.storage", name = "selector", havingValue = LogStorageConstant.ELASTICSEARCH7)
     public class Elasticsearch7autoconfiguration {
         @Bean
-        public Elasticsearch7Client mysqlClient() {
+        public Elasticsearch7Client elasticsearch7Client() {
             return new Elasticsearch7Client(logProperties.getStorage().getElasticsearch7());
         }
 
         @Bean
-        public LogDAO h2LogDAO(Elasticsearch7Client elasticsearch7Client, LogProperties.Elasticsearch7Properties properties) {
-            return new Elasticsearch7DAOImpl(elasticsearch7Client, properties);
+        public LogDAO h2LogDAO(Elasticsearch7Client elasticsearch7Client) {
+            return new Elasticsearch7DAOImpl(elasticsearch7Client, logProperties.getStorage().getElasticsearch7());
         }
     }
 }

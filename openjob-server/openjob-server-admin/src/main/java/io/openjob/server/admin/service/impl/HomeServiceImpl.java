@@ -1,18 +1,17 @@
 package io.openjob.server.admin.service.impl;
 
+import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.admin.request.home.DelayCircleRequest;
-import io.openjob.server.admin.request.home.DelayPercentageRequest;
-import io.openjob.server.admin.request.home.JobCircleRequest;
-import io.openjob.server.admin.request.home.JobPercentageRequest;
+import io.openjob.server.admin.request.home.DelayChartRequest;
+import io.openjob.server.admin.request.home.JobChartRequest;
 import io.openjob.server.admin.request.home.SystemDataRequest;
 import io.openjob.server.admin.request.home.TaskDataRequest;
 import io.openjob.server.admin.service.HomeService;
+import io.openjob.server.admin.util.ChartUtil;
 import io.openjob.server.admin.vo.home.DataItemVO;
-import io.openjob.server.admin.vo.home.DelayCircleVO;
-import io.openjob.server.admin.vo.home.DelayPercentageVO;
-import io.openjob.server.admin.vo.home.JobCircleVO;
-import io.openjob.server.admin.vo.home.JobPercentageVO;
+import io.openjob.server.admin.vo.home.DelayChartVO;
+import io.openjob.server.admin.vo.home.JobChartVO;
 import io.openjob.server.admin.vo.home.SystemDataVO;
 import io.openjob.server.admin.vo.home.TaskDataVO;
 import io.openjob.server.repository.constant.ServerStatusEnum;
@@ -25,8 +24,17 @@ import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobSlotsDAO;
 import io.openjob.server.repository.dao.ServerDAO;
 import io.openjob.server.repository.dao.WorkerDAO;
+import io.openjob.server.repository.dto.GroupCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author stelin swoft@qq.com
@@ -116,22 +124,133 @@ public class HomeServiceImpl implements HomeService {
     }
 
     @Override
-    public JobCircleVO jobCircle(JobCircleRequest jobCircleRequest) {
-        return null;
+    public JobChartVO jobChart(JobChartRequest jobChartRequest) {
+        JobChartVO jobChartVO = new JobChartVO();
+        List<String> xData = new ArrayList<>();
+        List<Long> successData = new ArrayList<>();
+        List<Long> failData = new ArrayList<>();
+
+        // Query by date
+        if (this.isQueryByDay(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())) {
+            Map<Integer, Long> successDateMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failDateMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Date list data
+            ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
+                        successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                    });
+        } else {
+            // Query by hour
+            Map<Integer, Long> successHourMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failHourMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Hour list data
+            ChartUtil.getHourList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                    .forEach(d -> {
+                        xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
+                        successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                    });
+        }
+
+        // Status map
+        Map<Integer, Long> statusGroupMap = this.jobInstanceDAO.countByNamespaceGroupByStatus(jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
+                .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+        // Percent list
+        long total = statusGroupMap.values().stream().mapToLong(Long::longValue).sum();
+        List<Long> percentList = Stream.of(
+                        InstanceStatusEnum.WAITING.getStatus(),
+                        InstanceStatusEnum.RUNNING.getStatus(),
+                        InstanceStatusEnum.SUCCESS.getStatus(),
+                        InstanceStatusEnum.FAIL.getStatus(),
+                        InstanceStatusEnum.STOP.getStatus()
+                ).map(s -> Math.round(Optional.ofNullable(statusGroupMap.get(s)).orElse(0L) * 10000.0 / total))
+                .collect(Collectors.toList());
+
+        jobChartVO.setAxisData(xData);
+        jobChartVO.setSuccessData(successData);
+        jobChartVO.setFailData(failData);
+        jobChartVO.setPercentList(percentList);
+        return jobChartVO;
     }
 
-    @Override
-    public JobPercentageVO jobPercentage(JobPercentageRequest jobPercentageRequest) {
-        return null;
-    }
 
     @Override
-    public DelayCircleVO delayCircle(DelayCircleRequest delayCircleRequest) {
-        return null;
+    public DelayChartVO delayChart(DelayChartRequest delayChartRequest) {
+        DelayChartVO delayChartVO = new DelayChartVO();
+        List<String> xData = new ArrayList<>();
+        List<Long> successData = new ArrayList<>();
+        List<Long> failData = new ArrayList<>();
+
+        // Query by date
+        if (this.isQueryByDay(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())) {
+            Map<Integer, Long> successDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Date list data
+            ChartUtil.getDateList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                    .forEach(d -> {
+                        successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                        xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
+                    });
+        } else {
+            // Query by hour
+            Map<Integer, Long> successHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.SUCCESS.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> failHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+            // Hour list data
+            ChartUtil.getHourList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                    .forEach(d -> {
+                        successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
+                        failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                        xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
+                    });
+        }
+
+        // Status map
+        Map<Integer, Long> statusGroupMap = this.delayInstanceDAO.countByNamespaceGroupByStatus(delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
+                .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+
+        // Percent list
+        long total = statusGroupMap.values().stream().mapToLong(Long::longValue).sum();
+        List<Long> percentList = Stream.of(
+                        TaskStatusEnum.INIT.getStatus(),
+                        TaskStatusEnum.RUNNING.getStatus(),
+                        TaskStatusEnum.SUCCESS.getStatus(),
+                        TaskStatusEnum.FAILED.getStatus(),
+                        TaskStatusEnum.STOP.getStatus()
+                ).map(s -> Math.round(Optional.ofNullable(statusGroupMap.get(s)).orElse(0L) * 10000.0 / total))
+                .collect(Collectors.toList());
+
+        delayChartVO.setAxisData(xData);
+        delayChartVO.setSuccessData(successData);
+        delayChartVO.setFailData(failData);
+        delayChartVO.setPercentList(percentList);
+        return delayChartVO;
     }
 
-    @Override
-    public DelayPercentageVO delayPercentage(DelayPercentageRequest delayPercentageRequest) {
-        return null;
+    private Boolean isQueryByDay(Long beginTime, Long endTime) {
+        return (endTime - beginTime) / TimeUnit.DAYS.toSeconds(1) >= 3;
     }
 }

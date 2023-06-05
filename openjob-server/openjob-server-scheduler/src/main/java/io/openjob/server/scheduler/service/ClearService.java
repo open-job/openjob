@@ -29,6 +29,15 @@ public class ClearService {
     private final LogDAO logDAO;
 
 
+    /**
+     * Init
+     *
+     * @param jobInstanceDAO   jobInstanceDAO
+     * @param delayInstanceDAO delayInstanceDAO
+     * @param serverDAO        serverDAO
+     * @param workerDAO        workerDAO
+     * @param logDAO           logDAO
+     */
     public ClearService(JobInstanceDAO jobInstanceDAO,
                         DelayInstanceDAO delayInstanceDAO,
                         ServerDAO serverDAO,

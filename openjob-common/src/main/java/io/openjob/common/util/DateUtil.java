@@ -1,6 +1,5 @@
 package io.openjob.common.util;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,13 +16,27 @@ public class DateUtil {
     /**
      * Date formatter
      */
-    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     /**
      * Hour formatter
      */
-    private final static DateTimeFormatter HOUR_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
+    private static final DateTimeFormatter HOUR_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
 
+    /**
+     * Date formatter pattern
+     */
+    private static final DateTimeFormatter DATE_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    /**
+     * Hour formatter pattern
+     */
+    private static final DateTimeFormatter HOUR_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    /**
+     * Mill formatter pattern
+     */
+    private static final DateTimeFormatter MILL_FORMATTER_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private DateUtil() {
 
@@ -52,19 +65,8 @@ public class DateUtil {
      * @return String
      */
     public static String formatTimestamp(Long timeMillis) {
-        return timestampToString(timeMillis, "yyyy-MM-dd HH:mm:ss.SSS");
-    }
-
-    /**
-     * Timestamp to string
-     *
-     * @param timeMillis timeMillis
-     * @param pattern    pattern
-     * @return String
-     */
-    public static String timestampToString(Long timeMillis, String pattern) {
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-        return sdf.format(timeMillis);
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeMillis), ZoneId.systemDefault());
+        return localDateTime.format(MILL_FORMATTER_PATTERN);
     }
 
     /**
@@ -86,6 +88,16 @@ public class DateUtil {
     }
 
     /**
+     * Get now format date
+     *
+     * @return Integer
+     */
+    public static Integer getNowFormatDate() {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant(), ZoneId.systemDefault());
+        return Integer.valueOf(localDateTime.format(DATE_FORMATTER));
+    }
+
+    /**
      * Hour format
      *
      * @param timestamp timestamp
@@ -96,10 +108,37 @@ public class DateUtil {
         return Integer.valueOf(localDateTime.format(HOUR_FORMATTER));
     }
 
+    /**
+     * Get zero timestamp
+     *
+     * @return Long
+     */
     public static Long getZeroTimestamp() {
         return LocalDate.now()
                 .atStartOfDay(ZoneOffset.ofHours(8))
                 .toInstant()
                 .getEpochSecond();
+    }
+
+    /**
+     * Format date
+     *
+     * @param dateTime dateTime
+     * @return String
+     */
+    public static String formatDatePattern(String dateTime) {
+        LocalDate localDate = LocalDate.parse(dateTime, DATE_FORMATTER);
+        return localDate.format(DATE_FORMATTER_PATTERN);
+    }
+
+    /**
+     * Format  hour
+     *
+     * @param hourTime hourTime
+     * @return String
+     */
+    public static String formatHourPattern(String hourTime) {
+        LocalDateTime localDateTime = LocalDateTime.parse(hourTime, HOUR_FORMATTER);
+        return localDateTime.format(HOUR_FORMATTER_PATTERN);
     }
 }

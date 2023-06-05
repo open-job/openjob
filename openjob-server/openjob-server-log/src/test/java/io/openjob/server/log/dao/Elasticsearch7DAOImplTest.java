@@ -59,6 +59,12 @@ public class Elasticsearch7DAOImplTest {
         Assertions.assertNotNull(pageDTO);
     }
 
+    @Test
+    @Disabled
+    public void testDeleteByLastTime() throws Exception {
+        elasticsearch7DAO.deleteByLastTime(DateUtil.timestamp());
+    }
+
     @BeforeAll
     public static void CreateElasticsearch7() throws Exception {
         LogProperties.Elasticsearch7Properties elasticsearch7Properties = new LogProperties.Elasticsearch7Properties();

@@ -1,17 +1,13 @@
 package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
-import io.openjob.server.admin.request.home.DelayCircleRequest;
-import io.openjob.server.admin.request.home.DelayPercentageRequest;
-import io.openjob.server.admin.request.home.JobCircleRequest;
-import io.openjob.server.admin.request.home.JobPercentageRequest;
+import io.openjob.server.admin.request.home.DelayChartRequest;
+import io.openjob.server.admin.request.home.JobChartRequest;
 import io.openjob.server.admin.request.home.SystemDataRequest;
 import io.openjob.server.admin.request.home.TaskDataRequest;
 import io.openjob.server.admin.service.HomeService;
-import io.openjob.server.admin.vo.home.DelayCircleVO;
-import io.openjob.server.admin.vo.home.DelayPercentageVO;
-import io.openjob.server.admin.vo.home.JobCircleVO;
-import io.openjob.server.admin.vo.home.JobPercentageVO;
+import io.openjob.server.admin.vo.home.DelayChartVO;
+import io.openjob.server.admin.vo.home.JobChartVO;
 import io.openjob.server.admin.vo.home.SystemDataVO;
 import io.openjob.server.admin.vo.home.TaskDataVO;
 import io.swagger.annotations.Api;
@@ -52,27 +48,15 @@ public class HomeController {
         return Result.success(this.homeService.systemData(systemDataRequest));
     }
 
-    @ApiOperation("Job circle")
-    @GetMapping("/job-circle")
-    public Result<JobCircleVO> jobCircle(@Valid @ModelAttribute JobCircleRequest jobCircleRequest) {
-        return Result.success(this.homeService.jobCircle(jobCircleRequest));
+    @ApiOperation("Job chart")
+    @GetMapping("/job-chart")
+    public Result<JobChartVO> jobChart(@Valid @ModelAttribute JobChartRequest jobChartRequest) {
+        return Result.success(this.homeService.jobChart(jobChartRequest));
     }
 
-    @ApiOperation("Job percentage")
-    @GetMapping("/job-percentage")
-    public Result<JobPercentageVO> jobPercentage(@Valid @ModelAttribute JobPercentageRequest jobPercentageRequest) {
-        return Result.success(this.homeService.jobPercentage(jobPercentageRequest));
-    }
-
-    @ApiOperation("Delay circle")
-    @GetMapping("/delay-circle")
-    public Result<DelayCircleVO> delayCircle(@Valid @ModelAttribute DelayCircleRequest delayCircleRequest) {
-        return Result.success(this.homeService.delayCircle(delayCircleRequest));
-    }
-
-    @ApiOperation("Delay percentage")
-    @GetMapping("/delay-percentage")
-    public Result<DelayPercentageVO> delayPercentage(@Valid @ModelAttribute DelayPercentageRequest delayPercentageRequest) {
-        return Result.success(this.homeService.delayPercentage(delayPercentageRequest));
+    @ApiOperation("Delay chart")
+    @GetMapping("/delay-chart")
+    public Result<DelayChartVO> delayChart(@Valid @ModelAttribute DelayChartRequest delayChartRequest) {
+        return Result.success(this.homeService.delayChart(delayChartRequest));
     }
 }

@@ -19,7 +19,7 @@ public class ClearScheduling {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
-    public void clearData(){
+    public void clearData() {
         this.clearService.clearData();
     }
 }

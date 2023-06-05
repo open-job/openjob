@@ -62,8 +62,35 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @return List
      */
     @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(d.createTimeHour, count(d.id)) from DelayInstance as d "
-            + "where d.namespaceId=?1 and d.createTime >= ?2 and d.createTime<=?3 and d.status=?4 and d.deleted=?5")
+            + "where d.namespaceId=?1 and d.createTime >= ?2 and d.createTime<=?3 and d.status=?4 and d.deleted=?5 GROUP BY d.createTimeHour")
     List<GroupCountDTO> getDelayGroupByHour(Long namespaceId, Long startTime, Long endTime, Integer status, Integer deleted);
+
+    /**
+     * Group by date time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param status      status
+     * @param deleted     deleted
+     * @return List
+     */
+    @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(d.createTimeDate, count(d.id)) from DelayInstance as d "
+            + "where d.namespaceId=?1 and d.createTime >= ?2 and d.createTime<=?3 and d.status=?4 and d.deleted=?5 GROUP BY d.createTimeDate")
+    List<GroupCountDTO> getDelayGroupByDate(Long namespaceId, Long startTime, Long endTime, Integer status, Integer deleted);
+
+    /**
+     * Group by hour time
+     *
+     * @param namespaceId namespaceId
+     * @param startTime   startTime
+     * @param endTime     endTime
+     * @param deleted     deleted
+     * @return List
+     */
+    @Query(value = "SELECT new io.openjob.server.repository.dto.GroupCountDTO(d.status, count(d.id)) from DelayInstance as d "
+            + "where d.namespaceId=?1 and d.createTime >= ?2 and d.createTime<=?3 and d.deleted=?4 GROUP BY d.status")
+    List<GroupCountDTO> getDelayGroupByStatus(Long namespaceId, Long startTime, Long endTime, Integer deleted);
 
     /**
      * Find by task id.
@@ -92,6 +119,8 @@ public interface DelayInstanceRepository extends JpaRepository<DelayInstance, Lo
      * @param status   status
      * @return Long
      */
+    @Modifying
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqualAndStatusNot(Long lastTime, Integer status);
 
     /**

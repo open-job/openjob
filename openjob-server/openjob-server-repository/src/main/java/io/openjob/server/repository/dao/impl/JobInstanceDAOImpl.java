@@ -134,6 +134,16 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public List<GroupCountDTO> countByNamespaceGroupByDateTime(Long namespaceId, Long startTime, Long endTime, Integer status) {
+        return this.jobInstanceRepository.getJobInstanceGroupByDate(namespaceId, startTime, endTime, status, CommonConstant.NO);
+    }
+
+    @Override
+    public List<GroupCountDTO> countByNamespaceGroupByStatus(Long namespaceId, Long startTime, Long endTime) {
+        return this.jobInstanceRepository.getJobInstanceGroupStatus(namespaceId, startTime, endTime, CommonConstant.NO);
+    }
+
+    @Override
     public PageDTO<JobInstance> pageList(JobInstancePageDTO instanceDTO) {
         Specification<JobInstance> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> conditions = new ArrayList<>();

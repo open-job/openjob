@@ -3,6 +3,8 @@ package io.openjob.server.repository.repository;
 import io.openjob.server.repository.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -53,5 +55,7 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
      * @param status   status
      * @return Long
      */
+    @Modifying
+    @Transactional(rollbackFor = Exception.class)
     Long deleteByCreateTimeLessThanEqualAndStatus(Long lastTime, Integer status);
 }
