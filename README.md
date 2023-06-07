@@ -55,7 +55,7 @@
 ## Contact
 - Gitter: https://gitter.im/openjob/openjob
 - Discord: https://discord.gg/ZUmX57fKa5
-- QQ交流群: 849015265
+- QQ Group: 849015265
 - WeChat Assistant:
 
  <img alt="WeChat" width="200px" src="./public/image/wx.png">
