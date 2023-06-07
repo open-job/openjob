@@ -33,7 +33,7 @@ Openjob 是一款分布式高性能任务调度框架，支持多种定时任务
 ## 依赖
 
 ```xml
-<openjob.worker.version>1.0.1</openjob.worker.version>
+<openjob.worker.version>1.0.2</openjob.worker.version>
 <dependency>
     <groupId>io.openjob.worker</groupId>
     <artifactId>openjob-worker-core</artifactId>
@@ -57,6 +57,7 @@ Openjob 是一款分布式高性能任务调度框架，支持多种定时任务
 ## 联系
 - Gitter: https://gitter.im/openjob/openjob
 - Discord: https://discord.gg/ZUmX57fKa5
+- QQ交流群: 849015265
 - 微信群助手:
   
    <img alt="WeChat" width="200px" src="./public/image/wx.png">
