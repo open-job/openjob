@@ -31,7 +31,7 @@
   * Comprehensive monitoring indicators, rich and timely alarm methods, convenient operation and maintenance personnel to quickly locate and solve online problems.
 ## Maven dependency
 ```xml
-<openjob.worker.version>1.0.1</openjob.worker.version>
+<openjob.worker.version>1.0.2</openjob.worker.version>
 <dependency>
     <groupId>io.openjob.worker</groupId>
     <artifactId>openjob-worker-core</artifactId>
@@ -55,6 +55,7 @@
 ## Contact
 - Gitter: https://gitter.im/openjob/openjob
 - Discord: https://discord.gg/ZUmX57fKa5
+- QQ交流群: 849015265
 - WeChat Assistant:
 
  <img alt="WeChat" width="200px" src="./public/image/wx.png">
