@@ -1,7 +1,6 @@
 package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.OpenjobSpringContext;
-import io.openjob.server.scheduler.service.SchedulerTimerService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,6 @@ public class SchedulerTimerTask extends AbstractTimerTask {
 
     @Override
     public void run() {
-        // Dispatch task to run.
-        OpenjobSpringContext.getBean(SchedulerTimerService.class).run(this);
+        OpenjobSpringContext.getBean(SchedulerTimerExecutor.class).submit(this);
     }
 }
