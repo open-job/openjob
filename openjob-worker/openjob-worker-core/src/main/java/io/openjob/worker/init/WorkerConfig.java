@@ -52,19 +52,9 @@ public class WorkerConfig {
     private static Integer serverPort;
 
     /**
-     * Initialize status
-     */
-    private final AtomicBoolean isInit = new AtomicBoolean(false);
-
-    /**
      * Init
      */
     public void init() throws UnknownHostException {
-        // Already initialized
-        if (this.isInit.get()) {
-            return;
-        }
-
         // App name.
         appName = OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME);
         if (Objects.isNull(appName)) {
@@ -79,9 +69,6 @@ public class WorkerConfig {
         // Server hostname
         serverHost = OpenjobConfig.getString(WorkerConstant.SERVER_HOST, IpUtil.getLocalAddress());
         serverPort = OpenjobConfig.getInteger(WorkerConstant.SERVER_PORT, WorkerConstant.DEFAULT_SERVER_PORT);
-
-        // Initialized
-        this.isInit.set(true);
     }
 
     public static String getWorkerHost() {

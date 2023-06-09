@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author stelin swoft@qq.com
- * @since 1.0.2
+ * @since 1.0.3
  */
 @Component
 public class SchedulerTimerExecutor {

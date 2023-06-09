@@ -12,6 +12,8 @@ public class WorkerConstant {
     public static final String SERVER_HOST = "openjob.server.host";
     public static final String SERVER_PORT = "openjob.server.port";
 
+    public static final String SERVER_ADDRESS = "openjob.server.address";
+
     /**
      * Worker config key.
      */
@@ -36,6 +38,7 @@ public class WorkerConstant {
      */
     public static final String DEFAULT_WORKER_AKKA_CONFIG_FILENAME = "akka-worker.conf";
     public static final Integer DEFAULT_SERVER_PORT = 25520;
+    public static final Integer DEFAULT_SERVER_ADDRESS_PORT = 8080;
     public static final Integer DEFAULT_WORKER_PORT = 25588;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM = 32;
