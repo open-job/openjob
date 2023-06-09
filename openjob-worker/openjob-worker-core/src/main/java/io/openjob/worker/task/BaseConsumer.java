@@ -17,6 +17,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public abstract class BaseConsumer<T> {
+
+    /**
+     * Poll ide time(ms).
+     */
+    protected Long pollIdeTime = 1000L;
+
+    /**
+     * Poll sleep time(ms).
+     */
+    protected Long pollSleepTime = 500L;
+
     protected final Long id;
     protected final Integer consumerCoreThreadNum;
     protected final Integer consumerMaxThreadNum;
@@ -26,7 +37,6 @@ public abstract class BaseConsumer<T> {
     protected String pollThreadName;
     protected Thread pollThread;
     protected TaskQueue<T> queues;
-
     protected ThreadPoolExecutor pullExecutor;
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 

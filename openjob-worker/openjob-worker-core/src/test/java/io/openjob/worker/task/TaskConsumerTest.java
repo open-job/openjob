@@ -39,7 +39,7 @@ public class TaskConsumerTest {
     public void testHandle() throws InterruptedException {
         this.before();
 
-        int max = (new Random()).nextInt(1000) + 1000;
+        int max = (new Random()).nextInt(1000) + 5000;
         for (int i = 0; i < max; i++) {
             queues.submit(new MyTestTask("task" + i));
         }

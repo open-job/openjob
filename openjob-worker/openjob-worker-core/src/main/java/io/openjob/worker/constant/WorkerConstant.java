@@ -7,12 +7,14 @@ package io.openjob.worker.constant;
 public class WorkerConstant {
 
     /**
-     * Server config key.
+     * Server address
      */
-    public static final String SERVER_HOST = "openjob.server.host";
-    public static final String SERVER_PORT = "openjob.server.port";
-
     public static final String SERVER_ADDRESS = "openjob.server.address";
+
+    /**
+     * Server address uri
+     */
+    public static final String SERVER_ADDRESS_URI = "/openapi/cluster/online";
 
     /**
      * Worker config key.
@@ -27,6 +29,7 @@ public class WorkerConstant {
     public static final String WORKER_TASK_CONTAINER_ACTOR_NUM = "openjob.worker.task.container.actor.num";
     public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "openjob.worker.persistent.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "openjob.worker.heartbeat.interval";
+    public static final String WORKER_HEARTBEAT_FAIL_TIMES = "openjob.worker.heartbeat.fail.times";
     public static final String WORKER_DELAY_MASTER_ACTOR_NUM = "openjob.worker.delay.master.actor.num";
     public static final String WORKER_DELAY_PULL_SIZE = "openjob.worker.delay.pull.size";
     public static final String WORKER_DELAY_PULL_SLEEP = "openjob.worker.delay.pull.sleep";
@@ -37,7 +40,6 @@ public class WorkerConstant {
      * Default worker config.
      */
     public static final String DEFAULT_WORKER_AKKA_CONFIG_FILENAME = "akka-worker.conf";
-    public static final Integer DEFAULT_SERVER_PORT = 25520;
     public static final Integer DEFAULT_SERVER_ADDRESS_PORT = 8080;
     public static final Integer DEFAULT_WORKER_PORT = 25588;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
@@ -45,11 +47,13 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
     public static final Integer DEFAULT_WORKER_HEARTBEAT_INTERVAL = 20;
+    public static final Integer DEFAULT_WORKER_HEARTBEAT_FAIL_TIMES = 2;
     public static final Integer DEFAULT_WORKER_DELAY_MASTER_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_DELAY_PULL_SIZE = 8;
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_TIMEOUT = 3000L;
+
 
     /**
      * Task

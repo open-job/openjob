@@ -35,14 +35,10 @@ public class OpenjobWorkerAutoConfiguration {
      */
     @PostConstruct
     public void init() {
-        // Server
-        if (StringUtils.isEmpty(System.getProperty(WorkerConstant.SERVER_HOST))
-                && Objects.nonNull(this.properties.getServer().getHost())) {
-            System.setProperty(WorkerConstant.SERVER_HOST, this.properties.getServer().getHost());
-        }
-        if (StringUtils.isEmpty(System.getProperty(WorkerConstant.SERVER_PORT))
-                && Objects.nonNull(this.properties.getServer().getPort())) {
-            System.setProperty(WorkerConstant.SERVER_PORT, String.valueOf(this.properties.getServer().getPort()));
+        // Server address
+        if (StringUtils.isEmpty(System.getProperty(WorkerConstant.SERVER_ADDRESS))
+                && Objects.nonNull(this.properties.getServer().getAddress())) {
+            System.setProperty(WorkerConstant.SERVER_ADDRESS, String.valueOf(this.properties.getServer().getAddress()));
         }
 
         // Worker

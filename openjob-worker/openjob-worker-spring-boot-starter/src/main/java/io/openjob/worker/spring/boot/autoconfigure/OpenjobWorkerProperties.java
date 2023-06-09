@@ -38,11 +38,10 @@ public class OpenjobWorkerProperties {
 
     @Data
     public static class Server {
-
         /**
-         * Default is IP
+         * Address
          */
-        private String host;
+        private String address;
 
         /**
          * Default is 25520

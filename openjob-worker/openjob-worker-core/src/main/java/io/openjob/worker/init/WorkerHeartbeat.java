@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class WorkerHeartbeat {
-
     private final OpenjobWorker openjobWorker;
 
     /**
@@ -37,9 +37,9 @@ public class WorkerHeartbeat {
     private final ScheduledExecutorService heartbeatService;
 
     /**
-     * Initialize status
+     * Fail counter
      */
-    private final AtomicBoolean isInit = new AtomicBoolean(false);
+    private final AtomicInteger failCounter = new AtomicInteger(0);
 
     /**
      * New WorkerHeartbeat
@@ -59,12 +59,8 @@ public class WorkerHeartbeat {
      * Init
      */
     public void init() {
-        // Already initialized
-        if (this.isInit.get()) {
-            return;
-        }
-
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
+        int failTimes = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_FAIL_TIMES, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_FAIL_TIMES);
         heartbeatService.scheduleAtFixedRate(() -> {
             String workerAddress = WorkerConfig.getWorkerAddress();
             String serverAddress = WorkerConfig.getServerHost();
@@ -76,19 +72,25 @@ public class WorkerHeartbeat {
             heartbeatReq.setVersion("1.0");
             heartbeatReq.setRunningJobInstanceIds(TaskMasterPool.getRunningTask());
             try {
+                //Heartbeat
                 ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
-                log.info("Worker heartbeat success. serverAddress={} workerAddress={}", serverAddress, workerAddress);
 
                 // Refresh worker.
                 this.refresh(heartbeatResponse);
+
+                // Reset counter
+                this.failCounter.set(0);
             } catch (Throwable e) {
-                log.error("Worker heartbeat fail. serverAddress={} workerAddress={}", serverAddress, workerAddress, e);
+                int count = this.failCounter.incrementAndGet();
+                log.error(String.format("Worker heartbeat fail. serverAddress=%s workerAddress=%s failTimes=%s", count, serverAddress, workerAddress), e);
+
+                if (count >= failTimes) {
+                    log.info("Begin to refresh server! server={} port={} failTimes={}", WorkerConfig.getServerHost(), WorkerConfig.getServerPort(), failTimes);
+                    WorkerConfig.refreshServer();
+                }
             }
 
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
-
-        // Initialized
-        this.isInit.set(true);
     }
 
     /**

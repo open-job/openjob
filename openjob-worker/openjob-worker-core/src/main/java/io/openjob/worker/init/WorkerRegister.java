@@ -19,25 +19,14 @@ public class WorkerRegister {
 
     private final OpenjobWorker openjobWorker;
 
-    /**
-     * Initialize status
-     */
-    private final AtomicBoolean isInit = new AtomicBoolean(false);
-
     public WorkerRegister(OpenjobWorker openjobWorker) {
         this.openjobWorker = openjobWorker;
     }
-
 
     /**
      * Register
      */
     public void register() {
-        // Already initialized
-        if (this.isInit.get()) {
-            return;
-        }
-
         String serverAddress = WorkerConfig.getServerHost();
 
         WorkerStartRequest startReq = new WorkerStartRequest();
@@ -51,9 +40,6 @@ public class WorkerRegister {
 
             // Do register.
             this.doRegister(response);
-
-            // Initialized
-            this.isInit.set(true);
         } catch (Throwable e) {
             log.error("Register worker fail. serverAddress={} workerAddress={}", serverAddress, WorkerConfig.getWorkerAddress());
             throw e;
