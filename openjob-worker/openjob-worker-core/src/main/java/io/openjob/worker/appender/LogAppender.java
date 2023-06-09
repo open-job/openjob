@@ -2,7 +2,7 @@ package io.openjob.worker.appender;
 
 import io.openjob.worker.dto.LogContentDTO;
 import io.openjob.worker.task.LogTaskConsumer;
-import io.openjob.worker.task.TaskQueue;
+import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 
 /**

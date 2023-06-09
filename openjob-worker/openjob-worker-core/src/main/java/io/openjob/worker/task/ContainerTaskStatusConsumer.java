@@ -1,5 +1,7 @@
 package io.openjob.worker.task;
 
+import io.openjob.common.task.BaseConsumer;
+import io.openjob.common.task.TaskQueue;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ContainerTaskStatusRequest;

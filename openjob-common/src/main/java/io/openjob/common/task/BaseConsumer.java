@@ -1,5 +1,6 @@
-package io.openjob.worker.task;
+package io.openjob.common.task;
 
+import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
@@ -21,7 +22,7 @@ public abstract class BaseConsumer<T> {
     /**
      * Poll ide time(ms).
      */
-    protected Long pollIdeTime = 1000L;
+    protected Long pollIdleTime = 1000L;
 
     /**
      * Poll sleep time(ms).
@@ -103,10 +104,10 @@ public abstract class BaseConsumer<T> {
                     List<T> tasks = this.pollTasks();
                     if (tasks.size() < this.pollSize) {
                         if (tasks.isEmpty()) {
-                            Thread.sleep(1000L);
+                            Thread.sleep(this.pollIdleTime);
                             continue;
                         }
-                        Thread.sleep(500L);
+                        Thread.sleep(this.pollSleepTime);
                     }
                 }
             } catch (Throwable ex) {
@@ -146,15 +147,6 @@ public abstract class BaseConsumer<T> {
         }
     }
 
-    private synchronized List<T> pollTasks() {
-        List<T> tasks = queues.poll(this.pollSize);
-        if (!tasks.isEmpty()) {
-            this.activePollNum.incrementAndGet();
-            this.consume(id, tasks);
-        }
-        return tasks;
-    }
-
     /**
      * Whether is active.
      *
@@ -162,5 +154,18 @@ public abstract class BaseConsumer<T> {
      */
     public synchronized boolean isActive() {
         return queues.size() > 0 || activePollNum.get() > 0;
+    }
+
+    public AtomicInteger getActivePollNum() {
+        return activePollNum;
+    }
+
+    private synchronized List<T> pollTasks() {
+        List<T> tasks = queues.poll(this.pollSize);
+        if (!tasks.isEmpty()) {
+            this.activePollNum.incrementAndGet();
+            this.consume(id, tasks);
+        }
+        return tasks;
     }
 }

@@ -1,4 +1,4 @@
-package io.openjob.worker.task;
+package io.openjob.common.task;
 
 import com.google.common.collect.Lists;
 

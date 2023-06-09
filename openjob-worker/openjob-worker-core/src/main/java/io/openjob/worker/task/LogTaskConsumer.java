@@ -2,6 +2,8 @@ package io.openjob.worker.task;
 
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskLogRequest;
+import io.openjob.common.task.BaseConsumer;
+import io.openjob.common.task.TaskQueue;
 import io.openjob.worker.dto.LogContentDTO;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;

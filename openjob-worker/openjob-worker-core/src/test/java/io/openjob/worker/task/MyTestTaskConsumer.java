@@ -1,5 +1,8 @@
 package io.openjob.worker.task;
 
+import io.openjob.common.task.BaseConsumer;
+import io.openjob.common.task.TaskQueue;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
