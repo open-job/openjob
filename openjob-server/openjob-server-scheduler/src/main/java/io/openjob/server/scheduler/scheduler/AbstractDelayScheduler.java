@@ -42,6 +42,14 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         Set<Long> addSlots = new HashSet<>(currentSlots);
         addSlots.removeAll(runningSlots);
 
+        // Refresh current slots to empty
+        if (CollectionUtils.isEmpty(slots)) {
+            if (Objects.nonNull(this.executorService)) {
+                this.stop();
+            }
+            return;
+        }
+
         // First to start executor service.
         if (Objects.isNull(this.executorService)) {
             if (!CollectionUtils.isEmpty(addSlots)) {
