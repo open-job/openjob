@@ -98,7 +98,7 @@ public class HealthService {
                 this.checkOnline(node);
             }
         } catch (Exception e) {
-            log.info("Node{} ping failed!", node);
+            log.info(String.format("Node %s ping failed!", node.toString()), e);
 
             // Node failed.
             // Record node fail message.

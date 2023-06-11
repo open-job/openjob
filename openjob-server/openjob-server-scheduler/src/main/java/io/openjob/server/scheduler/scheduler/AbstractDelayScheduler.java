@@ -46,11 +46,15 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         if (CollectionUtils.isEmpty(slots)) {
             if (Objects.nonNull(this.executorService)) {
                 this.stop();
+
+                // Rest executor and runnable list
+                this.executorService = null;
+                this.runnableList.clear();
             }
             return;
         }
 
-        // First to start executor service.
+        // When executor is not initialized to start executor.
         if (Objects.isNull(this.executorService)) {
             if (!CollectionUtils.isEmpty(addSlots)) {
                 this.start();
