@@ -156,8 +156,8 @@ public class HealthService {
         if (reportsCount > this.clusterProperties.getNodeSuccessTimes()) {
             // Join node to cluster.
             Config config = this.actorSystem.settings().config();
-            Integer bindPort = config.getInt(AkkaConfigConstant.AKKA_BIND_PORT);
-            String bindHostname = config.getString(AkkaConfigConstant.AKKA_BIND_HOSTNAME);
+            Integer bindPort = config.getInt(AkkaConfigConstant.AKKA_CANONICAL_PORT);
+            String bindHostname = config.getString(AkkaConfigConstant.AKKA_CANONICAL_HOSTNAME);
             this.joinManager.join(bindHostname, bindPort);
         }
     }
