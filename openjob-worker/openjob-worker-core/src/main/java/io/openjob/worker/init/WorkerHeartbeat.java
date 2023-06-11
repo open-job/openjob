@@ -87,6 +87,9 @@ public class WorkerHeartbeat {
                 if (count >= failTimes) {
                     log.info("Begin to refresh server! server={} port={} failTimes={}", WorkerConfig.getServerHost(), WorkerConfig.getServerPort(), failTimes);
                     WorkerConfig.refreshServer();
+
+                    // Reset counter
+                    this.failCounter.set(0);
                 }
             }
 

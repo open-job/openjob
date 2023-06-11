@@ -96,9 +96,13 @@ public class WorkerConfig {
     }
 
     public static synchronized void refreshServer() {
+        // Request config Mills
         RequestConfig.Builder config = RequestConfig.custom();
-        try {
+        config.setConnectTimeout(3000);
+        config.setSocketTimeout(3000);
+        config.setConnectionRequestTimeout(3000);
 
+        try {
             // Request
             String url = String.format("%s%s", serverAddress, WorkerConstant.SERVER_ADDRESS_URI);
             Result<ClusterDTO> result = HttpClientUtil.get(config.build(), url, new TypeReference<Result<ClusterDTO>>() {
@@ -129,7 +133,7 @@ public class WorkerConfig {
             serverPort = Integer.valueOf(serverSplit[1]);
             log.info("Refresh server success! server={} port={}", serverHost, serverPort);
         } catch (IOException e) {
-            throw new RuntimeException("Refresh server failed!", e);
+            log.error("Refresh server failed!", e);
         }
     }
 

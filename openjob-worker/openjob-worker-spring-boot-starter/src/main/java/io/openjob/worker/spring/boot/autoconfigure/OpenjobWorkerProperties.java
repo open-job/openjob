@@ -42,11 +42,6 @@ public class OpenjobWorkerProperties {
          * Address
          */
         private String address;
-
-        /**
-         * Default is 25520
-         */
-        private Integer port;
     }
 
     @Data
