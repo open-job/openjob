@@ -1,25 +1,24 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.response.ServerHeartbeatResponse;
 import io.openjob.common.response.ServerHeartbeatSystemResponse;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.cluster.executor.WorkerHeartbeatExecutor;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.dto.SystemDTO;
-import io.openjob.server.common.util.LogUtil;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.WorkerDAO;
-import io.openjob.server.repository.entity.Worker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -31,11 +30,15 @@ import java.util.Set;
 public class WorkerHeartbeatService {
     private final WorkerDAO workerDAO;
     private final JobInstanceDAO jobInstanceDAO;
+    private final WorkerHeartbeatExecutor workerHeartbeatExecutor;
 
     @Autowired
-    public WorkerHeartbeatService(WorkerDAO workerDAO, JobInstanceDAO jobInstanceDAO) {
+    public WorkerHeartbeatService(WorkerDAO workerDAO,
+                                  JobInstanceDAO jobInstanceDAO,
+                                  WorkerHeartbeatExecutor workerHeartbeatExecutor) {
         this.workerDAO = workerDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.workerHeartbeatExecutor = workerHeartbeatExecutor;
     }
 
     /**
@@ -44,13 +47,8 @@ public class WorkerHeartbeatService {
      * @param heartbeatReq heartbeat request.
      */
     public ServerHeartbeatResponse workerHeartbeat(WorkerHeartbeatRequest heartbeatReq) {
-        Worker worker = this.workerDAO.getByAddress(heartbeatReq.getAddress());
-        if (Objects.isNull(worker)) {
-            LogUtil.logAndThrow(String.format("worker(%s) do not exist!", heartbeatReq.getAddress()));
-        }
-
-        // Do heartbeat.
-        OpenjobSpringContext.getBean(this.getClass()).doHeartbeat(heartbeatReq, worker);
+        //Submit request
+        this.workerHeartbeatExecutor.submit(heartbeatReq);
 
         ServerHeartbeatResponse response = new ServerHeartbeatResponse();
         ServerHeartbeatSystemResponse systemResponse = new ServerHeartbeatSystemResponse();
@@ -68,19 +66,32 @@ public class WorkerHeartbeatService {
     }
 
     /**
-     * Do heartbeat
+     * Batch heartbeat
      *
-     * @param workerHeartbeatReq workerHeartbeatReq
-     * @param worker             worker
+     * @param requests requests
      */
     @Transactional(rollbackFor = Exception.class)
-    public void doHeartbeat(WorkerHeartbeatRequest workerHeartbeatReq, Worker worker) {
-        worker.setLastHeartbeatTime(DateUtil.timestamp());
-        this.workerDAO.save(worker);
+    public void batchHeartbeat(List<WorkerHeartbeatRequest> requests) {
+        Long timestamp = DateUtil.timestamp();
+        Set<String> addressList = new HashSet<>();
+        Set<Long> instanceIds = new HashSet<>();
 
-        List<Long> instanceIds = workerHeartbeatReq.getRunningJobInstanceIds();
+        // Merge requests
+        requests.forEach(r -> {
+            addressList.add(r.getAddress());
+            if (!CollectionUtils.isEmpty(r.getRunningJobInstanceIds())) {
+                instanceIds.addAll(r.getRunningJobInstanceIds());
+            }
+        });
+
+        // Worker heartbeat
+        if (!CollectionUtils.isEmpty(addressList)) {
+            this.workerDAO.updateLastHeartbeatTimeByAddresses(new ArrayList<>(addressList), timestamp);
+        }
+
+        // Instance last report time.
         if (!CollectionUtils.isEmpty(instanceIds)) {
-            this.jobInstanceDAO.updateLastReportTimeByIds(instanceIds, DateUtil.timestamp());
+            this.jobInstanceDAO.updateLastReportTimeByIds(new ArrayList<>(instanceIds), timestamp);
         }
     }
 }

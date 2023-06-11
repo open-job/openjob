@@ -61,6 +61,8 @@ public interface WorkerDAO {
      */
     Long deleteByCreateTimeAndStatus(Long lastTime, Integer status);
 
+    void updateLastHeartbeatTimeByAddresses(List<String> addresses, Long lastHeartbeatTime);
+
     /**
      * page result
      *

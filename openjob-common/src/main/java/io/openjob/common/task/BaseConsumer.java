@@ -1,6 +1,5 @@
 package io.openjob.common.task;
 
-import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
@@ -158,6 +157,14 @@ public abstract class BaseConsumer<T> {
 
     public AtomicInteger getActivePollNum() {
         return activePollNum;
+    }
+
+    public void setPollIdleTime(Long pollIdleTime) {
+        this.pollIdleTime = pollIdleTime;
+    }
+
+    public void setPollSleepTime(Long pollSleepTime) {
+        this.pollSleepTime = pollSleepTime;
     }
 
     private synchronized List<T> pollTasks() {

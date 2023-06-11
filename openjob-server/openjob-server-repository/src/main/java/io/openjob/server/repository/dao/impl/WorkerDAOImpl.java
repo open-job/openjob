@@ -60,6 +60,11 @@ public class WorkerDAOImpl implements WorkerDAO {
     }
 
     @Override
+    public void updateLastHeartbeatTimeByAddresses(List<String> addresses, Long lastHeartbeatTime) {
+        this.workerRepository.updateLastHeartbeatTimeByAddresses(addresses, lastHeartbeatTime);
+    }
+
+    @Override
     public PageDTO<Worker> getPage(WorkerPageDTO workerPageDTO) {
         // Matcher
         ExampleMatcher matching = ExampleMatcher.matching();
