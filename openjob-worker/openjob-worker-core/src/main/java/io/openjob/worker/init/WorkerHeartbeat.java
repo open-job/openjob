@@ -82,7 +82,7 @@ public class WorkerHeartbeat {
                 this.failCounter.set(0);
             } catch (Throwable e) {
                 int count = this.failCounter.incrementAndGet();
-                log.error(String.format("Worker heartbeat fail. serverAddress=%s workerAddress=%s failTimes=%s", count, serverAddress, workerAddress), e);
+                log.error(String.format("Worker heartbeat fail. serverAddress=%s workerAddress=%s failTimes=%s", serverAddress, workerAddress, count), e);
 
                 if (count >= failTimes) {
                     log.info("Begin to refresh server! server={} port={} failTimes={}", WorkerConfig.getServerHost(), WorkerConfig.getServerPort(), failTimes);
