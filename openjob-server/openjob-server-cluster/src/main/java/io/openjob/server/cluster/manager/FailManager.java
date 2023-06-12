@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-@Component
 @Slf4j
+@Component
 public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
@@ -69,7 +69,7 @@ public class FailManager {
                 failDTO.setServerId(stopNode.getServerId());
                 failDTO.setAkkaAddress(stopNode.getAkkaAddress());
 
-                // Akka message for join.
+                // Akka message for fail.
                 this.sendClusterStopMessage(failDTO, stopNode);
             }
         } catch (InterruptedException interruptedException) {
@@ -135,7 +135,9 @@ public class FailManager {
      */
     private void migrateSlots(Node stopNode) {
         List<JobSlots> currentJobSlots = this.jobSlotsDAO.listJobSlotsByServerId(stopNode.getServerId());
-        List<Server> servers = this.serverDAO.listServers(ServerStatusEnum.OK.getStatus());
+        List<Server> servers = this.serverDAO.listServers(ServerStatusEnum.OK.getStatus())
+                .stream().filter(s -> !s.getId().equals(stopNode.getServerId()))
+                .collect(Collectors.toList());
 
         // Exclude current server.
         int serverCount = servers.size();
@@ -154,14 +156,9 @@ public class FailManager {
         for (int i = 0; i < servers.size(); i++) {
             Server s = servers.get(i);
 
-            // Ignore current server.
-            if (s.getId().equals(stopNode.getServerId())) {
-                break;
-            }
-
             // Last server.
             if (i + 1 == servers.size()) {
-                List<Long> lastSlotsId = currentJobSlots.subList(index, currentJobSlots.size() - index)
+                List<Long> lastSlotsId = currentJobSlots.subList(index, currentJobSlots.size())
                         .stream()
                         .map(JobSlots::getId)
                         .collect(Collectors.toList());
@@ -169,12 +166,13 @@ public class FailManager {
                 break;
             }
 
-            index += slotsSize;
-
-            List<Long> slotIds = currentJobSlots.subList(index, slotsSize)
+            int segmentSize = (i + 1) * slotsSize;
+            List<Long> slotIds = currentJobSlots.subList(index, segmentSize)
                     .stream()
                     .map(JobSlots::getId)
                     .collect(Collectors.toList());
+
+            index = segmentSize;
             migrationSlots.put(s.getId(), slotIds);
         }
 

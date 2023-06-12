@@ -1,13 +1,13 @@
 package io.openjob.worker.task;
 
+import io.openjob.common.task.BaseConsumer;
+import io.openjob.common.task.TaskQueue;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.exception.BatchUpdateStatusException;
 import io.openjob.worker.master.DistributeStatusHandler;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
-import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.h2.jdbc.JdbcBatchUpdateException;
 
 import java.util.List;
 import java.util.stream.Collectors;

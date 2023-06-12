@@ -2,7 +2,7 @@ package io.openjob.worker.container;
 
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.task.ContainerTaskStatusConsumer;
-import io.openjob.worker.task.TaskQueue;
+import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 
 /**

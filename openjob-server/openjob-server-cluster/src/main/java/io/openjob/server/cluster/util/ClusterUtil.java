@@ -155,7 +155,7 @@ public class ClusterUtil {
 
                 log.info("Cluster message success! akkaAddress={}, message={} response={}", akkaAddress, message, nodeResponse);
             } catch (Throwable e) {
-                log.warn("Akka cluster message error({})!", e.getMessage());
+                log.warn("Akka cluster message error!", e);
             }
         });
 

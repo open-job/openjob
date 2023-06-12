@@ -89,8 +89,8 @@ public class SchedulerTimerService {
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
-            this.addInstanceLog(task.getJobId(), task.getTaskId(), "Do not have available worker node!");
-            log.error("Do not have available worker node! taskId={} appid={}", task.getTaskId(), task.getAppid());
+            this.addInstanceLog(task.getJobId(), task.getTaskId(), "No worker nodes are available!");
+            log.error("No worker nodes are available! taskId={} appid={}", task.getTaskId(), task.getAppid());
             return;
         }
 

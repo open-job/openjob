@@ -1,8 +1,5 @@
 package io.openjob.server.admin.interceptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import io.openjob.common.response.Result;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
 import io.openjob.server.admin.service.AdminUserService;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 

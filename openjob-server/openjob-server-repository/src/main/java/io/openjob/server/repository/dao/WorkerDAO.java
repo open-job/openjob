@@ -55,11 +55,20 @@ public interface WorkerDAO {
 
     /**
      * Delete by create time and status
+     *
      * @param lastTime lastTime
-     * @param status status
+     * @param status   status
      * @return Long
      */
     Long deleteByCreateTimeAndStatus(Long lastTime, Integer status);
+
+    /**
+     * Update heartbeat time
+     *
+     * @param addresses         addresses
+     * @param lastHeartbeatTime lastHeartbeatTime
+     */
+    void updateLastHeartbeatTimeByAddresses(List<String> addresses, Long lastHeartbeatTime);
 
     /**
      * page result

@@ -1,4 +1,4 @@
-package io.openjob.worker.task;
+package io.openjob.common.task;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public abstract class BaseConsumer<T> {
+
+    protected Long pollIdleTime = 1000L;
+    protected Long pollSleepTime = 500L;
     protected final Long id;
     protected final Integer consumerCoreThreadNum;
     protected final Integer consumerMaxThreadNum;
@@ -26,7 +29,6 @@ public abstract class BaseConsumer<T> {
     protected String pollThreadName;
     protected Thread pollThread;
     protected TaskQueue<T> queues;
-
     protected ThreadPoolExecutor pullExecutor;
     protected AtomicInteger activePollNum = new AtomicInteger(0);
 
@@ -55,6 +57,39 @@ public abstract class BaseConsumer<T> {
         this.pollSize = pollSize;
         this.pollThreadName = pollThreadName;
         this.queues = queues;
+    }
+
+    /**
+     * New BaseConsumer
+     *
+     * @param id                    id
+     * @param consumerCoreThreadNum consumerCoreThreadNum
+     * @param consumerMaxThreadNum  consumerMaxThreadNum
+     * @param consumerThreadName    consumerThreadName
+     * @param pollSize              pollSize
+     * @param pollThreadName        pollThreadName
+     * @param queues                queues
+     * @param pollIdleTime          pollIdleTime(ms)
+     * @param pollSleepTime         pollSleepTime(ms)
+     */
+    public BaseConsumer(Long id,
+                        Integer consumerCoreThreadNum,
+                        Integer consumerMaxThreadNum,
+                        String consumerThreadName,
+                        Integer pollSize,
+                        String pollThreadName,
+                        TaskQueue<T> queues,
+                        Long pollIdleTime,
+                        Long pollSleepTime) {
+        this.id = id;
+        this.consumerCoreThreadNum = consumerCoreThreadNum;
+        this.consumerMaxThreadNum = consumerMaxThreadNum;
+        this.consumerThreadName = consumerThreadName;
+        this.pollSize = pollSize;
+        this.pollThreadName = pollThreadName;
+        this.queues = queues;
+        this.pollIdleTime = pollIdleTime;
+        this.pollSleepTime = pollSleepTime;
     }
 
     /**
@@ -93,10 +128,10 @@ public abstract class BaseConsumer<T> {
                     List<T> tasks = this.pollTasks();
                     if (tasks.size() < this.pollSize) {
                         if (tasks.isEmpty()) {
-                            Thread.sleep(1000L);
+                            Thread.sleep(this.pollIdleTime);
                             continue;
                         }
-                        Thread.sleep(500L);
+                        Thread.sleep(this.pollSleepTime);
                     }
                 }
             } catch (Throwable ex) {
@@ -136,15 +171,6 @@ public abstract class BaseConsumer<T> {
         }
     }
 
-    private synchronized List<T> pollTasks() {
-        List<T> tasks = queues.poll(this.pollSize);
-        if (!tasks.isEmpty()) {
-            this.activePollNum.incrementAndGet();
-            this.consume(id, tasks);
-        }
-        return tasks;
-    }
-
     /**
      * Whether is active.
      *
@@ -152,5 +178,18 @@ public abstract class BaseConsumer<T> {
      */
     public synchronized boolean isActive() {
         return queues.size() > 0 || activePollNum.get() > 0;
+    }
+
+    public AtomicInteger getActivePollNum() {
+        return activePollNum;
+    }
+
+    private synchronized List<T> pollTasks() {
+        List<T> tasks = queues.poll(this.pollSize);
+        if (!tasks.isEmpty()) {
+            this.activePollNum.incrementAndGet();
+            this.consume(id, tasks);
+        }
+        return tasks;
     }
 }

@@ -2,7 +2,7 @@ package io.openjob.worker.master;
 
 import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.task.DistributeStatusConsumer;
-import io.openjob.worker.task.TaskQueue;
+import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

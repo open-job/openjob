@@ -12,7 +12,33 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SchedulerProperties {
     private Integer instanceReDispatchPeriodTime = 90;
     private Integer instanceFailPeriodTime = 15;
+    private SchedulerProperties.Scheduler scheduler = new SchedulerProperties.Scheduler();
+    private SchedulerProperties.Workflow workflow = new SchedulerProperties.Workflow();
     private Delay delay;
+
+    @Data
+    public static class Scheduler {
+        private Integer timingWheelSize = 1;
+        private Integer executorMaxPoolSize = 16;
+        private Integer executorBlockingSize = 4;
+
+        /**
+         * Executor keep alive time(Second)
+         */
+        private Integer executorKeepAliveTime = 90;
+    }
+
+    @Data
+    public static class Workflow {
+        private Integer timingWheelSize = 1;
+        private Integer executorMaxPoolSize = 8;
+        private Integer executorBlockingSize = 4;
+
+        /**
+         * Executor keep alive time(Second)
+         */
+        private Integer executorKeepAliveTime = 90;
+    }
 
     @Data
     public static class Delay {

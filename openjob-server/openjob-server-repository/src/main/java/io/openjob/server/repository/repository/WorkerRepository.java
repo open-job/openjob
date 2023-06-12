@@ -4,6 +4,7 @@ import io.openjob.server.repository.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -47,6 +48,19 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
      * @return Long
      */
     Long countByNamespaceIdAndStatusAndDeleted(Long namespaceId, Integer status, Integer deleted);
+
+    /**
+     * Update last heartbeat time
+     *
+     * @param addresses         addresses
+     * @param lastHeartbeatTime lastHeartbeatTime
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update Worker as w set w.lastHeartbeatTime=?2 where w.address in (?1)")
+    Integer updateLastHeartbeatTimeByAddresses(List<String> addresses, Long lastHeartbeatTime);
+
 
     /**
      * Delete sever by create time and status

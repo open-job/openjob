@@ -52,8 +52,7 @@ public abstract class AbstractWheel implements Wheel {
      * @return SystemTimer
      */
     public SystemTimer getSystemTimer(Long slotsId) {
-        int size = this.systemTimers.size() - 1;
-        int index = (int) (slotsId % size);
+        int index = (int) (slotsId % this.systemTimers.size());
         return this.systemTimers.get(index);
     }
 
@@ -71,7 +70,7 @@ public abstract class AbstractWheel implements Wheel {
                 SystemTimer systemTimer = new SystemTimer(name);
                 this.systemTimers.add(systemTimer);
 
-                log.info("Scheduler {} is stared!", name);
+                log.info("Scheduler {} is started!", name);
 
                 // Advance clock.
                 while (true) {

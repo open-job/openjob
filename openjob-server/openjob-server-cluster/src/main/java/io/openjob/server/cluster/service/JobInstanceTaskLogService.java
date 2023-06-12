@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskLogRequest;
+import io.openjob.server.cluster.executor.WorkerTaskLogExecutor;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
@@ -25,10 +26,12 @@ import java.util.stream.Collectors;
 @Service
 public class JobInstanceTaskLogService {
     private final LogDAO logDAO;
+    private final WorkerTaskLogExecutor executor;
 
     @Autowired
-    public JobInstanceTaskLogService(LogDAO logDAO) {
+    public JobInstanceTaskLogService(LogDAO logDAO, WorkerTaskLogExecutor executor) {
         this.logDAO = logDAO;
+        this.executor = executor;
     }
 
     /**
@@ -37,7 +40,16 @@ public class JobInstanceTaskLogService {
      * @param logReq log request.
      */
     public void handleInstanceTaskLog(WorkerJobInstanceTaskLogRequest logReq) {
-        List<ProcessorLogDTO> processorLogList = logReq.getFieldList().stream().map(fields -> {
+        this.executor.submit(logReq);
+    }
+
+    /**
+     * Batch instance log
+     *
+     * @param requests requests
+     */
+    public void batchInstanceTaskLog(List<WorkerJobInstanceTaskLogRequest> requests) {
+        List<ProcessorLogDTO> processorLogList = requests.stream().flatMap(r -> r.getFieldList().stream().map(fields -> {
             // Field map.
             Map<String, List<WorkerJobInstanceTaskLogFieldRequest>> fieldMap = fields.stream()
                     .collect(Collectors.groupingBy(WorkerJobInstanceTaskLogFieldRequest::getName));
@@ -60,7 +72,7 @@ public class JobInstanceTaskLogService {
             processorLog.setTime(Long.valueOf(timeStamp));
             processorLog.setFields(BeanMapperUtil.mapList(fields, WorkerJobInstanceTaskLogFieldRequest.class, ProcessorLogFieldDTO.class));
             return processorLog;
-        }).collect(Collectors.toList());
+        })).collect(Collectors.toList());
 
         try {
             logDAO.batchAdd(processorLogList);

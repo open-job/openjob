@@ -41,8 +41,6 @@ public class WorkerHeartbeatActor extends BaseActor {
      */
     public void workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatRequest) {
         ServerHeartbeatResponse response = workerHeartbeatService.workerHeartbeat(workerHeartbeatRequest);
-        log.info("Worker({}) heartbeat success!", workerHeartbeatRequest.getAddress());
-
         getSender().tell(Result.success(response), getSelf());
     }
 }

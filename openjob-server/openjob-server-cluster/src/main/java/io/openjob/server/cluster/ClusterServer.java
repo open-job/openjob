@@ -51,9 +51,9 @@ public class ClusterServer {
 
         // Join server
         Config config = actorSystem.settings().config();
-        Integer bindPort = config.getInt(AkkaConfigConstant.AKKA_BIND_PORT);
-        String bindHostname = config.getString(AkkaConfigConstant.AKKA_BIND_HOSTNAME);
-        this.joinService.join(bindHostname, bindPort);
+        Integer remotePort = config.getInt(AkkaConfigConstant.AKKA_CANONICAL_PORT);
+        String remoteHostname = config.getString(AkkaConfigConstant.AKKA_CANONICAL_HOSTNAME);
+        this.joinService.join(remoteHostname, remotePort);
 
         // Register coordinated shutdown.
         this.registerCoordinatedShutdown();
