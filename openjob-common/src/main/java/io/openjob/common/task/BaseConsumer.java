@@ -18,16 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public abstract class BaseConsumer<T> {
 
-    /**
-     * Poll ide time(ms).
-     */
     protected Long pollIdleTime = 1000L;
-
-    /**
-     * Poll sleep time(ms).
-     */
     protected Long pollSleepTime = 500L;
-
     protected final Long id;
     protected final Integer consumerCoreThreadNum;
     protected final Integer consumerMaxThreadNum;
@@ -65,6 +57,39 @@ public abstract class BaseConsumer<T> {
         this.pollSize = pollSize;
         this.pollThreadName = pollThreadName;
         this.queues = queues;
+    }
+
+    /**
+     * New BaseConsumer
+     *
+     * @param id                    id
+     * @param consumerCoreThreadNum consumerCoreThreadNum
+     * @param consumerMaxThreadNum  consumerMaxThreadNum
+     * @param consumerThreadName    consumerThreadName
+     * @param pollSize              pollSize
+     * @param pollThreadName        pollThreadName
+     * @param queues                queues
+     * @param pollIdleTime          pollIdleTime(ms)
+     * @param pollSleepTime         pollSleepTime(ms)
+     */
+    public BaseConsumer(Long id,
+                        Integer consumerCoreThreadNum,
+                        Integer consumerMaxThreadNum,
+                        String consumerThreadName,
+                        Integer pollSize,
+                        String pollThreadName,
+                        TaskQueue<T> queues,
+                        Long pollIdleTime,
+                        Long pollSleepTime) {
+        this.id = id;
+        this.consumerCoreThreadNum = consumerCoreThreadNum;
+        this.consumerMaxThreadNum = consumerMaxThreadNum;
+        this.consumerThreadName = consumerThreadName;
+        this.pollSize = pollSize;
+        this.pollThreadName = pollThreadName;
+        this.queues = queues;
+        this.pollIdleTime = pollIdleTime;
+        this.pollSleepTime = pollSleepTime;
     }
 
     /**
@@ -157,14 +182,6 @@ public abstract class BaseConsumer<T> {
 
     public AtomicInteger getActivePollNum() {
         return activePollNum;
-    }
-
-    public void setPollIdleTime(Long pollIdleTime) {
-        this.pollIdleTime = pollIdleTime;
-    }
-
-    public void setPollSleepTime(Long pollSleepTime) {
-        this.pollSleepTime = pollSleepTime;
     }
 
     private synchronized List<T> pollTasks() {

@@ -14,8 +14,6 @@ import java.util.List;
  */
 public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
 
-    private final WorkerHeartbeatService workerHeartbeatService;
-
     public WorkerHeartConsumer(Long id,
                                Integer consumerCoreThreadNum,
                                Integer consumerMaxThreadNum,
@@ -23,17 +21,12 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
                                Integer pollSize,
                                String pollThreadName,
                                TaskQueue<WorkerHeartbeatRequest> queues) {
-        super(id, consumerCoreThreadNum, consumerMaxThreadNum, consumerThreadName, pollSize, pollThreadName, queues);
-
-        // Initialize
-        this.setPollIdleTime(2000L);
-        this.setPollSleepTime(1000L);
-        this.workerHeartbeatService = OpenjobSpringContext.getBean(WorkerHeartbeatService.class);
+        super(id, consumerCoreThreadNum, consumerMaxThreadNum, consumerThreadName, pollSize, pollThreadName, queues, 2000L, 1000L);
     }
 
     @Override
     public void consume(Long id, List<WorkerHeartbeatRequest> tasks) {
-        this.consumerExecutor.submit(new WorkerHeartbeatConsumerRunnable(tasks, this.workerHeartbeatService));
+        this.consumerExecutor.submit(new WorkerHeartbeatConsumerRunnable(tasks));
     }
 
     /**
@@ -41,17 +34,14 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
      */
     private static class WorkerHeartbeatConsumerRunnable implements Runnable {
         private final List<WorkerHeartbeatRequest> tasks;
-        private final WorkerHeartbeatService workerHeartbeatService;
 
-        private WorkerHeartbeatConsumerRunnable(List<WorkerHeartbeatRequest> tasks,
-                                                WorkerHeartbeatService workerHeartbeatService) {
+        private WorkerHeartbeatConsumerRunnable(List<WorkerHeartbeatRequest> tasks) {
             this.tasks = tasks;
-            this.workerHeartbeatService = workerHeartbeatService;
         }
 
         @Override
         public void run() {
-            this.workerHeartbeatService.batchHeartbeat(this.tasks);
+            OpenjobSpringContext.getBean(WorkerHeartbeatService.class).batchHeartbeat(this.tasks);
         }
     }
 }

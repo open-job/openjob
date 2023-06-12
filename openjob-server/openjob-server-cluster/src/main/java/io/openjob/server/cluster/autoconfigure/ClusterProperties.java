@@ -57,11 +57,11 @@ public class ClusterProperties {
         /**
          * Worker online period(s).
          */
-        private Integer onlinePeriod = 30;
+        private Integer onlinePeriod = 10;
 
         /**
          * Worker offline period(s).
          */
-        private Integer offlinePeriod = 60;
+        private Integer offlinePeriod = 20;
     }
 }

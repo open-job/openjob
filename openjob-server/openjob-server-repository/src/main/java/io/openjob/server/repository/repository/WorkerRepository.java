@@ -51,7 +51,7 @@ public interface WorkerRepository extends JpaRepository<Worker, Long>, JpaSpecif
 
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update Worker as w set w.lastHeartbeatTime=?2,w.updateTime=?2 where w.address in (?1)")
+    @Query(value = "update Worker as w set w.lastHeartbeatTime=?2 where w.address in (?1)")
     Integer updateLastHeartbeatTimeByAddresses(List<String> addresses, Long lastHeartbeatTime);
 
 
