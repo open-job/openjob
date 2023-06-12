@@ -95,6 +95,9 @@ public class WorkerConfig {
         refreshServer();
     }
 
+    /**
+     * Refresh server
+     */
     public static synchronized void refreshServer() {
         // Request config Mills
         RequestConfig.Builder config = RequestConfig.custom();

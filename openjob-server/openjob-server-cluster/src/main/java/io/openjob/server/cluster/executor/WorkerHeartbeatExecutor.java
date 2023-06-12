@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 public class WorkerHeartbeatExecutor {
     private final TaskQueue<WorkerHeartbeatRequest> queue;
 
+    /**
+     * New
+     */
     public WorkerHeartbeatExecutor() {
         this.queue = new TaskQueue<>(0L, 64);
 

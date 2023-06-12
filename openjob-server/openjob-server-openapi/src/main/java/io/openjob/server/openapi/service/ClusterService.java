@@ -8,5 +8,12 @@ import io.openjob.server.openapi.vo.ClusterOnlineVO;
  * @since 1.0.3
  */
 public interface ClusterService {
+
+    /**
+     * online
+     *
+     * @param clusterOnlineRequest clusterOnlineRequest
+     * @return ClusterOnlineVO
+     */
     ClusterOnlineVO online(ClusterOnlineRequest clusterOnlineRequest);
 }

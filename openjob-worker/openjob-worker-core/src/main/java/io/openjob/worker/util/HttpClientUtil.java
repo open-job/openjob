@@ -23,10 +23,10 @@ public class HttpClientUtil {
     /**
      * Http client
      */
-    private static final CloseableHttpClient httpClient;
+    private static final CloseableHttpClient HTTP_CLIENT;
 
     static {
-        httpClient = HttpClients.createDefault();
+        HTTP_CLIENT = HttpClients.createDefault();
     }
 
     /**
@@ -44,7 +44,7 @@ public class HttpClientUtil {
         httpGet.setConfig(requestConfig);
         CloseableHttpResponse response = null;
         try {
-            response = httpClient.execute(httpGet);
+            response = HTTP_CLIENT.execute(httpGet);
             HttpEntity entity = response.getEntity();
             String body = EntityUtils.toString(entity, "UTF-8");
             int statusCode = response.getStatusLine().getStatusCode();

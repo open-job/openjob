@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 public class WorkerTaskLogExecutor {
     private final TaskQueue<WorkerJobInstanceTaskLogRequest> queue;
 
+    /**
+     * New
+     */
     public WorkerTaskLogExecutor() {
         this.queue = new TaskQueue<>(0L, 64);
 
