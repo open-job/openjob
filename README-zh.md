@@ -33,7 +33,7 @@ Openjob 是一款分布式高性能任务调度框架，支持多种定时任务
 ## 依赖
 
 ```xml
-<openjob.worker.version>1.0.2</openjob.worker.version>
+<openjob.worker.version>1.0.3</openjob.worker.version>
 <dependency>
     <groupId>io.openjob.worker</groupId>
     <artifactId>openjob-worker-core</artifactId>
