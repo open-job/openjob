@@ -158,7 +158,7 @@ public class FailManager {
 
             // Last server.
             if (i + 1 == servers.size()) {
-                List<Long> lastSlotsId = currentJobSlots.subList(index, currentJobSlots.size() - 1)
+                List<Long> lastSlotsId = currentJobSlots.subList(index, currentJobSlots.size())
                         .stream()
                         .map(JobSlots::getId)
                         .collect(Collectors.toList());
@@ -167,12 +167,12 @@ public class FailManager {
             }
 
             int segmentSize = i * slotsSize;
-            List<Long> slotIds = currentJobSlots.subList(index, segmentSize - 1)
+            List<Long> slotIds = currentJobSlots.subList(index, segmentSize)
                     .stream()
                     .map(JobSlots::getId)
                     .collect(Collectors.toList());
 
-            index += slotsSize;
+            index = segmentSize;
             migrationSlots.put(s.getId(), slotIds);
         }
 
