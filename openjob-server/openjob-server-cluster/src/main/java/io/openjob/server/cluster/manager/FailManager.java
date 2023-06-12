@@ -166,7 +166,7 @@ public class FailManager {
                 break;
             }
 
-            int segmentSize = i * slotsSize;
+            int segmentSize = (i + 1) * slotsSize;
             List<Long> slotIds = currentJobSlots.subList(index, segmentSize)
                     .stream()
                     .map(JobSlots::getId)
