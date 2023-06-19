@@ -32,13 +32,13 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
 
         int shardingNum = shardingMap.size();
         List<MasterStartContainerRequest> startContainerRequestList = Lists.newArrayList();
-        for (Map.Entry<Long, String> entry : shardingMap.entrySet()) {
+        shardingMap.forEach((i, p) -> {
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
-            startRequest.setShardingId(entry.getKey());
-            startRequest.setShardingParam(entry.getValue());
+            startRequest.setShardingId(i);
+            startRequest.setShardingParam(p);
             startRequest.setShardingNum(shardingNum);
             startContainerRequestList.add(startRequest);
-        }
+        });
 
         this.dispatchTasks(startContainerRequestList, false, Collections.emptySet());
     }

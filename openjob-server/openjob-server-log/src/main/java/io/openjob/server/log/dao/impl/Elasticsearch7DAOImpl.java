@@ -3,7 +3,7 @@ package io.openjob.server.log.dao.impl;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
-import io.openjob.server.common.util.JsonUtil;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.dao.LogDAO;

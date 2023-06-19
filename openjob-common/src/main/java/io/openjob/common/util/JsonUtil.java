@@ -1,4 +1,4 @@
-package io.openjob.server.common.util;
+package io.openjob.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
