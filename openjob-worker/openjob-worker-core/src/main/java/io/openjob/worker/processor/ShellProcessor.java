@@ -31,9 +31,7 @@ import java.util.function.Consumer;
 public class ShellProcessor implements JobProcessor {
 
     protected static final Logger logger = LoggerFactory.getLogger("openjob");
-
     protected ExecutorService executorService;
-
     protected Process process;
 
     @Override
@@ -45,21 +43,21 @@ public class ShellProcessor implements JobProcessor {
     public ProcessResult process(JobContext context) throws IOException, InterruptedException {
         ProcessResult result = new ProcessResult(false);
         ProcessBuilder processBuilder = new ProcessBuilder(this.parseCommand(context));
+        processBuilder.redirectErrorStream(true);
         this.process = processBuilder.start();
 
         // Process stream
         this.executorService = new ThreadPoolExecutor(
-                2,
-                2,
+                1,
+                1,
                 30,
                 TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(2),
+                new LinkedBlockingDeque<>(1),
                 r -> new Thread(r, "Openjob-shell-stream")
         );
 
         // Input stream and error stream
-        this.executorService.submit(new StreamRunnable(this.process.getInputStream(), logger::info));
-        this.executorService.submit(new StreamRunnable(this.process.getErrorStream(), logger::error));
+        this.executorService.submit(new InputStreamRunnable(this.process.getInputStream(), this::processStdout));
 
         // Waiting
         if (this.process.waitFor() == 0) {
@@ -84,32 +82,13 @@ public class ShellProcessor implements JobProcessor {
         }
     }
 
-    public static class StreamRunnable implements Runnable {
-        private final InputStream inputStream;
-        private final Consumer<String> consumer;
-
-        public StreamRunnable(InputStream inputStream, Consumer<String> consumer) {
-            this.inputStream = inputStream;
-            this.consumer = consumer;
-        }
-
-        @Override
-        public void run() {
-            try {
-                String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                while (!Thread.interrupted() && (line = br.readLine()) != null) {
-                    this.consumer.accept(line);
-                }
-            } catch (Throwable e) {
-                logger.error("ShellProcessor reader stream", e);
-            }
-        }
+    protected void processStdout(String message) {
+        logger.info(message);
     }
 
-    private String[] parseCommand(JobContext context) {
+    protected String[] parseCommand(JobContext context) {
         List<String> params = new ArrayList<>();
-        ShellProcessorDTO processorDTO = JsonUtil.decode(context.getProcessorType(), ShellProcessorDTO.class);
+        ShellProcessorDTO processorDTO = JsonUtil.decode(context.getProcessorInfo(), ShellProcessorDTO.class);
 
         if (ShellTypeEnum.UNIX.getType().equals(processorDTO.getType())) {
             // Unix
@@ -127,5 +106,28 @@ public class ShellProcessor implements JobProcessor {
             params.add(context.getShardingParam());
         }
         return params.toArray(new String[0]);
+    }
+
+    protected static class InputStreamRunnable implements Runnable {
+        private final InputStream inputStream;
+        private final Consumer<String> consumer;
+
+        public InputStreamRunnable(InputStream inputStream, Consumer<String> consumer) {
+            this.inputStream = inputStream;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                while (!Thread.currentThread().isInterrupted() && (line = br.readLine()) != null) {
+                    this.consumer.accept(line);
+                }
+            } catch (Throwable e) {
+                logger.error("ShellProcessor reader stream", e);
+            }
+        }
     }
 }
