@@ -10,25 +10,38 @@
 
 > **[中文](README-zh.md)**
 ## Introduction
-**Openjob** is a distributed, high-performance task scheduling framework that supports a variety of scheduled and delayed tasks. It adopts a decentralized design and supports wireless capacity expansion.
+**Openjob** is A distributed and high-performance task scheduling framework that supports multiple cronjob, delay task, workflow, lightweight distributed computing, unlimited horizontal scaling, with high scalability and fault tolerance. Also has perfect permission management, powerful alarm monitoring, and support multiple languages.
 * High reliability
-  * Distributed stateless design, Master/Worker architecture, relying on only one database (MySQL/PostgreSQL/Oracle)
+  * Distributed with stateless design, using the Master/Worker architecture, supports multiple databases (MySQL/PostgreSQL/Oracle)
 * High performance
-  * Task scheduling is accurate to the second level, supports lightweight distributed computing, adopts the fragmentation algorithm, and supports unlimited capacity expansion.
-* Timing scheduling
-  * The system schedules distributed scheduled tasks, fixed frequency tasks, high-performance second-level tasks, and one-time tasks.
-* Distributed computation
-  * Supports multiple distributed programming models such as single machine, broadcast, Map, MapReduce, and sharding, easily realizing distributed big data computing.
-* Workflow
-  * Built-in workflow scheduling engine, supporting visual DAG, convenient and efficient implementation of complex task scheduling.
+  * System uses a consistency sharding algorithm, lock-free design, task scheduling is accurate down to the second, supporting lightweight distributed computing and unlimited horizontal scaling
+* Cronjob
+  * Supports distributed cronjob, fixed rate tasks, high-performance second tasks, and onetime tasks
+* Distributed computing
+  * Supports multiple distributed programming models such as standalone, broadcast, Map, MapReduce, and sharding, easy to complete distributed computing for big data
 * Delay task
-  * Redis implements high-performance delayed tasks, supports multi-level storage of delayed tasks and rich task management.
-* Cross language
-  * Redundant support for Java/Go/PHP is officially available, as well as integration with common frameworks such as Spring Boot, Gin, and Swoft.
-* Authority management
-  * Namespace design, support rich permission management, accurate to the button level.
+  * High performance delay task based on Redis , support multi-level storage, and provides rich statistics and reports
+* Workflow
+  * Supports workflow scheduling engine, visual DAG design, and easy to complete complex task scheduling
+* Permission management
+  * Perfect user management, supports menu, button, and data permission settings, flexible management of user permissions
 * Alarm monitoring
-  * Comprehensive monitoring indicators, rich and timely alarm methods, convenient operation and maintenance personnel to quickly locate and solve online problems.
+  * Overall monitoring metrics, rich and alarm in time, easy to locate and resolve online problem
+* Multiple languages
+  * Support multiple languages such as Java, Go, PHP, and Python, as well as build with frameworks such as Spring Boot, Gin, and Swoft
+## Open source
+|**Item**|**Quartz**|**Elastic-Job**|**XXL-JOB**|**Openjob**|
+| ----- | ----- | ----- | ----- | ----- |
+|Cronjob|Cron|Cron|Cron|* Cronjob<br>* second<br>* Onetime<br>* Fixed rate|
+|Delay task|No|No|No|Distributed, high-performance delay task  based on Redis|
+|Workflow|No|No|No|Workflow design with UI|
+|Distributed Computing|No|Sharding|Sharding|* Broadcast<br>* Map/MapReduce<br>* Sharding|
+|Multiple languages|Java|* Java<br>* Shell|* Java<br>* Shell|* Java<br>* Go(Gin、beego)<br>* PHP(Swoft)<br>* Python(Agent)<br>* Shell<br>* HTTP<br>* Kettle|
+|Visualization|No|Weak|* Task history<br>* Task log（Not support storage）<br>* Dashboard|* Task history<br><br>* Task log（support H2/Mysql/Elasticsearch）<br>* Dashboard<br>* Full permissions<br>* Task log stack|
+|Manageable|No|enable、disable task|* enable、disable task<br>* execute once<br>* stop|* enable、disable task<br>* execute once<br>* kill<br>* stop|
+|Alarms|No|email|email|* custom event<br>* email<br>* webhook|
+|Performance|Every task scheduling try to acquire a lock through the database, causes a high pressure on the database|ZooKeeper  is performance bottleneck|Task scheduling is only by master, causes a high pressure on master|Uses sharding algorithm, each node can be scheduled without lock, supports unlimited horizontal scaling, and supports big task scheduling|
+
 ## Maven dependency
 ```xml
 <openjob.worker.version>1.0.3</openjob.worker.version>
