@@ -10,7 +10,7 @@
 
 > **[中文](README-zh.md)**
 ## Introduction
-**Openjob** is A distributed and high-performance task scheduling framework that supports multiple cronjob, delay task, workflow, lightweight distributed computing, unlimited horizontal scaling, with high scalability and fault tolerance. Also has perfect permission management, powerful alarm monitoring, and support multiple languages.
+**Openjob** is A distributed and high-performance task scheduling framework that supports multiple cronjob, delay task, workflow, lightweight distributed computing, unlimited horizontal scaling, with high scalability and fault tolerance. Also has permission management, powerful alarm monitoring, and support multiple languages.
 * High reliability
   * Distributed with stateless design, using the Master/Worker architecture, supports multiple databases (MySQL/PostgreSQL/Oracle)
 * High performance
@@ -24,7 +24,7 @@
 * Workflow
   * Supports workflow scheduling engine, visual DAG design, and easy to complete complex task scheduling
 * Permission management
-  * Perfect user management, supports menu, button, and data permission settings, flexible management of user permissions
+  * User management, supports menu, button, and data permission settings, flexible management of user permissions
 * Alarm monitoring
   * Overall monitoring metrics, rich and alarm in time, easy to locate and resolve online problem
 * Multiple languages
