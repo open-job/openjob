@@ -1,5 +1,8 @@
 package io.openjob.worker.processor;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinNT;
 import io.openjob.common.constant.ShellTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
@@ -13,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,7 @@ public class ShellProcessor implements JobProcessor {
     protected static final Logger logger = LoggerFactory.getLogger("openjob");
     protected ExecutorService executorService;
     protected Process process;
+    protected String type;
 
     @Override
     public void preProcess(JobContext context) {
@@ -73,19 +78,53 @@ public class ShellProcessor implements JobProcessor {
 
     @Override
     public void stop(JobContext context) {
-        if (Objects.nonNull(this.process)) {
-            this.process.destroy();
+        // Windows
+        if (ShellTypeEnum.WINDOWS.getType().equals(this.type)) {
+            Long processPid = -1L;
+            try {
+                processPid = this.getProcessPid(this.process);
+                if (processPid > 0) {
+                    this.stopProcess(processPid);
+                }
+                logger.info("Process stop success! pid={}", processPid);
+                log.info("Process stop success! pid={}", processPid);
+            } catch (Throwable throwable) {
+                logger.error(String.format("Process stop failed! pid=%d", processPid), throwable);
+                log.error(String.format("Process stop failed! pid=%d", processPid), throwable);
+            }
         }
 
-        if (Objects.nonNull(this.executorService)) {
-            this.executorService.shutdown();
+        try {
+            // Process
+            if (Objects.nonNull(this.process)) {
+                this.process.destroy();
+            }
+
+            // Executor service
+            if (Objects.nonNull(this.executorService)) {
+                this.executorService.shutdown();
+            }
+        } catch (Throwable throwable) {
+            logger.error("Processor stop failed!", throwable);
+            log.error("Processor stop failed!", throwable);
         }
     }
 
+    /**
+     * Process stdout
+     *
+     * @param message message
+     */
     protected void processStdout(String message) {
         logger.info(message);
     }
 
+    /**
+     * Parse command
+     *
+     * @param context context
+     * @return string[]
+     */
     protected String[] parseCommand(JobContext context) {
         List<String> params = new ArrayList<>();
         ShellProcessorDTO processorDTO = JsonUtil.decode(context.getProcessorInfo(), ShellProcessorDTO.class);
@@ -105,7 +144,69 @@ public class ShellProcessor implements JobProcessor {
             params.add(String.valueOf(context.getShardingId()));
             params.add(context.getShardingParam());
         }
+
+        this.type = processorDTO.getType();
+        logger.info("Processor command={}", String.join(" ", params));
+        log.info("Processor command={}", String.join(" ", params));
         return params.toArray(new String[0]);
+    }
+
+    /**
+     * Get process pid
+     *
+     * @param process process
+     * @return Long
+     */
+    @SuppressWarnings(value = "all")
+    protected Long getProcessPid(Process process) {
+        Long pid = -1L;
+        try {
+            //Windows
+            if (process.getClass().getName().equals("java.lang.Win32Process") || process.getClass().getName().equals("java.lang.ProcessImpl")) {
+                Field f = process.getClass().getDeclaredField("handle");
+                f.setAccessible(true);
+                long handl = f.getLong(process);
+                Kernel32 kernel = Kernel32.INSTANCE;
+                WinNT.HANDLE hand = new WinNT.HANDLE();
+                hand.setPointer(Pointer.createConstant(handl));
+                pid = (long) kernel.GetProcessId(hand);
+                f.setAccessible(false);
+            }
+
+            //Unix
+            else if (process.getClass().getName().equals("java.lang.UNIXProcess")) {
+                Field f = process.getClass().getDeclaredField("pid");
+                f.setAccessible(true);
+                pid = f.getLong(process);
+                f.setAccessible(false);
+            }
+        } catch (Throwable ex) {
+            pid = -1L;
+        }
+        return pid;
+    }
+
+    /**
+     * Stop process for unix
+     *
+     * @param pid pid
+     * @throws IOException IOException
+     */
+    protected void stopProcess(Long pid) throws IOException {
+        List<String> commandKill = new ArrayList<>();
+        commandKill.add("taskkill");
+        commandKill.add("/PID");
+        commandKill.add(String.valueOf(pid));
+        commandKill.add("/F");
+
+        ProcessBuilder pbk = new ProcessBuilder(commandKill);
+        Process stopProcess = pbk.start();
+        BufferedReader readerKill = new BufferedReader(new InputStreamReader(stopProcess.getInputStream(), "GBK"));
+
+        String line;
+        while ((line = readerKill.readLine()) != null) {
+            System.out.println("执行 taskkill 返回结果：" + line);
+        }
     }
 
     protected static class InputStreamRunnable implements Runnable {
@@ -127,6 +228,7 @@ public class ShellProcessor implements JobProcessor {
                 }
             } catch (Throwable e) {
                 logger.error("ShellProcessor reader stream", e);
+                log.error("ShellProcessor reader stream", e);
             }
         }
     }

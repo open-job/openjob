@@ -28,7 +28,7 @@ public enum ExecuteTypeEnum {
     /**
      * Sharding.
      */
-    Sharding("sharding"),
+    SHARDING("sharding"),
     ;
 
     private final String type;
@@ -41,5 +41,36 @@ public enum ExecuteTypeEnum {
      */
     public static Boolean isStandalone(String type) {
         return STANDALONE.getType().equals(type);
+    }
+
+    /**
+     * Whether is broadcast
+     *
+     * @param type type
+     * @return Boolean
+     */
+    public static Boolean isBroadcast(String type) {
+        return BROADCAST.getType().equals(type);
+    }
+
+
+    /**
+     * Whether is map reduce
+     *
+     * @param type type
+     * @return Boolean
+     */
+    public static Boolean isMapReduce(String type) {
+        return MAP_REDUCE.getType().equals(type);
+    }
+
+    /**
+     * Whether is sharding
+     *
+     * @param type type
+     * @return Boolean
+     */
+    public static Boolean isSharding(String type) {
+        return SHARDING.getType().equals(type);
     }
 }

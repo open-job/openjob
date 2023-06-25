@@ -2,7 +2,11 @@ package io.openjob.server.admin.service.impl;
 
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.dto.ShellProcessorDTO;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.job.AddJobRequest;
@@ -35,7 +39,7 @@ import io.openjob.server.repository.entity.Job;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.classfile.Code;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -190,6 +194,52 @@ public class JobServiceImpl implements JobService {
             }
             return listJobVO;
         });
+    }
+
+    /**
+     * Check job
+     *
+     * @param request request
+     */
+    private void handleJob(AddJobRequest request) {
+        if (ProcessorTypeEnum.isShell(request.getProcessorType())) {
+            // Shell
+            if (StringUtils.isBlank(request.getShellProcessorType())) {
+                CodeEnum.SHELL_PROCESSOR_TYPE_INVALID.throwException();
+            }
+
+            if (StringUtils.isBlank(request.getShellProcessorInfo())) {
+                CodeEnum.SHELL_PROCESSOR_INFO_INVALID.throwException();
+            }
+
+            ShellProcessorDTO shellProcessorDTO = new ShellProcessorDTO();
+            shellProcessorDTO.setContent(request.getShellProcessorInfo());
+            shellProcessorDTO.setType(request.getShellProcessorType());
+            request.setProcessorInfo(JsonUtil.encode(shellProcessorDTO));
+        } else if (ProcessorTypeEnum.isKettle(request.getProcessorType())) {
+            // Kettle
+            if (StringUtils.isBlank(request.getKettleProcessorType())) {
+                CodeEnum.KETTLE_PROCESSOR_TYPE_INVALID.throwException();
+            }
+
+            if (StringUtils.isBlank(request.getKettleProcessorInfo())) {
+                CodeEnum.KETTLE_PROCESSOR_INFO_INVALID.throwException();
+            }
+
+            ShellProcessorDTO shellProcessorDTO = new ShellProcessorDTO();
+            shellProcessorDTO.setContent(request.getKettleProcessorInfo());
+            shellProcessorDTO.setType(request.getKettleProcessorType());
+            request.setProcessorInfo(JsonUtil.encode(shellProcessorDTO));
+        }
+
+        // ShardingParams
+        if (ExecuteTypeEnum.isSharding(request.getExecuteType())) {
+            if (StringUtils.isBlank(request.getShardingParams())) {
+                CodeEnum.SHARDING_PARAMS_INVALID.throwException();
+            }
+
+            request.setParams(request.getShardingParams());
+        }
     }
 
     /**

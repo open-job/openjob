@@ -34,22 +34,34 @@ public class AddJobRequest {
     @ApiModelProperty(value = "Job process type: bean/shell/python, default(bean)", required = true)
     private String processorType;
 
-    @NotBlank
-    @ApiModelProperty(value = "Job process info", required = true)
+    @ApiModelProperty(value = "Job process info")
     private String processorInfo;
+
+    @ApiModelProperty(value = "Shell processor info")
+    private String shellProcessorInfo;
+
+    @ApiModelProperty(value = "Shell processor type")
+    private String shellProcessorType;
+
+    @ApiModelProperty(value = "Kettle processor type")
+    private String kettleProcessorType;
+
+    @ApiModelProperty(value = "Kettle processor info")
+    private String kettleProcessorInfo;
+
+    @ApiModelProperty(value = "Sharding params")
+    private String shardingParams;
 
     @NotBlank
     @ApiModelProperty(value = "Execute type: standalone, broadcast, MR", required = true)
     private String executeType;
 
-    @NotBlank
-    @ApiModelProperty(value = "Job params type", required = true)
+    @ApiModelProperty(value = "Job params type")
     private String paramsType;
 
     @ApiModelProperty(value = "Job params")
     private String params;
 
-    @NotBlank
     @ApiModelProperty(value = "Job extend params type")
     private String extendParamsType;
 

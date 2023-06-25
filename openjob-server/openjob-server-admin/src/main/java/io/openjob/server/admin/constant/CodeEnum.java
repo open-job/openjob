@@ -30,6 +30,11 @@ public enum CodeEnum implements CodeExceptionAssert {
     // Job
     TIME_EXPRESSION_INVALID(400, "Time expression is invalid"),
     JOB_DELETE_INVALID(401, "Job can not be deleted!"),
+    SHELL_PROCESSOR_INFO_INVALID(402, "Shell content can not be empty!"),
+    SHELL_PROCESSOR_TYPE_INVALID(403, "Shell type type can not be empty!"),
+    KETTLE_PROCESSOR_INFO_INVALID(404, "Kettle command can not be empty!"),
+    KETTLE_PROCESSOR_TYPE_INVALID(405, "Kettle command type can not be empty!"),
+    SHARDING_PARAMS_INVALID(406, "Sharding params can not be empty!"),
 
     // Delay
     DELAY_TOPIC_EXIST(500, "Topic is exist!"),
