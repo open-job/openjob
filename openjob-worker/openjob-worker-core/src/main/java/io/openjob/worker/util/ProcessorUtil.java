@@ -5,7 +5,11 @@ import io.openjob.worker.processor.BaseProcessor;
 import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.processor.ProcessorHandlerMapping;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import io.openjob.worker.processor.ShellProcessor;
+import io.openjob.worker.processor.KettleProcessor;
 
+import java.lang.reflect.Constructor;
 import java.util.Objects;
 
 /**
@@ -51,5 +55,26 @@ public class ProcessorUtil {
             log.error(String.format("Processor load failed! processor=%s", className), e);
         }
         return null;
+    }
+
+    /**
+     * Get default processor
+     *
+     * @param processorType processorType
+     * @return ProcessorHandler
+     * @see ShellProcessor
+     * @see KettleProcessor
+     */
+    public static ProcessorHandler getDefaultProcessor(String processorType) {
+        try {
+            String className = String.format("io.openjob.worker.processor.%sProcessor", StringUtils.capitalize(processorType));
+            @SuppressWarnings("unchecked")
+            Constructor<? extends BaseProcessor> constructor = ((Class<? extends BaseProcessor>) Class.forName(className))
+                    .getConstructor();
+            BaseProcessor baseProcessor = constructor.newInstance();
+            return new ProcessorHandler(baseProcessor);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }

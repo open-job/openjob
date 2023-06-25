@@ -75,6 +75,9 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public AddJobVO add(AddJobRequest addJobRequest) {
+        // Pre handle request
+        this.preHandleJob(addJobRequest);
+
         if (!TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType())) {
             addJobRequest.setTimeExpression(String.valueOf(addJobRequest.getTimeExpressionValue()));
         }
@@ -93,12 +96,14 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public UpdateJobVO update(UpdateJobRequest updateJobRequest) {
+        // Pre handle job
+        this.preHandleJob(updateJobRequest);
+
         if (!TimeExpressionTypeEnum.isCron(updateJobRequest.getTimeExpressionType())) {
             updateJobRequest.setTimeExpression(String.valueOf(updateJobRequest.getTimeExpressionValue()));
         }
 
         // Job
-        Job originJob = this.jobDAO.getById(updateJobRequest.getId());
         Job updateJob = BeanMapperUtil.map(updateJobRequest, Job.class);
 
         // Condition
@@ -192,6 +197,22 @@ public class JobServiceImpl implements JobService {
             if (!TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
                 listJobVO.setTimeExpressionValue(Long.valueOf(j.getTimeExpression()));
             }
+
+            // Processor type
+            if (ProcessorTypeEnum.isShell(j.getProcessorType())) {
+                ShellProcessorDTO shellProcessorDTO = JsonUtil.decode(j.getProcessorInfo(), ShellProcessorDTO.class);
+                listJobVO.setShellProcessorType(shellProcessorDTO.getType());
+                listJobVO.setShellProcessorInfo(shellProcessorDTO.getContent());
+            } else if (ProcessorTypeEnum.isKettle(j.getProcessorType())) {
+                ShellProcessorDTO shellProcessorDTO = JsonUtil.decode(j.getProcessorInfo(), ShellProcessorDTO.class);
+                listJobVO.setKettleProcessorType(shellProcessorDTO.getType());
+                listJobVO.setKettleProcessorInfo(shellProcessorDTO.getContent());
+            }
+
+            // Execute type
+            if (ExecuteTypeEnum.isSharding(j.getExecuteType())) {
+                listJobVO.setShardingParams(j.getParams());
+            }
             return listJobVO;
         });
     }
@@ -201,7 +222,7 @@ public class JobServiceImpl implements JobService {
      *
      * @param request request
      */
-    private void handleJob(AddJobRequest request) {
+    private void preHandleJob(AddJobRequest request) {
         if (ProcessorTypeEnum.isShell(request.getProcessorType())) {
             // Shell
             if (StringUtils.isBlank(request.getShellProcessorType())) {

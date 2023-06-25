@@ -34,7 +34,7 @@ public enum ProcessorTypeEnum {
     private final String type;
 
     public static Boolean isProcessor(String type) {
-        return ProcessorTypeEnum.KETTLE.getType().equals(type);
+        return ProcessorTypeEnum.PROCESSOR.getType().equals(type);
     }
 
     public static Boolean isShell(String type) {

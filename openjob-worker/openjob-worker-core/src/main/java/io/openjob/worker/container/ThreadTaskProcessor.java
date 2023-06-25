@@ -55,8 +55,10 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
         try {
             // Java
-            if (ProcessorTypeEnum.PROCESSOR.getType().equals(this.jobContext.getProcessorType())) {
+            if (ProcessorTypeEnum.isProcessor(this.jobContext.getProcessorType())) {
                 this.processorHandler = ProcessorUtil.getProcessor(this.jobContext.getProcessorInfo());
+            } else {
+                this.processorHandler = ProcessorUtil.getDefaultProcessor(this.jobContext.getProcessorType());
             }
 
             if (Objects.nonNull(this.processorHandler)) {
