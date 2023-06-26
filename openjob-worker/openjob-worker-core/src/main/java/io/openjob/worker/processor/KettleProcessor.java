@@ -26,11 +26,6 @@ public class KettleProcessor extends ShellProcessor {
     }
 
     @Override
-    protected String[] parseCommand(JobContext context) {
-        return context.getProcessorInfo().split(" ");
-    }
-
-    @Override
     protected void processStdout(String message) {
         // Pattern
         Pattern pattern = Pattern.compile("Java heap space|OutOfMemoryError|Unknown database|ORA-[0-9]{1,10}:|"

@@ -8,6 +8,7 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.worker.context.JobContext;
+import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class ShellProcessor implements JobProcessor {
         );
 
         // Input stream and error stream
-        this.executorService.submit(new InputStreamRunnable(this.process.getInputStream(), this::processStdout));
+        this.executorService.submit(new InputStreamRunnable(context, this.process.getInputStream(), this::processStdout));
 
         // Waiting
         if (this.process.waitFor() == 0) {
@@ -212,14 +213,19 @@ public class ShellProcessor implements JobProcessor {
     protected static class InputStreamRunnable implements Runnable {
         private final InputStream inputStream;
         private final Consumer<String> consumer;
+        private final JobContext context;
 
-        public InputStreamRunnable(InputStream inputStream, Consumer<String> consumer) {
+        public InputStreamRunnable(JobContext context, InputStream inputStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
             this.consumer = consumer;
+            this.context = context;
         }
 
         @Override
         public void run() {
+            // Init context
+            ThreadLocalUtil.setJobContext(this.context);
+
             try {
                 String line;
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -229,6 +235,9 @@ public class ShellProcessor implements JobProcessor {
             } catch (Throwable e) {
                 logger.error("ShellProcessor reader stream", e);
                 log.error("ShellProcessor reader stream", e);
+            } finally {
+                // Clear context
+                ThreadLocalUtil.removeJobContext();
             }
         }
     }
