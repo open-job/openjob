@@ -10,7 +10,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ShellTypeEnum {
+
+    /**
+     * unix
+     */
     UNIX("unix"),
+
+    /**
+     * windows
+     */
     WINDOWS("windows"),
     ;
 

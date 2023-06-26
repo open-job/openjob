@@ -172,10 +172,8 @@ public class ShellProcessor implements JobProcessor {
                 hand.setPointer(Pointer.createConstant(handl));
                 pid = (long) kernel.GetProcessId(hand);
                 f.setAccessible(false);
-            }
-
-            //Unix
-            else if (process.getClass().getName().equals("java.lang.UNIXProcess")) {
+            } else if (process.getClass().getName().equals("java.lang.UNIXProcess")) {
+                //Unix
                 Field f = process.getClass().getDeclaredField("pid");
                 f.setAccessible(true);
                 pid = f.getLong(process);
