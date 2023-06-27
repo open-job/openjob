@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * @author stelin swoft@qq.com
@@ -63,7 +63,7 @@ public class ShellProcessor implements JobProcessor {
         );
 
         // Input stream and error stream
-        this.executorService.submit(new InputStreamRunnable(context, this.process.getInputStream(), this::processStdout));
+        this.executorService.submit(new InputStreamRunnable(context, this.process.getInputStream(), this));
 
         // Waiting
         if (this.process.waitFor() == 0) {
@@ -85,7 +85,7 @@ public class ShellProcessor implements JobProcessor {
             try {
                 processPid = this.getProcessPid(this.process);
                 if (processPid > 0) {
-                    this.stopProcess(processPid);
+                    this.stopProcessForWindows(processPid);
                 }
                 logger.info("Process stop success! pid={}", processPid);
                 log.info("Process stop success! pid={}", processPid);
@@ -127,10 +127,25 @@ public class ShellProcessor implements JobProcessor {
      * @return string[]
      */
     protected String[] parseCommand(JobContext context) {
-        List<String> params = new ArrayList<>();
+        // Command params
         ShellProcessorDTO processorDTO = JsonUtil.decode(context.getProcessorInfo(), ShellProcessorDTO.class);
+        List<String> params = parseDefaultCommand(processorDTO.getType());
 
-        if (ShellTypeEnum.UNIX.getType().equals(processorDTO.getType())) {
+        // Content and sharding params
+        params.add(processorDTO.getContent());
+        if (Objects.nonNull(context.getShardingId())) {
+            params.add(String.valueOf(context.getShardingId()));
+            params.add(context.getShardingParam());
+        }
+
+        logger.info("Processor command={}", String.join(" ", params));
+        log.info("Processor command={}", String.join(" ", params));
+        return params.toArray(new String[0]);
+    }
+
+    protected List<String> parseDefaultCommand(String type) {
+        List<String> params = new ArrayList<>();
+        if (ShellTypeEnum.UNIX.getType().equals(type)) {
             // Unix
             params.add("/bin/sh");
             params.add("-c");
@@ -140,16 +155,8 @@ public class ShellProcessor implements JobProcessor {
             params.add("/c");
         }
 
-        params.add(processorDTO.getContent());
-        if (Objects.nonNull(context.getShardingId())) {
-            params.add(String.valueOf(context.getShardingId()));
-            params.add(context.getShardingParam());
-        }
-
-        this.type = processorDTO.getType();
-        logger.info("Processor command={}", String.join(" ", params));
-        log.info("Processor command={}", String.join(" ", params));
-        return params.toArray(new String[0]);
+        this.type = type;
+        return params;
     }
 
     /**
@@ -186,12 +193,12 @@ public class ShellProcessor implements JobProcessor {
     }
 
     /**
-     * Stop process for unix
+     * Stop process for windows
      *
      * @param pid pid
      * @throws IOException IOException
      */
-    protected void stopProcess(Long pid) throws IOException {
+    protected void stopProcessForWindows(Long pid) throws IOException {
         List<String> commandKill = new ArrayList<>();
         commandKill.add("taskkill");
         commandKill.add("/PID");
@@ -200,23 +207,39 @@ public class ShellProcessor implements JobProcessor {
 
         ProcessBuilder pbk = new ProcessBuilder(commandKill);
         Process stopProcess = pbk.start();
-        BufferedReader readerKill = new BufferedReader(new InputStreamReader(stopProcess.getInputStream(), "GBK"));
+        BufferedReader readerKill = new BufferedReader(this.getInputStreamReader(stopProcess.getInputStream()));
 
         String line;
         while ((line = readerKill.readLine()) != null) {
-            System.out.println("执行 taskkill 返回结果：" + line);
+            logger.info("Stop result {}", line);
+            log.info("Stop result {}", line);
         }
     }
 
-    protected static class InputStreamRunnable implements Runnable {
-        private final InputStream inputStream;
-        private final Consumer<String> consumer;
-        private final JobContext context;
+    /**
+     * Get input stream reader
+     *
+     * @param inputStream inputStream
+     * @return InputStreamReader
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
+     */
+    protected InputStreamReader getInputStreamReader(InputStream inputStream) throws UnsupportedEncodingException {
+        if (ShellTypeEnum.WINDOWS.getType().equals(this.type)) {
+            return new InputStreamReader(inputStream, "GBK");
+        }
 
-        public InputStreamRunnable(JobContext context, InputStream inputStream, Consumer<String> consumer) {
+        return new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+    }
+
+    protected static class InputStreamRunnable implements Runnable {
+        private final JobContext context;
+        private final InputStream inputStream;
+        private final ShellProcessor shellProcessor;
+
+        public InputStreamRunnable(JobContext context, InputStream inputStream, ShellProcessor shellProcessor) {
             this.inputStream = inputStream;
-            this.consumer = consumer;
             this.context = context;
+            this.shellProcessor = shellProcessor;
         }
 
         @Override
@@ -226,9 +249,9 @@ public class ShellProcessor implements JobProcessor {
 
             try {
                 String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                BufferedReader br = new BufferedReader(this.shellProcessor.getInputStreamReader(this.inputStream));
                 while (!Thread.currentThread().isInterrupted() && (line = br.readLine()) != null) {
-                    this.consumer.accept(line);
+                    this.shellProcessor.processStdout(line);
                 }
             } catch (Throwable e) {
                 logger.error("ShellProcessor reader stream", e);

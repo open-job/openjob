@@ -1,10 +1,14 @@
 package io.openjob.worker.processor;
 
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.dto.ShellProcessorDTO;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.worker.context.JobContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +27,21 @@ public class KettleProcessor extends ShellProcessor {
             processResult.setStatus(TaskStatusEnum.FAILED);
         }
         return processResult;
+    }
+
+    @Override
+    protected String[] parseCommand(JobContext context) {
+        // Command params
+        ShellProcessorDTO processorDTO = JsonUtil.decode(context.getProcessorInfo(), ShellProcessorDTO.class);
+        List<String> params = parseDefaultCommand(processorDTO.getType());
+
+        // Parse kettle params
+        String[] cmdSplit = processorDTO.getContent().split(" ");
+        params.addAll(Arrays.asList(cmdSplit));
+
+        logger.info("Kettle command={}", String.join(" ", params));
+        log.info("Kettle command={}", String.join(" ", params));
+        return params.toArray(new String[0]);
     }
 
     @Override
