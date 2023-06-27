@@ -23,7 +23,7 @@ public class KettleProcessor extends ShellProcessor {
     @Override
     public ProcessResult process(JobContext context) throws IOException, InterruptedException {
         ProcessResult processResult = super.process(context);
-        if (this.finalResult) {
+        if (!this.finalResult) {
             processResult.setStatus(TaskStatusEnum.FAILED);
         }
         return processResult;

@@ -204,6 +204,7 @@ public class ShellProcessor implements JobProcessor {
         commandKill.add("/PID");
         commandKill.add(String.valueOf(pid));
         commandKill.add("/F");
+        commandKill.add("/T");
 
         ProcessBuilder pbk = new ProcessBuilder(commandKill);
         Process stopProcess = pbk.start();
