@@ -804,32 +804,6 @@ INSERT INTO "job_slots" ("id", "server_id", "deleted", "delete_time", "create_ti
 INSERT INTO "job_slots" ("id", "server_id", "deleted", "delete_time", "create_time", "update_time") VALUES (256, 1, 2, 0, 1655782000, 1687953090);
 COMMIT;
 
--- ----------------------------
--- Table structure for migration_version
--- ----------------------------
-DROP TABLE IF EXISTS "migration_version";
-CREATE TABLE "migration_version" (
-                                     "installed_rank" int4 NOT NULL,
-                                     "version" varchar(50) COLLATE "pg_catalog"."default",
-                                     "description" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "type" varchar(20) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "script" varchar(1000) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "checksum" int4,
-                                     "installed_by" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "installed_on" timestamp(6) NOT NULL,
-                                     "execution_time" int4 NOT NULL,
-                                     "success" int2 NOT NULL
-)
-;
-ALTER TABLE "migration_version" OWNER TO "postgres";
-
--- ----------------------------
--- Records of migration_version
--- ----------------------------
-BEGIN;
-INSERT INTO "migration_version" ("installed_rank", "version", "description", "type", "script", "checksum", "installed_by", "installed_on", "execution_time", "success") VALUES (1, '1', 'v1.0.0 release', 'SQL', 'V1__v1.0.0_release.sql', 2116098378, 'root', '2023-06-28 11:51:22', 462, 1);
-INSERT INTO "migration_version" ("installed_rank", "version", "description", "type", "script", "checksum", "installed_by", "installed_on", "execution_time", "success") VALUES (2, '2', 'v1.0.2 release', 'SQL', 'V2__v1.0.2_release.sql', 322099072, 'root', '2023-06-28 11:51:22', 150, 1);
-COMMIT;
 
 -- ----------------------------
 -- Table structure for namespace
@@ -1312,17 +1286,6 @@ CREATE INDEX "idx_server_id" ON "job_slots" USING btree (
 -- ----------------------------
 ALTER TABLE "job_slots" ADD CONSTRAINT "job_slots_pkey" PRIMARY KEY ("id");
 
--- ----------------------------
--- Indexes structure for table migration_version
--- ----------------------------
-CREATE INDEX "migration_version_s_idx" ON "migration_version" USING btree (
-    "success" "pg_catalog"."int2_ops" ASC NULLS LAST
-    );
-
--- ----------------------------
--- Primary Key structure for table migration_version
--- ----------------------------
-ALTER TABLE "migration_version" ADD CONSTRAINT "migration_version_pkey" PRIMARY KEY ("installed_rank");
 
 -- ----------------------------
 -- Indexes structure for table namespace
