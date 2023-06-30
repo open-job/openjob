@@ -1,7 +1,6 @@
 -- ----------------------------
 -- Table structure for admin_permission
 -- ----------------------------
-DROP TABLE "admin_permission";
 CREATE TABLE "admin_permission" (
                                          "id" NUMBER(20,0) NOT NULL,
                                          "pid" NUMBER(20,0) NOT NULL,
@@ -74,7 +73,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for admin_role
 -- ----------------------------
-DROP TABLE "admin_role";
 CREATE TABLE "admin_role" (
                                    "id" NUMBER(20,0) NOT NULL,
                                    "name" NVARCHAR2(48) NOT NULL,
@@ -128,7 +126,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for admin_user
 -- ----------------------------
-DROP TABLE "admin_user";
 CREATE TABLE "admin_user" (
                                    "id" NUMBER(20,0) NOT NULL,
                                    "username" NVARCHAR2(48) NOT NULL,
@@ -182,7 +179,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for app
 -- ----------------------------
-DROP TABLE "app";
 CREATE TABLE "app" (
                             "id" NUMBER(20,0) NOT NULL,
                             "namespace_id" NUMBER(20,0) NOT NULL,
@@ -227,7 +223,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for delay
 -- ----------------------------
-DROP TABLE "delay";
 CREATE TABLE "delay" (
                               "id" NUMBER(20,0) NOT NULL,
                               "pid" NUMBER(20,0) NOT NULL,
@@ -291,7 +286,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for delay_instance
 -- ----------------------------
-DROP TABLE "delay_instance";
 CREATE TABLE "delay_instance" (
                                        "id" NUMBER(20,0) NOT NULL,
                                        "app_id" NUMBER(20,0) NOT NULL,
@@ -351,7 +345,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for delay_worker
 -- ----------------------------
-DROP TABLE "delay_worker";
 CREATE TABLE "delay_worker" (
                                      "id" NUMBER(20,0) NOT NULL,
                                      "topic" NVARCHAR2(128) NOT NULL,
@@ -387,7 +380,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for job
 -- ----------------------------
-DROP TABLE "job";
 CREATE TABLE "job" (
                             "id" NUMBER(20,0) NOT NULL,
                             "namespace_id" NUMBER(20,0) NOT NULL,
@@ -463,7 +455,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for job_instance
 -- ----------------------------
-DROP TABLE "job_instance";
 CREATE TABLE "job_instance" (
                                      "id" NUMBER(20,0) NOT NULL,
                                      "job_id" NUMBER(20,0) NOT NULL,
@@ -547,7 +538,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for job_instance_log
 -- ----------------------------
-DROP TABLE "job_instance_log";
 CREATE TABLE "job_instance_log" (
                                          "id" NUMBER(20,0) NOT NULL,
                                          "job_id" NUMBER(20,0) NOT NULL,
@@ -587,7 +577,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for job_instance_task
 -- ----------------------------
-DROP TABLE "job_instance_task";
 CREATE TABLE "job_instance_task" (
                                           "id" NUMBER(11,0) NOT NULL,
                                           "job_id" NUMBER(20,0) NOT NULL,
@@ -639,7 +628,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for job_slots
 -- ----------------------------
-DROP TABLE "job_slots";
 CREATE TABLE "job_slots" (
                                   "id" NUMBER(20,0) NOT NULL,
                                   "server_id" NUMBER(20,0) NOT NULL,
@@ -935,7 +923,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for namespace
 -- ----------------------------
-DROP TABLE "namespace";
 CREATE TABLE "namespace" (
                                   "id" NUMBER(20,0) NOT NULL,
                                   "name" NVARCHAR2(64) NOT NULL,
@@ -978,7 +965,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for processor_log
 -- ----------------------------
-DROP TABLE "processor_log";
 CREATE TABLE "processor_log" (
                                       "id" NUMBER(20,0) NOT NULL,
                                       "task_id" NVARCHAR2(128) NOT NULL,
@@ -1012,7 +998,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for server
 -- ----------------------------
-DROP TABLE "server";
 CREATE TABLE "server" (
                                "id" NUMBER(20,0) NOT NULL,
                                "ip" NVARCHAR2(32) NOT NULL,
@@ -1057,7 +1042,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for server_reports
 -- ----------------------------
-DROP TABLE "server_reports";
 CREATE TABLE "server_reports" (
                                        "id" NUMBER(20,0) NOT NULL,
                                        "server_id" NUMBER(20,0) NOT NULL,
@@ -1097,7 +1081,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for system
 -- ----------------------------
-DROP TABLE "system";
 CREATE TABLE "system" (
                                "id" NUMBER(11,0) NOT NULL,
                                "version" NVARCHAR2(16) NOT NULL,
@@ -1164,7 +1147,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for task
 -- ----------------------------
-DROP TABLE "task";
 CREATE TABLE "task" (
                              "id" NUMBER(20,0) NOT NULL,
                              "job_id" NUMBER(20,0) NOT NULL,
@@ -1214,7 +1196,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for worker
 -- ----------------------------
-DROP TABLE "worker";
 CREATE TABLE "worker" (
                                "id" NUMBER(20,0) NOT NULL,
                                "app_id" NUMBER(20,0) NOT NULL,
@@ -1291,7 +1272,7 @@ ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011367" CHECK ("create_time
 -- Indexes structure for table admin_permission
 -- ----------------------------
 CREATE INDEX "idx_path"
-    ON "admin_permission" ("path" ASC) LOCAL
+    ON "admin_permission" ("path" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1377,7 +1358,7 @@ ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011348" CHECK ("create_time" IS N
 -- Indexes structure for table admin_user
 -- ----------------------------
 CREATE INDEX "idx_name"
-    ON "admin_user" ("username" ASC) LOCAL
+    ON "admin_user" ("username" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1392,7 +1373,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE UNIQUE INDEX "uni_token"
-    ON "admin_user" ("token" ASC) LOCAL
+    ON "admin_user" ("token" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1474,7 +1455,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_namespace_id_topic"
-    ON "delay" ("namespace_id" ASC, "topic" ASC) LOCAL
+    ON "delay" ("namespace_id" ASC, "topic" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1483,7 +1464,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE UNIQUE INDEX "udx_topic"
-    ON "delay" ("topic" ASC) LOCAL
+    ON "delay" ("topic" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1523,7 +1504,7 @@ ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011405" CHECK ("create_time_h
 -- Indexes structure for table delay_instance
 -- ----------------------------
 CREATE INDEX "idx_create_time_day"
-    ON "delay_instance" ("create_time" ASC, "create_time_date" ASC) LOCAL
+    ON "delay_instance" ("create_time" ASC, "create_time_date" ASC) 
   LOGGING
   ONLINE
   VISIBLE
@@ -1533,7 +1514,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_create_time_hour"
-    ON "delay_instance" ("create_time" ASC, "create_time_hour" ASC) LOCAL
+    ON "delay_instance" ("create_time" ASC, "create_time_hour" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1542,7 +1523,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_delay_id"
-    ON "delay_instance" ("delay_id" ASC) LOCAL
+    ON "delay_instance" ("delay_id" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1562,7 +1543,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_namespace_id_create_time"
-    ON "delay_instance" ("namespace_id" ASC, "create_time" ASC) LOCAL
+    ON "delay_instance" ("namespace_id" ASC, "create_time" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1573,7 +1554,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE UNIQUE INDEX "udx_task_id"
-    ON "delay_instance" ("task_id" ASC) LOCAL
+    ON "delay_instance" ("task_id" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1644,7 +1625,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_namespace_id_name_job"
-    ON "job" ("namespace_id" ASC, "name" ASC) LOCAL
+    ON "job" ("namespace_id" ASC, "name" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -1813,7 +1794,7 @@ ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011489" CHECK ("delete_tim
 -- Indexes structure for table job_instance_task
 -- ----------------------------
 CREATE INDEX "idx_jiic_job_instance_task"
-    ON "job_instance_task" ("job_instance_id" ASC, "create_time" ASC) LOCAL
+    ON "job_instance_task" ("job_instance_id" ASC, "create_time" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1822,7 +1803,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE INDEX "idx_parent_task_id"
-    ON "job_instance_task" ("parent_task_id" ASC) LOCAL
+    ON "job_instance_task" ("parent_task_id" ASC) 
   LOGGING
   VISIBLE
 PCTFREE 10
@@ -1923,7 +1904,7 @@ ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011509" CHECK ("time" IS NOT N
 -- Indexes structure for table processor_log
 -- ----------------------------
 CREATE INDEX "idx_task_id"
-    ON "processor_log" ("task_id" ASC) LOCAL
+    ON "processor_log" ("task_id" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -2000,7 +1981,7 @@ ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011525" CHECK ("update_time" 
 -- Indexes structure for table server_reports
 -- ----------------------------
 CREATE INDEX "idx_create_time_server_id"
-    ON "server_reports" ("create_time" ASC, "server_id" ASC) LOCAL
+    ON "server_reports" ("create_time" ASC, "server_id" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -2072,7 +2053,7 @@ STORAGE (
   BUFFER_POOL DEFAULT
 );
 CREATE UNIQUE INDEX "udx_task_id_task"
-    ON "task" ("task_id" ASC) LOCAL
+    ON "task" ("task_id" ASC) 
   LOGGING
   ONLINE
   NOSORT
@@ -2112,7 +2093,7 @@ ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011571" CHECK ("update_time" IS NOT N
 -- Indexes structure for table worker
 -- ----------------------------
 CREATE INDEX "idx_nia_worker"
-    ON "worker" ("namespace_id" ASC, "app_id" ASC) LOCAL
+    ON "worker" ("namespace_id" ASC, "app_id" ASC) 
   LOGGING
   ONLINE
   NOSORT

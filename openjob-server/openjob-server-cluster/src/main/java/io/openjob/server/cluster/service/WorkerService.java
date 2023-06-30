@@ -234,6 +234,9 @@ public class WorkerService {
 
             // Update latest app name
             worker.setAppName(startReq.getAppName());
+            worker.setNamespaceId(app.getNamespaceId());
+            worker.setAppId(app.getId());
+            worker.setProtocolType(startReq.getProtocolType());
             workerDAO.save(worker);
             return;
         }

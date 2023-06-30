@@ -2,8 +2,9 @@
 -- Table structure for admin_permission
 -- ----------------------------
 DROP TABLE IF EXISTS "admin_permission";
+create sequence admin_permission_id start with 10000 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_permission" (
-                                    "id" numeric(20,0) NOT NULL,
+                                    "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_permission_id'::regclass),
                                     "pid" numeric(20,0) NOT NULL,
                                     "type" int2 NOT NULL,
                                     "name" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
@@ -62,8 +63,9 @@ COMMIT;
 -- Table structure for admin_role
 -- ----------------------------
 DROP TABLE IF EXISTS "admin_role";
+create sequence admin_role_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_role" (
-                              "id" numeric(20,0) NOT NULL,
+                              "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_role_id'::regclass),
                               "name" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
                               "desc" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
                               "admin" int2 NOT NULL,
@@ -103,8 +105,9 @@ COMMIT;
 -- Table structure for admin_user
 -- ----------------------------
 DROP TABLE IF EXISTS "admin_user";
+create sequence admin_user_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_user" (
-                              "id" numeric(20,0) NOT NULL,
+                              "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_user_id'::regclass),
                               "username" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
                               "nickname" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
                               "passwd" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
@@ -144,8 +147,9 @@ COMMIT;
 -- Table structure for app
 -- ----------------------------
 DROP TABLE IF EXISTS "app";
+create sequence app_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "app" (
-                       "id" numeric(20,0) NOT NULL,
+                       "id" numeric(20,0) NOT NULL DEFAULT nextval('app_id'::regclass),
                        "namespace_id" int8 NOT NULL,
                        "name" varchar(64) COLLATE "pg_catalog"."default",
                        "desc" varchar(256) COLLATE "pg_catalog"."default" NOT NULL,
@@ -176,8 +180,9 @@ COMMIT;
 -- Table structure for delay
 -- ----------------------------
 DROP TABLE IF EXISTS "delay";
+create sequence delay_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "delay" (
-                         "id" numeric(20,0) NOT NULL,
+                         "id" numeric(20,0) NOT NULL DEFAULT nextval('delay_id'::regclass),
                          "pid" int8 NOT NULL,
                          "cid" int8 NOT NULL,
                          "namespace_id" int8 NOT NULL,
@@ -231,8 +236,9 @@ COMMIT;
 -- Table structure for delay_instance
 -- ----------------------------
 DROP TABLE IF EXISTS "delay_instance";
+create sequence delay_instance_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "delay_instance" (
-                                  "id" numeric(20,0) NOT NULL,
+                                  "id" numeric(20,0) NOT NULL DEFAULT nextval('delay_instance_id'::regclass),
                                   "app_id" numeric(20,0) NOT NULL,
                                   "namespace_id" numeric(20,0) NOT NULL,
                                   "task_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
@@ -277,40 +283,13 @@ COMMENT ON COLUMN "delay_instance"."create_time_hour" IS 'Time hour`2023052701`'
 -- ----------------------------
 BEGIN;
 COMMIT;
-
--- ----------------------------
--- Table structure for delay_worker
--- ----------------------------
-DROP TABLE IF EXISTS "delay_worker";
-CREATE TABLE "delay_worker" (
-                                "id" numeric(20,0) NOT NULL,
-                                "topic" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                "pull_size" int8 NOT NULL,
-                                "pull_time" numeric(20,0) NOT NULL,
-                                "create_time" int8 NOT NULL,
-                                "update_time" int8 NOT NULL
-)
-;
-ALTER TABLE "delay_worker" OWNER TO "postgres";
-COMMENT ON COLUMN "delay_worker"."id" IS 'PK';
-COMMENT ON COLUMN "delay_worker"."topic" IS 'Topic';
-COMMENT ON COLUMN "delay_worker"."pull_size" IS 'Pull size';
-COMMENT ON COLUMN "delay_worker"."pull_time" IS 'Pull time';
-COMMENT ON COLUMN "delay_worker"."create_time" IS 'Create time';
-COMMENT ON COLUMN "delay_worker"."update_time" IS 'Update time';
-
--- ----------------------------
--- Records of delay_worker
--- ----------------------------
-BEGIN;
-COMMIT;
-
 -- ----------------------------
 -- Table structure for job
 -- ----------------------------
 DROP TABLE IF EXISTS "job";
+create sequence job_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job" (
-                       "id" numeric(20,0) NOT NULL,
+                       "id" numeric(20,0) NOT NULL DEFAULT nextval('job_id'::regclass),
                        "namespace_id" numeric(20,0) NOT NULL,
                        "app_id" numeric(20,0) NOT NULL,
                        "workflow_id" numeric(20,0) NOT NULL,
@@ -376,8 +355,9 @@ COMMIT;
 -- Table structure for job_instance
 -- ----------------------------
 DROP TABLE IF EXISTS "job_instance";
+create sequence job_instance_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance" (
-                                "id" numeric(20,0) NOT NULL,
+                                "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_id'::regclass),
                                 "job_id" numeric(20,0) NOT NULL,
                                 "params" varchar(3096) COLLATE "pg_catalog"."default" NOT NULL,
                                 "params_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
@@ -451,8 +431,9 @@ COMMIT;
 -- Table structure for job_instance_log
 -- ----------------------------
 DROP TABLE IF EXISTS "job_instance_log";
+create sequence job_instance_log_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance_log" (
-                                    "id" numeric(20,0) NOT NULL,
+                                    "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_log_id'::regclass),
                                     "job_id" numeric(20,0) NOT NULL,
                                     "job_instance_id" numeric(20,0) NOT NULL,
                                     "message" text COLLATE "pg_catalog"."default",
@@ -482,8 +463,9 @@ COMMIT;
 -- Table structure for job_instance_task
 -- ----------------------------
 DROP TABLE IF EXISTS "job_instance_task";
+create sequence job_instance_task_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance_task" (
-                                     "id" int8 NOT NULL,
+                                     "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_task_id'::regclass),
                                      "job_id" numeric(20,0) NOT NULL,
                                      "job_instance_id" numeric(20,0) NOT NULL,
                                      "circle_id" numeric(20,0) NOT NULL,
@@ -525,8 +507,9 @@ COMMIT;
 -- Table structure for job_slots
 -- ----------------------------
 DROP TABLE IF EXISTS "job_slots";
+create sequence job_slots_id start with 257 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_slots" (
-                             "id" numeric(20,0) NOT NULL,
+                             "id" numeric(20,0) NOT NULL DEFAULT nextval('job_slots_id'::regclass),
                              "server_id" numeric(20,0) NOT NULL,
                              "deleted" int2 NOT NULL,
                              "delete_time" numeric(20,0) NOT NULL,
@@ -809,8 +792,9 @@ COMMIT;
 -- Table structure for namespace
 -- ----------------------------
 DROP TABLE IF EXISTS "namespace";
+create sequence namespace_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "namespace" (
-                             "id" numeric(20,0) NOT NULL,
+                             "id" numeric(20,0) NOT NULL DEFAULT nextval('namespace_id'::regclass),
                              "name" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
                              "uuid" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
                              "deleted" int2 NOT NULL,
@@ -839,8 +823,9 @@ COMMIT;
 -- Table structure for processor_log
 -- ----------------------------
 DROP TABLE IF EXISTS "processor_log";
+create sequence processor_log_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "processor_log" (
-                                 "id" numeric(20,0) NOT NULL,
+                                 "id" numeric(20,0) NOT NULL DEFAULT nextval('processor_log_id'::regclass),
                                  "task_id" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
                                  "worker_address" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
                                  "content" text COLLATE "pg_catalog"."default" NOT NULL,
@@ -864,8 +849,9 @@ COMMIT;
 -- Table structure for server
 -- ----------------------------
 DROP TABLE IF EXISTS "server";
+create sequence server_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "server" (
-                          "id" numeric(20,0) NOT NULL,
+                          "id" numeric(20,0) NOT NULL DEFAULT nextval('server_id'::regclass),
                           "ip" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
                           "akka_address" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
                           "status" int2 NOT NULL,
@@ -889,15 +875,15 @@ COMMENT ON COLUMN "server"."update_time" IS 'Update time';
 -- Records of server
 -- ----------------------------
 BEGIN;
-INSERT INTO "server" ("id", "ip", "akka_address", "status", "deleted", "delete_time", "create_time", "update_time") VALUES (1, '172.20.1.52', '172.20.1.52:25520', 1, 2, 0, 1687953090, 1687953090);
 COMMIT;
 
 -- ----------------------------
 -- Table structure for server_reports
 -- ----------------------------
 DROP TABLE IF EXISTS "server_reports";
+create sequence server_reports_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "server_reports" (
-                                  "id" numeric(20,0) NOT NULL,
+                                  "id" numeric(20,0) NOT NULL DEFAULT nextval('server_reports_id'::regclass),
                                   "server_id" numeric(20,0) NOT NULL,
                                   "report_server_id" numeric(20,0) NOT NULL,
                                   "status" int2 NOT NULL,
@@ -927,8 +913,9 @@ COMMIT;
 -- Table structure for system
 -- ----------------------------
 DROP TABLE IF EXISTS "system";
+create sequence system_id start with 2 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "system" (
-                          "id" int8 NOT NULL,
+                          "id" numeric(20,0) NOT NULL DEFAULT nextval('system_id'::regclass),
                           "version" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
                           "cluster_version" numeric(20,0) NOT NULL,
                           "cluster_delay_version" numeric(20,0) NOT NULL,
@@ -978,52 +965,12 @@ INSERT INTO "system" ("id", "version", "cluster_version", "cluster_delay_version
 COMMIT;
 
 -- ----------------------------
--- Table structure for task
--- ----------------------------
-DROP TABLE IF EXISTS "task";
-CREATE TABLE "task" (
-                        "id" numeric(20,0) NOT NULL,
-                        "job_id" numeric(20,0) NOT NULL,
-                        "instance_id" numeric(20,0) NOT NULL,
-                        "circle_id" numeric(20,0) NOT NULL,
-                        "task_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                        "task_name" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                        "task_parent_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                        "status" int2 NOT NULL,
-                        "worker_address" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                        "result" text COLLATE "pg_catalog"."default",
-                        "task_body" bytea,
-                        "create_time" numeric(20,0) NOT NULL,
-                        "update_time" numeric(20,0) NOT NULL
-)
-;
-ALTER TABLE "task" OWNER TO "postgres";
-COMMENT ON COLUMN "task"."id" IS 'PK';
-COMMENT ON COLUMN "task"."job_id" IS 'Job id';
-COMMENT ON COLUMN "task"."instance_id" IS 'Instance id';
-COMMENT ON COLUMN "task"."circle_id" IS 'Circle id';
-COMMENT ON COLUMN "task"."task_id" IS 'Task id';
-COMMENT ON COLUMN "task"."task_name" IS 'Task name';
-COMMENT ON COLUMN "task"."task_parent_id" IS 'Task parent id';
-COMMENT ON COLUMN "task"."status" IS 'Status';
-COMMENT ON COLUMN "task"."worker_address" IS 'Worker address';
-COMMENT ON COLUMN "task"."result" IS 'Task result';
-COMMENT ON COLUMN "task"."task_body" IS 'Task body';
-COMMENT ON COLUMN "task"."create_time" IS 'Create time';
-COMMENT ON COLUMN "task"."update_time" IS 'Update time';
-
--- ----------------------------
--- Records of task
--- ----------------------------
-BEGIN;
-COMMIT;
-
--- ----------------------------
 -- Table structure for worker
 -- ----------------------------
 DROP TABLE IF EXISTS "worker";
+create sequence worker_id start with 2 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "worker" (
-                          "id" numeric(20,0) NOT NULL,
+                          "id" numeric(20,0) NOT NULL DEFAULT nextval('worker_id'::regclass),
                           "app_id" numeric(20,0) NOT NULL,
                           "namespace_id" numeric(20,0) NOT NULL,
                           "app_name" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
