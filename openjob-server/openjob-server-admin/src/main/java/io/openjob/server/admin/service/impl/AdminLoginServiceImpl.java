@@ -84,7 +84,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
 
-        if (CollectionUtils.isEmpty(user.getRoleIds())) {
+        if (CollectionUtils.isEmpty(user.getRoleIdsByJson())) {
             AdminHttpStatusEnum.FORBIDDEN.throwException();
         }
     }
@@ -105,7 +105,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 .build();
 
         // Query user role and perms
-        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIds());
+        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIdsByJson());
         if (CollectionUtils.isEmpty(roles)) {
             AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
@@ -118,7 +118,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 isAdmin.set(true);
                 return;
             }
-            permIds.addAll(r.getPermIds());
+            permIds.addAll(r.getPermIdsByJson());
         });
         loginVO.setSupperAdmin(isAdmin.get());
 

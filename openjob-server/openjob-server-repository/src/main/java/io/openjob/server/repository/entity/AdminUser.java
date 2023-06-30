@@ -1,6 +1,8 @@
 package io.openjob.server.repository.entity;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.openjob.common.util.JsonUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -76,9 +78,8 @@ public class AdminUser {
     /**
      * Role IDs. JSON: [1,2]
      */
-    @Type(type = "json")
-    @Column(name = "`role_ids`", columnDefinition = "json")
-    private List<Long> roleIds;
+    @Column(name = "`role_ids`")
+    private String roleIds;
 
     /**
      * Delete status. 1=yes 2=no
@@ -103,4 +104,8 @@ public class AdminUser {
      */
     @Column(name = "`create_time`")
     private Long createTime;
+
+    public List<Long> getRoleIdsByJson(){
+        return JsonUtil.decode(this.roleIds, new TypeReference<List<Long>>(){});
+    }
 }

@@ -1,6 +1,7 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,9 +66,8 @@ public class AdminPermission {
      * Extra meta data.
      * - JSON: {icon:xx,title:some.name,component:/@/views/path/to/page.vue}
      */
-    @Type(type = "json")
-    @Column(name = "`meta`", columnDefinition = "json")
-    private MenuMeta meta;
+    @Column(name = "`meta`")
+    private String meta;
 
     /**
      * Hidden status. 1=yes 2=no
@@ -104,4 +104,8 @@ public class AdminPermission {
      */
     @Column(name = "`create_time`")
     private Long createTime;
+
+    public MenuMeta getMetaByJson(){
+        return JsonUtil.decode(this.meta, MenuMeta.class);
+    }
 }

@@ -83,9 +83,9 @@ public class DelayInstance {
     /**
      * Create time date
      */
-    @Column(name = "create_time_date")
+    @Column(name = "`create_time_date`")
     private Integer createTimeDate;
 
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 }

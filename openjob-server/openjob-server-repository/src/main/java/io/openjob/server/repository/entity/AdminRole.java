@@ -1,6 +1,8 @@
 package io.openjob.server.repository.entity;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.openjob.common.util.JsonUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,7 +36,7 @@ public class AdminRole {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "admin_role_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "admin_role_id")})
     private Long id;
 
     /**
@@ -52,30 +54,26 @@ public class AdminRole {
     /**
      * Menu ids for role. JSON array
      */
-    @Type(type = "json")
-    @Column(name = "`menu_ids`", columnDefinition = "json")
-    private List<Long> menuIds;
+    @Column(name = "`menu_ids`")
+    private String menuIds;
 
     /**
      * Menu ids for role. JSON array
      */
-    @Type(type = "json")
-    @Column(name = "`perm_ids`", columnDefinition = "json")
-    private List<Long> permIds;
+    @Column(name = "`perm_ids`")
+    private String permIds;
 
     /**
      * Namespace ids for role. JSON array
      */
-    @Type(type = "json")
-    @Column(name = "`namespace_ids`", columnDefinition = "json")
-    private List<Long> namespaceIds;
+    @Column(name = "`namespace_ids`")
+    private String namespaceIds;
 
     /**
      * App ids for role. JSON array
      */
-    @Type(type = "json")
-    @Column(name = "`app_ids`", columnDefinition = "json")
-    private List<Long> appIds;
+    @Column(name = "`app_ids`")
+    private String appIds;
 
     /**
      * Is Admin. 1=yes 2=no
@@ -106,4 +104,25 @@ public class AdminRole {
      */
     @Column(name = "`create_time`")
     private Long createTime;
+
+    public List<Long> getMenuIdsByJson() {
+        return JsonUtil.decode(this.menuIds, new TypeReference<List<Long>>() {
+        });
+    }
+
+
+    public List<Long> getPermIdsByJson() {
+        return JsonUtil.decode(this.permIds, new TypeReference<List<Long>>() {
+        });
+    }
+
+    public List<Long> getNamespaceIds() {
+        return JsonUtil.decode(this.namespaceIds, new TypeReference<List<Long>>() {
+        });
+    }
+
+    public List<Long> getAppIds() {
+        return JsonUtil.decode(this.appIds, new TypeReference<List<Long>>() {
+        });
+    }
 }
