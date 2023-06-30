@@ -1326,7 +1326,7 @@ ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011348" CHECK ("create_time" IS N
 CREATE INDEX "idx_name"
     ON "admin_user" ("username" ASC)
 ;
-CREATE UNIQUE INDEX "uni_token"
+CREATE UNIQUE INDEX "udx_token"
     ON "admin_user" ("token" ASC)
 ;
 
@@ -1704,7 +1704,7 @@ ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011517" CHECK ("update_time" IS NOT N
 -- ----------------------------
 -- Indexes structure for table server
 -- ----------------------------
-CREATE INDEX "udx_akka_address"
+CREATE UNIQUE INDEX "udx_akka_address"
     ON "server" ("akka_address" ASC)
 ;
 
@@ -1820,7 +1820,7 @@ ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011571" CHECK ("update_time" IS NOT N
 CREATE INDEX "idx_nia_worker"
     ON "worker" ("namespace_id" ASC, "app_id" ASC)
 ;
-CREATE INDEX "udx_address"
+CREATE UNIQUE INDEX "udx_address"
     ON "worker" ("address" ASC);
 
 
