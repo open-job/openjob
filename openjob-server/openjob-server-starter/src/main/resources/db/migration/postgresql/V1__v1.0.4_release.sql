@@ -1045,7 +1045,7 @@ ALTER TABLE "admin_role" ADD CONSTRAINT "admin_role_pkey" PRIMARY KEY ("id");
 CREATE INDEX "idx_name_admin_user" ON "admin_user" USING btree (
     "username" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
     );
-CREATE UNIQUE INDEX "uni_token" ON "admin_user" USING btree (
+CREATE UNIQUE INDEX "udx_token" ON "admin_user" USING btree (
     "token" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
     );
 
@@ -1264,7 +1264,7 @@ ALTER TABLE "processor_log" ADD CONSTRAINT "processor_log_pkey" PRIMARY KEY ("id
 -- ----------------------------
 -- Indexes structure for table server
 -- ----------------------------
-CREATE INDEX "udx_akka_address" ON "server" USING btree (
+CREATE UNIQUE INDEX "udx_akka_address" ON "server" USING btree (
     "akka_address" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
     );
 
@@ -1314,7 +1314,7 @@ CREATE INDEX "idx_namespace_id_app_id_worker" ON "worker" USING btree (
     "namespace_id" "pg_catalog"."numeric_ops" ASC NULLS LAST,
     "app_id" "pg_catalog"."numeric_ops" ASC NULLS LAST
     );
-CREATE INDEX "udx_address" ON "worker" USING btree (
+CREATE UNIQUE INDEX "udx_address" ON "worker" USING btree (
     "address" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
     );
 
