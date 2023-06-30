@@ -1,6 +1,8 @@
 package io.openjob.server.repository.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,52 +17,54 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "job_instance_task")
+@Table(name = "`job_instance_task`")
 public class JobInstanceTask {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "job_instance_task_id")})
     private Long id;
 
-    @Column(name = "job_id")
+    @Column(name = "`job_id`")
     private Long jobId;
 
-    @Column(name = "job_instance_id")
+    @Column(name = "`job_instance_id`")
     private Long jobInstanceId;
 
-    @Column(name = "circle_id")
+    @Column(name = "`circle_id`")
     private Long circleId;
 
-    @Column(name = "task_id")
+    @Column(name = "`task_id`")
     private String taskId;
 
-    @Column(name = "parent_task_id")
+    @Column(name = "`parent_task_id`")
     private String parentTaskId;
 
-    @Column(name = "task_name")
+    @Column(name = "`task_name`")
     private String taskName;
 
-    @Column(name = "status")
+    @Column(name = "`status`")
     private Integer status;
 
-    @Column(name = "result")
+    @Column(name = "`result`")
     private String result;
 
-    @Column(name = "worker_address")
+    @Column(name = "`worker_address`")
     private String workerAddress;
 
-    @Column(name = "deleted")
+    @Column(name = "`deleted`")
     private Integer deleted;
 
     /**
      * Delete time
      */
-    @Column(name = "delete_time")
+    @Column(name = "`delete_time`")
     private Long deleteTime;
 
-    @Column(name = "create_time")
+    @Column(name = "`create_time`")
     private Long createTime;
 
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 }

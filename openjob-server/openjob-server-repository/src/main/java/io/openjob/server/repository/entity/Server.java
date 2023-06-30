@@ -17,9 +17,10 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "server")
+@Table(name = "`server`")
 public class Server {
     @Id
+    @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "server_id")})
     private Long id;
@@ -27,38 +28,40 @@ public class Server {
     /**
      * Server IP
      */
+    @Column(name = "`ip`")
     private String ip;
 
     /**
      * Server address
      */
-    @Column(name = "akka_address")
+    @Column(name = "`akka_address`")
     private String akkaAddress;
 
     /**
      * Server status
      */
+    @Column(name = "`status`")
     private Integer status;
 
-    @Column(name = "deleted")
+    @Column(name = "`deleted`")
     private Integer deleted;
 
     /**
      * Delete time
      */
-    @Column(name = "delete_time")
+    @Column(name = "`delete_time`")
     private Long deleteTime;
 
     /**
      * Create time
      */
-    @Column(name = "create_time")
+    @Column(name = "`create_time`")
     private Long createTime;
 
     /**
      * Update time
      */
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 
     @Override

@@ -3,6 +3,8 @@ package io.openjob.server.repository.entity;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "admin_user")
+@Table(name = "`admin_user`")
 @TypeDef(name = "json", typeClass = JsonType.class)
 public class AdminUser {
 
@@ -30,73 +32,75 @@ public class AdminUser {
      * PK
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "admin_user_id")})
     private Long id;
 
     /**
      * User name
      */
-    @Column(name = "username")
+    @Column(name = "`username`")
     private String username;
 
     /**
      * Nickname
      */
-    @Column(name = "nickname")
+    @Column(name = "`nickname`")
     private String nickname;
 
     /**
      * Password
      */
-    @Column(name = "passwd")
+    @Column(name = "`passwd`")
     private String passwd;
 
     /**
      * Session expire at
      */
-    @Column(name = "session_expire_at")
+    @Column(name = "`session_expire_at`")
     private Long sessionExpireAt;
 
     /**
      * Session key
      */
-    @Column(name = "session_key")
+    @Column(name = "`session_key`")
     private String sessionKey;
 
     /**
      * Api auth token
      */
-    @Column(name = "token")
+    @Column(name = "`token`")
     private String token;
 
     /**
      * Role IDs. JSON: [1,2]
      */
     @Type(type = "json")
-    @Column(name = "role_ids", columnDefinition = "json")
+    @Column(name = "`role_ids`", columnDefinition = "json")
     private List<Long> roleIds;
 
     /**
      * Delete status. 1=yes 2=no
      */
-    @Column(name = "deleted")
+    @Column(name = "`deleted`")
     private Integer deleted;
 
     /**
      * Delete time
      */
-    @Column(name = "delete_time")
+    @Column(name = "`delete_time`")
     private Long deleteTime;
 
     /**
      * Update time
      */
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 
     /**
      * Create time
      */
-    @Column(name = "create_time")
+    @Column(name = "`create_time`")
     private Long createTime;
 }
