@@ -343,41 +343,6 @@ COMMIT;
 COMMIT;
 
 -- ----------------------------
--- Table structure for delay_worker
--- ----------------------------
-CREATE TABLE "delay_worker" (
-                                "id" NUMBER(20,0) NOT NULL,
-                                "topic" NVARCHAR2(128) NOT NULL,
-                                "pull_size" NUMBER(11,0) NOT NULL,
-                                "pull_time" NUMBER(20,0) NOT NULL,
-                                "create_time" NUMBER(20,0) NOT NULL,
-                                "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
-COMMENT ON COLUMN "delay_worker"."id" IS 'PK';
-COMMENT ON COLUMN "delay_worker"."topic" IS 'Topic';
-COMMENT ON COLUMN "delay_worker"."pull_size" IS 'Pull size';
-COMMENT ON COLUMN "delay_worker"."pull_time" IS 'Pull time';
-COMMENT ON COLUMN "delay_worker"."create_time" IS 'Create time';
-COMMENT ON COLUMN "delay_worker"."update_time" IS 'Update time';
-
--- ----------------------------
--- Records of delay_worker
--- ----------------------------
-COMMIT;
-COMMIT;
-
--- ----------------------------
 -- Table structure for job
 -- ----------------------------
 CREATE TABLE "job" (
@@ -1035,7 +1000,6 @@ COMMENT ON COLUMN "server"."update_time" IS 'Update time';
 -- ----------------------------
 -- Records of server
 -- ----------------------------
-INSERT INTO "server" ("id", "ip", "akka_address", "status", "deleted", "delete_time", "create_time", "update_time") VALUES ('1', '172.20.1.52', '172.20.1.52:25520', '1', '2', '0', '1687953090', '1687953090');
 COMMIT;
 COMMIT;
 
@@ -1141,55 +1105,6 @@ COMMENT ON COLUMN "system"."update_time" IS 'Update time';
 -- Records of system
 -- ----------------------------
 INSERT INTO "system" ("id", "version", "cluster_version", "cluster_delay_version", "worker_supervisor_slot", "delay_zset_slot", "delay_fail_zset_slot", "delay_add_list_slot", "delay_status_list_slot", "delay_delete_list_slot", "max_slot", "job_keep_days", "delay_keep_days", "server_keep_days", "worker_keep_days", "deleted", "delete_time", "create_time", "update_time") VALUES ('1', '1.0.0', '438', '8', '32', '2', '2', '2', '2', '1', '256', '1', '7', '90', '180', '2', '0', '1663590330', '1663590330');
-COMMIT;
-COMMIT;
-
--- ----------------------------
--- Table structure for task
--- ----------------------------
-CREATE TABLE "task" (
-                        "id" NUMBER(20,0) NOT NULL,
-                        "job_id" NUMBER(20,0) NOT NULL,
-                        "instance_id" NUMBER(20,0) NOT NULL,
-                        "circle_id" NUMBER(20,0) NOT NULL,
-                        "task_id" NVARCHAR2(64) NOT NULL,
-                        "task_name" NVARCHAR2(128) NOT NULL,
-                        "task_parent_id" NVARCHAR2(64) NOT NULL,
-                        "status" NUMBER(4,0) NOT NULL,
-                        "worker_address" NVARCHAR2(64) NOT NULL,
-                        "result" NCLOB,
-                        "task_body" BLOB,
-                        "create_time" NUMBER(20,0) NOT NULL,
-                        "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
-COMMENT ON COLUMN "task"."id" IS 'PK';
-COMMENT ON COLUMN "task"."job_id" IS 'Job id';
-COMMENT ON COLUMN "task"."instance_id" IS 'Instance id';
-COMMENT ON COLUMN "task"."circle_id" IS 'Circle id';
-COMMENT ON COLUMN "task"."task_id" IS 'Task id';
-COMMENT ON COLUMN "task"."task_name" IS 'Task name';
-COMMENT ON COLUMN "task"."task_parent_id" IS 'Task parent id';
-COMMENT ON COLUMN "task"."status" IS 'Status';
-COMMENT ON COLUMN "task"."worker_address" IS 'Worker address';
-COMMENT ON COLUMN "task"."result" IS 'Task result';
-COMMENT ON COLUMN "task"."task_body" IS 'Task body';
-COMMENT ON COLUMN "task"."create_time" IS 'Create time';
-COMMENT ON COLUMN "task"."update_time" IS 'Update time';
-
--- ----------------------------
--- Records of task
--- ----------------------------
 COMMIT;
 COMMIT;
 
@@ -1436,21 +1351,6 @@ CREATE INDEX "idx_namespace_id_create_time"
 CREATE UNIQUE INDEX "udx_task_id"
     ON "delay_instance" ("task_id" ASC)
 ;
-
--- ----------------------------
--- Primary Key structure for table delay_worker
--- ----------------------------
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011578" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table delay_worker
--- ----------------------------
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011406" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011407" CHECK ("topic" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011408" CHECK ("pull_size" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011409" CHECK ("pull_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011410" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_worker" ADD CONSTRAINT "SYS_C0011411" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Primary Key structure for table job
@@ -1761,35 +1661,6 @@ ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011554" CHECK ("create_time" IS NOT N
 ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011555" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
--- Primary Key structure for table task
--- ----------------------------
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011590" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table task
--- ----------------------------
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011526" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011527" CHECK ("job_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011528" CHECK ("instance_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011529" CHECK ("circle_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011530" CHECK ("task_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011531" CHECK ("task_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011532" CHECK ("task_parent_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011533" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011534" CHECK ("worker_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011535" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011536" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
--- Indexes structure for table task
--- ----------------------------
-CREATE INDEX "idx_instance_id_circle_id"
-    ON "task" ("instance_id" ASC, "circle_id" ASC)
-;
-CREATE UNIQUE INDEX "udx_task_id_task"
-    ON "task" ("task_id" ASC) ;
-
--- ----------------------------
 -- Primary Key structure for table worker
 -- ----------------------------
 ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011591" PRIMARY KEY ("id");
@@ -1828,7 +1699,7 @@ CREATE UNIQUE INDEX "udx_address"
 create sequence admin_permission_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
+    start with 10000
     increment by 1
     cache 20
 cycle
@@ -1838,7 +1709,7 @@ cycle
 create sequence admin_role_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
+    start with 3
     increment by 1
     cache 20
 cycle
@@ -1849,7 +1720,7 @@ create sequence admin_user_id
     minvalue 1
     maxvalue 999999999999
     start with 1
-    increment by 1
+    increment by 3
     cache 20
 cycle
 ;
@@ -1858,7 +1729,7 @@ cycle
 create sequence app_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
+    start with 3
     increment by 1
     cache 20
 cycle
@@ -1876,16 +1747,6 @@ cycle
 
 -- Create sequence
 create sequence delay_instance_id
-    minvalue 1
-    maxvalue 999999999999
-    start with 1
-    increment by 1
-    cache 20
-cycle
-;
-
--- Create sequence
-create sequence delay_worker_id
     minvalue 1
     maxvalue 999999999999
     start with 1
@@ -1938,7 +1799,7 @@ cycle
 create sequence job_slots_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
+    start with 257
     increment by 1
     cache 20
 cycle
@@ -1948,7 +1809,7 @@ cycle
 create sequence namespace_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
+    start with 3
     increment by 1
     cache 20
 cycle
@@ -1988,17 +1849,7 @@ cycle
 create sequence system_id
     minvalue 1
     maxvalue 999999999999
-    start with 1
-    increment by 1
-    cache 20
-cycle
-;
-
--- Create sequence
-create sequence task_id
-    minvalue 1
-    maxvalue 999999999999
-    start with 1
+    start with 2
     increment by 1
     cache 20
 cycle

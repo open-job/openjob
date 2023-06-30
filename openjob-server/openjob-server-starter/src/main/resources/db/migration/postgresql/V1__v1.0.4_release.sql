@@ -968,7 +968,7 @@ COMMIT;
 -- Table structure for worker
 -- ----------------------------
 DROP TABLE IF EXISTS "worker";
-create sequence worker_id start with 2 increment by 1 no minvalue no maxvalue cache 1;
+create sequence worker_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "worker" (
                           "id" numeric(20,0) NOT NULL DEFAULT nextval('worker_id'::regclass),
                           "app_id" numeric(20,0) NOT NULL,
@@ -1128,11 +1128,6 @@ CREATE UNIQUE INDEX "udx_task_id" ON "delay_instance" USING btree (
 ALTER TABLE "delay_instance" ADD CONSTRAINT "delay_instance_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Primary Key structure for table delay_worker
--- ----------------------------
-ALTER TABLE "delay_worker" ADD CONSTRAINT "delay_worker_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
 -- Indexes structure for table job
 -- ----------------------------
 CREATE INDEX "idx_namespace_id_app_id_name" ON "job" USING btree (
@@ -1290,22 +1285,6 @@ ALTER TABLE "server_reports" ADD CONSTRAINT "server_reports_pkey" PRIMARY KEY ("
 -- Primary Key structure for table system
 -- ----------------------------
 ALTER TABLE "system" ADD CONSTRAINT "system_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Indexes structure for table task
--- ----------------------------
-CREATE INDEX "idx_instance_id_circle_id" ON "task" USING btree (
-    "instance_id" "pg_catalog"."numeric_ops" ASC NULLS LAST,
-    "circle_id" "pg_catalog"."numeric_ops" ASC NULLS LAST
-    );
-CREATE UNIQUE INDEX "udx_task_id_task" ON "task" USING btree (
-    "task_id" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
-    );
-
--- ----------------------------
--- Primary Key structure for table task
--- ----------------------------
-ALTER TABLE "task" ADD CONSTRAINT "task_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
 -- Indexes structure for table worker
