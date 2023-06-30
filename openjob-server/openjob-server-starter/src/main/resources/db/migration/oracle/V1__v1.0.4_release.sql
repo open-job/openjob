@@ -2,26 +2,26 @@
 -- Table structure for admin_permission
 -- ----------------------------
 CREATE TABLE "admin_permission" (
-                                         "id" NUMBER(20,0) NOT NULL,
-                                         "pid" NUMBER(20,0) NOT NULL,
-                                         "type" NUMBER(4,0) NOT NULL,
-                                         "name" NVARCHAR2(48) NOT NULL,
-                                         "path" NVARCHAR2(86) NOT NULL,
-                                         "meta" CLOB,
-                                         "hidden" NUMBER(4,0) NOT NULL,
-                                         "sort" NUMBER(11,0) NOT NULL,
-                                         "deleted" NUMBER(4,0) NOT NULL,
-                                         "delete_time" NUMBER(20,0) NOT NULL,
-                                         "update_time" NUMBER(20,0) NOT NULL,
-                                         "create_time" NUMBER(20,0) NOT NULL
+                                    "id" NUMBER(20,0) NOT NULL,
+                                    "pid" NUMBER(20,0) NOT NULL,
+                                    "type" NUMBER(4,0) NOT NULL,
+                                    "name" NVARCHAR2(48) NOT NULL,
+                                    "path" NVARCHAR2(86) NOT NULL,
+                                    "meta" CLOB,
+                                    "hidden" NUMBER(4,0) NOT NULL,
+                                    "sort" NUMBER(11,0) NOT NULL,
+                                    "deleted" NUMBER(4,0) NOT NULL,
+                                    "delete_time" NUMBER(20,0) NOT NULL,
+                                    "update_time" NUMBER(20,0) NOT NULL,
+                                    "create_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -74,26 +74,26 @@ COMMIT;
 -- Table structure for admin_role
 -- ----------------------------
 CREATE TABLE "admin_role" (
-                                   "id" NUMBER(20,0) NOT NULL,
-                                   "name" NVARCHAR2(48) NOT NULL,
-                                   "desc" NVARCHAR2(128) NOT NULL,
-                                   "admin" NUMBER(4,0) NOT NULL,
-                                   "menu_ids" CLOB,
-                                   "perm_ids" CLOB,
-                                   "namespace_ids" CLOB,
-                                   "app_ids" CLOB,
-                                   "deleted" NUMBER(4,0) NOT NULL,
-                                   "delete_time" NUMBER(20,0) NOT NULL,
-                                   "update_time" NUMBER(20,0) NOT NULL,
-                                   "create_time" NUMBER(20,0) NOT NULL
+                              "id" NUMBER(20,0) NOT NULL,
+                              "name" NVARCHAR2(48) NOT NULL,
+                              "desc" NVARCHAR2(128) NOT NULL,
+                              "admin" NUMBER(4,0) NOT NULL,
+                              "menu_ids" CLOB,
+                              "perm_ids" CLOB,
+                              "namespace_ids" CLOB,
+                              "app_ids" CLOB,
+                              "deleted" NUMBER(4,0) NOT NULL,
+                              "delete_time" NUMBER(20,0) NOT NULL,
+                              "update_time" NUMBER(20,0) NOT NULL,
+                              "create_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -127,26 +127,26 @@ COMMIT;
 -- Table structure for admin_user
 -- ----------------------------
 CREATE TABLE "admin_user" (
-                                   "id" NUMBER(20,0) NOT NULL,
-                                   "username" NVARCHAR2(48) NOT NULL,
-                                   "nickname" NVARCHAR2(64) NOT NULL,
-                                   "passwd" NVARCHAR2(128) NOT NULL,
-                                   "session_key" NVARCHAR2(128) NOT NULL,
-                                   "session_expire_at" NUMBER(20,0) NOT NULL,
-                                   "token" NVARCHAR2(64) NOT NULL,
-                                   "role_ids" CLOB,
-                                   "deleted" NUMBER(4,0) NOT NULL,
-                                   "delete_time" NUMBER(20,0) NOT NULL,
-                                   "update_time" NUMBER(20,0) NOT NULL,
-                                   "create_time" NUMBER(20,0) NOT NULL
+                              "id" NUMBER(20,0) NOT NULL,
+                              "username" NVARCHAR2(48) NOT NULL,
+                              "nickname" NVARCHAR2(64) NOT NULL,
+                              "passwd" NVARCHAR2(128) NOT NULL,
+                              "session_key" NVARCHAR2(128) NOT NULL,
+                              "session_expire_at" NUMBER(20,0) NOT NULL,
+                              "token" NVARCHAR2(64) NOT NULL,
+                              "role_ids" CLOB,
+                              "deleted" NUMBER(4,0) NOT NULL,
+                              "delete_time" NUMBER(20,0) NOT NULL,
+                              "update_time" NUMBER(20,0) NOT NULL,
+                              "create_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -180,22 +180,22 @@ COMMIT;
 -- Table structure for app
 -- ----------------------------
 CREATE TABLE "app" (
-                            "id" NUMBER(20,0) NOT NULL,
-                            "namespace_id" NUMBER(20,0) NOT NULL,
-                            "name" NVARCHAR2(64),
-                            "desc" NVARCHAR2(256) NOT NULL,
-                            "deleted" NUMBER(4,0) NOT NULL,
-                            "delete_time" NUMBER(20,0) NOT NULL,
-                            "create_time" NUMBER(20,0) NOT NULL,
-                            "update_time" NUMBER(20,0) NOT NULL
+                       "id" NUMBER(20,0) NOT NULL,
+                       "namespace_id" NUMBER(20,0) NOT NULL,
+                       "name" NVARCHAR2(64),
+                       "desc" NVARCHAR2(256) NOT NULL,
+                       "deleted" NUMBER(4,0) NOT NULL,
+                       "delete_time" NUMBER(20,0) NOT NULL,
+                       "create_time" NUMBER(20,0) NOT NULL,
+                       "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -224,26 +224,26 @@ COMMIT;
 -- Table structure for delay
 -- ----------------------------
 CREATE TABLE "delay" (
-                              "id" NUMBER(20,0) NOT NULL,
-                              "pid" NUMBER(20,0) NOT NULL,
-                              "cid" NUMBER(20,0) NOT NULL,
-                              "namespace_id" NUMBER(20,0) NOT NULL,
-                              "app_id" NUMBER(20,0) NOT NULL,
-                              "name" NVARCHAR2(128) NOT NULL,
-                              "description" NVARCHAR2(256) NOT NULL,
-                              "processor_info" NVARCHAR2(256) NOT NULL,
-                              "fail_retry_times" NUMBER(11,0) NOT NULL,
-                              "fail_retry_interval" NUMBER(11,0) NOT NULL,
-                              "execute_timeout" NUMBER(11,0) NOT NULL,
-                              "concurrency" NUMBER(11,0) NOT NULL,
-                              "blocking_size" NUMBER(11,0) NOT NULL,
-                              "topic" NVARCHAR2(128) NOT NULL,
-                              "fail_topic_enable" NUMBER(4,0) NOT NULL,
-                              "fail_topic_concurrency" NUMBER(11,0) NOT NULL,
-                              "deleted" NUMBER(4,0) NOT NULL,
-                              "delete_time" NUMBER(20,0) NOT NULL,
-                              "create_time" NUMBER(20,0) NOT NULL,
-                              "update_time" NUMBER(20,0) NOT NULL
+                         "id" NUMBER(20,0) NOT NULL,
+                         "pid" NUMBER(20,0) NOT NULL,
+                         "cid" NUMBER(20,0) NOT NULL,
+                         "namespace_id" NUMBER(20,0) NOT NULL,
+                         "app_id" NUMBER(20,0) NOT NULL,
+                         "name" NVARCHAR2(128) NOT NULL,
+                         "description" NVARCHAR2(256) NOT NULL,
+                         "processor_info" NVARCHAR2(256) NOT NULL,
+                         "fail_retry_times" NUMBER(11,0) NOT NULL,
+                         "fail_retry_interval" NUMBER(11,0) NOT NULL,
+                         "execute_timeout" NUMBER(11,0) NOT NULL,
+                         "concurrency" NUMBER(11,0) NOT NULL,
+                         "blocking_size" NUMBER(11,0) NOT NULL,
+                         "topic" NVARCHAR2(128) NOT NULL,
+                         "fail_topic_enable" NUMBER(4,0) NOT NULL,
+                         "fail_topic_concurrency" NUMBER(11,0) NOT NULL,
+                         "deleted" NUMBER(4,0) NOT NULL,
+                         "delete_time" NUMBER(20,0) NOT NULL,
+                         "create_time" NUMBER(20,0) NOT NULL,
+                         "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -287,24 +287,24 @@ COMMIT;
 -- Table structure for delay_instance
 -- ----------------------------
 CREATE TABLE "delay_instance" (
-                                       "id" NUMBER(20,0) NOT NULL,
-                                       "app_id" NUMBER(20,0) NOT NULL,
-                                       "namespace_id" NUMBER(20,0) NOT NULL,
-                                       "task_id" NVARCHAR2(64) NOT NULL,
-                                       "topic" NVARCHAR2(128) NOT NULL,
-                                       "delay_id" NUMBER(20,0) NOT NULL,
-                                       "delay_params" NCLOB NOT NULL,
-                                       "delay_extra" NCLOB NOT NULL,
-                                       "status" NUMBER(4,0) NOT NULL,
-                                       "execute_time" NUMBER(20,0) NOT NULL,
-                                       "complete_time" NUMBER(20,0) NOT NULL,
-                                       "worker_address" NVARCHAR2(32) NOT NULL,
-                                       "deleted" NUMBER(4,0) NOT NULL,
-                                       "delete_time" NUMBER(20,0) NOT NULL,
-                                       "create_time" NUMBER(20,0) NOT NULL,
-                                       "update_time" NUMBER(20,0) NOT NULL,
-                                       "create_time_date" NUMBER(11,0) NOT NULL,
-                                       "create_time_hour" NUMBER(11,0) NOT NULL
+                                  "id" NUMBER(20,0) NOT NULL,
+                                  "app_id" NUMBER(20,0) NOT NULL,
+                                  "namespace_id" NUMBER(20,0) NOT NULL,
+                                  "task_id" NVARCHAR2(64) NOT NULL,
+                                  "topic" NVARCHAR2(128) NOT NULL,
+                                  "delay_id" NUMBER(20,0) NOT NULL,
+                                  "delay_params" NCLOB NOT NULL,
+                                  "delay_extra" NCLOB NOT NULL,
+                                  "status" NUMBER(4,0) NOT NULL,
+                                  "execute_time" NUMBER(20,0) NOT NULL,
+                                  "complete_time" NUMBER(20,0) NOT NULL,
+                                  "worker_address" NVARCHAR2(32) NOT NULL,
+                                  "deleted" NUMBER(4,0) NOT NULL,
+                                  "delete_time" NUMBER(20,0) NOT NULL,
+                                  "create_time" NUMBER(20,0) NOT NULL,
+                                  "update_time" NUMBER(20,0) NOT NULL,
+                                  "create_time_date" NUMBER(11,0) NOT NULL,
+                                  "create_time_hour" NUMBER(11,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -346,12 +346,12 @@ COMMIT;
 -- Table structure for delay_worker
 -- ----------------------------
 CREATE TABLE "delay_worker" (
-                                     "id" NUMBER(20,0) NOT NULL,
-                                     "topic" NVARCHAR2(128) NOT NULL,
-                                     "pull_size" NUMBER(11,0) NOT NULL,
-                                     "pull_time" NUMBER(20,0) NOT NULL,
-                                     "create_time" NUMBER(20,0) NOT NULL,
-                                     "update_time" NUMBER(20,0) NOT NULL
+                                "id" NUMBER(20,0) NOT NULL,
+                                "topic" NVARCHAR2(128) NOT NULL,
+                                "pull_size" NUMBER(11,0) NOT NULL,
+                                "pull_time" NUMBER(20,0) NOT NULL,
+                                "create_time" NUMBER(20,0) NOT NULL,
+                                "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -381,32 +381,32 @@ COMMIT;
 -- Table structure for job
 -- ----------------------------
 CREATE TABLE "job" (
-                            "id" NUMBER(20,0) NOT NULL,
-                            "namespace_id" NUMBER(20,0) NOT NULL,
-                            "app_id" NUMBER(20,0) NOT NULL,
-                            "workflow_id" NUMBER(20,0) NOT NULL,
-                            "name" NVARCHAR2(32) NOT NULL,
-                            "description" NVARCHAR2(128) NOT NULL,
-                            "processor_type" NVARCHAR2(16) NOT NULL,
-                            "processor_info" NCLOB NOT NULL,
-                            "execute_type" NVARCHAR2(16) NOT NULL,
-                            "params" NCLOB NOT NULL,
-                            "params_type" NVARCHAR2(16) NOT NULL,
-                            "extend_params_type" NVARCHAR2(16),
-                            "extend_params" NCLOB NOT NULL,
-                            "fail_retry_times" NUMBER(11,0) NOT NULL,
-                            "fail_retry_interval" NUMBER(11,0) NOT NULL,
-                            "concurrency" NUMBER(11,0) NOT NULL,
-                            "time_expression_type" NVARCHAR2(16) NOT NULL,
-                            "time_expression" NVARCHAR2(32) NOT NULL,
-                            "execute_strategy" NUMBER(4,0) NOT NULL,
-                            "status" NUMBER(4,0) NOT NULL,
-                            "next_execute_time" NUMBER(20,0) NOT NULL,
-                            "slots_id" NUMBER(11,0) NOT NULL,
-                            "deleted" NUMBER(4,0) NOT NULL,
-                            "delete_time" NUMBER(20,0) NOT NULL,
-                            "create_time" NUMBER(20,0) NOT NULL,
-                            "update_time" NUMBER(20,0) NOT NULL
+                       "id" NUMBER(20,0) NOT NULL,
+                       "namespace_id" NUMBER(20,0) NOT NULL,
+                       "app_id" NUMBER(20,0) NOT NULL,
+                       "workflow_id" NUMBER(20,0) NOT NULL,
+                       "name" NVARCHAR2(32) NOT NULL,
+                       "description" NVARCHAR2(128) NOT NULL,
+                       "processor_type" NVARCHAR2(16) NOT NULL,
+                       "processor_info" NCLOB NOT NULL,
+                       "execute_type" NVARCHAR2(16) NOT NULL,
+                       "params" NCLOB NOT NULL,
+                       "params_type" NVARCHAR2(16) NOT NULL,
+                       "extend_params_type" NVARCHAR2(16),
+                       "extend_params" NCLOB NOT NULL,
+                       "fail_retry_times" NUMBER(11,0) NOT NULL,
+                       "fail_retry_interval" NUMBER(11,0) NOT NULL,
+                       "concurrency" NUMBER(11,0) NOT NULL,
+                       "time_expression_type" NVARCHAR2(16) NOT NULL,
+                       "time_expression" NVARCHAR2(32) NOT NULL,
+                       "execute_strategy" NUMBER(4,0) NOT NULL,
+                       "status" NUMBER(4,0) NOT NULL,
+                       "next_execute_time" NUMBER(20,0) NOT NULL,
+                       "slots_id" NUMBER(11,0) NOT NULL,
+                       "deleted" NUMBER(4,0) NOT NULL,
+                       "delete_time" NUMBER(20,0) NOT NULL,
+                       "create_time" NUMBER(20,0) NOT NULL,
+                       "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -456,36 +456,36 @@ COMMIT;
 -- Table structure for job_instance
 -- ----------------------------
 CREATE TABLE "job_instance" (
-                                     "id" NUMBER(20,0) NOT NULL,
-                                     "job_id" NUMBER(20,0) NOT NULL,
-                                     "params" NCLOB NOT NULL,
-                                     "params_type" NVARCHAR2(16) NOT NULL,
-                                     "extend_params_type" NVARCHAR2(16),
-                                     "extend_params" NCLOB NOT NULL,
-                                     "status" NUMBER(4,0) NOT NULL,
-                                     "slots_id" NUMBER(20,0) NOT NULL,
-                                     "workflow_id" NUMBER(20,0) NOT NULL,
-                                     "namespace_id" NUMBER(20,0) NOT NULL,
-                                     "app_id" NUMBER(20,0) NOT NULL,
-                                     "execute_time" NUMBER(20,0) NOT NULL,
-                                     "complete_time" NUMBER(20,0) NOT NULL,
-                                     "last_report_time" NUMBER(20,0) NOT NULL,
-                                     "processor_type" NVARCHAR2(16) NOT NULL,
-                                     "processor_info" NCLOB NOT NULL,
-                                     "execute_type" NVARCHAR2(16) NOT NULL,
-                                     "fail_retry_times" NUMBER(11,0) NOT NULL,
-                                     "fail_retry_interval" NUMBER(11,0) NOT NULL,
-                                     "time_expression_type" NVARCHAR2(16) NOT NULL,
-                                     "time_expression" NVARCHAR2(32) NOT NULL,
-                                     "concurrency" NUMBER(11,0) NOT NULL,
-                                     "worker_address" NVARCHAR2(32) NOT NULL,
-                                     "execute_strategy" NUMBER(4,0) NOT NULL,
-                                     "deleted" NUMBER(4,0) NOT NULL,
-                                     "delete_time" NUMBER(20,0) NOT NULL,
-                                     "update_time" NUMBER(20,0) NOT NULL,
-                                     "create_time_date" NUMBER(11,0) NOT NULL,
-                                     "create_time_hour" NUMBER(11,0) NOT NULL,
-                                     "create_time" NUMBER(20,0) NOT NULL
+                                "id" NUMBER(20,0) NOT NULL,
+                                "job_id" NUMBER(20,0) NOT NULL,
+                                "params" NCLOB NOT NULL,
+                                "params_type" NVARCHAR2(16) NOT NULL,
+                                "extend_params_type" NVARCHAR2(16),
+                                "extend_params" NCLOB NOT NULL,
+                                "status" NUMBER(4,0) NOT NULL,
+                                "slots_id" NUMBER(20,0) NOT NULL,
+                                "workflow_id" NUMBER(20,0) NOT NULL,
+                                "namespace_id" NUMBER(20,0) NOT NULL,
+                                "app_id" NUMBER(20,0) NOT NULL,
+                                "execute_time" NUMBER(20,0) NOT NULL,
+                                "complete_time" NUMBER(20,0) NOT NULL,
+                                "last_report_time" NUMBER(20,0) NOT NULL,
+                                "processor_type" NVARCHAR2(16) NOT NULL,
+                                "processor_info" NCLOB NOT NULL,
+                                "execute_type" NVARCHAR2(16) NOT NULL,
+                                "fail_retry_times" NUMBER(11,0) NOT NULL,
+                                "fail_retry_interval" NUMBER(11,0) NOT NULL,
+                                "time_expression_type" NVARCHAR2(16) NOT NULL,
+                                "time_expression" NVARCHAR2(32) NOT NULL,
+                                "concurrency" NUMBER(11,0) NOT NULL,
+                                "worker_address" NVARCHAR2(32) NOT NULL,
+                                "execute_strategy" NUMBER(4,0) NOT NULL,
+                                "deleted" NUMBER(4,0) NOT NULL,
+                                "delete_time" NUMBER(20,0) NOT NULL,
+                                "update_time" NUMBER(20,0) NOT NULL,
+                                "create_time_date" NUMBER(11,0) NOT NULL,
+                                "create_time_hour" NUMBER(11,0) NOT NULL,
+                                "create_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -539,14 +539,14 @@ COMMIT;
 -- Table structure for job_instance_log
 -- ----------------------------
 CREATE TABLE "job_instance_log" (
-                                         "id" NUMBER(20,0) NOT NULL,
-                                         "job_id" NUMBER(20,0) NOT NULL,
-                                         "job_instance_id" NUMBER(20,0) NOT NULL,
-                                         "message" NCLOB,
-                                         "deleted" NUMBER(4,0) NOT NULL,
-                                         "delete_time" NUMBER(20,0) NOT NULL,
-                                         "create_time" NUMBER(20,0) NOT NULL,
-                                         "update_time" NUMBER(20,0) NOT NULL
+                                    "id" NUMBER(20,0) NOT NULL,
+                                    "job_id" NUMBER(20,0) NOT NULL,
+                                    "job_instance_id" NUMBER(20,0) NOT NULL,
+                                    "message" NCLOB,
+                                    "deleted" NUMBER(4,0) NOT NULL,
+                                    "delete_time" NUMBER(20,0) NOT NULL,
+                                    "create_time" NUMBER(20,0) NOT NULL,
+                                    "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -578,20 +578,20 @@ COMMIT;
 -- Table structure for job_instance_task
 -- ----------------------------
 CREATE TABLE "job_instance_task" (
-                                          "id" NUMBER(11,0) NOT NULL,
-                                          "job_id" NUMBER(20,0) NOT NULL,
-                                          "job_instance_id" NUMBER(20,0) NOT NULL,
-                                          "circle_id" NUMBER(20,0) NOT NULL,
-                                          "task_id" NVARCHAR2(64) NOT NULL,
-                                          "parent_task_id" NVARCHAR2(64) NOT NULL,
-                                          "task_name" NVARCHAR2(128) NOT NULL,
-                                          "status" NUMBER(4,0) NOT NULL,
-                                          "result" NCLOB,
-                                          "worker_address" NVARCHAR2(128) NOT NULL,
-                                          "deleted" NUMBER(4,0) NOT NULL,
-                                          "delete_time" NUMBER(20,0) NOT NULL,
-                                          "create_time" NUMBER(20,0),
-                                          "update_time" NUMBER(20,0)
+                                     "id" NUMBER(11,0) NOT NULL,
+                                     "job_id" NUMBER(20,0) NOT NULL,
+                                     "job_instance_id" NUMBER(20,0) NOT NULL,
+                                     "circle_id" NUMBER(20,0) NOT NULL,
+                                     "task_id" NVARCHAR2(64) NOT NULL,
+                                     "parent_task_id" NVARCHAR2(64) NOT NULL,
+                                     "task_name" NVARCHAR2(128) NOT NULL,
+                                     "status" NUMBER(4,0) NOT NULL,
+                                     "result" NCLOB,
+                                     "worker_address" NVARCHAR2(128) NOT NULL,
+                                     "deleted" NUMBER(4,0) NOT NULL,
+                                     "delete_time" NUMBER(20,0) NOT NULL,
+                                     "create_time" NUMBER(20,0),
+                                     "update_time" NUMBER(20,0)
 )
     LOGGING
 NOCOMPRESS
@@ -629,20 +629,20 @@ COMMIT;
 -- Table structure for job_slots
 -- ----------------------------
 CREATE TABLE "job_slots" (
-                                  "id" NUMBER(20,0) NOT NULL,
-                                  "server_id" NUMBER(20,0) NOT NULL,
-                                  "deleted" NUMBER(4,0) NOT NULL,
-                                  "delete_time" NUMBER(20,0) NOT NULL,
-                                  "create_time" NUMBER(20,0) NOT NULL,
-                                  "update_time" NUMBER(20,0) NOT NULL
+                             "id" NUMBER(20,0) NOT NULL,
+                             "server_id" NUMBER(20,0) NOT NULL,
+                             "deleted" NUMBER(4,0) NOT NULL,
+                             "delete_time" NUMBER(20,0) NOT NULL,
+                             "create_time" NUMBER(20,0) NOT NULL,
+                             "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -924,21 +924,21 @@ COMMIT;
 -- Table structure for namespace
 -- ----------------------------
 CREATE TABLE "namespace" (
-                                  "id" NUMBER(20,0) NOT NULL,
-                                  "name" NVARCHAR2(64) NOT NULL,
-                                  "uuid" NVARCHAR2(64) NOT NULL,
-                                  "deleted" NUMBER(4,0) NOT NULL,
-                                  "delete_time" NUMBER(20,0) NOT NULL,
-                                  "create_time" NUMBER(20,0) NOT NULL,
-                                  "update_time" NUMBER(20,0) NOT NULL
+                             "id" NUMBER(20,0) NOT NULL,
+                             "name" NVARCHAR2(64) NOT NULL,
+                             "uuid" NVARCHAR2(64) NOT NULL,
+                             "deleted" NUMBER(4,0) NOT NULL,
+                             "delete_time" NUMBER(20,0) NOT NULL,
+                             "create_time" NUMBER(20,0) NOT NULL,
+                             "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -966,11 +966,11 @@ COMMIT;
 -- Table structure for processor_log
 -- ----------------------------
 CREATE TABLE "processor_log" (
-                                      "id" NUMBER(20,0) NOT NULL,
-                                      "task_id" NVARCHAR2(128) NOT NULL,
-                                      "worker_address" NVARCHAR2(128) NOT NULL,
-                                      "content" NCLOB NOT NULL,
-                                      "time" NUMBER(20,0) NOT NULL
+                                 "id" NUMBER(20,0) NOT NULL,
+                                 "task_id" NVARCHAR2(128) NOT NULL,
+                                 "worker_address" NVARCHAR2(128) NOT NULL,
+                                 "content" NCLOB NOT NULL,
+                                 "time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -999,22 +999,22 @@ COMMIT;
 -- Table structure for server
 -- ----------------------------
 CREATE TABLE "server" (
-                               "id" NUMBER(20,0) NOT NULL,
-                               "ip" NVARCHAR2(32) NOT NULL,
-                               "akka_address" NVARCHAR2(32) NOT NULL,
-                               "status" NUMBER(4,0) NOT NULL,
-                               "deleted" NUMBER(4,0) NOT NULL,
-                               "delete_time" NUMBER(20,0) NOT NULL,
-                               "create_time" NUMBER(20,0) NOT NULL,
-                               "update_time" NUMBER(20,0) NOT NULL
+                          "id" NUMBER(20,0) NOT NULL,
+                          "ip" NVARCHAR2(32) NOT NULL,
+                          "akka_address" NVARCHAR2(32) NOT NULL,
+                          "status" NUMBER(4,0) NOT NULL,
+                          "deleted" NUMBER(4,0) NOT NULL,
+                          "delete_time" NUMBER(20,0) NOT NULL,
+                          "create_time" NUMBER(20,0) NOT NULL,
+                          "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -1043,14 +1043,14 @@ COMMIT;
 -- Table structure for server_reports
 -- ----------------------------
 CREATE TABLE "server_reports" (
-                                       "id" NUMBER(20,0) NOT NULL,
-                                       "server_id" NUMBER(20,0) NOT NULL,
-                                       "report_server_id" NUMBER(20,0) NOT NULL,
-                                       "status" NUMBER(4,0) NOT NULL,
-                                       "deleted" NUMBER(4,0) NOT NULL,
-                                       "delete_time" NUMBER(20,0) NOT NULL,
-                                       "create_time" NUMBER(20,0) NOT NULL,
-                                       "update_time" NUMBER(20,0) NOT NULL
+                                  "id" NUMBER(20,0) NOT NULL,
+                                  "server_id" NUMBER(20,0) NOT NULL,
+                                  "report_server_id" NUMBER(20,0) NOT NULL,
+                                  "status" NUMBER(4,0) NOT NULL,
+                                  "deleted" NUMBER(4,0) NOT NULL,
+                                  "delete_time" NUMBER(20,0) NOT NULL,
+                                  "create_time" NUMBER(20,0) NOT NULL,
+                                  "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -1082,33 +1082,33 @@ COMMIT;
 -- Table structure for system
 -- ----------------------------
 CREATE TABLE "system" (
-                               "id" NUMBER(11,0) NOT NULL,
-                               "version" NVARCHAR2(16) NOT NULL,
-                               "cluster_version" NUMBER(20,0) NOT NULL,
-                               "cluster_delay_version" NUMBER(20,0) NOT NULL,
-                               "worker_supervisor_slot" NUMBER(11,0) NOT NULL,
-                               "delay_zset_slot" NUMBER(11,0) NOT NULL,
-                               "delay_fail_zset_slot" NUMBER(11,0) NOT NULL,
-                               "delay_add_list_slot" NUMBER(11,0) NOT NULL,
-                               "delay_status_list_slot" NUMBER(11,0) NOT NULL,
-                               "delay_delete_list_slot" NUMBER(11,0) NOT NULL,
-                               "max_slot" NUMBER(11,0) NOT NULL,
-                               "job_keep_days" NUMBER(11,0) NOT NULL,
-                               "delay_keep_days" NUMBER(11,0) NOT NULL,
-                               "server_keep_days" NUMBER(11,0) NOT NULL,
-                               "worker_keep_days" NUMBER(11,0) NOT NULL,
-                               "deleted" NUMBER(4,0) NOT NULL,
-                               "delete_time" NUMBER(20,0) NOT NULL,
-                               "create_time" NUMBER(20,0) NOT NULL,
-                               "update_time" NUMBER(20,0) NOT NULL
+                          "id" NUMBER(11,0) NOT NULL,
+                          "version" NVARCHAR2(16) NOT NULL,
+                          "cluster_version" NUMBER(20,0) NOT NULL,
+                          "cluster_delay_version" NUMBER(20,0) NOT NULL,
+                          "worker_supervisor_slot" NUMBER(11,0) NOT NULL,
+                          "delay_zset_slot" NUMBER(11,0) NOT NULL,
+                          "delay_fail_zset_slot" NUMBER(11,0) NOT NULL,
+                          "delay_add_list_slot" NUMBER(11,0) NOT NULL,
+                          "delay_status_list_slot" NUMBER(11,0) NOT NULL,
+                          "delay_delete_list_slot" NUMBER(11,0) NOT NULL,
+                          "max_slot" NUMBER(11,0) NOT NULL,
+                          "job_keep_days" NUMBER(11,0) NOT NULL,
+                          "delay_keep_days" NUMBER(11,0) NOT NULL,
+                          "server_keep_days" NUMBER(11,0) NOT NULL,
+                          "worker_keep_days" NUMBER(11,0) NOT NULL,
+                          "deleted" NUMBER(4,0) NOT NULL,
+                          "delete_time" NUMBER(20,0) NOT NULL,
+                          "create_time" NUMBER(20,0) NOT NULL,
+                          "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
 PCTFREE 10
 INITRANS 1
 STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
+  INITIAL 65536
+  NEXT 1048576
   MINEXTENTS 1
   MAXEXTENTS 2147483645
   BUFFER_POOL DEFAULT
@@ -1148,19 +1148,19 @@ COMMIT;
 -- Table structure for task
 -- ----------------------------
 CREATE TABLE "task" (
-                             "id" NUMBER(20,0) NOT NULL,
-                             "job_id" NUMBER(20,0) NOT NULL,
-                             "instance_id" NUMBER(20,0) NOT NULL,
-                             "circle_id" NUMBER(20,0) NOT NULL,
-                             "task_id" NVARCHAR2(64) NOT NULL,
-                             "task_name" NVARCHAR2(128) NOT NULL,
-                             "task_parent_id" NVARCHAR2(64) NOT NULL,
-                             "status" NUMBER(4,0) NOT NULL,
-                             "worker_address" NVARCHAR2(64) NOT NULL,
-                             "result" NCLOB,
-                             "task_body" BLOB,
-                             "create_time" NUMBER(20,0) NOT NULL,
-                             "update_time" NUMBER(20,0) NOT NULL
+                        "id" NUMBER(20,0) NOT NULL,
+                        "job_id" NUMBER(20,0) NOT NULL,
+                        "instance_id" NUMBER(20,0) NOT NULL,
+                        "circle_id" NUMBER(20,0) NOT NULL,
+                        "task_id" NVARCHAR2(64) NOT NULL,
+                        "task_name" NVARCHAR2(128) NOT NULL,
+                        "task_parent_id" NVARCHAR2(64) NOT NULL,
+                        "status" NUMBER(4,0) NOT NULL,
+                        "worker_address" NVARCHAR2(64) NOT NULL,
+                        "result" NCLOB,
+                        "task_body" BLOB,
+                        "create_time" NUMBER(20,0) NOT NULL,
+                        "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -1197,22 +1197,22 @@ COMMIT;
 -- Table structure for worker
 -- ----------------------------
 CREATE TABLE "worker" (
-                               "id" NUMBER(20,0) NOT NULL,
-                               "app_id" NUMBER(20,0) NOT NULL,
-                               "namespace_id" NUMBER(20,0) NOT NULL,
-                               "app_name" NVARCHAR2(128) NOT NULL,
-                               "worker_key" NVARCHAR2(64) NOT NULL,
-                               "slots_id" NUMBER(20,0) NOT NULL,
-                               "address" NVARCHAR2(32) NOT NULL,
-                               "protocol_type" NVARCHAR2(8) NOT NULL,
-                               "version" NVARCHAR2(32) NOT NULL,
-                               "last_heartbeat_time" NUMBER(20,0) NOT NULL,
-                               "status" NUMBER(4,0) NOT NULL,
-                               "metric" NCLOB NOT NULL,
-                               "deleted" NUMBER(4,0) NOT NULL,
-                               "delete_time" NUMBER(20,0) NOT NULL,
-                               "create_time" NUMBER(20,0) NOT NULL,
-                               "update_time" NUMBER(20,0) NOT NULL
+                          "id" NUMBER(20,0) NOT NULL,
+                          "app_id" NUMBER(20,0) NOT NULL,
+                          "namespace_id" NUMBER(20,0) NOT NULL,
+                          "app_name" NVARCHAR2(128) NOT NULL,
+                          "worker_key" NVARCHAR2(64) NOT NULL,
+                          "slots_id" NUMBER(20,0) NOT NULL,
+                          "address" NVARCHAR2(32) NOT NULL,
+                          "protocol_type" NVARCHAR2(8) NOT NULL,
+                          "version" NVARCHAR2(32) NOT NULL,
+                          "last_heartbeat_time" NUMBER(20,0) NOT NULL,
+                          "status" NUMBER(4,0) NOT NULL,
+                          "metric" NCLOB NOT NULL,
+                          "deleted" NUMBER(4,0) NOT NULL,
+                          "delete_time" NUMBER(20,0) NOT NULL,
+                          "create_time" NUMBER(20,0) NOT NULL,
+                          "update_time" NUMBER(20,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -1272,33 +1272,9 @@ ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011367" CHECK ("create_time
 -- Indexes structure for table admin_permission
 -- ----------------------------
 CREATE INDEX "idx_path"
-    ON "admin_permission" ("path" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+    ON "admin_permission" ("path" ASC) ;
 CREATE INDEX "idx_pid"
-    ON "admin_permission" ("pid" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+    ON "admin_permission" ("pid" ASC) ;
 
 -- ----------------------------
 -- Primary Key structure for table admin_role
@@ -1322,17 +1298,7 @@ ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011356" CHECK ("create_time" IS N
 -- ----------------------------
 CREATE INDEX "idx_name_admin_role"
     ON "admin_role" ("name" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table admin_user
@@ -1358,35 +1324,11 @@ ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011348" CHECK ("create_time" IS N
 -- Indexes structure for table admin_user
 -- ----------------------------
 CREATE INDEX "idx_name"
-    ON "admin_user" ("username" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+    ON "admin_user" ("username" ASC)
+;
 CREATE UNIQUE INDEX "uni_token"
-    ON "admin_user" ("token" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+    ON "admin_user" ("token" ASC)
+;
 
 -- ----------------------------
 -- Primary Key structure for table app
@@ -1438,40 +1380,15 @@ ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011387" CHECK ("update_time" IS NOT NU
 -- ----------------------------
 CREATE INDEX "idx_namespace_id_app_id"
     ON "delay" ("namespace_id" ASC, "app_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_namespace_id_name_delay"
     ON "delay" ("namespace_id" ASC, "name" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_namespace_id_topic"
-    ON "delay" ("namespace_id" ASC, "topic" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay" ("namespace_id" ASC, "topic" ASC)
+;
 CREATE UNIQUE INDEX "udx_topic"
-    ON "delay" ("topic" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay" ("topic" ASC) ;
 
 -- ----------------------------
 -- Primary Key structure for table delay_instance
@@ -1504,64 +1421,21 @@ ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011405" CHECK ("create_time_h
 -- Indexes structure for table delay_instance
 -- ----------------------------
 CREATE INDEX "idx_create_time_day"
-    ON "delay_instance" ("create_time" ASC, "create_time_date" ASC) 
-  LOGGING
-  ONLINE
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay_instance" ("create_time" ASC, "create_time_date" ASC)
+;
 CREATE INDEX "idx_create_time_hour"
-    ON "delay_instance" ("create_time" ASC, "create_time_hour" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay_instance" ("create_time" ASC, "create_time_hour" ASC) ;
 CREATE INDEX "idx_delay_id"
-    ON "delay_instance" ("delay_id" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay_instance" ("delay_id" ASC)
+;
 CREATE INDEX "idx_nadc_delay_instance"
     ON "delay_instance" ("namespace_id" ASC, "app_id" ASC, "delay_id" ASC, "create_time" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_namespace_id_create_time"
-    ON "delay_instance" ("namespace_id" ASC, "create_time" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay_instance" ("namespace_id" ASC, "create_time" ASC) ;
 CREATE UNIQUE INDEX "udx_task_id"
-    ON "delay_instance" ("task_id" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "delay_instance" ("task_id" ASC)
+;
 
 -- ----------------------------
 -- Primary Key structure for table delay_worker
@@ -1617,24 +1491,10 @@ ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011436" CHECK ("update_time" IS NOT NULL
 -- ----------------------------
 CREATE INDEX "idx_namespace_id_app_id_name"
     ON "job" ("namespace_id" ASC, "app_id" ASC, "name" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_namespace_id_name_job"
-    ON "job" ("namespace_id" ASC, "name" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "job" ("namespace_id" ASC, "name" ASC)
+;
 
 -- ----------------------------
 -- Primary Key structure for table job_instance
@@ -1679,67 +1539,25 @@ ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011465" CHECK ("create_time" IS
 -- ----------------------------
 CREATE INDEX "idx_ch_instance"
     ON "job_instance" ("create_time" ASC, "create_time_hour" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_ct_day_job_instance"
     ON "job_instance" ("create_time" ASC, "create_time_date" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_execute_time_slots_id"
     ON "job_instance" ("execute_time" ASC, "slots_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_job_id_status"
     ON "job_instance" ("job_id" ASC, "status" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_last_report_time_slots_id"
     ON "job_instance" ("last_report_time" ASC, "slots_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_niajcc_job_instance"
     ON "job_instance" ("namespace_id" ASC, "app_id" ASC, "job_id" ASC, "create_time" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE INDEX "idx_nicc_job_instance"
     ON "job_instance" ("namespace_id" ASC, "create_time" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table job_instance_log
@@ -1762,13 +1580,7 @@ ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011472" CHECK ("update_time
 -- ----------------------------
 CREATE INDEX "idx_jict_job_instance_log"
     ON "job_instance_log" ("job_instance_id" ASC, "create_time" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table job_instance_task
@@ -1794,32 +1606,14 @@ ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011489" CHECK ("delete_tim
 -- Indexes structure for table job_instance_task
 -- ----------------------------
 CREATE INDEX "idx_jiic_job_instance_task"
-    ON "job_instance_task" ("job_instance_id" ASC, "create_time" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "job_instance_task" ("job_instance_id" ASC, "create_time" ASC)
+;
 CREATE INDEX "idx_parent_task_id"
-    ON "job_instance_task" ("parent_task_id" ASC) 
-  LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "job_instance_task" ("parent_task_id" ASC)
+;
 CREATE UNIQUE INDEX "udx_task_id_job_instance_task"
     ON "job_instance_task" ("task_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table job_slots
@@ -1841,17 +1635,7 @@ ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011478" CHECK ("update_time" IS NO
 -- ----------------------------
 CREATE INDEX "idx_server_id"
     ON "job_slots" ("server_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table namespace
@@ -1874,17 +1658,7 @@ ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011504" CHECK ("update_time" IS NO
 -- ----------------------------
 CREATE INDEX "idx_name_namespace"
     ON "namespace" ("name" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table processor_log
@@ -1904,27 +1678,11 @@ ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011509" CHECK ("time" IS NOT N
 -- Indexes structure for table processor_log
 -- ----------------------------
 CREATE INDEX "idx_task_id"
-    ON "processor_log" ("task_id" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "processor_log" ("task_id" ASC)
+;
 CREATE INDEX "idx_task_unique_id_time"
     ON "processor_log" ("time" ASC)
-    LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table server
@@ -1948,17 +1706,7 @@ ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011517" CHECK ("update_time" IS NOT N
 -- ----------------------------
 CREATE INDEX "udx_akka_address"
     ON "server" ("akka_address" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  INITIAL 65536 
-  NEXT 1048576 
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-);
+;
 
 -- ----------------------------
 -- Primary Key structure for table server_reports
@@ -1981,16 +1729,8 @@ ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011525" CHECK ("update_time" 
 -- Indexes structure for table server_reports
 -- ----------------------------
 CREATE INDEX "idx_create_time_server_id"
-    ON "server_reports" ("create_time" ASC, "server_id" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "server_reports" ("create_time" ASC, "server_id" ASC)
+;
 
 -- ----------------------------
 -- Primary Key structure for table system
@@ -2045,24 +1785,9 @@ ALTER TABLE "task" ADD CONSTRAINT "SYS_C0011536" CHECK ("update_time" IS NOT NUL
 -- ----------------------------
 CREATE INDEX "idx_instance_id_circle_id"
     ON "task" ("instance_id" ASC, "circle_id" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+;
 CREATE UNIQUE INDEX "udx_task_id_task"
-    ON "task" ("task_id" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "task" ("task_id" ASC) ;
 
 -- ----------------------------
 -- Primary Key structure for table worker
@@ -2093,22 +1818,198 @@ ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011571" CHECK ("update_time" IS NOT N
 -- Indexes structure for table worker
 -- ----------------------------
 CREATE INDEX "idx_nia_worker"
-    ON "worker" ("namespace_id" ASC, "app_id" ASC) 
-  LOGGING
-  ONLINE
-  NOSORT
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "worker" ("namespace_id" ASC, "app_id" ASC)
+;
 CREATE INDEX "udx_address"
-    ON "worker" ("address" ASC)
-    LOGGING
-  VISIBLE
-PCTFREE 10
-INITRANS 2
-STORAGE (
-  BUFFER_POOL DEFAULT
-);
+    ON "worker" ("address" ASC);
+
+
+-- Create sequence
+create sequence admin_permission_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence admin_role_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence admin_user_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence app_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence delay_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence delay_instance_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence delay_worker_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence job_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence job_instance_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence job_instance_log_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence job_instance_task_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence job_slots_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence namespace_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence processor_log_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence server_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence server_reports_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence system_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence task_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
+
+-- Create sequence
+create sequence worker_id
+    minvalue 1
+    maxvalue 999999999999
+    start with 1
+    increment by 1
+    cache 20
+cycle
+;
