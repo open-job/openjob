@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class JdbcDAOImpl implements LogDAO {
-    private final AbstractJdbcHikariClient jdbcHikariClient;
+    protected final AbstractJdbcHikariClient jdbcHikariClient;
 
     public JdbcDAOImpl(AbstractJdbcHikariClient jdbcHikariClient) {
         this.jdbcHikariClient = jdbcHikariClient;
@@ -100,7 +100,7 @@ public class JdbcDAOImpl implements LogDAO {
         }
     }
 
-    private String getContent(List<ProcessorLogFieldDTO> fields) {
+    protected String getContent(List<ProcessorLogFieldDTO> fields) {
         Map<String, String> fieldMap = fields.stream()
                 .collect(Collectors.toMap(ProcessorLogFieldDTO::getName, ProcessorLogFieldDTO::getValue));
 
@@ -113,7 +113,7 @@ public class JdbcDAOImpl implements LogDAO {
         }
     }
 
-    private ProcessorLogDTO convert(ResultSet rs) throws SQLException {
+    protected ProcessorLogDTO convert(ResultSet rs) throws SQLException {
         ProcessorLogDTO taskLog = new ProcessorLogDTO();
         taskLog.setTaskId(rs.getString("task_id"));
         taskLog.setWorkerAddress(rs.getString("worker_address"));
