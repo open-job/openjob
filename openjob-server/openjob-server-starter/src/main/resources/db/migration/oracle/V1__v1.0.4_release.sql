@@ -2,7 +2,7 @@
 -- Table structure for admin_permission
 -- ----------------------------
 CREATE TABLE "admin_permission" (
-                                    "id" NUMBER(20,0) NOT NULL,
+                                    "id" NUMBER(20,0) NOT NULL ,
                                     "pid" NUMBER(20,0),
                                     "type" NUMBER(4,0),
                                     "name" NVARCHAR2(48),
@@ -10,26 +10,11 @@ CREATE TABLE "admin_permission" (
                                     "meta" CLOB,
                                     "hidden" NUMBER(4,0),
                                     "sort" NUMBER(11,0),
-                                    "deleted" NUMBER(4,0) NOT NULL,
-                                    "delete_time" NUMBER(20,0) NOT NULL,
-                                    "update_time" NUMBER(20,0) NOT NULL,
-                                    "create_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                                    "deleted" NUMBER(4,0) ,
+                                    "delete_time" NUMBER(20,0) ,
+                                    "update_time" NUMBER(20,0) ,
+                                    "create_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "admin_permission"."id" IS 'PK';
 COMMENT ON COLUMN "admin_permission"."pid" IS 'Parent ID';
 COMMENT ON COLUMN "admin_permission"."type" IS 'Type. 1=menu 2=perm';
@@ -74,7 +59,7 @@ COMMIT;
 -- Table structure for admin_role
 -- ----------------------------
 CREATE TABLE "admin_role" (
-                              "id" NUMBER(20,0) NOT NULL,
+                              "id" NUMBER(20,0) NOT NULL ,
                               "name" NVARCHAR2(48),
                               "desc" NVARCHAR2(128),
                               "admin" NUMBER(4,0),
@@ -82,25 +67,11 @@ CREATE TABLE "admin_role" (
                               "perm_ids" CLOB,
                               "namespace_ids" CLOB,
                               "app_ids" CLOB,
-                              "deleted" NUMBER(4,0) NOT NULL,
-                              "delete_time" NUMBER(20,0) NOT NULL,
-                              "update_time" NUMBER(20,0) NOT NULL,
-                              "create_time" NUMBER(20,0) NOT NULL
+                              "deleted" NUMBER(4,0) ,
+                              "delete_time" NUMBER(20,0) ,
+                              "update_time" NUMBER(20,0) ,
+                              "create_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "admin_role"."id" IS 'PK';
 COMMENT ON COLUMN "admin_role"."name" IS 'role name';
@@ -127,7 +98,7 @@ COMMIT;
 -- Table structure for admin_user
 -- ----------------------------
 CREATE TABLE "admin_user" (
-                              "id" NUMBER(20,0) NOT NULL,
+                              "id" NUMBER(20,0) NOT NULL ,
                               "username" NVARCHAR2(48),
                               "nickname" NVARCHAR2(64),
                               "passwd" NVARCHAR2(128),
@@ -135,26 +106,11 @@ CREATE TABLE "admin_user" (
                               "session_expire_at" NUMBER(20,0),
                               "token" NVARCHAR2(64),
                               "role_ids" CLOB,
-                              "deleted" NUMBER(4,0) NOT NULL,
-                              "delete_time" NUMBER(20,0) NOT NULL,
-                              "update_time" NUMBER(20,0) NOT NULL,
-                              "create_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                              "deleted" NUMBER(4,0) ,
+                              "delete_time" NUMBER(20,0) ,
+                              "update_time" NUMBER(20,0) ,
+                              "create_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "admin_user"."id" IS 'PK';
 COMMENT ON COLUMN "admin_user"."username" IS 'User name';
 COMMENT ON COLUMN "admin_user"."nickname" IS 'Nickname';
@@ -180,30 +136,15 @@ COMMIT;
 -- Table structure for app
 -- ----------------------------
 CREATE TABLE "app" (
-                       "id" NUMBER(20,0) NOT NULL,
+                       "id" NUMBER(20,0) NOT NULL ,
                        "namespace_id" NUMBER(20,0),
                        "name" NVARCHAR2(64),
                        "desc" NVARCHAR2(256),
-                       "deleted" NUMBER(4,0) NOT NULL,
-                       "delete_time" NUMBER(20,0) NOT NULL,
-                       "create_time" NUMBER(20,0) NOT NULL,
-                       "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                       "deleted" NUMBER(4,0) ,
+                       "delete_time" NUMBER(20,0) ,
+                       "create_time" NUMBER(20,0) ,
+                       "update_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "app"."id" IS 'PK';
 COMMENT ON COLUMN "app"."namespace_id" IS 'Namespace id';
 COMMENT ON COLUMN "app"."name" IS 'Name';
@@ -224,7 +165,7 @@ COMMIT;
 -- Table structure for delay
 -- ----------------------------
 CREATE TABLE "delay" (
-                         "id" NUMBER(20,0) NOT NULL,
+                         "id" NUMBER(20,0) NOT NULL ,
                          "pid" NUMBER(20,0),
                          "cid" NUMBER(20,0),
                          "namespace_id" NUMBER(20,0),
@@ -240,22 +181,11 @@ CREATE TABLE "delay" (
                          "topic" NVARCHAR2(128),
                          "fail_topic_enable" NUMBER(4,0),
                          "fail_topic_concurrency" NUMBER(11,0),
-                         "deleted" NUMBER(4,0) NOT NULL,
-                         "delete_time" NUMBER(20,0) NOT NULL,
-                         "create_time" NUMBER(20,0) NOT NULL,
-                         "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                         "deleted" NUMBER(4,0) ,
+                         "delete_time" NUMBER(20,0) ,
+                         "create_time" NUMBER(20,0) ,
+                         "update_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "delay"."id" IS 'PK';
 COMMENT ON COLUMN "delay"."pid" IS 'Parent id';
 COMMENT ON COLUMN "delay"."cid" IS 'Child id';
@@ -287,7 +217,7 @@ COMMIT;
 -- Table structure for delay_instance
 -- ----------------------------
 CREATE TABLE "delay_instance" (
-                                  "id" NUMBER(20,0) NOT NULL,
+                                  "id" NUMBER(20,0) NOT NULL ,
                                   "app_id" NUMBER(20,0),
                                   "namespace_id" NUMBER(20,0),
                                   "task_id" NVARCHAR2(64),
@@ -299,24 +229,13 @@ CREATE TABLE "delay_instance" (
                                   "execute_time" NUMBER(20,0),
                                   "complete_time" NUMBER(20,0),
                                   "worker_address" NVARCHAR2(32),
-                                  "deleted" NUMBER(4,0) NOT NULL,
-                                  "delete_time" NUMBER(20,0) NOT NULL,
-                                  "create_time" NUMBER(20,0) NOT NULL,
-                                  "update_time" NUMBER(20,0) NOT NULL,
+                                  "deleted" NUMBER(4,0) ,
+                                  "delete_time" NUMBER(20,0) ,
+                                  "create_time" NUMBER(20,0) ,
+                                  "update_time" NUMBER(20,0) ,
                                   "create_time_date" NUMBER(11,0),
                                   "create_time_hour" NUMBER(11,0)
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+);
 COMMENT ON COLUMN "delay_instance"."id" IS 'PK';
 COMMENT ON COLUMN "delay_instance"."app_id" IS 'Application';
 COMMENT ON COLUMN "delay_instance"."namespace_id" IS 'Namespace';
@@ -346,7 +265,7 @@ COMMIT;
 -- Table structure for job
 -- ----------------------------
 CREATE TABLE "job" (
-                       "id" NUMBER(20,0) NOT NULL,
+                       "id" NUMBER(20,0) NOT NULL ,
                        "namespace_id" NUMBER(20,0),
                        "app_id" NUMBER(20,0),
                        "workflow_id" NUMBER(20,0),
@@ -368,22 +287,11 @@ CREATE TABLE "job" (
                        "status" NUMBER(4,0),
                        "next_execute_time" NUMBER(20,0),
                        "slots_id" NUMBER(11,0),
-                       "deleted" NUMBER(4,0) NOT NULL,
-                       "delete_time" NUMBER(20,0) NOT NULL,
-                       "create_time" NUMBER(20,0) NOT NULL,
-                       "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                       "deleted" NUMBER(4,0) ,
+                       "delete_time" NUMBER(20,0) ,
+                       "create_time" NUMBER(20,0) ,
+                       "update_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "job"."id" IS 'PK';
 COMMENT ON COLUMN "job"."namespace_id" IS 'Namespace';
 COMMENT ON COLUMN "job"."app_id" IS 'Application';
@@ -421,7 +329,7 @@ COMMIT;
 -- Table structure for job_instance
 -- ----------------------------
 CREATE TABLE "job_instance" (
-                                "id" NUMBER(20,0) NOT NULL,
+                                "id" NUMBER(20,0) NOT NULL ,
                                 "job_id" NUMBER(20,0),
                                 "params" NCLOB,
                                 "params_type" NVARCHAR2(16),
@@ -445,24 +353,13 @@ CREATE TABLE "job_instance" (
                                 "concurrency" NUMBER(11,0),
                                 "worker_address" NVARCHAR2(32),
                                 "execute_strategy" NUMBER(4,0),
-                                "deleted" NUMBER(4,0) NOT NULL,
-                                "delete_time" NUMBER(20,0) NOT NULL,
-                                "update_time" NUMBER(20,0) NOT NULL,
+                                "deleted" NUMBER(4,0) ,
+                                "delete_time" NUMBER(20,0) ,
+                                "update_time" NUMBER(20,0) ,
                                 "create_time_date" NUMBER(11,0),
                                 "create_time_hour" NUMBER(11,0),
-                                "create_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                                "create_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "job_instance"."id" IS 'PK';
 COMMENT ON COLUMN "job_instance"."job_id" IS 'Job id';
 COMMENT ON COLUMN "job_instance"."params" IS 'Params';
@@ -504,26 +401,15 @@ COMMIT;
 -- Table structure for job_instance_log
 -- ----------------------------
 CREATE TABLE "job_instance_log" (
-                                    "id" NUMBER(20,0) NOT NULL,
+                                    "id" NUMBER(20,0) NOT NULL ,
                                     "job_id" NUMBER(20,0),
                                     "job_instance_id" NUMBER(20,0),
                                     "message" NCLOB,
-                                    "deleted" NUMBER(4,0) NOT NULL,
-                                    "delete_time" NUMBER(20,0) NOT NULL,
-                                    "create_time" NUMBER(20,0) NOT NULL,
-                                    "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                                    "deleted" NUMBER(4,0) ,
+                                    "delete_time" NUMBER(20,0) ,
+                                    "create_time" NUMBER(20,0) ,
+                                    "update_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "job_instance_log"."id" IS 'PK';
 COMMENT ON COLUMN "job_instance_log"."job_id" IS 'Job id';
 COMMENT ON COLUMN "job_instance_log"."job_instance_id" IS 'Job instance id';
@@ -543,7 +429,7 @@ COMMIT;
 -- Table structure for job_instance_task
 -- ----------------------------
 CREATE TABLE "job_instance_task" (
-                                     "id" NUMBER(11,0) NOT NULL,
+                                     "id" NUMBER(11,0) NOT NULL ,
                                      "job_id" NUMBER(20,0),
                                      "job_instance_id" NUMBER(20,0),
                                      "circle_id" NUMBER(20,0),
@@ -553,22 +439,11 @@ CREATE TABLE "job_instance_task" (
                                      "status" NUMBER(4,0),
                                      "result" NCLOB,
                                      "worker_address" NVARCHAR2(128),
-                                     "deleted" NUMBER(4,0) NOT NULL,
-                                     "delete_time" NUMBER(20,0) NOT NULL,
+                                     "deleted" NUMBER(4,0) ,
+                                     "delete_time" NUMBER(20,0) ,
                                      "create_time" NUMBER(20,0),
                                      "update_time" NUMBER(20,0)
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+);
 COMMENT ON COLUMN "job_instance_task"."id" IS 'PK';
 COMMENT ON COLUMN "job_instance_task"."job_id" IS 'Job id';
 COMMENT ON COLUMN "job_instance_task"."job_instance_id" IS 'Instance id';
@@ -594,28 +469,13 @@ COMMIT;
 -- Table structure for job_slots
 -- ----------------------------
 CREATE TABLE "job_slots" (
-                             "id" NUMBER(20,0) NOT NULL,
+                             "id" NUMBER(20,0) NOT NULL ,
                              "server_id" NUMBER(20,0),
-                             "deleted" NUMBER(4,0) NOT NULL,
-                             "delete_time" NUMBER(20,0) NOT NULL,
-                             "create_time" NUMBER(20,0) NOT NULL,
-                             "update_time" NUMBER(20,0) NOT NULL
-)
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
-;
+                             "deleted" NUMBER(4,0) ,
+                             "delete_time" NUMBER(20,0) ,
+                             "create_time" NUMBER(20,0) ,
+                             "update_time" NUMBER(20,0)
+);
 COMMENT ON COLUMN "job_slots"."id" IS 'PK';
 COMMENT ON COLUMN "job_slots"."server_id" IS 'Server id';
 COMMENT ON COLUMN "job_slots"."deleted" IS 'Delete status. 1=yes 2=no';
@@ -889,28 +749,14 @@ COMMIT;
 -- Table structure for namespace
 -- ----------------------------
 CREATE TABLE "namespace" (
-                             "id" NUMBER(20,0) NOT NULL,
+                             "id" NUMBER(20,0) NOT NULL ,
                              "name" NVARCHAR2(64),
                              "uuid" NVARCHAR2(64),
-                             "deleted" NUMBER(4,0) NOT NULL,
-                             "delete_time" NUMBER(20,0) NOT NULL,
-                             "create_time" NUMBER(20,0) NOT NULL,
-                             "update_time" NUMBER(20,0) NOT NULL
+                             "deleted" NUMBER(4,0) ,
+                             "delete_time" NUMBER(20,0) ,
+                             "create_time" NUMBER(20,0) ,
+                             "update_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "namespace"."id" IS 'PK';
 COMMENT ON COLUMN "namespace"."name" IS 'Name';
@@ -931,22 +777,12 @@ COMMIT;
 -- Table structure for processor_log
 -- ----------------------------
 CREATE TABLE "processor_log" (
-                                 "id" NUMBER(20,0) NOT NULL,
+                                 "id" NUMBER(20,0) NOT NULL ,
                                  "task_id" NVARCHAR2(128),
                                  "worker_address" NVARCHAR2(128),
                                  "content" NCLOB,
                                  "time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "processor_log"."id" IS 'PK';
 COMMENT ON COLUMN "processor_log"."task_id" IS 'Task id';
@@ -964,29 +800,15 @@ COMMIT;
 -- Table structure for server
 -- ----------------------------
 CREATE TABLE "server" (
-                          "id" NUMBER(20,0) NOT NULL,
+                          "id" NUMBER(20,0)NOT NULL ,
                           "ip" NVARCHAR2(32),
                           "akka_address" NVARCHAR2(32),
                           "status" NUMBER(4,0),
-                          "deleted" NUMBER(4,0) NOT NULL,
-                          "delete_time" NUMBER(20,0) NOT NULL,
-                          "create_time" NUMBER(20,0) NOT NULL,
-                          "update_time" NUMBER(20,0) NOT NULL
+                          "deleted" NUMBER(4,0) ,
+                          "delete_time" NUMBER(20,0) ,
+                          "create_time" NUMBER(20,0) ,
+                          "update_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "server"."id" IS 'ID';
 COMMENT ON COLUMN "server"."ip" IS 'Server ip';
@@ -1007,25 +829,15 @@ COMMIT;
 -- Table structure for server_reports
 -- ----------------------------
 CREATE TABLE "server_reports" (
-                                  "id" NUMBER(20,0) NOT NULL,
+                                  "id" NUMBER(20,0) NOT NULL ,
                                   "server_id" NUMBER(20,0),
                                   "report_server_id" NUMBER(20,0),
                                   "status" NUMBER(4,0),
-                                  "deleted" NUMBER(4,0) NOT NULL,
-                                  "delete_time" NUMBER(20,0) NOT NULL,
-                                  "create_time" NUMBER(20,0) NOT NULL,
-                                  "update_time" NUMBER(20,0) NOT NULL
+                                  "deleted" NUMBER(4,0) ,
+                                  "delete_time" NUMBER(20,0) ,
+                                  "create_time" NUMBER(20,0) ,
+                                  "update_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "server_reports"."id" IS 'PK';
 COMMENT ON COLUMN "server_reports"."server_id" IS 'Server id';
@@ -1046,7 +858,7 @@ COMMIT;
 -- Table structure for system
 -- ----------------------------
 CREATE TABLE "system" (
-                          "id" NUMBER(11,0) NOT NULL,
+                          "id" NUMBER(11,0) NOT NULL ,
                           "version" NVARCHAR2(16),
                           "cluster_version" NUMBER(20,0),
                           "cluster_delay_version" NUMBER(20,0),
@@ -1060,26 +872,12 @@ CREATE TABLE "system" (
                           "job_keep_days" NUMBER(11,0),
                           "delay_keep_days" NUMBER(11,0),
                           "server_keep_days" NUMBER(11,0),
-                          "worker_keep_days" NUMBER(11,0) NOT NULL,
-                          "deleted" NUMBER(4,0) NOT NULL,
-                          "delete_time" NUMBER(20,0) NOT NULL,
-                          "create_time" NUMBER(20,0) NOT NULL,
-                          "update_time" NUMBER(20,0) NOT NULL
+                          "worker_keep_days" NUMBER(11,0) ,
+                          "deleted" NUMBER(4,0) ,
+                          "delete_time" NUMBER(20,0) ,
+                          "create_time" NUMBER(20,0) ,
+                          "update_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  INITIAL 65536
-  NEXT 1048576
-  MINEXTENTS 1
-  MAXEXTENTS 2147483645
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "system"."id" IS 'PK';
 COMMENT ON COLUMN "system"."version" IS 'Version';
@@ -1112,7 +910,7 @@ COMMIT;
 -- Table structure for worker
 -- ----------------------------
 CREATE TABLE "worker" (
-                          "id" NUMBER(20,0) NOT NULL,
+                          "id" NUMBER(20,0) NOT NULL ,
                           "app_id" NUMBER(20,0),
                           "namespace_id" NUMBER(20,0),
                           "app_name" NVARCHAR2(128),
@@ -1124,21 +922,11 @@ CREATE TABLE "worker" (
                           "last_heartbeat_time" NUMBER(20,0),
                           "status" NUMBER(4,0),
                           "metric" NCLOB,
-                          "deleted" NUMBER(4,0) NOT NULL,
-                          "delete_time" NUMBER(20,0) NOT NULL,
-                          "create_time" NUMBER(20,0) NOT NULL,
-                          "update_time" NUMBER(20,0) NOT NULL
+                          "deleted" NUMBER(4,0) ,
+                          "delete_time" NUMBER(20,0) ,
+                          "create_time" NUMBER(20,0) ,
+                          "update_time" NUMBER(20,0)
 )
-    LOGGING
-NOCOMPRESS
-PCTFREE 10
-INITRANS 1
-STORAGE (
-  BUFFER_POOL DEFAULT
-)
-PARALLEL 1
-NOCACHE
-DISABLE ROW MOVEMENT
 ;
 COMMENT ON COLUMN "worker"."id" IS 'PK';
 COMMENT ON COLUMN "worker"."app_id" IS 'Application id';
@@ -1169,21 +957,6 @@ COMMIT;
 ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011575" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Checks structure for table admin_permission
--- ----------------------------
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011357" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011358" CHECK ("pid" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011359" CHECK ("type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011360" CHECK ("name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011361" CHECK ("path" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011362" CHECK ("hidden" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011363" CHECK ("sort" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011364" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011365" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011366" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_permission" ADD CONSTRAINT "SYS_C0011367" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
 -- Indexes structure for table admin_permission
 -- ----------------------------
 CREATE INDEX "idx_path"
@@ -1196,17 +969,6 @@ CREATE INDEX "idx_pid"
 -- ----------------------------
 ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011574" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table admin_role
--- ----------------------------
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011349" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011350" CHECK ("name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011351" CHECK ("desc" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011352" CHECK ("admin" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011353" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011354" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011355" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_role" ADD CONSTRAINT "SYS_C0011356" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table admin_role
@@ -1220,20 +982,6 @@ CREATE INDEX "idx_name_admin_role"
 -- ----------------------------
 ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011572" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table admin_user
--- ----------------------------
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011338" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011339" CHECK ("username" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011340" CHECK ("nickname" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011341" CHECK ("passwd" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011342" CHECK ("session_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011343" CHECK ("session_expire_at" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011344" CHECK ("token" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011345" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011346" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011347" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "admin_user" ADD CONSTRAINT "SYS_C0011348" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table admin_user
@@ -1250,45 +998,11 @@ CREATE UNIQUE INDEX "udx_token"
 -- ----------------------------
 ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011573" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table app
--- ----------------------------
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011331" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011332" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011333" CHECK ("desc" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011334" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011335" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011336" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "app" ADD CONSTRAINT "SYS_C0011337" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Primary Key structure for table delay
 -- ----------------------------
 ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011576" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table delay
--- ----------------------------
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011368" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011369" CHECK ("pid" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011370" CHECK ("cid" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011371" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011372" CHECK ("app_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011373" CHECK ("name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011374" CHECK ("description" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011375" CHECK ("processor_info" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011376" CHECK ("fail_retry_times" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011377" CHECK ("fail_retry_interval" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011378" CHECK ("execute_timeout" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011379" CHECK ("concurrency" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011380" CHECK ("blocking_size" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011381" CHECK ("topic" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011382" CHECK ("fail_topic_enable" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011383" CHECK ("fail_topic_concurrency" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011384" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011385" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011386" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay" ADD CONSTRAINT "SYS_C0011387" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table delay
@@ -1310,27 +1024,6 @@ CREATE UNIQUE INDEX "udx_topic"
 -- ----------------------------
 ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011577" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table delay_instance
--- ----------------------------
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011388" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011389" CHECK ("app_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011390" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011391" CHECK ("task_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011392" CHECK ("topic" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011393" CHECK ("delay_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011394" CHECK ("delay_params" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011395" CHECK ("delay_extra" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011396" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011397" CHECK ("execute_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011398" CHECK ("complete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011399" CHECK ("worker_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011400" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011401" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011402" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011403" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011404" CHECK ("create_time_date" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "delay_instance" ADD CONSTRAINT "SYS_C0011405" CHECK ("create_time_hour" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table delay_instance
@@ -1358,35 +1051,6 @@ CREATE UNIQUE INDEX "udx_task_id"
 ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011579" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Checks structure for table job
--- ----------------------------
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011412" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011413" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011414" CHECK ("app_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011415" CHECK ("workflow_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011416" CHECK ("name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011417" CHECK ("description" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011418" CHECK ("processor_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011419" CHECK ("processor_info" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011420" CHECK ("execute_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011421" CHECK ("params" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011422" CHECK ("params_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011423" CHECK ("extend_params" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011424" CHECK ("fail_retry_times" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011425" CHECK ("fail_retry_interval" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011426" CHECK ("concurrency" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011427" CHECK ("time_expression_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011428" CHECK ("time_expression" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011429" CHECK ("execute_strategy" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011430" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011431" CHECK ("next_execute_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011432" CHECK ("slots_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011433" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011434" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011435" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job" ADD CONSTRAINT "SYS_C0011436" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
 -- Indexes structure for table job
 -- ----------------------------
 CREATE INDEX "idx_namespace_id_app_id_name"
@@ -1400,39 +1064,6 @@ CREATE INDEX "idx_namespace_id_name_job"
 -- Primary Key structure for table job_instance
 -- ----------------------------
 ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011580" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table job_instance
--- ----------------------------
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011437" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011438" CHECK ("job_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011439" CHECK ("params" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011440" CHECK ("params_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011441" CHECK ("extend_params" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011442" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011443" CHECK ("slots_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011444" CHECK ("workflow_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011445" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011446" CHECK ("app_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011447" CHECK ("execute_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011448" CHECK ("complete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011449" CHECK ("last_report_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011450" CHECK ("processor_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011451" CHECK ("processor_info" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011452" CHECK ("execute_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011453" CHECK ("fail_retry_times" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011454" CHECK ("fail_retry_interval" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011455" CHECK ("time_expression_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011456" CHECK ("time_expression" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011457" CHECK ("concurrency" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011458" CHECK ("worker_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011459" CHECK ("execute_strategy" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011460" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011461" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011462" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011463" CHECK ("create_time_date" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011464" CHECK ("create_time_hour" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance" ADD CONSTRAINT "SYS_C0011465" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table job_instance
@@ -1465,17 +1096,6 @@ CREATE INDEX "idx_nicc_job_instance"
 ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011581" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Checks structure for table job_instance_log
--- ----------------------------
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011466" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011467" CHECK ("job_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011468" CHECK ("job_instance_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011469" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011470" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011471" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_log" ADD CONSTRAINT "SYS_C0011472" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
 -- Indexes structure for table job_instance_log
 -- ----------------------------
 CREATE INDEX "idx_jict_job_instance_log"
@@ -1486,21 +1106,6 @@ CREATE INDEX "idx_jict_job_instance_log"
 -- Primary Key structure for table job_instance_task
 -- ----------------------------
 ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011582" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table job_instance_task
--- ----------------------------
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011479" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011480" CHECK ("job_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011481" CHECK ("job_instance_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011482" CHECK ("circle_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011483" CHECK ("task_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011484" CHECK ("parent_task_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011485" CHECK ("task_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011486" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011487" CHECK ("worker_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011488" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_instance_task" ADD CONSTRAINT "SYS_C0011489" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table job_instance_task
@@ -1520,15 +1125,6 @@ CREATE UNIQUE INDEX "udx_task_id_job_instance_task"
 -- ----------------------------
 ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011583" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table job_slots
--- ----------------------------
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011473" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011474" CHECK ("server_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011475" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011476" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011477" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "job_slots" ADD CONSTRAINT "SYS_C0011478" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table job_slots
@@ -1542,16 +1138,6 @@ CREATE INDEX "idx_server_id"
 -- ----------------------------
 ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011585" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table namespace
--- ----------------------------
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011498" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011499" CHECK ("name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011500" CHECK ("uuid" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011501" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011502" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011503" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "namespace" ADD CONSTRAINT "SYS_C0011504" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table namespace
@@ -1564,15 +1150,6 @@ CREATE INDEX "idx_name_namespace"
 -- Primary Key structure for table processor_log
 -- ----------------------------
 ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011586" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table processor_log
--- ----------------------------
-ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011505" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011506" CHECK ("task_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011507" CHECK ("worker_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011508" CHECK ("content" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "processor_log" ADD CONSTRAINT "SYS_C0011509" CHECK ("time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table processor_log
@@ -1590,18 +1167,6 @@ CREATE INDEX "idx_task_unique_id_time"
 ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011587" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Checks structure for table server
--- ----------------------------
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011510" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011511" CHECK ("ip" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011512" CHECK ("akka_address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011513" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011514" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011515" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011516" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server" ADD CONSTRAINT "SYS_C0011517" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
 -- Indexes structure for table server
 -- ----------------------------
 CREATE UNIQUE INDEX "udx_akka_address"
@@ -1613,17 +1178,6 @@ CREATE UNIQUE INDEX "udx_akka_address"
 -- ----------------------------
 ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011588" PRIMARY KEY ("id");
 
--- ----------------------------
--- Checks structure for table server_reports
--- ----------------------------
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011518" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011519" CHECK ("server_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011520" CHECK ("report_server_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011521" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011522" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011523" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011524" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "server_reports" ADD CONSTRAINT "SYS_C0011525" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table server_reports
@@ -1638,52 +1192,9 @@ CREATE INDEX "idx_create_time_server_id"
 ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011589" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Checks structure for table system
--- ----------------------------
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011537" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011538" CHECK ("version" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011539" CHECK ("cluster_version" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011540" CHECK ("cluster_delay_version" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011541" CHECK ("worker_supervisor_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011542" CHECK ("delay_zset_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011543" CHECK ("delay_fail_zset_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011544" CHECK ("delay_add_list_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011545" CHECK ("delay_status_list_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011546" CHECK ("delay_delete_list_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011547" CHECK ("max_slot" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011548" CHECK ("job_keep_days" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011549" CHECK ("delay_keep_days" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011550" CHECK ("server_keep_days" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011551" CHECK ("worker_keep_days" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011552" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011553" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011554" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "system" ADD CONSTRAINT "SYS_C0011555" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-
--- ----------------------------
 -- Primary Key structure for table worker
 -- ----------------------------
 ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011591" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table worker
--- ----------------------------
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011556" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011557" CHECK ("app_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011558" CHECK ("namespace_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011559" CHECK ("app_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011560" CHECK ("worker_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011561" CHECK ("slots_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011562" CHECK ("address" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011563" CHECK ("protocol_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011564" CHECK ("version" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011565" CHECK ("last_heartbeat_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011566" CHECK ("status" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011567" CHECK ("metric" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011568" CHECK ("deleted" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011569" CHECK ("delete_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011570" CHECK ("create_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
-ALTER TABLE "worker" ADD CONSTRAINT "SYS_C0011571" CHECK ("update_time" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table worker
