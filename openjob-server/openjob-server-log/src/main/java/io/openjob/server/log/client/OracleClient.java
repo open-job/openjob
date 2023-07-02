@@ -3,6 +3,7 @@ package io.openjob.server.log.client;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.constant.LogJdbcDriverConstant;
 
+import java.sql.SQLException;
 import java.util.Objects;
 
 /**
@@ -14,6 +15,10 @@ public class OracleClient extends AbstractJdbcHikariClient {
 
     public OracleClient(LogProperties.OracleProperties oracleProperties) {
         this.oracleProperties = oracleProperties;
+    }
+
+    @Override
+    public void initTable() throws SQLException {
     }
 
     @Override

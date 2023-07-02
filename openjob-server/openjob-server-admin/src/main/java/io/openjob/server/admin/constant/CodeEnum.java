@@ -19,6 +19,10 @@ import lombok.Getter;
 public enum CodeEnum implements CodeExceptionAssert {
     // Code list
     USER_EXIST(100, "User is exist!"),
+    USER_NOT_FOUND(101, "User not found"),
+    USER_DELETED(102, "User deleted"),
+    USER_PWD_INVALID(103, "User password invalid"),
+    USER_ROLE_EMPTY(104, "User role empty"),
 
     // Namespace
     NAMESPACE_DELETE_INVALID(200, "Namespace can not be delete!"),

@@ -4,6 +4,7 @@ import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
 import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
@@ -81,7 +82,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         }
 
         if (!HmacUtil.verifyPasswd(user.getPasswd(), passwd, userProperties.getPasswdSalt())) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
+            CodeEnum.USER_PWD_INVALID.throwException();
         }
 
         if (CollectionUtils.isEmpty(user.getRoleIdsByJson())) {
