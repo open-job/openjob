@@ -23,12 +23,12 @@ public class OracleDAOImpl extends JdbcDAOImpl {
 
     @Override
     public void batchAdd(List<ProcessorLogDTO> processorLogList) throws Exception {
-        String sql = "INSERT INTO `processor_log` ("
-                + "`id`,"
-                + "`task_id`,"
-                + "`worker_address`,"
-                + "`content`,"
-                + "`time`"
+        String sql = "INSERT INTO \"processor_log\" ("
+                + "\"id\","
+                + "\"task_id\","
+                + "\"worker_address\","
+                + "\"content\","
+                + "\"time\""
                 + ") VALUES (?,?, ?, ?, ?)";
 
         PreparedStatement ps = null;
@@ -52,6 +52,16 @@ public class OracleDAOImpl extends JdbcDAOImpl {
                 ps.close();
             }
         }
+    }
+
+    @Override
+    protected String getQueryByScrollSql() {
+        return "SELECT * FROM \"processor_log\" WHERE \"task_id\"=? AND \"time\" > ? AND rownum< ? ORDER BY \"time\" ASC";
+    }
+
+    @Override
+    protected String getDeleteSql() {
+        return "delete from \"processor_log\" where \"time\" < ?";
     }
 
     public Long getInsertId() throws Exception {
