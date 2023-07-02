@@ -23,6 +23,7 @@ public enum CodeEnum implements CodeExceptionAssert {
     USER_DELETED(102, "User deleted"),
     USER_PWD_INVALID(103, "User password invalid"),
     USER_ROLE_EMPTY(104, "User role empty"),
+    USER_VERIFY_CODE_INVALID(105, "Verification code invalid"),
 
     // Namespace
     NAMESPACE_DELETE_INVALID(200, "Namespace can not be delete!"),

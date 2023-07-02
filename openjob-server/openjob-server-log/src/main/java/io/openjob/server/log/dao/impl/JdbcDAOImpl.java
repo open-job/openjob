@@ -34,14 +34,8 @@ public class JdbcDAOImpl implements LogDAO {
 
     @Override
     public void batchAdd(List<ProcessorLogDTO> processorLogList) throws Exception {
-        String sql = "INSERT INTO `processor_log` ("
-                + "`task_id`,"
-                + "`worker_address`,"
-                + "`content`,"
-                + "`time`"
-                + ") VALUES (?, ?, ?, ?)";
-
         PreparedStatement ps = null;
+        String sql = this.getBatchAddSql();
         try (Connection connection = this.jdbcHikariClient.getConnection()) {
             ps = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
@@ -66,7 +60,7 @@ public class JdbcDAOImpl implements LogDAO {
     @Override
     public List<ProcessorLogDTO> queryByScroll(String taskUniqueId, Long time, Integer size) throws Exception {
         ResultSet rs = null;
-        String sql = "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? ORDER BY `time` ASC limit ?";
+        String sql = this.getQueryByScrollSql();
         try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, taskUniqueId);
             ps.setLong(2, time);
@@ -85,6 +79,7 @@ public class JdbcDAOImpl implements LogDAO {
         }
     }
 
+
     @Override
     public PageDTO<ProcessorLogDTO> queryByPageSize(String taskUniqueId, String searchKey, Integer page, Integer size) {
         return null;
@@ -92,12 +87,29 @@ public class JdbcDAOImpl implements LogDAO {
 
     @Override
     public void deleteByLastTime(Long lastTime) throws Exception {
-        String sql = "delete from `processor_log` where `time` < ?";
+        String sql = this.getDeleteSql();
         try (Connection connection = this.jdbcHikariClient.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, lastTime);
             int logCount = ps.executeUpdate();
             log.info("System data clear success!logCount={}", logCount);
         }
+    }
+
+    protected String getBatchAddSql() {
+        return "INSERT INTO `processor_log` ("
+                + "`task_id`,"
+                + "`worker_address`,"
+                + "`content`,"
+                + "`time`"
+                + ") VALUES (?, ?, ?, ?)";
+    }
+
+    protected String getQueryByScrollSql() {
+        return "SELECT * FROM `processor_log` WHERE `task_id`=? AND `time` > ? ORDER BY `time` ASC limit ?";
+    }
+
+    protected String getDeleteSql() {
+        return "delete from `processor_log` where `time` < ?";
     }
 
     protected String getContent(List<ProcessorLogFieldDTO> fields) {
@@ -112,6 +124,7 @@ public class JdbcDAOImpl implements LogDAO {
             throw new RuntimeException(e);
         }
     }
+
 
     protected ProcessorLogDTO convert(ResultSet rs) throws SQLException {
         ProcessorLogDTO taskLog = new ProcessorLogDTO();

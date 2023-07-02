@@ -74,11 +74,11 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private void checkLoginUser(AdminUser user, String passwd) {
         if (Objects.isNull(user)) {
-            AdminHttpStatusEnum.NOT_FOUND.throwException();
+            CodeEnum.USER_NOT_FOUND.throwException();
         }
 
         if (CommonUtil.isTrue(user.getDeleted())) {
-            AdminHttpStatusEnum.NOT_FOUND.throwException();
+            CodeEnum.USER_DELETED.throwException();
         }
 
         if (!HmacUtil.verifyPasswd(user.getPasswd(), passwd, userProperties.getPasswdSalt())) {
@@ -86,7 +86,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         }
 
         if (CollectionUtils.isEmpty(user.getRoleIdsByJson())) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
+            CodeEnum.USER_ROLE_EMPTY.throwException();
         }
     }
 
