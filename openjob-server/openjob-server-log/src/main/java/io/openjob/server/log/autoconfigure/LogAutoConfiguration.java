@@ -3,11 +3,15 @@ package io.openjob.server.log.autoconfigure;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.client.H2Client;
 import io.openjob.server.log.client.MysqlClient;
+import io.openjob.server.log.client.OracleClient;
+import io.openjob.server.log.client.PostgresqlClient;
 import io.openjob.server.log.constant.LogStorageConstant;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dao.impl.Elasticsearch7DAOImpl;
 import io.openjob.server.log.dao.impl.H2LogDAOImpl;
 import io.openjob.server.log.dao.impl.MysqlLogDAOImpl;
+import io.openjob.server.log.dao.impl.OracleDAOImpl;
+import io.openjob.server.log.dao.impl.PostgresqlDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,6 +55,32 @@ public class LogAutoConfiguration {
         @Bean
         public LogDAO h2LogDAO(MysqlClient mysqlClient) {
             return new MysqlLogDAOImpl(mysqlClient);
+        }
+    }
+
+    @ConditionalOnProperty(prefix = "openjob.log.storage", name = "selector", havingValue = LogStorageConstant.POSTGRESQL)
+    public class PostgresqlAutoConfiguration {
+        @Bean
+        public PostgresqlClient postgresqlClient() {
+            return new PostgresqlClient(logProperties.getStorage().getPostgresql());
+        }
+
+        @Bean
+        public LogDAO h2LogDAO(PostgresqlClient postgresqlClient) {
+            return new PostgresqlDAOImpl(postgresqlClient);
+        }
+    }
+
+    @ConditionalOnProperty(prefix = "openjob.log.storage", name = "selector", havingValue = LogStorageConstant.ORACLE)
+    public class OracleAutoConfiguration {
+        @Bean
+        public OracleClient oracleClient() {
+            return new OracleClient(logProperties.getStorage().getOracle());
+        }
+
+        @Bean
+        public LogDAO h2LogDAO(OracleClient oracleClient) {
+            return new OracleDAOImpl(oracleClient);
         }
     }
 

@@ -176,6 +176,7 @@ public class WorkerService {
                 workerStartRequest.setAddress(w.getAddress());
                 workerStartRequest.setAppName(w.getAppName());
                 workerStartRequest.setWorkerKey(w.getWorkerKey());
+                workerStartRequest.setProtocolType(w.getProtocolType());
 
                 log.info("Scheduling worker start begin! address={}", w.getAddress());
                 this.workerStart(workerStartRequest);
@@ -234,6 +235,9 @@ public class WorkerService {
 
             // Update latest app name
             worker.setAppName(startReq.getAppName());
+            worker.setNamespaceId(app.getNamespaceId());
+            worker.setAppId(app.getId());
+            worker.setProtocolType(startReq.getProtocolType());
             workerDAO.save(worker);
             return;
         }

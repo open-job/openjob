@@ -20,6 +20,8 @@ public class LogProperties {
         private Integer queryMaxSize;
         private H2Properties h2 = new H2Properties();
         private MysqlProperties mysql = new MysqlProperties();
+        private PostgresqlProperties postgresql = new PostgresqlProperties();
+        private OracleProperties oracle = new OracleProperties();
         private TidbProperties tidb = new TidbProperties();
         private Elasticsearch7Properties elasticsearch7 = new Elasticsearch7Properties();
     }
@@ -31,6 +33,16 @@ public class LogProperties {
 
     @Data
     public static class MysqlProperties {
+        private JdbcProperties properties = new JdbcProperties();
+    }
+
+    @Data
+    public static class PostgresqlProperties {
+        private JdbcProperties properties = new JdbcProperties();
+    }
+
+    @Data
+    public static class OracleProperties {
         private JdbcProperties properties = new JdbcProperties();
     }
 

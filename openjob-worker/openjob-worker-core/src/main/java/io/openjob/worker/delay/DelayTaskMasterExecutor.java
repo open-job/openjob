@@ -40,13 +40,20 @@ public class DelayTaskMasterExecutor implements Runnable {
     }
 
     @Override
-    @SuppressWarnings("InfiniteLoopStatement")
+    @SuppressWarnings("all")
     public void run() {
         while (true) {
             try {
                 this.start();
             } catch (Throwable e) {
                 log.error("DelayTaskMasterExecutor start failed!", e);
+
+                // Optimize start error
+                try {
+                    Thread.sleep(3000L);
+                } catch (InterruptedException ex) {
+                    log.error("DelayTaskMasterExecutor start failed!", ex);
+                }
             }
         }
     }

@@ -6,12 +6,16 @@ import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.server.common.util.ServerUtil;
+import io.openjob.server.repository.constant.WorkerStatusEnum;
 import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.repository.dao.WorkerDAO;
 import io.openjob.server.repository.entity.JobInstance;
+import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
 import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -24,9 +28,12 @@ import java.util.Objects;
 @Component
 public class JobInstanceScheduler {
     private final JobInstanceDAO jobInstanceDAO;
+    private final WorkerDAO workerDAO;
 
-    public JobInstanceScheduler(JobInstanceDAO jobInstanceDAO) {
+    @Autowired
+    public JobInstanceScheduler(JobInstanceDAO jobInstanceDAO, WorkerDAO workerDAO) {
         this.jobInstanceDAO = jobInstanceDAO;
+        this.workerDAO = workerDAO;
     }
 
     /**
@@ -45,6 +52,13 @@ public class JobInstanceScheduler {
         // Not running or empty address.
         if (!InstanceStatusEnum.isRunning(jobInstance.getStatus()) || StringUtils.isEmpty(jobInstance.getWorkerAddress())) {
             jobInstanceStopResponseDTO.setType(1);
+            return jobInstanceStopResponseDTO;
+        }
+
+        //  Worker offline
+        Worker byAddress = this.workerDAO.getByAddress(jobInstance.getWorkerAddress());
+        if (WorkerStatusEnum.OFFLINE.getStatus().equals(byAddress.getStatus())) {
+            jobInstanceStopResponseDTO.setType(0);
             return jobInstanceStopResponseDTO;
         }
 

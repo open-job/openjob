@@ -90,9 +90,6 @@ public class HealthService {
             ActorSelection actor = ServerUtil.getServerClusterActor(node.getAkkaAddress());
             NodePongDTO nodePongDTO = FutureUtil.mustAsk(actor, nodePingDTO, NodePongDTO.class, clusterProperties.getPingTimeout());
 
-            // Node ping success.
-            log.info("Ping success version({})", nodePongDTO.getClusterVersion());
-
             // Current server is unknow.
             if (!nodePongDTO.getKnowServer()) {
                 this.checkOnline(node);

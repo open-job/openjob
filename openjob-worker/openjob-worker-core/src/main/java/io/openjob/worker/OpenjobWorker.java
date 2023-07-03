@@ -5,6 +5,7 @@ import io.openjob.worker.config.OpenjobConfig;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.delay.DelayManager;
 import io.openjob.worker.init.WorkerActorSystem;
+import io.openjob.worker.init.WorkerChecker;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.init.WorkerHeartbeat;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class OpenjobWorker implements InitializingBean {
 
+    private final WorkerChecker workerChecker;
     private final WorkerConfig workerConfig;
     private final WorkerActorSystem workerActorSystem;
     private final WorkerRegister workerRegister;
@@ -38,6 +40,7 @@ public class OpenjobWorker implements InitializingBean {
      * New OpenjobWorker
      */
     public OpenjobWorker() {
+        this.workerChecker = new WorkerChecker();
         this.workerConfig = new WorkerConfig();
         this.workerActorSystem = new WorkerActorSystem();
         this.workerRegister = new WorkerRegister(this);
@@ -89,6 +92,9 @@ public class OpenjobWorker implements InitializingBean {
      */
     public synchronized Boolean doInitialize() {
         try {
+            // Checker
+            this.workerChecker.init();
+
             // Initialize worker config.
             this.workerConfig.init();
 

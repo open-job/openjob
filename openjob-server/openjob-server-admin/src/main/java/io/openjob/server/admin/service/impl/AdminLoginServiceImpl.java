@@ -4,6 +4,7 @@ import io.openjob.common.util.CommonUtil;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.admin.autoconfigure.AdminUserProperties;
 import io.openjob.server.admin.constant.AdminHttpStatusEnum;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
 import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
@@ -73,19 +74,19 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private void checkLoginUser(AdminUser user, String passwd) {
         if (Objects.isNull(user)) {
-            AdminHttpStatusEnum.NOT_FOUND.throwException();
+            CodeEnum.USER_NOT_FOUND.throwException();
         }
 
         if (CommonUtil.isTrue(user.getDeleted())) {
-            AdminHttpStatusEnum.NOT_FOUND.throwException();
+            CodeEnum.USER_DELETED.throwException();
         }
 
         if (!HmacUtil.verifyPasswd(user.getPasswd(), passwd, userProperties.getPasswdSalt())) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
+            CodeEnum.USER_PWD_INVALID.throwException();
         }
 
-        if (CollectionUtils.isEmpty(user.getRoleIds())) {
-            AdminHttpStatusEnum.FORBIDDEN.throwException();
+        if (CollectionUtils.isEmpty(user.getRoleIdsByJson())) {
+            CodeEnum.USER_ROLE_EMPTY.throwException();
         }
     }
 
@@ -105,7 +106,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 .build();
 
         // Query user role and perms
-        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIds());
+        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIdsByJson());
         if (CollectionUtils.isEmpty(roles)) {
             AdminHttpStatusEnum.NOT_FOUND.throwException();
         }
@@ -118,7 +119,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
                 isAdmin.set(true);
                 return;
             }
-            permIds.addAll(r.getPermIds());
+            permIds.addAll(r.getPermIdsByJson());
         });
         loginVO.setSupperAdmin(isAdmin.get());
 

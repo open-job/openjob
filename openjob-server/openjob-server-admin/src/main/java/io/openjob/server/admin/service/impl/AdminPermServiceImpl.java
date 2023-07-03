@@ -49,7 +49,7 @@ public class AdminPermServiceImpl implements AdminPermService {
     @Override
     public AdminPermissionMenusVO getMenus(AdminPermissionMenusRequest request) {
         AdminUser user = this.adminUserDAO.getById(request.getUid());
-        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIds());
+        List<AdminRole> roles = this.adminRoleDAO.getByIds(user.getRoleIdsByJson());
 
         // Menu ids.
         AtomicBoolean isAdmin = new AtomicBoolean(false);
@@ -59,7 +59,7 @@ public class AdminPermServiceImpl implements AdminPermService {
                 isAdmin.set(true);
                 return;
             }
-            menuIds.addAll(r.getMenuIds());
+            menuIds.addAll(r.getMenuIdsByJson());
         });
 
         //Menu list
@@ -86,9 +86,9 @@ public class AdminPermServiceImpl implements AdminPermService {
             node.setId(dataRecord.getId());
             node.setName(dataRecord.getName());
             node.setPath(dataRecord.getPath());
-            node.setComponent(dataRecord.getMeta().getComponent());
+            node.setComponent(dataRecord.getMetaByJson().getComponent());
 
-            MenuMetaVO menuMetaVO = BeanMapperUtil.map(dataRecord.getMeta(), MenuMetaVO.class);
+            MenuMetaVO menuMetaVO = BeanMapperUtil.map(dataRecord.getMetaByJson(), MenuMetaVO.class);
             menuMetaVO.setIsHide(CommonUtil.isTrue(dataRecord.getHidden()));
             node.setMeta(menuMetaVO);
 

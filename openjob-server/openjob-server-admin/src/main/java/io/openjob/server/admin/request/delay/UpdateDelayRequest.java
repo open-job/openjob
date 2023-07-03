@@ -38,7 +38,7 @@ public class UpdateDelayRequest {
     @ApiModelProperty(value = "Description", required = true)
     private String description;
 
-    @ApiModelProperty(value = "", required = true)
+    @ApiModelProperty(value = "Processor info", required = true)
     private String processorInfo;
 
     @ApiModelProperty(value = "Fail retry times", required = true)

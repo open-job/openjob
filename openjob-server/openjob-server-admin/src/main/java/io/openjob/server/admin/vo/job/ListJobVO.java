@@ -37,6 +37,21 @@ public class ListJobVO {
     @ApiModelProperty(value = "Job process info")
     private String processorInfo;
 
+    @ApiModelProperty(value = "Shell processor type")
+    private String shellProcessorType;
+
+    @ApiModelProperty(value = "Shell processor info")
+    private String shellProcessorInfo;
+
+    @ApiModelProperty(value = "Kettle processor type")
+    private String kettleProcessorType;
+
+    @ApiModelProperty(value = "Kettle processor info")
+    private String kettleProcessorInfo;
+
+    @ApiModelProperty(value = "Sharding params")
+    private String shardingParams;
+
     @ApiModelProperty(value = "Execute type: standalone, broadcast, MR")
     private String executeType;
 

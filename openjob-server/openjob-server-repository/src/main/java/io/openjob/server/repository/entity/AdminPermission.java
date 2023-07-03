@@ -1,10 +1,12 @@
 package io.openjob.server.repository.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.server.repository.entity.json.MenuMeta;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
@@ -22,7 +24,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "admin_permission")
+@Table(name = "`admin_permission`")
 @TypeDef(name = "json", typeClass = JsonType.class)
 public class AdminPermission {
 
@@ -30,74 +32,79 @@ public class AdminPermission {
      * PK
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "admin_permission_id")})
     private Long id;
 
     /**
      * Parent ID
      */
-    @Column(name = "pid")
+    @Column(name = "`pid`")
     private Long pid;
 
     /**
      * Type. 1=menu 2=perm
      */
-    @Column(name = "type")
+    @Column(name = "`type`")
     private Integer type;
 
     /**
      * Menu or perm name.(use for i18n or perm key)
      */
-    @Column(name = "name")
+    @Column(name = "`name`")
     private String name;
 
     /**
      * Route path or API path
      */
-    @Column(name = "path")
+    @Column(name = "`path`")
     private String path;
 
     /**
      * Extra meta data.
      * - JSON: {icon:xx,title:some.name,component:/@/views/path/to/page.vue}
      */
-    @Type(type = "json")
-    @Column(name = "meta", columnDefinition = "json")
-    private MenuMeta meta;
+    @Column(name = "`meta`")
+    private String meta;
 
     /**
      * Hidden status. 1=yes 2=no
      */
-    @Column(name = "hidden")
+    @Column(name = "`hidden`")
     private Integer hidden;
 
     /**
      * Sort value
      */
-    @Column(name = "sort")
+    @Column(name = "`sort`")
     private Integer sort;
 
     /**
      * Delete status. 1=yes 2=no
      */
-    @Column(name = "deleted")
+    @Column(name = "`deleted`")
     private Integer deleted;
 
     /**
      * Delete time
      */
-    @Column(name = "delete_time")
+    @Column(name = "`delete_time`")
     private Long deleteTime;
 
     /**
      * Update time
      */
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 
     /**
      * Create time
      */
-    @Column(name = "create_time")
+    @Column(name = "`create_time`")
     private Long createTime;
+
+    public MenuMeta getMetaByJson() {
+        return JsonUtil.decode(this.meta, MenuMeta.class);
+    }
 }

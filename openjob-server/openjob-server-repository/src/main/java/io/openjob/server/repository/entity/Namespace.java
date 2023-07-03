@@ -1,6 +1,8 @@
 package io.openjob.server.repository.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,32 +17,33 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "namespace")
+@Table(name = "`namespace`")
 public class Namespace {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "namespace_id")})
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "`name`")
     private String name;
 
-    @Column(name = "uuid")
+    @Column(name = "`uuid`")
     private String uuid;
 
-    @Column(name = "deleted")
+    @Column(name = "`deleted`")
     private Integer deleted;
-
 
     /**
      * Delete time
      */
-    @Column(name = "delete_time")
+    @Column(name = "`delete_time`")
     private Long deleteTime;
 
-    @Column(name = "create_time")
+    @Column(name = "`create_time`")
     private Long createTime;
 
-    @Column(name = "update_time")
+    @Column(name = "`update_time`")
     private Long updateTime;
 }
