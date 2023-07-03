@@ -12,3 +12,13 @@ ALTER TABLE `admin_role` CHANGE `app_ids` `app_ids` TEXT  CHARACTER SET utf8mb4 
 # `admin_user`
 # ------------------------------------------------------------
 ALTER TABLE `admin_user` CHANGE `role_ids` `role_ids` TEXT  CHARACTER SET utf8mb4  COLLATE utf8mb4_general_ci  NOT NULL;
+
+# `server`
+# ------------------------------------------------------------
+ALTER TABLE `server` DROP INDEX `udx_akka_address`;
+ALTER TABLE `server` ADD UNIQUE INDEX `udx_akka_address` (`akka_address`);
+
+# `worker`
+# ------------------------------------------------------------
+ALTER TABLE `worker` DROP INDEX `udx_address`;
+ALTER TABLE `worker` ADD UNIQUE INDEX `udx_address` (`address`);
