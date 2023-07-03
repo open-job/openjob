@@ -79,21 +79,8 @@ public class ShellProcessor implements JobProcessor {
 
     @Override
     public void stop(JobContext context) {
-        // Windows
-        if (ShellTypeEnum.WINDOWS.getType().equals(this.type)) {
-            Long processPid = -1L;
-            try {
-                processPid = this.getProcessPid(this.process);
-                if (processPid > 0) {
-                    this.stopProcessForWindows(processPid);
-                }
-                logger.info("Process stop success! pid={}", processPid);
-                log.info("Process stop success! pid={}", processPid);
-            } catch (Throwable throwable) {
-                logger.error(String.format("Process stop failed! pid=%d", processPid), throwable);
-                log.error(String.format("Process stop failed! pid=%d", processPid), throwable);
-            }
-        }
+        // Stop child threads
+        this.stopChildThreads();
 
         try {
             // Process
@@ -160,6 +147,35 @@ public class ShellProcessor implements JobProcessor {
     }
 
     /**
+     * Stop child threads
+     */
+    protected void stopChildThreads() {
+        Long processPid = -1L;
+        try {
+            // Obtain process pid failed!
+            processPid = this.getProcessPid(this.process);
+            if (processPid < 0) {
+                logger.warn("Obtain process pid failed!");
+                log.warn("Obtain process pid failed!");
+                return;
+            }
+
+            if (ShellTypeEnum.WINDOWS.getType().equals(this.type)) {
+                // Windows
+                this.stopProcessForWindows(processPid);
+            } else {
+                // unix
+                this.stopProcessForUnix(processPid);
+            }
+            logger.info("Process stop {} success! pid={}", this.type, processPid);
+            log.info("Process stop {} success! pid={}", this.type, processPid);
+        } catch (Throwable throwable) {
+            logger.error(String.format("Process stop failed! pid=%d", processPid), throwable);
+            log.error(String.format("Process stop failed! pid=%d", processPid), throwable);
+        }
+    }
+
+    /**
      * Get process pid
      *
      * @param process process
@@ -212,8 +228,32 @@ public class ShellProcessor implements JobProcessor {
 
         String line;
         while ((line = readerKill.readLine()) != null) {
-            logger.info("Stop result {}", line);
-            log.info("Stop result {}", line);
+            logger.info("Stop windows result {}", line);
+            log.info("Stop windows result {}", line);
+        }
+    }
+
+    /**
+     * Stop process for unix
+     *
+     * @param pid pid
+     * @throws IOException IOException
+     */
+    protected void stopProcessForUnix(Long pid) throws IOException {
+        List<String> commandKill = new ArrayList<>();
+        commandKill.add("/bin/sh");
+        commandKill.add("-c");
+        commandKill.add("kill");
+        commandKill.add("-9");
+        commandKill.add(String.format("-%d", pid));
+        ProcessBuilder pbk = new ProcessBuilder(commandKill);
+        Process stopProcess = pbk.start();
+        BufferedReader readerKill = new BufferedReader(this.getInputStreamReader(stopProcess.getInputStream()));
+
+        String line;
+        while ((line = readerKill.readLine()) != null) {
+            logger.info("Stop unix result {}", line);
+            log.info("Stop unix result {}", line);
         }
     }
 
