@@ -5,17 +5,17 @@ DROP TABLE IF EXISTS "admin_permission";
 create sequence admin_permission_id start with 10000 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_permission" (
                                     "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_permission_id'::regclass),
-                                    "pid" numeric(20,0) NOT NULL,
-                                    "type" int2 NOT NULL,
-                                    "name" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
-                                    "path" varchar(86) COLLATE "pg_catalog"."default" NOT NULL,
+                                    "pid" numeric(20,0),
+                                    "type" int2,
+                                    "name" varchar(48) COLLATE "pg_catalog"."default",
+                                    "path" varchar(86) COLLATE "pg_catalog"."default",
                                     "meta" text COLLATE "pg_catalog"."default",
-                                    "hidden" int2 NOT NULL,
-                                    "sort" int4 NOT NULL,
-                                    "deleted" int2 NOT NULL,
-                                    "delete_time" numeric(20,0) NOT NULL,
-                                    "update_time" numeric(20,0) NOT NULL,
-                                    "create_time" numeric(20,0) NOT NULL
+                                    "hidden" int2,
+                                    "sort" int4,
+                                    "deleted" int2,
+                                    "delete_time" numeric(20,0),
+                                    "update_time" numeric(20,0),
+                                    "create_time" numeric(20,0)
 )
 ;
 ALTER TABLE "admin_permission" OWNER TO "postgres";
@@ -66,17 +66,17 @@ DROP TABLE IF EXISTS "admin_role";
 create sequence admin_role_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_role" (
                               "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_role_id'::regclass),
-                              "name" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
-                              "desc" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                              "admin" int2 NOT NULL,
+                              "name" varchar(48) COLLATE "pg_catalog"."default",
+                              "desc" varchar(128) COLLATE "pg_catalog"."default",
+                              "admin" int2,
                               "menu_ids" text COLLATE "pg_catalog"."default",
                               "perm_ids" text COLLATE "pg_catalog"."default",
                               "namespace_ids" text COLLATE "pg_catalog"."default",
                               "app_ids" text COLLATE "pg_catalog"."default",
-                              "deleted" int2 NOT NULL,
-                              "delete_time" numeric(20,0) NOT NULL,
-                              "update_time" numeric(20,0) NOT NULL,
-                              "create_time" numeric(20,0) NOT NULL
+                              "deleted" int2,
+                              "delete_time" numeric(20,0),
+                              "update_time" numeric(20,0),
+                              "create_time" numeric(20,0)
 )
 ;
 ALTER TABLE "admin_role" OWNER TO "postgres";
@@ -108,17 +108,17 @@ DROP TABLE IF EXISTS "admin_user";
 create sequence admin_user_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "admin_user" (
                               "id" numeric(20,0) NOT NULL DEFAULT nextval('admin_user_id'::regclass),
-                              "username" varchar(48) COLLATE "pg_catalog"."default" NOT NULL,
-                              "nickname" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                              "passwd" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                              "session_key" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                              "session_expire_at" int8 NOT NULL,
-                              "token" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
+                              "username" varchar(48) COLLATE "pg_catalog"."default",
+                              "nickname" varchar(64) COLLATE "pg_catalog"."default",
+                              "passwd" varchar(128) COLLATE "pg_catalog"."default",
+                              "session_key" varchar(128) COLLATE "pg_catalog"."default",
+                              "session_expire_at" int8,
+                              "token" varchar(64) COLLATE "pg_catalog"."default",
                               "role_ids" text COLLATE "pg_catalog"."default",
-                              "deleted" int2 NOT NULL,
-                              "delete_time" numeric(20,0) NOT NULL,
-                              "update_time" numeric(20,0) NOT NULL,
-                              "create_time" numeric(20,0) NOT NULL
+                              "deleted" int2,
+                              "delete_time" numeric(20,0),
+                              "update_time" numeric(20,0),
+                              "create_time" numeric(20,0)
 )
 ;
 ALTER TABLE "admin_user" OWNER TO "postgres";
@@ -150,13 +150,13 @@ DROP TABLE IF EXISTS "app";
 create sequence app_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "app" (
                        "id" numeric(20,0) NOT NULL DEFAULT nextval('app_id'::regclass),
-                       "namespace_id" int8 NOT NULL,
+                       "namespace_id" int8,
                        "name" varchar(64) COLLATE "pg_catalog"."default",
-                       "desc" varchar(256) COLLATE "pg_catalog"."default" NOT NULL,
-                       "deleted" int2 NOT NULL,
-                       "delete_time" numeric(20,0) NOT NULL,
-                       "create_time" numeric(20,0) NOT NULL,
-                       "update_time" numeric(20,0) NOT NULL
+                       "desc" varchar(256) COLLATE "pg_catalog"."default",
+                       "deleted" int2,
+                       "delete_time" numeric(20,0),
+                       "create_time" numeric(20,0),
+                       "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "app" OWNER TO "postgres";
@@ -183,25 +183,25 @@ DROP TABLE IF EXISTS "delay";
 create sequence delay_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "delay" (
                          "id" numeric(20,0) NOT NULL DEFAULT nextval('delay_id'::regclass),
-                         "pid" int8 NOT NULL,
-                         "cid" int8 NOT NULL,
-                         "namespace_id" int8 NOT NULL,
-                         "app_id" int8 NOT NULL,
-                         "name" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                         "description" varchar(256) COLLATE "pg_catalog"."default" NOT NULL,
-                         "processor_info" varchar(256) COLLATE "pg_catalog"."default" NOT NULL,
-                         "fail_retry_times" int8 NOT NULL,
-                         "fail_retry_interval" int8 NOT NULL,
-                         "execute_timeout" int8 NOT NULL,
-                         "concurrency" int8 NOT NULL,
-                         "blocking_size" int8 NOT NULL,
-                         "topic" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                         "fail_topic_enable" int2 NOT NULL,
-                         "fail_topic_concurrency" int4 NOT NULL,
-                         "deleted" int2 NOT NULL,
-                         "delete_time" numeric(20,0) NOT NULL,
-                         "create_time" int8 NOT NULL,
-                         "update_time" int8 NOT NULL
+                         "pid" int8,
+                         "cid" int8,
+                         "namespace_id" int8,
+                         "app_id" int8,
+                         "name" varchar(128) COLLATE "pg_catalog"."default",
+                         "description" varchar(256) COLLATE "pg_catalog"."default",
+                         "processor_info" varchar(256) COLLATE "pg_catalog"."default",
+                         "fail_retry_times" int8,
+                         "fail_retry_interval" int8,
+                         "execute_timeout" int8,
+                         "concurrency" int8,
+                         "blocking_size" int8,
+                         "topic" varchar(128) COLLATE "pg_catalog"."default",
+                         "fail_topic_enable" int2,
+                         "fail_topic_concurrency" int4,
+                         "deleted" int2,
+                         "delete_time" numeric(20,0),
+                         "create_time" int8,
+                         "update_time" int8
 )
 ;
 ALTER TABLE "delay" OWNER TO "postgres";
@@ -239,23 +239,23 @@ DROP TABLE IF EXISTS "delay_instance";
 create sequence delay_instance_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "delay_instance" (
                                   "id" numeric(20,0) NOT NULL DEFAULT nextval('delay_instance_id'::regclass),
-                                  "app_id" numeric(20,0) NOT NULL,
-                                  "namespace_id" numeric(20,0) NOT NULL,
-                                  "task_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                                  "topic" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                  "delay_id" numeric(20,0) NOT NULL,
-                                  "delay_params" text COLLATE "pg_catalog"."default" NOT NULL,
-                                  "delay_extra" text COLLATE "pg_catalog"."default" NOT NULL,
-                                  "status" int2 NOT NULL,
-                                  "execute_time" int8 NOT NULL,
-                                  "complete_time" int8 NOT NULL,
-                                  "worker_address" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                                  "deleted" int2 NOT NULL,
-                                  "delete_time" numeric(20,0) NOT NULL,
-                                  "create_time" int8 NOT NULL,
-                                  "update_time" int8 NOT NULL,
-                                  "create_time_date" int4 NOT NULL,
-                                  "create_time_hour" int4 NOT NULL
+                                  "app_id" numeric(20,0),
+                                  "namespace_id" numeric(20,0),
+                                  "task_id" varchar(64) COLLATE "pg_catalog"."default",
+                                  "topic" varchar(128) COLLATE "pg_catalog"."default",
+                                  "delay_id" numeric(20,0),
+                                  "delay_params" text COLLATE "pg_catalog"."default",
+                                  "delay_extra" text COLLATE "pg_catalog"."default",
+                                  "status" int2,
+                                  "execute_time" int8,
+                                  "complete_time" int8,
+                                  "worker_address" varchar(32) COLLATE "pg_catalog"."default",
+                                  "deleted" int2,
+                                  "delete_time" numeric(20,0),
+                                  "create_time" int8,
+                                  "update_time" int8,
+                                  "create_time_date" int4,
+                                  "create_time_hour" int4
 )
 ;
 ALTER TABLE "delay_instance" OWNER TO "postgres";
@@ -290,31 +290,31 @@ DROP TABLE IF EXISTS "job";
 create sequence job_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job" (
                        "id" numeric(20,0) NOT NULL DEFAULT nextval('job_id'::regclass),
-                       "namespace_id" numeric(20,0) NOT NULL,
-                       "app_id" numeric(20,0) NOT NULL,
-                       "workflow_id" numeric(20,0) NOT NULL,
-                       "name" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                       "description" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                       "processor_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                       "processor_info" text COLLATE "pg_catalog"."default" NOT NULL,
-                       "execute_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                       "params" varchar(3096) COLLATE "pg_catalog"."default" NOT NULL,
-                       "params_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
+                       "namespace_id" numeric(20,0),
+                       "app_id" numeric(20,0),
+                       "workflow_id" numeric(20,0),
+                       "name" varchar(32) COLLATE "pg_catalog"."default",
+                       "description" varchar(128) COLLATE "pg_catalog"."default",
+                       "processor_type" varchar(16) COLLATE "pg_catalog"."default",
+                       "processor_info" text COLLATE "pg_catalog"."default",
+                       "execute_type" varchar(16) COLLATE "pg_catalog"."default",
+                       "params" varchar(3096) COLLATE "pg_catalog"."default",
+                       "params_type" varchar(16) COLLATE "pg_catalog"."default",
                        "extend_params_type" varchar(16) COLLATE "pg_catalog"."default",
-                       "extend_params" varchar(3096) COLLATE "pg_catalog"."default" NOT NULL,
-                       "fail_retry_times" int8 NOT NULL,
-                       "fail_retry_interval" int8 NOT NULL,
-                       "concurrency" int8 NOT NULL,
-                       "time_expression_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                       "time_expression" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                       "execute_strategy" int2 NOT NULL,
-                       "status" int2 NOT NULL,
-                       "next_execute_time" numeric(20,0) NOT NULL,
-                       "slots_id" int8 NOT NULL,
-                       "deleted" int2 NOT NULL,
-                       "delete_time" numeric(20,0) NOT NULL,
-                       "create_time" numeric(20,0) NOT NULL,
-                       "update_time" numeric(20,0) NOT NULL
+                       "extend_params" varchar(3096) COLLATE "pg_catalog"."default",
+                       "fail_retry_times" int8,
+                       "fail_retry_interval" int8,
+                       "concurrency" int8,
+                       "time_expression_type" varchar(16) COLLATE "pg_catalog"."default",
+                       "time_expression" varchar(32) COLLATE "pg_catalog"."default",
+                       "execute_strategy" int2,
+                       "status" int2,
+                       "next_execute_time" numeric(20,0),
+                       "slots_id" int8,
+                       "deleted" int2,
+                       "delete_time" numeric(20,0),
+                       "create_time" numeric(20,0),
+                       "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "job" OWNER TO "postgres";
@@ -358,35 +358,35 @@ DROP TABLE IF EXISTS "job_instance";
 create sequence job_instance_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance" (
                                 "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_id'::regclass),
-                                "job_id" numeric(20,0) NOT NULL,
-                                "params" varchar(3096) COLLATE "pg_catalog"."default" NOT NULL,
-                                "params_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
+                                "job_id" numeric(20,0),
+                                "params" varchar(3096) COLLATE "pg_catalog"."default",
+                                "params_type" varchar(16) COLLATE "pg_catalog"."default",
                                 "extend_params_type" varchar(16) COLLATE "pg_catalog"."default",
-                                "extend_params" varchar(3096) COLLATE "pg_catalog"."default" NOT NULL,
-                                "status" int2 NOT NULL,
-                                "slots_id" numeric(20,0) NOT NULL,
-                                "workflow_id" numeric(20,0) NOT NULL,
-                                "namespace_id" numeric(20,0) NOT NULL,
-                                "app_id" numeric(20,0) NOT NULL,
-                                "execute_time" numeric(20,0) NOT NULL,
-                                "complete_time" numeric(20,0) NOT NULL,
-                                "last_report_time" numeric(20,0) NOT NULL,
-                                "processor_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                                "processor_info" text COLLATE "pg_catalog"."default" NOT NULL,
-                                "execute_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                                "fail_retry_times" int8 NOT NULL,
-                                "fail_retry_interval" int8 NOT NULL,
-                                "time_expression_type" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                                "time_expression" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                                "concurrency" int8 NOT NULL,
-                                "worker_address" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                                "execute_strategy" int2 NOT NULL,
-                                "deleted" int2 NOT NULL,
-                                "delete_time" numeric(20,0) NOT NULL,
-                                "update_time" numeric(20,0) NOT NULL,
-                                "create_time_date" int4 NOT NULL,
-                                "create_time_hour" int4 NOT NULL,
-                                "create_time" numeric(20,0) NOT NULL
+                                "extend_params" varchar(3096) COLLATE "pg_catalog"."default",
+                                "status" int2,
+                                "slots_id" numeric(20,0),
+                                "workflow_id" numeric(20,0),
+                                "namespace_id" numeric(20,0),
+                                "app_id" numeric(20,0),
+                                "execute_time" numeric(20,0),
+                                "complete_time" numeric(20,0),
+                                "last_report_time" numeric(20,0),
+                                "processor_type" varchar(16) COLLATE "pg_catalog"."default",
+                                "processor_info" text COLLATE "pg_catalog"."default",
+                                "execute_type" varchar(16) COLLATE "pg_catalog"."default",
+                                "fail_retry_times" int8,
+                                "fail_retry_interval" int8,
+                                "time_expression_type" varchar(16) COLLATE "pg_catalog"."default",
+                                "time_expression" varchar(32) COLLATE "pg_catalog"."default",
+                                "concurrency" int8,
+                                "worker_address" varchar(32) COLLATE "pg_catalog"."default",
+                                "execute_strategy" int2,
+                                "deleted" int2,
+                                "delete_time" numeric(20,0),
+                                "update_time" numeric(20,0),
+                                "create_time_date" int4,
+                                "create_time_hour" int4,
+                                "create_time" numeric(20,0)
 )
 ;
 ALTER TABLE "job_instance" OWNER TO "postgres";
@@ -434,13 +434,13 @@ DROP TABLE IF EXISTS "job_instance_log";
 create sequence job_instance_log_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance_log" (
                                     "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_log_id'::regclass),
-                                    "job_id" numeric(20,0) NOT NULL,
-                                    "job_instance_id" numeric(20,0) NOT NULL,
+                                    "job_id" numeric(20,0),
+                                    "job_instance_id" numeric(20,0),
                                     "message" text COLLATE "pg_catalog"."default",
-                                    "deleted" int2 NOT NULL,
-                                    "delete_time" numeric(20,0) NOT NULL,
-                                    "create_time" numeric(20,0) NOT NULL,
-                                    "update_time" numeric(20,0) NOT NULL
+                                    "deleted" int2,
+                                    "delete_time" numeric(20,0),
+                                    "create_time" numeric(20,0),
+                                    "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "job_instance_log" OWNER TO "postgres";
@@ -466,17 +466,17 @@ DROP TABLE IF EXISTS "job_instance_task";
 create sequence job_instance_task_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_instance_task" (
                                      "id" numeric(20,0) NOT NULL DEFAULT nextval('job_instance_task_id'::regclass),
-                                     "job_id" numeric(20,0) NOT NULL,
-                                     "job_instance_id" numeric(20,0) NOT NULL,
-                                     "circle_id" numeric(20,0) NOT NULL,
-                                     "task_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "parent_task_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "task_name" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "status" int2 NOT NULL,
+                                     "job_id" numeric(20,0),
+                                     "job_instance_id" numeric(20,0),
+                                     "circle_id" numeric(20,0),
+                                     "task_id" varchar(64) COLLATE "pg_catalog"."default",
+                                     "parent_task_id" varchar(64) COLLATE "pg_catalog"."default",
+                                     "task_name" varchar(128) COLLATE "pg_catalog"."default",
+                                     "status" int2,
                                      "result" text COLLATE "pg_catalog"."default",
-                                     "worker_address" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "deleted" int2 NOT NULL,
-                                     "delete_time" numeric(20,0) NOT NULL,
+                                     "worker_address" varchar(128) COLLATE "pg_catalog"."default",
+                                     "deleted" int2,
+                                     "delete_time" numeric(20,0),
                                      "create_time" numeric(20,0),
                                      "update_time" numeric(20,0)
 )
@@ -510,11 +510,11 @@ DROP TABLE IF EXISTS "job_slots";
 create sequence job_slots_id start with 257 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "job_slots" (
                              "id" numeric(20,0) NOT NULL DEFAULT nextval('job_slots_id'::regclass),
-                             "server_id" numeric(20,0) NOT NULL,
-                             "deleted" int2 NOT NULL,
-                             "delete_time" numeric(20,0) NOT NULL,
-                             "create_time" numeric(20,0) NOT NULL,
-                             "update_time" numeric(20,0) NOT NULL
+                             "server_id" numeric(20,0),
+                             "deleted" int2,
+                             "delete_time" numeric(20,0),
+                             "create_time" numeric(20,0),
+                             "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "job_slots" OWNER TO "postgres";
@@ -795,12 +795,12 @@ DROP TABLE IF EXISTS "namespace";
 create sequence namespace_id start with 3 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "namespace" (
                              "id" numeric(20,0) NOT NULL DEFAULT nextval('namespace_id'::regclass),
-                             "name" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                             "uuid" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                             "deleted" int2 NOT NULL,
-                             "delete_time" numeric(20,0) NOT NULL,
-                             "create_time" numeric(20,0) NOT NULL,
-                             "update_time" numeric(20,0) NOT NULL
+                             "name" varchar(64) COLLATE "pg_catalog"."default",
+                             "uuid" varchar(64) COLLATE "pg_catalog"."default",
+                             "deleted" int2,
+                             "delete_time" numeric(20,0),
+                             "create_time" numeric(20,0),
+                             "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "namespace" OWNER TO "postgres";
@@ -826,10 +826,10 @@ DROP TABLE IF EXISTS "processor_log";
 create sequence processor_log_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "processor_log" (
                                  "id" numeric(20,0) NOT NULL DEFAULT nextval('processor_log_id'::regclass),
-                                 "task_id" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                 "worker_address" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                                 "content" text COLLATE "pg_catalog"."default" NOT NULL,
-                                 "time" numeric(20,0) NOT NULL
+                                 "task_id" varchar(128) COLLATE "pg_catalog"."default",
+                                 "worker_address" varchar(128) COLLATE "pg_catalog"."default",
+                                 "content" text COLLATE "pg_catalog"."default",
+                                 "time" numeric(20,0)
 )
 ;
 ALTER TABLE "processor_log" OWNER TO "postgres";
@@ -852,13 +852,13 @@ DROP TABLE IF EXISTS "server";
 create sequence server_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "server" (
                           "id" numeric(20,0) NOT NULL DEFAULT nextval('server_id'::regclass),
-                          "ip" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                          "akka_address" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                          "status" int2 NOT NULL,
-                          "deleted" int2 NOT NULL,
-                          "delete_time" numeric(20,0) NOT NULL,
-                          "create_time" numeric(20,0) NOT NULL,
-                          "update_time" numeric(20,0) NOT NULL
+                          "ip" varchar(32) COLLATE "pg_catalog"."default",
+                          "akka_address" varchar(32) COLLATE "pg_catalog"."default",
+                          "status" int2,
+                          "deleted" int2,
+                          "delete_time" numeric(20,0),
+                          "create_time" numeric(20,0),
+                          "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "server" OWNER TO "postgres";
@@ -884,13 +884,13 @@ DROP TABLE IF EXISTS "server_reports";
 create sequence server_reports_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "server_reports" (
                                   "id" numeric(20,0) NOT NULL DEFAULT nextval('server_reports_id'::regclass),
-                                  "server_id" numeric(20,0) NOT NULL,
-                                  "report_server_id" numeric(20,0) NOT NULL,
-                                  "status" int2 NOT NULL,
-                                  "deleted" int2 NOT NULL,
-                                  "delete_time" numeric(20,0) NOT NULL,
-                                  "create_time" numeric(20,0) NOT NULL,
-                                  "update_time" numeric(20,0) NOT NULL
+                                  "server_id" numeric(20,0),
+                                  "report_server_id" numeric(20,0),
+                                  "status" int2,
+                                  "deleted" int2,
+                                  "delete_time" numeric(20,0),
+                                  "create_time" numeric(20,0),
+                                  "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "server_reports" OWNER TO "postgres";
@@ -916,24 +916,24 @@ DROP TABLE IF EXISTS "system";
 create sequence system_id start with 2 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "system" (
                           "id" numeric(20,0) NOT NULL DEFAULT nextval('system_id'::regclass),
-                          "version" varchar(16) COLLATE "pg_catalog"."default" NOT NULL,
-                          "cluster_version" numeric(20,0) NOT NULL,
-                          "cluster_delay_version" numeric(20,0) NOT NULL,
-                          "worker_supervisor_slot" int8 NOT NULL,
-                          "delay_zset_slot" int8 NOT NULL,
-                          "delay_fail_zset_slot" int4 NOT NULL,
-                          "delay_add_list_slot" int8 NOT NULL,
-                          "delay_status_list_slot" int8 NOT NULL,
-                          "delay_delete_list_slot" int8 NOT NULL,
-                          "max_slot" int8 NOT NULL,
-                          "job_keep_days" int4 NOT NULL,
-                          "delay_keep_days" int4 NOT NULL,
-                          "server_keep_days" int4 NOT NULL,
-                          "worker_keep_days" int4 NOT NULL,
-                          "deleted" int2 NOT NULL,
-                          "delete_time" numeric(20,0) NOT NULL,
-                          "create_time" numeric(20,0) NOT NULL,
-                          "update_time" numeric(20,0) NOT NULL
+                          "version" varchar(16) COLLATE "pg_catalog"."default",
+                          "cluster_version" numeric(20,0),
+                          "cluster_delay_version" numeric(20,0),
+                          "worker_supervisor_slot" int8,
+                          "delay_zset_slot" int8,
+                          "delay_fail_zset_slot" int4,
+                          "delay_add_list_slot" int8,
+                          "delay_status_list_slot" int8,
+                          "delay_delete_list_slot" int8,
+                          "max_slot" int8,
+                          "job_keep_days" int4,
+                          "delay_keep_days" int4,
+                          "server_keep_days" int4,
+                          "worker_keep_days" int4,
+                          "deleted" int2,
+                          "delete_time" numeric(20,0),
+                          "create_time" numeric(20,0),
+                          "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "system" OWNER TO "postgres";
@@ -971,21 +971,21 @@ DROP TABLE IF EXISTS "worker";
 create sequence worker_id start with 1 increment by 1 no minvalue no maxvalue cache 1;
 CREATE TABLE "worker" (
                           "id" numeric(20,0) NOT NULL DEFAULT nextval('worker_id'::regclass),
-                          "app_id" numeric(20,0) NOT NULL,
-                          "namespace_id" numeric(20,0) NOT NULL,
-                          "app_name" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-                          "worker_key" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
-                          "slots_id" numeric(20,0) NOT NULL,
-                          "address" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                          "protocol_type" varchar(8) COLLATE "pg_catalog"."default" NOT NULL,
-                          "version" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-                          "last_heartbeat_time" numeric(20,0) NOT NULL,
-                          "status" int2 NOT NULL,
-                          "metric" varchar(1024) COLLATE "pg_catalog"."default" NOT NULL,
-                          "deleted" int2 NOT NULL,
-                          "delete_time" numeric(20,0) NOT NULL,
-                          "create_time" numeric(20,0) NOT NULL,
-                          "update_time" numeric(20,0) NOT NULL
+                          "app_id" numeric(20,0),
+                          "namespace_id" numeric(20,0),
+                          "app_name" varchar(128) COLLATE "pg_catalog"."default",
+                          "worker_key" varchar(64) COLLATE "pg_catalog"."default",
+                          "slots_id" numeric(20,0),
+                          "address" varchar(32) COLLATE "pg_catalog"."default",
+                          "protocol_type" varchar(8) COLLATE "pg_catalog"."default",
+                          "version" varchar(32) COLLATE "pg_catalog"."default",
+                          "last_heartbeat_time" numeric(20,0),
+                          "status" int2,
+                          "metric" varchar(1024) COLLATE "pg_catalog"."default",
+                          "deleted" int2,
+                          "delete_time" numeric(20,0),
+                          "create_time" numeric(20,0),
+                          "update_time" numeric(20,0)
 )
 ;
 ALTER TABLE "worker" OWNER TO "postgres";
