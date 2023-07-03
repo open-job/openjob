@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
@@ -36,7 +35,7 @@ public class AdminUser {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "admin_user_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "admin_user_id")})
     private Long id;
 
     /**
@@ -105,7 +104,8 @@ public class AdminUser {
     @Column(name = "`create_time`")
     private Long createTime;
 
-    public List<Long> getRoleIdsByJson(){
-        return JsonUtil.decode(this.roleIds, new TypeReference<List<Long>>(){});
+    public List<Long> getRoleIdsByJson() {
+        return JsonUtil.decode(this.roleIds, new TypeReference<List<Long>>() {
+        });
     }
 }

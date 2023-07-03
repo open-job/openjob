@@ -64,6 +64,12 @@ public class OracleDAOImpl extends JdbcDAOImpl {
         return "delete from \"processor_log\" where \"time\" < ?";
     }
 
+    /**
+     * Get insert id
+     *
+     * @return Long
+     * @throws Exception Exception
+     */
     public Long getInsertId() throws Exception {
         Long id = this.idLinkedQueue.poll();
         if (Objects.nonNull(id)) {
@@ -73,6 +79,12 @@ public class OracleDAOImpl extends JdbcDAOImpl {
         return nextIds();
     }
 
+    /**
+     * Next ids.
+     *
+     * @return Long
+     * @throws Exception Exception
+     */
     public synchronized Long nextIds() throws Exception {
         PreparedStatement ps = null;
         try (Connection connection = this.jdbcHikariClient.getConnection()) {

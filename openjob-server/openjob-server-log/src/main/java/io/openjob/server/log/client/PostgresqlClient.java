@@ -9,7 +9,7 @@ import java.util.Objects;
  * @author stelin swoft@qq.com
  * @since 1.0.4
  */
-public class PostgresqlClient extends AbstractJdbcHikariClient{
+public class PostgresqlClient extends AbstractJdbcHikariClient {
     private final LogProperties.PostgresqlProperties postgresqlProperties;
 
     public PostgresqlClient(LogProperties.PostgresqlProperties postgresqlProperties) {

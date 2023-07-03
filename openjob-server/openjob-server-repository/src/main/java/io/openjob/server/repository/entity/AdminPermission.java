@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
@@ -35,7 +34,7 @@ public class AdminPermission {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "admin_permission_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "admin_permission_id")})
     private Long id;
 
     /**
@@ -105,7 +104,7 @@ public class AdminPermission {
     @Column(name = "`create_time`")
     private Long createTime;
 
-    public MenuMeta getMetaByJson(){
+    public MenuMeta getMetaByJson() {
         return JsonUtil.decode(this.meta, MenuMeta.class);
     }
 }

@@ -57,7 +57,7 @@ public class JobInstanceScheduler {
 
         //  Worker offline
         Worker byAddress = this.workerDAO.getByAddress(jobInstance.getWorkerAddress());
-        if (WorkerStatusEnum.OFFLINE.getStatus().equals(byAddress.getStatus())){
+        if (WorkerStatusEnum.OFFLINE.getStatus().equals(byAddress.getStatus())) {
             jobInstanceStopResponseDTO.setType(0);
             return jobInstanceStopResponseDTO;
         }
