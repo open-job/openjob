@@ -204,6 +204,9 @@ public class ShellProcessor implements JobProcessor {
             }
         } catch (Throwable ex) {
             pid = -1L;
+
+            logger.error("Get process pid failed!", ex);
+            log.error("Get process pid failed!", ex);
         }
         return pid;
     }
