@@ -20,7 +20,7 @@ import java.util.List;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-public interface MapProcessor extends BaseProcessor {
+public interface MapProcessor extends JavaProcessor {
 
     /**
      * Map
@@ -60,15 +60,5 @@ public interface MapProcessor extends BaseProcessor {
             }
         });
         return result;
-    }
-
-    /**
-     * Stop processor.
-     *
-     * @param context context
-     */
-    @Override
-    default void stop(JobContext context) {
-
     }
 }
