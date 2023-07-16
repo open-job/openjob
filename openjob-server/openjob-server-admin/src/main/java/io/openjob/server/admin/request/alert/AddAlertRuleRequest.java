@@ -21,7 +21,7 @@ public class AddAlertRuleRequest {
 
     @NotNull
     @ApiModelProperty(value = "Name", required = true)
-    private List<String> namespaceAppIds;
+    private List<Integer> namespaceAppIds;
 
     @NotNull
     @ApiModelProperty(value = "Events")

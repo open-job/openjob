@@ -13,11 +13,15 @@ import java.util.List;
 @Data
 @ApiModel
 public class ListAlertRuleVO {
+
+    @ApiModelProperty(value = "ID", required = true)
+    private Long id;
+
     @ApiModelProperty(value = "Name", required = true)
     private String name;
 
     @ApiModelProperty(value = "Name", required = true)
-    private List<String> namespaceAppIds;
+    private List<Integer> namespaceAppIds;
 
     @ApiModelProperty(value = "Events")
     private List<String> events;

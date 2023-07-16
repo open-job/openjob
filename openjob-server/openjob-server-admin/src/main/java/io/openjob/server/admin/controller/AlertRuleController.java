@@ -16,9 +16,14 @@ import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @author stelin swoft@qq.com
@@ -38,31 +43,31 @@ public class AlertRuleController {
 
     @ApiOperation("Add")
     @PostMapping("/add")
-    public Result<AddAlertRuleVO> add(AddAlertRuleRequest request) {
+    public Result<AddAlertRuleVO> add(@Valid @RequestBody AddAlertRuleRequest request) {
         return Result.success(this.alertRuleService.add(request));
     }
 
     @ApiOperation("Delete")
     @PostMapping("/delete")
-    public Result<DeleteAlertRuleVO> delete(DeleteAlertRuleRequest request) {
+    public Result<DeleteAlertRuleVO> delete(@Valid @RequestBody DeleteAlertRuleRequest request) {
         return Result.success(this.alertRuleService.delete(request));
     }
 
     @ApiOperation("Update")
     @PostMapping("/update")
-    public Result<UpdateAlertRuleVO> update(UpdateAlertRuleRequest request) {
+    public Result<UpdateAlertRuleVO> update(@Valid @RequestBody UpdateAlertRuleRequest request) {
         return Result.success(this.alertRuleService.update(request));
     }
 
     @ApiOperation("Update status")
     @PostMapping("/update-status")
-    public Result<UpdateAlertRuleStatusVO> updateStatus(UpdateAlertRuleStatusRequest request) {
+    public Result<UpdateAlertRuleStatusVO> updateStatus(@Valid @RequestBody UpdateAlertRuleStatusRequest request) {
         return Result.success(this.alertRuleService.updateStatus(request));
     }
 
     @ApiOperation("List")
-    @PostMapping("/list")
-    public Result<PageVO<ListAlertRuleVO>> list(ListAlertRuleRequest request) {
+    @GetMapping("/list")
+    public Result<PageVO<ListAlertRuleVO>> list(@Valid @ModelAttribute ListAlertRuleRequest request) {
         return Result.success(this.alertRuleService.list(request));
     }
 }

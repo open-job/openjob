@@ -80,10 +80,17 @@ public class AlertRuleServiceImpl implements AlertRuleService {
         }
 
         return PageUtil.convert(pageList, r -> {
-            ListAlertRuleVO listAlertRuleVO = BeanMapperUtil.map(r, ListAlertRuleVO.class);
+            ListAlertRuleVO listAlertRuleVO = new ListAlertRuleVO();
+            listAlertRuleVO.setId(r.getId());
+            listAlertRuleVO.setName(r.getName());
+            listAlertRuleVO.setMethod(r.getMethod());
+            listAlertRuleVO.setUrl(r.getUrl());
+            listAlertRuleVO.setStatus(r.getStatus());
+            listAlertRuleVO.setCreateTime(r.getCreateTime());
+            listAlertRuleVO.setUpdateTime(r.getUpdateTime());
 
             // App ids
-            listAlertRuleVO.setNamespaceAppIds(JsonUtil.decode(r.getNamespaceAppIds(), new TypeReference<List<String>>() {
+            listAlertRuleVO.setNamespaceAppIds(JsonUtil.decode(r.getNamespaceAppIds(), new TypeReference<List<Integer>>() {
             }));
 
             // Events
