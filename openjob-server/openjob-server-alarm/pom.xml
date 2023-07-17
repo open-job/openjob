@@ -3,18 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>openjob-server</artifactId>
+        <artifactId>openjob</artifactId>
         <groupId>io.openjob</groupId>
         <version>1.0.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>openjob-server-dispatcher</artifactId>
+    <artifactId>openjob-server-alarm</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.openjob</groupId>
-            <artifactId>openjob-server-repository</artifactId>
+            <artifactId>openjob-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
     </dependencies>
 </project>

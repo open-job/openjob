@@ -13,7 +13,7 @@
     <groupId>io.openjob</groupId>
     <artifactId>openjob</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <name>Openjob Build ${version}</name>
     <description>Openjob build with Maven</description>
@@ -22,6 +22,7 @@
         <module>openjob-common</module>
         <module>openjob-worker</module>
         <module>openjob-server</module>
+        <module>openjob-server/openjob-server-alarm</module>
     </modules>
 
     <licenses>
