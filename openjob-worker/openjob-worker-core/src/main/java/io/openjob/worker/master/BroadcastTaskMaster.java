@@ -64,4 +64,22 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     protected void postProcess() {
 
     }
+
+    @Override
+    public void stop() {
+        // Stop scheduled thread poll
+        this.scheduledService.shutdown();
+
+        // Stop master
+        super.stop();
+    }
+
+    @Override
+    public void destroyTaskContainer() {
+        // Stop scheduled thread poll
+        this.scheduledService.shutdown();
+
+        // Destroy task container
+        super.destroyTaskContainer();
+    }
 }

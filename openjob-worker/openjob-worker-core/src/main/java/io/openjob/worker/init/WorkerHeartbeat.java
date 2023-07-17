@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -60,39 +59,13 @@ public class WorkerHeartbeat {
      */
     public void init() {
         int heartbeatInterval = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_INTERVAL, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_INTERVAL);
-        int failTimes = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_FAIL_TIMES, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_FAIL_TIMES);
         heartbeatService.scheduleAtFixedRate(() -> {
-            String workerAddress = WorkerConfig.getWorkerAddress();
-            String serverAddress = WorkerConfig.getServerHost();
-
-            WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
-            heartbeatReq.setAppId(WorkerContext.getAppId());
-            heartbeatReq.setAddress(workerAddress);
-            heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME));
-            heartbeatReq.setVersion("1.0");
-            heartbeatReq.setRunningJobInstanceIds(TaskMasterPool.getRunningTask());
             try {
-                //Heartbeat
-                ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
-
-                // Refresh worker.
-                this.refresh(heartbeatResponse);
-
-                // Reset counter
-                this.failCounter.set(0);
-            } catch (Throwable e) {
-                int count = this.failCounter.incrementAndGet();
-                log.error(String.format("Worker heartbeat fail. serverAddress=%s workerAddress=%s failTimes=%s", serverAddress, workerAddress, count), e);
-
-                if (count >= failTimes) {
-                    log.info("Begin to refresh server! server={} port={} failTimes={}", WorkerConfig.getServerHost(), WorkerConfig.getServerPort(), failTimes);
-                    WorkerConfig.refreshServer();
-
-                    // Reset counter
-                    this.failCounter.set(0);
-                }
+                // Fixed terminate task, when an execution of the task throws an exception.
+                this.doWorkerHeartbeat();
+            } catch (Throwable throwable) {
+                log.error("Do worker heartbeat failed!", throwable);
             }
-
         }, 5, heartbeatInterval, TimeUnit.SECONDS);
     }
 
@@ -102,6 +75,40 @@ public class WorkerHeartbeat {
     public void shutdown() {
         // Stop worker heartbeat service.
         heartbeatService.shutdownNow();
+    }
+
+    private void doWorkerHeartbeat() {
+        int failTimes = OpenjobConfig.getInteger(WorkerConstant.WORKER_HEARTBEAT_FAIL_TIMES, WorkerConstant.DEFAULT_WORKER_HEARTBEAT_FAIL_TIMES);
+        String workerAddress = WorkerConfig.getWorkerAddress();
+        String serverAddress = WorkerConfig.getServerHost();
+
+        WorkerHeartbeatRequest heartbeatReq = new WorkerHeartbeatRequest();
+        heartbeatReq.setAppId(WorkerContext.getAppId());
+        heartbeatReq.setAddress(workerAddress);
+        heartbeatReq.setAppName(OpenjobConfig.getString(WorkerConstant.WORKER_APP_NAME));
+        heartbeatReq.setVersion("1.0");
+        heartbeatReq.setRunningJobInstanceIds(TaskMasterPool.getRunningTask());
+        try {
+            //Heartbeat
+            ServerHeartbeatResponse heartbeatResponse = FutureUtil.mustAsk(WorkerUtil.getServerHeartbeatActor(), heartbeatReq, ServerHeartbeatResponse.class, 3000L);
+
+            // Refresh worker.
+            this.refresh(heartbeatResponse);
+
+            // Reset counter
+            this.failCounter.set(0);
+        } catch (Throwable e) {
+            int count = this.failCounter.incrementAndGet();
+            log.error(String.format("Worker heartbeat fail. serverAddress=%s workerAddress=%s failTimes=%s", serverAddress, workerAddress, count), e);
+
+            if (count >= failTimes) {
+                log.info("Begin to refresh server! server={} port={} failTimes={}", WorkerConfig.getServerHost(), WorkerConfig.getServerPort(), failTimes);
+                WorkerConfig.refreshServer();
+
+                // Reset counter
+                this.failCounter.set(0);
+            }
+        }
     }
 
     /**

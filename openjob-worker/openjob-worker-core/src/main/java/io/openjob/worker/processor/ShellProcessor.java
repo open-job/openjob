@@ -74,7 +74,12 @@ public class ShellProcessor implements JobProcessor {
 
     @Override
     public ProcessResult postProcess(JobContext context) {
-        return null;
+        try {
+            this.executorService.shutdown();
+        } catch (Throwable throwable) {
+            log.error("Shell processor post failed!", throwable);
+        }
+        return ProcessResult.success();
     }
 
     @Override
@@ -204,6 +209,9 @@ public class ShellProcessor implements JobProcessor {
             }
         } catch (Throwable ex) {
             pid = -1L;
+
+            logger.error("Get process pid failed!", ex);
+            log.error("Get process pid failed!", ex);
         }
         return pid;
     }
@@ -237,24 +245,44 @@ public class ShellProcessor implements JobProcessor {
      * Stop process for unix
      *
      * @param pid pid
-     * @throws IOException IOException
+     * @throws IOException          IOException
+     * @throws InterruptedException InterruptedException
      */
-    protected void stopProcessForUnix(Long pid) throws IOException {
+    protected void stopProcessForUnix(Long pid) throws IOException, InterruptedException {
+        this.stopChildProcessForUnix(pid);
+    }
+
+    /**
+     * Stop child process
+     *
+     * @param pid pid
+     * @throws IOException          IOException
+     * @throws InterruptedException IOException
+     */
+    protected void stopChildProcessForUnix(Long pid) throws IOException, InterruptedException {
+        // Find child pid
         List<String> commandKill = new ArrayList<>();
         commandKill.add("/bin/sh");
         commandKill.add("-c");
-        commandKill.add("kill");
-        commandKill.add("-9");
-        commandKill.add(String.format("-%d", pid));
-        ProcessBuilder pbk = new ProcessBuilder(commandKill);
-        Process stopProcess = pbk.start();
-        BufferedReader readerKill = new BufferedReader(this.getInputStreamReader(stopProcess.getInputStream()));
+        commandKill.add(String.format("ps axo pid,ppid| awk '{ if($2==%d) print$1}'", pid));
 
+        ProcessBuilder pb = new ProcessBuilder(commandKill);
+        Process psProcess = pb.start();
+        InputStream is = psProcess.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line;
-        while ((line = readerKill.readLine()) != null) {
-            logger.info("Stop unix result {}", line);
-            log.info("Stop unix result {}", line);
+
+        // Child pid list
+        while ((line = reader.readLine()) != null) {
+            stopChildProcessForUnix(Long.valueOf(line.trim()));
         }
+
+        // Kill current pid
+        ProcessBuilder killPb = new ProcessBuilder("kill", "-9", String.valueOf(pid));
+        killPb.start().waitFor();
+
+        logger.info("Unix stop success! pid={}", pid);
+        log.info("Unix stop success! pid={}", pid);
     }
 
     /**

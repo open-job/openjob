@@ -64,6 +64,9 @@ public class DelayThreadTaskProcessor implements Runnable {
             logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), new RuntimeException(ex));
             result.setResult(ex.getMessage());
         } finally {
+            // Remove job context
+            ThreadLocalUtil.removeJobContext();
+
             DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
             this.reportFinallyTaskStatus(result);
 

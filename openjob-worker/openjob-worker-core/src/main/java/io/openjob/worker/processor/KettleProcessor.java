@@ -1,5 +1,6 @@
 package io.openjob.worker.processor;
 
+import io.openjob.common.constant.ShellTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
 import io.openjob.common.util.JsonUtil;
@@ -7,6 +8,7 @@ import io.openjob.worker.context.JobContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,6 +44,22 @@ public class KettleProcessor extends ShellProcessor {
         logger.info("Kettle command={}", String.join(" ", params));
         log.info("Kettle command={}", String.join(" ", params));
         return params.toArray(new String[0]);
+    }
+
+    @Override
+    protected List<String> parseDefaultCommand(String type) {
+        List<String> params = new ArrayList<>();
+        if (ShellTypeEnum.UNIX.getType().equals(type)) {
+            // Unix
+            params.add("/bin/sh");
+        } else {
+            // Windows
+            params.add("cmd.exe");
+            params.add("/c");
+        }
+
+        this.type = type;
+        return params;
     }
 
     @Override
