@@ -135,7 +135,7 @@ public class WorkerConfig {
             serverHost = serverSplit[0];
             serverPort = Integer.valueOf(serverSplit[1]);
             log.info("Refresh server success! server={} port={}", serverHost, serverPort);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             log.error("Refresh server failed!", e);
         }
     }

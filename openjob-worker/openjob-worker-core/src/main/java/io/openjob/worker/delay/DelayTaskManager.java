@@ -3,6 +3,7 @@ package io.openjob.worker.delay;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class DelayTaskManager {
     public static final DelayTaskManager INSTANCE = new DelayTaskManager();
 
@@ -100,6 +102,14 @@ public class DelayTaskManager {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Delay task timeout executor run failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             Long timestamp = DateUtil.timestamp();
             this.delayTaskManager.taskId2Timeout.forEach((tid, time) -> {
                 if (time > timestamp) {

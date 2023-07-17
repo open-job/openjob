@@ -159,6 +159,14 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Task status checker failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;
@@ -192,6 +200,14 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Task failover puller failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;
