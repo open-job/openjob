@@ -112,6 +112,10 @@ public enum TaskStatusEnum {
         return SUCCESS.getStatus().equals(status);
     }
 
+    public static Boolean isFailed(Integer status) {
+        return FAILED.getStatus().equals(status);
+    }
+
     public static Boolean isDelayComplete(Integer status) {
         return DELAY_COMPLETE.contains(status);
     }

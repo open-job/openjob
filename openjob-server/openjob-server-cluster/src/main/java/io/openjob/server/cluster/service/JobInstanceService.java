@@ -1,6 +1,10 @@
 package io.openjob.server.cluster.service;
 
+import io.openjob.alarm.AlarmEvent;
+import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.util.DateUtil;
@@ -15,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,7 @@ public class JobInstanceService {
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
             this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
+            this.addAlarmEvent(statusRequest);
         }
 
         // Save job instance task
@@ -98,5 +104,20 @@ public class JobInstanceService {
         jobInstanceLog.setCreateTime(logRequest.getTime());
         jobInstanceLog.setUpdateTime(logRequest.getTime());
         this.jobInstanceLogDAO.save(jobInstanceLog);
+    }
+
+    protected void addAlarmEvent(WorkerJobInstanceStatusRequest statusRequest) {
+        if (InstanceStatusEnum.isFailed(statusRequest.getStatus())) {
+            AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+            alarmEventDTO.setJobId(statusRequest.getJobId());
+            alarmEventDTO.setInstanceId(String.valueOf(statusRequest.getJobInstanceId()));
+            alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_FAIL.getEvent());
+
+            // Event message
+            if (!CollectionUtils.isEmpty(statusRequest.getTaskRequestList())) {
+                alarmEventDTO.setMessage(statusRequest.getTaskRequestList().get(0).getResult());
+            }
+            AlarmEvent.add(alarmEventDTO);
+        }
     }
 }
