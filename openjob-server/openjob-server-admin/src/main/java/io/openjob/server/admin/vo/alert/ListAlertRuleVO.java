@@ -44,6 +44,7 @@ public class ListAlertRuleVO {
     @ApiModelProperty(value = "Create time", required = true)
     private Long createTime;
 
+    @Data
     public static class AlertRuleMetricsVO {
 
     }
