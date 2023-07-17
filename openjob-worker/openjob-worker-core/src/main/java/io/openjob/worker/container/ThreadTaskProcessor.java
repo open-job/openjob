@@ -89,6 +89,10 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
             log.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
         } finally {
+            // Remove job context
+            ThreadLocalUtil.removeJobContext();
+
+            // Report status
             this.reportTaskStatus(result, workerAddress);
         }
     }

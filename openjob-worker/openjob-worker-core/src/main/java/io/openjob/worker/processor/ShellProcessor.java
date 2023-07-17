@@ -74,7 +74,12 @@ public class ShellProcessor implements JobProcessor {
 
     @Override
     public ProcessResult postProcess(JobContext context) {
-        return null;
+        try {
+            this.executorService.shutdown();
+        } catch (Throwable throwable) {
+            log.error("Shell processor post failed!", throwable);
+        }
+        return ProcessResult.success();
     }
 
     @Override
