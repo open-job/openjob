@@ -1,5 +1,6 @@
 package io.openjob.common.request;
 
+import io.openjob.common.constant.FailStatusEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,6 +36,13 @@ public class WorkerDelayTaskRequest implements Serializable {
      * Task status.
      */
     private Integer status;
+
+    /**
+     * Fail status
+     *
+     * @see FailStatusEnum#getStatus()
+     */
+    private Integer failStatus;
 
     /**
      * Task result.

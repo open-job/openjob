@@ -40,6 +40,7 @@ public class DelayInstanceDAOTest extends RepositoryTest {
             delayInstance.setDelayParams("p");
             delayInstance.setDelayExtra("e");
             delayInstance.setStatus(1);
+            delayInstance.setFailStatus(0);
             delayInstance.setExecuteTime(DateUtil.timestamp());
             delayInstance.setDeleted(2);
             delayInstance.setDeleteTime(0L);

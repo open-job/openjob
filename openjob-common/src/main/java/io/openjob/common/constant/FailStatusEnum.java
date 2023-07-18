@@ -14,6 +14,11 @@ public enum FailStatusEnum {
     /**
      * Job or delay
      */
+    NONE(0, "None"),
+
+    /**
+     * Job or delay
+     */
     EXECUTE_FAIL(1, "Execute fail"),
 
     /**

@@ -19,9 +19,9 @@ CREATE TABLE `alert_rule`
 
 # `job_instance`
 # ------------------------------------------------------------
-ALTER TABLE `job_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '1'  COMMENT 'Fail status'  AFTER `status`;
+ALTER TABLE `job_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Fail status'  AFTER `status`;
 
 
 # `delay_instance`
 # ------------------------------------------------------------
-ALTER TABLE `delay_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '1'  COMMENT 'Delay fail status'  AFTER `status`;
+ALTER TABLE `delay_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Delay fail status'  AFTER `status`;

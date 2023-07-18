@@ -1,5 +1,7 @@
 package io.openjob.server.repository.entity;
 
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -48,7 +50,13 @@ public class DelayInstance {
     private String delayExtra;
 
     /**
-     * @see io.openjob.common.constant.TaskStatusEnum
+     * @see FailStatusEnum#getStatus()
+     */
+    @Column(name = "`fail_status`")
+    private Integer failStatus;
+
+    /**
+     * @see TaskStatusEnum#getStatus()
      */
     @Column(name = "`status`")
     private Integer status;

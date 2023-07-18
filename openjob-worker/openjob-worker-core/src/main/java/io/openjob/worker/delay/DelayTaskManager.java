@@ -69,18 +69,22 @@ public class DelayTaskManager {
         this.taskId2Future.remove(taskId);
     }
 
+    public Boolean contains(String taskId) {
+        return this.taskId2Future.containsKey(taskId) || this.taskId2Timeout.containsKey(taskId);
+    }
+
     /**
      * Stop and remove
      *
      * @param taskId taskId
      */
     public void stopAndRemoveTaskInstance(String taskId) {
+        // Remove
+        this.remove(taskId);
+
         // Stop task
         Optional.ofNullable(this.taskId2Future.get(taskId))
                 .ifPresent(f -> f.cancel(true));
-
-        // Remove
-        this.remove(taskId);
     }
 
     /**

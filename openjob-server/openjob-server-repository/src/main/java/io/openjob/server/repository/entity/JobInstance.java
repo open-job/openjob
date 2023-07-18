@@ -1,5 +1,6 @@
 package io.openjob.server.repository.entity;
 
+import io.openjob.common.constant.FailStatusEnum;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -22,7 +23,7 @@ public class JobInstance {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "job_instance_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "job_instance_id")})
     private Long id;
 
     /**
@@ -57,6 +58,12 @@ public class JobInstance {
 
     @Column(name = "`status`")
     private Integer status;
+
+    /**
+     * @see FailStatusEnum#getStatus()
+     */
+    @Column(name = "`fail_status`")
+    private Integer failStatus;
 
     /**
      * Job slots id.

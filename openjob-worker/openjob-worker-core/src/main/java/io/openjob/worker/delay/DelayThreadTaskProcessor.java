@@ -1,5 +1,6 @@
 package io.openjob.worker.delay;
 
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.common.util.DateUtil;
@@ -37,6 +38,7 @@ public class DelayThreadTaskProcessor implements Runnable {
         // Init job context
         ThreadLocalUtil.setJobContext(this.jobContext);
 
+        Integer failStatus = FailStatusEnum.NONE.getStatus();
         ProcessResult result = new ProcessResult(false);
         try {
             // Report running
@@ -57,18 +59,30 @@ public class DelayThreadTaskProcessor implements Runnable {
             result = this.processorHandler.process(this.jobContext);
             logger.info("Delay processor completed! taskId={}", this.jobContext.getDelayTaskId());
         } catch (InterruptedException ex) {
-            logger.info("Delay processor is interrupted(stop or timeout)! taskId={}", this.jobContext.getDelayTaskId());
-            result.setStatus(TaskStatusEnum.STOP);
-            result.setResult(ex.getMessage());
+            if (DelayTaskManager.INSTANCE.contains(this.jobContext.getDelayTaskId())) {
+                logger.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
+                result.setStatus(TaskStatusEnum.STOP);
+                result.setResult(ex.getMessage());
+            } else {
+                logger.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
+                result.setStatus(TaskStatusEnum.FAILED);
+                result.setResult(ex.getMessage());
+
+                // Timeout
+                failStatus = FailStatusEnum.EXECUTE_TIMEOUT.getStatus();
+            }
         } catch (Throwable ex) {
             logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), new RuntimeException(ex));
             result.setResult(ex.getMessage());
+
+            // Execute fail
+            failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } finally {
             // Remove job context
             ThreadLocalUtil.removeJobContext();
 
             DelayDAO.INSTANCE.updatePullSizeById(this.jobContext.getDelayId(), 1);
-            this.reportFinallyTaskStatus(result);
+            this.reportFinallyTaskStatus(result, failStatus);
 
             // Remove from task manager
             DelayTaskManager.INSTANCE.remove(this.jobContext.getDelayTaskId());
@@ -82,18 +96,20 @@ public class DelayThreadTaskProcessor implements Runnable {
         workerDelayTaskRequest.setDelayPid(this.jobContext.getDelayPid());
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(TaskStatusEnum.RUNNING.getStatus());
+        workerDelayTaskRequest.setFailStatus(FailStatusEnum.NONE.getStatus());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
         workerDelayTaskRequest.setCompleteTime(0L);
         DelayStatusReporter.report(workerDelayTaskRequest);
     }
 
-    private void reportFinallyTaskStatus(ProcessResult result) {
+    private void reportFinallyTaskStatus(ProcessResult result, Integer failStatus) {
         WorkerDelayTaskRequest workerDelayTaskRequest = new WorkerDelayTaskRequest();
         workerDelayTaskRequest.setTopic(this.jobContext.getDelayTopic());
         workerDelayTaskRequest.setDelayPid(this.jobContext.getDelayPid());
         workerDelayTaskRequest.setDelayId(this.jobContext.getDelayId());
         workerDelayTaskRequest.setTaskId(this.jobContext.getDelayTaskId());
         workerDelayTaskRequest.setStatus(result.getStatus().getStatus());
+        workerDelayTaskRequest.setFailStatus(failStatus);
         workerDelayTaskRequest.setResult(result.getResult());
         workerDelayTaskRequest.setWorkerAddress(WorkerConfig.getWorkerAddress());
 
