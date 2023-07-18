@@ -79,12 +79,12 @@ public class DelayTaskManager {
      * @param taskId taskId
      */
     public void stopAndRemoveTaskInstance(String taskId) {
-        // Remove
-        this.remove(taskId);
-
         // Stop task
         Optional.ofNullable(this.taskId2Future.get(taskId))
                 .ifPresent(f -> f.cancel(true));
+
+        // Remove
+        this.remove(taskId);
     }
 
     /**

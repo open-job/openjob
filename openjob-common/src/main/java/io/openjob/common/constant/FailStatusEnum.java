@@ -44,4 +44,8 @@ public enum FailStatusEnum {
 
     private final Integer status;
     private final String message;
+
+    public static Boolean isExecuteFail(Integer status) {
+        return EXECUTE_FAIL.getStatus().equals(status);
+    }
 }

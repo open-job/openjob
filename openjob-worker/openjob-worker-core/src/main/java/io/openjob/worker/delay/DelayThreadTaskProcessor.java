@@ -11,16 +11,19 @@ import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class DelayThreadTaskProcessor implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger("openjob");
@@ -58,24 +61,40 @@ public class DelayThreadTaskProcessor implements Runnable {
 
             result = this.processorHandler.process(this.jobContext);
             logger.info("Delay processor completed! taskId={}", this.jobContext.getDelayTaskId());
-        } catch (InterruptedException ex) {
-            if (DelayTaskManager.INSTANCE.contains(this.jobContext.getDelayTaskId())) {
-                logger.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
-                result.setStatus(TaskStatusEnum.STOP);
-                result.setResult(ex.getMessage());
-            } else {
-                logger.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
-                result.setStatus(TaskStatusEnum.FAILED);
-                result.setResult(ex.getMessage());
+            log.info("Delay processor completed! taskId={}", this.jobContext.getDelayTaskId());
+        } catch (InvocationTargetException invocationException) {
+            Throwable target = Objects.nonNull(invocationException.getTargetException()) ? invocationException.getTargetException() : invocationException;
+            // InterruptedException
+            if (target instanceof InterruptedException) {
+                // Stop
+                if (DelayTaskManager.INSTANCE.contains(this.jobContext.getDelayTaskId())) {
+                    logger.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
+                    log.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
+                    result.setStatus(TaskStatusEnum.STOP);
+                    result.setResult(target.getMessage());
+                    return;
+                }
 
                 // Timeout
+                logger.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
+                log.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
+                result.setStatus(TaskStatusEnum.FAILED);
+                result.setResult(target.getMessage());
                 failStatus = FailStatusEnum.EXECUTE_TIMEOUT.getStatus();
+                return;
             }
-        } catch (Throwable ex) {
-            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), new RuntimeException(ex));
-            result.setResult(ex.getMessage());
 
             // Execute fail
+            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            log.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            result.setResult(target.getMessage());
+            failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
+        } catch (Throwable throwable) {
+            // Execute fail
+            Throwable cause = Objects.nonNull(throwable.getCause()) ? throwable.getCause() : throwable;
+            logger.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            log.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            result.setResult(cause.getMessage());
             failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } finally {
             // Remove job context
