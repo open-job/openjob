@@ -1,28 +1,28 @@
 package io.openjob.server.cluster.executor;
 
-import io.openjob.common.request.WorkerHeartbeatRequest;
+import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.task.TaskQueue;
-import io.openjob.server.cluster.task.WorkerHeartConsumer;
+import io.openjob.server.cluster.task.WorkerDelayStatusConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
  * @author stelin swoft@qq.com
- * @since 1.0.3
+ * @since 1.0.6
  */
 @Slf4j
 @Component
-public class WorkerHeartbeatExecutor {
-    private final TaskQueue<WorkerHeartbeatRequest> queue;
+public class WorkerDelayStatusExecutor {
+    private final TaskQueue<WorkerDelayStatusRequest> queue;
 
     /**
      * New
      */
-    public WorkerHeartbeatExecutor() {
-        this.queue = new TaskQueue<>(0L, 64);
+    public WorkerDelayStatusExecutor() {
+        this.queue = new TaskQueue<>(0L, 1024);
 
         //Consumer
-        WorkerHeartConsumer consumer = new WorkerHeartConsumer(
+        WorkerDelayStatusConsumer consumer = new WorkerDelayStatusConsumer(
                 0L,
                 1,
                 16,
@@ -39,7 +39,7 @@ public class WorkerHeartbeatExecutor {
      *
      * @param request request
      */
-    public void submit(WorkerHeartbeatRequest request) {
+    public void submit(WorkerDelayStatusRequest request) {
         try {
             this.queue.submit(request);
         } catch (InterruptedException e) {
