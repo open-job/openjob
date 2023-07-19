@@ -4,6 +4,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.cluster.executor.WorkerJobInstanceExecutor;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
@@ -28,16 +29,24 @@ import java.util.stream.Collectors;
 @Log4j2
 public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
-
     private final JobInstanceLogDAO jobInstanceLogDAO;
-
     private final JobInstanceDAO jobInstanceDAO;
+    private final WorkerJobInstanceExecutor workerJobInstanceExecutor;
 
     @Autowired
-    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceDAO jobInstanceDAO) {
+    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO,
+                              JobInstanceLogDAO jobInstanceLogDAO,
+                              JobInstanceDAO jobInstanceDAO,
+                              WorkerJobInstanceExecutor workerJobInstanceExecutor) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.workerJobInstanceExecutor = workerJobInstanceExecutor;
+    }
+
+    @Transactional(rollbackFor = Exception.class, timeout = 1)
+    public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
+        this.workerJobInstanceExecutor.submit(statusRequest);
     }
 
     /**
@@ -46,7 +55,8 @@ public class JobInstanceService {
      * @param statusRequest status request.
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
+    public void handleConsumerInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
+        Long start = DateUtil.timestamp();
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
             this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
@@ -77,6 +87,8 @@ public class JobInstanceService {
         } catch (DataIntegrityViolationException | UnexpectedRollbackException exception) {
             log.warn("Data has been saved! {}", taskList.stream().map(JobInstanceTask::getTaskId).collect(Collectors.toList()));
         }
+
+        System.out.println("timetime="+(DateUtil.timestamp()-start));
     }
 
     /**
