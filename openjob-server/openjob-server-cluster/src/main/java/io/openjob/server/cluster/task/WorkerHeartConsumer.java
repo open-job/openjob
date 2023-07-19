@@ -5,6 +5,7 @@ import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;
 import io.openjob.server.cluster.service.WorkerHeartbeatService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @author stelin swoft@qq.com
  * @since 1.0.3
  */
+@Slf4j
 public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
 
     public WorkerHeartConsumer(Long id,
@@ -41,7 +43,11 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
 
         @Override
         public void run() {
-            OpenjobSpringContext.getBean(WorkerHeartbeatService.class).batchHeartbeat(this.tasks);
+            try {
+                OpenjobSpringContext.getBean(WorkerHeartbeatService.class).batchHeartbeat(this.tasks);
+            } catch (Throwable throwable) {
+                log.error("Worker heartbeat failed!", throwable);
+            }
         }
     }
 }
