@@ -56,7 +56,6 @@ public class JobInstanceService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void handleConsumerInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
-        Long start = DateUtil.timestamp();
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
             this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
@@ -87,8 +86,6 @@ public class JobInstanceService {
         } catch (DataIntegrityViolationException | UnexpectedRollbackException exception) {
             log.warn("Data has been saved! {}", taskList.stream().map(JobInstanceTask::getTaskId).collect(Collectors.toList()));
         }
-
-        System.out.println("timetime="+(DateUtil.timestamp()-start));
     }
 
     /**
