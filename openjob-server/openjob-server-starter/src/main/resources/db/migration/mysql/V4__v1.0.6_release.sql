@@ -1,4 +1,4 @@
-# `alert_rule`
+#`alert_rule`
 # ------------------------------------------------------------
 CREATE TABLE `alert_rule`
 (
@@ -17,11 +17,33 @@ CREATE TABLE `alert_rule`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-# `job_instance`
+#`admin_permission`
 # ------------------------------------------------------------
-ALTER TABLE `job_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Fail status'  AFTER `status`;
+INSERT INTO `admin_permission` (`id`, `pid`, `type`, `name`, `path`, `meta`, `hidden`, `sort`, `deleted`, `delete_time`, `update_time`, `create_time`)
+VALUES  (106, 0, 1, 'userProfile', '/personal', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.userProfile", "isLink": "", "isAffix": false, "isIframe": false, "component": "/personal/index", "isKeepAlive": true}', 1, 0, 2, 0, 1669972320, 1669972320),
+        (170, 0, 1, 'Alert', '/e', '{"icon": "ele-Setting", "roles": ["admin"], "title": "message.router.alert", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320),
+        (171, 170, 1, 'AlertRule', '/admin/alert/list', '{"icon": "ele-Connection", "roles": ["admin"], "title": "message.router.alertRule", "isLink": "", "isAffix": false, "isIframe": false, "component": "/alert/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320);
 
-
-# `delay_instance`
+#`admin_user`
 # ------------------------------------------------------------
-ALTER TABLE `delay_instance` ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Delay fail status'  AFTER `status`;
+ALTER TABLE `admin_user`
+    ADD `login_time` BIGINT(12) unsigned NOT NULL DEFAULT '0' COMMENT 'Login time'  AFTER `role_ids`;
+ALTER TABLE `admin_user`
+    ADD `login_ip` VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'Login IP'  AFTER `role_ids`;
+
+#`job`
+# ------------------------------------------------------------
+ALTER TABLE `job`
+    ADD `execute_timeout` INT(11)  NOT NULL  DEFAULT '0'  COMMENT 'Execute timeout'  AFTER `concurrency`;
+
+#`job_instance`
+# ------------------------------------------------------------
+ALTER TABLE `job_instance`
+    ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Fail status'  AFTER `status`;
+ALTER TABLE `job_instance`
+    ADD `execute_timeout` INT(11)  NOT NULL  DEFAULT '0'  COMMENT 'Execute timeout'  AFTER `concurrency`;
+
+#`delay_instance`
+# ------------------------------------------------------------
+ALTER TABLE `delay_instance`
+    ADD `fail_status` TINYINT(2)  NOT NULL  DEFAULT '0'  COMMENT 'Delay fail status'  AFTER `status`;
