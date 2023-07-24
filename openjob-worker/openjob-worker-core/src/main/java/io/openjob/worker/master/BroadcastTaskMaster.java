@@ -59,6 +59,9 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
                 e.printStackTrace();
             }
         });
+
+        // Add task manager
+        this.addTask2Manager();
     }
 
     protected void postProcess() {
@@ -66,12 +69,12 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     @Override
-    public void stop() {
+    public void stop(Integer type) {
         // Stop scheduled thread poll
         this.scheduledService.shutdown();
 
         // Stop master
-        super.stop();
+        super.stop(type);
     }
 
     @Override

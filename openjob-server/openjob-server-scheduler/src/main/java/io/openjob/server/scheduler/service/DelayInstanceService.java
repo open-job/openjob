@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.service;
 import io.openjob.alarm.AlarmEvent;
 import io.openjob.alarm.constant.AlarmEventConstant;
 import io.openjob.alarm.dto.AlarmEventDTO;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
@@ -27,7 +28,6 @@ import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,9 +112,15 @@ public class DelayInstanceService {
         statusList.forEach(s -> {
             if (TaskStatusEnum.isFailed(s.getStatus())) {
                 AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
-                alarmEventDTO.setJobId(s.getDelayId());
+                alarmEventDTO.setJobUniqueId(s.getTopic());
                 alarmEventDTO.setInstanceId(s.getTaskId());
-                alarmEventDTO.setName(AlarmEventConstant.DELAY_EXECUTE_FAIL.getEvent());
+
+                // Delay worker task status(fail/timeout)
+                if (FailStatusEnum.isExecuteFail(s.getFailStatus())) {
+                    alarmEventDTO.setName(AlarmEventConstant.DELAY_EXECUTE_FAIL.getEvent());
+                } else {
+                    alarmEventDTO.setName(AlarmEventConstant.DELAY_EXECUTE_TIMEOUT.getEvent());
+                }
 
                 // Event message
                 alarmEventDTO.setMessage(s.getResult());

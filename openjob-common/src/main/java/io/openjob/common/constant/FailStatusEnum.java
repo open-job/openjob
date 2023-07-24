@@ -48,4 +48,8 @@ public enum FailStatusEnum {
     public static Boolean isExecuteFail(Integer status) {
         return EXECUTE_FAIL.getStatus().equals(status);
     }
+
+    public static Boolean isExecuteTimeout(Integer status) {
+        return EXECUTE_TIMEOUT.getStatus().equals(status);
+    }
 }

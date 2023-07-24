@@ -4,6 +4,7 @@ import io.openjob.alarm.AlarmEvent;
 import io.openjob.alarm.constant.AlarmEventConstant;
 import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
@@ -54,7 +55,8 @@ public class JobInstanceService {
     public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
-            this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
+            // Update status
+            this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus(), statusRequest.getFailStatus());
             this.addAlarmEvent(statusRequest);
         }
 
@@ -93,7 +95,7 @@ public class JobInstanceService {
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Update job instance status.
-        this.jobInstanceDAO.updateStatusById(logRequest.getJobInstanceId(), logRequest.getStatus());
+        this.jobInstanceDAO.updateStatusById(logRequest.getJobInstanceId(), logRequest.getStatus(), FailStatusEnum.NONE.getStatus());
 
         JobInstanceLog jobInstanceLog = new JobInstanceLog();
         jobInstanceLog.setJobId(logRequest.getJobId());
@@ -109,7 +111,7 @@ public class JobInstanceService {
     protected void addAlarmEvent(WorkerJobInstanceStatusRequest statusRequest) {
         if (InstanceStatusEnum.isFailed(statusRequest.getStatus())) {
             AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
-            alarmEventDTO.setJobId(statusRequest.getJobId());
+            alarmEventDTO.setJobUniqueId(String.valueOf(statusRequest.getJobId()));
             alarmEventDTO.setInstanceId(String.valueOf(statusRequest.getJobInstanceId()));
             alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_FAIL.getEvent());
 

@@ -1,5 +1,6 @@
 package io.openjob.worker.container;
 
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.context.JobContext;
@@ -117,6 +118,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         request.setWorkerAddress(workerAddress);
         request.setMasterActorPath(this.jobContext.getMasterActorPath());
         request.setStatus(result.getStatus().getStatus());
+        request.setFailStatus(FailStatusEnum.NONE.getStatus());
         request.setResult(result.getResult());
 
         TaskStatusReporter.report(request);

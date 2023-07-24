@@ -49,9 +49,9 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateStatusById(Long id, Integer status) {
+    public Integer updateStatusById(Long id, Integer status, Integer failStatus) {
         long now = DateUtil.timestamp();
-        return this.jobInstanceRepository.update(id, status, now, now);
+        return this.jobInstanceRepository.update(id, status, failStatus, now, now);
     }
 
     @Override

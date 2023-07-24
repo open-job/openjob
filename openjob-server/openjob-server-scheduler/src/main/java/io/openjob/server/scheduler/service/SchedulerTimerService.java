@@ -2,6 +2,7 @@ package io.openjob.server.scheduler.service;
 
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
@@ -131,7 +132,7 @@ public class SchedulerTimerService {
 
         // Running to update.
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
-            //Fixed update last report time.otherwise repeat dispatch.
+            //Fixed update last report time. otherwise repeat dispatch.
             this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
         }
     }
@@ -146,7 +147,7 @@ public class SchedulerTimerService {
         // Exist one task.
         if (Objects.nonNull(jobInstance)) {
             this.addInstanceLog(task.getJobId(), task.getTaskId(), "Discard after task!");
-            this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus());
+            this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus(), FailStatusEnum.EXECUTE_DISCARD.getStatus());
             return;
         }
 

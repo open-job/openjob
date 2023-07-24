@@ -42,5 +42,5 @@ public interface TaskMaster {
     /**
      * Stop
      */
-    void stop();
+    void stop(Integer type);
 }

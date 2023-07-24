@@ -1,5 +1,6 @@
 package io.openjob.common.request;
 
+import io.openjob.common.constant.FailStatusEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,6 +37,12 @@ public class WorkerJobInstanceStatusRequest implements Serializable {
      * @see InstanceStatusEnum
      */
     private Integer status;
+
+    /**
+     * Fail status
+     * @see FailStatusEnum#getStatus()
+     */
+    private Integer failStatus;
 
     /**
      * Delivery id.

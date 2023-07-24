@@ -22,14 +22,15 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      *
      * @param id           id
      * @param status       status
+     * @param failStatus   failStatus
      * @param completeTime completeTime
      * @param updateTime   updateTime
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.status=?2,j.completeTime=?3,j.updateTime=?4 where j.id=?1")
-    Integer update(Long id, Integer status, Long completeTime, Long updateTime);
+    @Query(value = "update JobInstance as j set j.status=?2,j.failStatus=?3,j.completeTime=?4,j.updateTime=?5 where j.id=?1")
+    Integer update(Long id, Integer status, Integer failStatus, Long completeTime, Long updateTime);
 
     /**
      * Update for last report time.

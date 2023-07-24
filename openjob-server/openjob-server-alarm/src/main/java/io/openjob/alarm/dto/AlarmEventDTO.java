@@ -10,9 +10,9 @@ import lombok.Data;
 public class AlarmEventDTO {
 
     /**
-     * Job id or delay id
+     * Job id or delay topic
      */
-    private Long jobId;
+    private String jobUniqueId;
 
     /**
      * Job instance id or delay taskId

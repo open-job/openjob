@@ -77,6 +77,10 @@ public class AddJobRequest {
     private Integer failRetryInterval;
 
     @NotNull
+    @ApiModelProperty(value = "Job execute timeout", required = true)
+    private Integer executeTimeout;
+
+    @NotNull
     @ApiModelProperty(value = "Job execute concurrency, default(1)", required = true)
     private Integer concurrency;
 

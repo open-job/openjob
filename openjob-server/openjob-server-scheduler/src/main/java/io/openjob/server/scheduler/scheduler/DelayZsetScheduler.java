@@ -1,5 +1,8 @@
 package io.openjob.server.scheduler.scheduler;
 
+import io.openjob.alarm.AlarmEvent;
+import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceTaskLogFieldRequest;
@@ -176,6 +179,9 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
 
             // Append processor log.
             this.appendProcessorLog(taskIds);
+
+            // Add alarm event.
+            this.addAlarmEvent(list);
         }
 
         @Override
@@ -183,6 +189,27 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
             return CacheUtil.getTopicListKey(topic);
         }
 
+        /**
+         * Add alarm event
+         *
+         * @param list list
+         */
+        private void addAlarmEvent(List<DelayInstanceAddRequestDTO> list) {
+            list.forEach(d -> {
+                AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+                alarmEventDTO.setJobUniqueId(d.getTopic());
+                alarmEventDTO.setInstanceId(d.getTaskId());
+                alarmEventDTO.setName(AlarmEventConstant.DELAY_TASK_IGNORE.getEvent());
+                alarmEventDTO.setMessage("Delay task have reached the retry times and has been discarded!");
+                AlarmEvent.add(alarmEventDTO);
+            });
+        }
+
+        /**
+         * Append processor log.
+         *
+         * @param taskIds taskIds
+         */
         private void appendProcessorLog(List<String> taskIds) {
             try {
                 List<ProcessorLogDTO> processorLogs = taskIds.stream().map(tid -> {
