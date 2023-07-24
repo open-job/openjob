@@ -88,6 +88,7 @@ public class JobDAOImpl implements JobDAO {
                     j.setStatus(job.getStatus());
                     j.setFailRetryInterval(job.getFailRetryInterval());
                     j.setFailRetryTimes(job.getFailRetryTimes());
+                    j.setExecuteTimeout(job.getExecuteTimeout());
                     j.setConcurrency(job.getConcurrency());
                     j.setTimeExpression(job.getTimeExpression());
                     j.setTimeExpressionType(job.getTimeExpressionType());
