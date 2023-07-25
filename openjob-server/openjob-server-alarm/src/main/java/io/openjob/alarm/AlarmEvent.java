@@ -14,13 +14,13 @@ public class AlarmEvent {
     private static final TaskQueue<AlarmEventDTO> queue;
 
     static {
-        queue = new TaskQueue<>(0L, 512);
+        queue = new TaskQueue<>(0L, 1024);
         EventTaskConsumer consumer = new EventTaskConsumer(
                 0L,
                 1,
-                8,
+                4,
                 "Openjob-heartbeat-executor",
-                50,
+                1024,
                 "Openjob-heartbeat-consumer",
                 queue
         );

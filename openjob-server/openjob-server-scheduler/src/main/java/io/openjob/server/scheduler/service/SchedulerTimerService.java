@@ -1,5 +1,8 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.alarm.AlarmEvent;
+import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
@@ -20,6 +23,7 @@ import io.openjob.server.scheduler.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -149,11 +153,23 @@ public class SchedulerTimerService {
         if (Objects.nonNull(jobInstance)) {
             this.addInstanceLog(task.getJobId(), task.getTaskId(), "Discard after task!");
             this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus(), FailStatusEnum.EXECUTE_DISCARD.getStatus());
+
+            // Add alarm event.
+            this.addAlarmEvent(task);
             return;
         }
 
         // Do run.
         this.doRun(task, Collections.emptySet());
+    }
+
+    private void addAlarmEvent(SchedulerTimerTask task) {
+        AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+        alarmEventDTO.setJobUniqueId(String.valueOf(task.getJobId()));
+        alarmEventDTO.setInstanceId(String.valueOf(task.getTaskId()));
+        alarmEventDTO.setName(AlarmEventConstant.JOB_DISCARD.getEvent());
+        alarmEventDTO.setMessage("Discard after task!");
+        AlarmEvent.add(alarmEventDTO);
     }
 
     private void doOverlay(SchedulerTimerTask task) {
