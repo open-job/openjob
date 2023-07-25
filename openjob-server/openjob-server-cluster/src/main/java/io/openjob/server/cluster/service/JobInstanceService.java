@@ -113,7 +113,13 @@ public class JobInstanceService {
             AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
             alarmEventDTO.setJobUniqueId(String.valueOf(statusRequest.getJobId()));
             alarmEventDTO.setInstanceId(String.valueOf(statusRequest.getJobInstanceId()));
-            alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_FAIL.getEvent());
+
+            // Fail status
+            if (FailStatusEnum.isExecuteTimeout(statusRequest.getFailStatus())) {
+                alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_TIMEOUT.getEvent());
+            } else {
+                alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_FAIL.getEvent());
+            }
 
             // Event message
             if (!CollectionUtils.isEmpty(statusRequest.getTaskRequestList())) {

@@ -25,6 +25,7 @@ public class SchedulerTimerTask extends AbstractTimerTask {
     protected String executeType;
     protected Integer failRetryTimes;
     protected Integer failRetryInterval;
+    protected Integer executeTimeout;
     protected Integer concurrency;
     protected String timeExpressionType;
     protected String timeExpression;

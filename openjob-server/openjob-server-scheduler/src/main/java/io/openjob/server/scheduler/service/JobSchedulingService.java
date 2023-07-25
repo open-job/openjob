@@ -235,6 +235,7 @@ public class JobSchedulingService {
         schedulerTask.setExecuteType(js.getExecuteType());
         schedulerTask.setFailRetryTimes(js.getFailRetryTimes());
         schedulerTask.setFailRetryInterval(js.getFailRetryInterval());
+        schedulerTask.setExecuteTimeout(js.getExecuteTimeout());
         schedulerTask.setConcurrency(js.getConcurrency());
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());

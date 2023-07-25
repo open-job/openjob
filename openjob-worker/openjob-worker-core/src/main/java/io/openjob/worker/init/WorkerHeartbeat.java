@@ -120,7 +120,7 @@ public class WorkerHeartbeat {
 
         // Refresh delay.
         if (WorkerConfig.getDelayEnable()) {
-            this.openjobWorker.getDelayManager().refresh(heartbeatResponse.getSystemResponse());
+            this.openjobWorker.getWorkerInitializer().getDelayManager().refresh(heartbeatResponse.getSystemResponse());
         }
     }
 

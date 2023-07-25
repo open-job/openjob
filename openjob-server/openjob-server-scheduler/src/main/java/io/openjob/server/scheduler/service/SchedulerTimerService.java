@@ -87,6 +87,7 @@ public class SchedulerTimerService {
         submitReq.setConcurrency(task.getConcurrency());
         submitReq.setTimeExpressionType(task.getTimeExpressionType());
         submitReq.setTimeExpression(task.getTimeExpression());
+        submitReq.setExecuteTimeout(task.getExecuteTimeout());
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {

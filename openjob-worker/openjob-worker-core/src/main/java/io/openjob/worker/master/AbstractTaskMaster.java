@@ -172,6 +172,13 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Remove task from manager
         this.removeTaskFromManager();
+
+        // Complete task
+        try {
+            this.completeTask();
+        } catch (Throwable e) {
+            log.error("Stop and complete task failed!", e);
+        }
     }
 
     @Override
@@ -190,11 +197,15 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected void addTask2Manager() {
-        TaskMasterManager.INSTANCE.addTask(this.jobInstanceDTO.getJobInstanceId(), DateUtil.timestamp());
+        if (this.jobInstanceDTO.getExecuteTimeout() > 0) {
+            TaskMasterManager.INSTANCE.addTask(this.jobInstanceDTO.getJobInstanceId(), DateUtil.timestamp() + this.jobInstanceDTO.getExecuteTimeout());
+        }
     }
 
     protected void removeTaskFromManager() {
-        TaskMasterManager.INSTANCE.remove(this.jobInstanceDTO.getJobInstanceId());
+        if (this.jobInstanceDTO.getExecuteTimeout() > 0) {
+            TaskMasterManager.INSTANCE.remove(this.jobInstanceDTO.getJobInstanceId());
+        }
     }
 
     protected Long acquireTaskId() {
@@ -261,7 +272,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         taskRequest.setTaskId(task.getTaskId());
         taskRequest.setTaskName(task.getTaskName());
         taskRequest.setParentTaskId(task.getTaskParentId());
-        taskRequest.setStatus(task.getStatus());
+        taskRequest.setStatus(this.getTaskStatus(task.getStatus()));
         taskRequest.setResult(task.getResult());
         taskRequest.setWorkerAddress(task.getWorkerAddress());
         taskRequest.setCreateTime(task.getCreateTime());
@@ -279,10 +290,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         long circleId = this.circleIdGenerator.get();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
 
-        // Failed task count.
-        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
-        int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
-        int failStatus = (JobInstanceStopEnum.isTimeout(this.stopping.get())) ? FailStatusEnum.EXECUTE_TIMEOUT.getStatus() : FailStatusEnum.NONE.getStatus();
+        // Instance status and fail status
+        int instanceStatus = this.getInstanceStatus();
+        int failStatus = this.getFailStatus();
 
         long size = 100;
         long page = CommonConstant.FIRST_PAGE;
@@ -328,6 +338,41 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                 break;
             }
         }
+    }
+
+    protected Integer getInstanceStatus() {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get())) {
+            return InstanceStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get())) {
+            return InstanceStatusEnum.FAIL.getStatus();
+        }
+
+        // Not stop
+        long circleId = this.circleIdGenerator.get();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
+        return failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
+    }
+
+    protected Integer getFailStatus() {
+        return (JobInstanceStopEnum.isTimeout(this.stopping.get())) ? FailStatusEnum.EXECUTE_TIMEOUT.getStatus() : FailStatusEnum.NONE.getStatus();
+    }
+
+    protected Integer getTaskStatus(Integer status) {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
+            return TaskStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
+            return TaskStatusEnum.FAILED.getStatus();
+        }
+        return status;
     }
 
     protected void circleSecondDelayTask() throws InterruptedException {

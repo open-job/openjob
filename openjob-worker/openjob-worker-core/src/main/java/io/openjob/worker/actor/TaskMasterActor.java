@@ -59,6 +59,7 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setProcessorInfo(submitReq.getProcessorInfo());
         jobInstanceDTO.setFailRetryInterval(submitReq.getFailRetryInterval());
         jobInstanceDTO.setFailRetryTimes(submitReq.getFailRetryTimes());
+        jobInstanceDTO.setExecuteTimeout(submitReq.getExecuteTimeout());
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
