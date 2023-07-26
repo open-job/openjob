@@ -47,7 +47,7 @@ public class DistributeStatusConsumer extends BaseConsumer<ContainerTaskStatusRe
                     .forEach((status, requestList) -> {
                         List<Task> updateList = requestList.stream().map(r -> {
                             String taskUniqueId = r.getTaskUniqueId();
-                            return new Task(taskUniqueId, r.getStatus());
+                            return new Task(taskUniqueId, r.getStatus(), r.getResult());
                         }).collect(Collectors.toList());
 
                         try {

@@ -124,11 +124,11 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
 
         TaskStatusReporter.report(request);
     }
-    private  String getStackTraceAsString(Throwable e) {
+
+    private String getStackTraceAsString(Throwable e) {
         StringBuffer sb = new StringBuffer();
-        Arrays.stream(e.getStackTrace()).forEach(s->{
-            sb.append(s.toString()).append("\n");
-        });
+        sb.append(e.getClass().getName()).append(": ").append(e.getMessage()).append("\n");
+        Arrays.stream(e.getStackTrace()).forEach(s -> sb.append(s.toString()).append("\n"));
         return sb.toString();
     }
 }

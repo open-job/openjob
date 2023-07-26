@@ -129,7 +129,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Update list
         List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
             String taskUniqueId = s.getTaskUniqueId();
-            return new Task(taskUniqueId, s.getStatus());
+            return new Task(taskUniqueId, s.getStatus(), s.getResult());
         }).collect(Collectors.toList());
 
         // Update by status.
