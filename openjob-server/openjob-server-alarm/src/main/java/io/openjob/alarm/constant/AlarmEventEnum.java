@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum AlarmEventConstant {
+public enum AlarmEventEnum {
     JOB_EXECUTE_FAIL("job_001", "Job execute failed"),
     JOB_DISCARD("job_002", "Job discard"),
     JOB_EXECUTE_TIMEOUT("job_003", "Job execute timeout"),

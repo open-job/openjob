@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
 import io.openjob.alarm.AlarmEvent;
-import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.constant.AlarmEventEnum;
 import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.constant.TaskStatusEnum;
@@ -199,7 +199,7 @@ public class DelayZsetScheduler extends AbstractDelayZsetScheduler {
                 AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
                 alarmEventDTO.setJobUniqueId(d.getTopic());
                 alarmEventDTO.setInstanceId(d.getTaskId());
-                alarmEventDTO.setName(AlarmEventConstant.DELAY_TASK_IGNORE.getEvent());
+                alarmEventDTO.setName(AlarmEventEnum.DELAY_TASK_IGNORE.getEvent());
                 alarmEventDTO.setMessage("Delay task have reached the retry times and has been discarded!");
                 AlarmEvent.add(alarmEventDTO);
             });

@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.alarm.AlarmEvent;
-import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.constant.AlarmEventEnum;
 import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
@@ -116,9 +116,9 @@ public class JobInstanceService {
 
             // Fail status
             if (FailStatusEnum.isExecuteTimeout(statusRequest.getFailStatus())) {
-                alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_TIMEOUT.getEvent());
+                alarmEventDTO.setName(AlarmEventEnum.JOB_EXECUTE_TIMEOUT.getEvent());
             } else {
-                alarmEventDTO.setName(AlarmEventConstant.JOB_EXECUTE_FAIL.getEvent());
+                alarmEventDTO.setName(AlarmEventEnum.JOB_EXECUTE_FAIL.getEvent());
             }
 
             // Event message

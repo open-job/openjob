@@ -12,6 +12,7 @@ import io.openjob.server.admin.vo.delay.AddDelayVO;
 import io.openjob.server.admin.vo.delay.DeleteDelayVO;
 import io.openjob.server.admin.vo.delay.ListDelayVO;
 import io.openjob.server.admin.vo.delay.UpdateDelayVO;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -26,7 +27,7 @@ import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.scheduler.dto.TopicFailCounterDTO;
 import io.openjob.server.scheduler.dto.TopicReadyCounterDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
-import io.openjob.server.scheduler.manager.DelayManager;
+import io.openjob.server.scheduler.scheduler.DelayScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,16 +50,22 @@ public class DelayServiceImpl implements DelayService {
     private final AppDAO appDAO;
     private final DelayDAO delayDAO;
     private final DelayInstanceDAO delayInstanceDAO;
-    private final DelayManager delayManager;
-
+    private final DelayScheduler delayScheduler;
+    private final RefreshData refreshData;
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayServiceImpl(DelayDAO delayDAO, AppDAO appDAO, DelayInstanceDAO delayInstanceDAO, DelayManager delayManager, DelayInstanceScheduler delayInstanceScheduler) {
+    public DelayServiceImpl(DelayDAO delayDAO,
+                            AppDAO appDAO,
+                            DelayInstanceDAO delayInstanceDAO,
+                            DelayScheduler delayScheduler,
+                            RefreshData refreshData,
+                            DelayInstanceScheduler delayInstanceScheduler) {
         this.delayDAO = delayDAO;
         this.appDAO = appDAO;
         this.delayInstanceDAO = delayInstanceDAO;
-        this.delayManager = delayManager;
+        this.delayScheduler = delayScheduler;
+        this.refreshData = refreshData;
         this.delayInstanceScheduler = delayInstanceScheduler;
     }
 
@@ -84,8 +91,11 @@ public class DelayServiceImpl implements DelayService {
         // Update delay
         this.delayDAO.updateCidById(delayId, failDelayId);
 
+        // Refresh delay cache
+        this.delayScheduler.refreshDelayCache(addRequest.getTopic(), delayId, failDelayId);
+
         // Refresh delay version
-        this.delayManager.refreshDelayVersion(addRequest.getTopic(), delayId, failDelayId);
+        this.refreshData.refreshDelayVersion();
         return new AddDelayVO();
     }
 
@@ -146,14 +156,17 @@ public class DelayServiceImpl implements DelayService {
             CodeEnum.DELAY_DELETE_INVALID.throwException();
         }
 
-        // Refresh delay version
+        // Refresh delay cache
         Delay delay = this.delayDAO.findById(deleteDelayRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Delay is not exist! id=" + deleteDelayRequest.getId()));
-        this.delayManager.refreshDelayVersion(delay.getTopic(), delay.getId(), delay.getCid());
+        this.delayScheduler.refreshDelayCache(delay.getTopic(), delay.getId(), delay.getCid());
 
         // Delete
         this.delayDAO.deleteById(deleteDelayRequest.getId());
         this.delayDAO.deleteById(deleteDelayRequest.getCid());
+
+        // Refresh delay version
+        this.refreshData.refreshDelayVersion();
         return new DeleteDelayVO();
     }
 
@@ -169,10 +182,10 @@ public class DelayServiceImpl implements DelayService {
         Delay delay = BeanMapperUtil.map(updateDelayRequest, Delay.class);
         this.delayDAO.update(delay);
 
-        // Refresh delay version
+        // Refresh delay cache
         Delay queryDelay = this.delayDAO.findById(updateDelayRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Delay is not exist! id=" + updateDelayRequest.getId()));
-        this.delayManager.refreshDelayVersion(queryDelay.getTopic(), queryDelay.getId(), queryDelay.getCid());
+        this.delayScheduler.refreshDelayCache(queryDelay.getTopic(), queryDelay.getId(), queryDelay.getCid());
 
         // Fail delay
         Delay failDelay = BeanMapperUtil.map(updateDelayRequest, Delay.class);
@@ -181,6 +194,9 @@ public class DelayServiceImpl implements DelayService {
         failDelay.setTopic(DelayUtil.getFailDelayTopic(updateDelayRequest.getTopic()));
         failDelay.setCid(0L);
         this.delayDAO.update(failDelay);
+
+        // Refresh delay version
+        this.refreshData.refreshDelayVersion();
         return new UpdateDelayVO();
     }
 }

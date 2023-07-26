@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import io.openjob.server.repository.entity.AlertRule;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.Job;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.function.Function;
  * @author stelin swoft@qq.com
  * @since 1.0.6
  */
+@Slf4j
 public class AlarmContext {
 
     /**
@@ -33,14 +35,17 @@ public class AlarmContext {
 
     public static synchronized void refreshAlarmRules() {
         ALARM_RULES.clear();
+        log.info("Refresh alarm rules success!");
     }
 
-    public static synchronized void refreshJobMAP() {
+    public static synchronized void refreshJobMap() {
         JOB_MAP.clear();
+        log.info("Refresh alarm job map success!");
     }
 
     public static synchronized void refreshDelayMap() {
         DELAY_MAP.clear();
+        log.info("Refresh alarm delay map success!");
     }
 
     public static List<AlertRule> getAlarmRules() {

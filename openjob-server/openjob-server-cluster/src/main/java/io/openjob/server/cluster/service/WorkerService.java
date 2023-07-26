@@ -8,10 +8,9 @@ import io.openjob.common.request.WorkerStopRequest;
 import io.openjob.common.response.ServerWorkerStartResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
-import io.openjob.server.cluster.constant.ClusterConstant;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
-import io.openjob.server.cluster.manager.RefreshManager;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.util.SlotsUtil;
@@ -45,10 +44,10 @@ public class WorkerService {
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
     private final ClusterProperties clusterProperties;
-    private final RefreshManager refreshManager;
+    private final RefreshData refreshManager;
 
     @Autowired
-    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ClusterProperties clusterProperties, RefreshManager refreshManager) {
+    public WorkerService(WorkerDAO workerDAO, AppDAO appDAO, ClusterProperties clusterProperties, RefreshData refreshManager) {
         this.workerDAO = workerDAO;
         this.appDAO = appDAO;
         this.clusterProperties = clusterProperties;

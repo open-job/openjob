@@ -1,7 +1,7 @@
 package io.openjob.server.scheduler.service;
 
 import io.openjob.alarm.AlarmEvent;
-import io.openjob.alarm.constant.AlarmEventConstant;
+import io.openjob.alarm.constant.AlarmEventEnum;
 import io.openjob.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
@@ -117,9 +117,9 @@ public class DelayInstanceService {
 
                 // Delay worker task status(fail/timeout)
                 if (FailStatusEnum.isExecuteFail(s.getFailStatus())) {
-                    alarmEventDTO.setName(AlarmEventConstant.DELAY_EXECUTE_FAIL.getEvent());
+                    alarmEventDTO.setName(AlarmEventEnum.DELAY_EXECUTE_FAIL.getEvent());
                 } else {
-                    alarmEventDTO.setName(AlarmEventConstant.DELAY_EXECUTE_TIMEOUT.getEvent());
+                    alarmEventDTO.setName(AlarmEventEnum.DELAY_EXECUTE_TIMEOUT.getEvent());
                 }
 
                 // Event message

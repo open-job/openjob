@@ -24,6 +24,7 @@ import io.openjob.server.admin.vo.job.ListJobVO;
 import io.openjob.server.admin.vo.job.TimeExpressionVO;
 import io.openjob.server.admin.vo.job.UpdateJobStatusVO;
 import io.openjob.server.admin.vo.job.UpdateJobVO;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.common.cron.CronExpression;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
@@ -42,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
@@ -63,13 +65,15 @@ public class JobServiceImpl implements JobService {
     private final JobDAO jobDAO;
     private final AppDAO appDAO;
     private final JobInstanceDAO jobInstanceDAO;
+    private final RefreshData refreshData;
     private final JobSchedulingService jobSchedulingService;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobInstanceDAO jobInstanceDAO, JobSchedulingService jobSchedulingService) {
+    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobInstanceDAO jobInstanceDAO, RefreshData refreshData, JobSchedulingService jobSchedulingService) {
         this.jobDAO = jobDAO;
         this.appDAO = appDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.refreshData = refreshData;
         this.jobSchedulingService = jobSchedulingService;
     }
 
@@ -95,6 +99,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UpdateJobVO update(UpdateJobRequest updateJobRequest) {
         // Pre handle job
         this.preHandleJob(updateJobRequest);
@@ -117,7 +122,11 @@ public class JobServiceImpl implements JobService {
             updateJob.setNextExecuteTime(Long.valueOf(updateJobRequest.getTimeExpression()));
         }
 
+        // Update
         this.jobDAO.update(updateJob);
+
+        // Refresh cluster version.
+        this.refreshData.refreshSystemClusterVersion();
         return new UpdateJobVO();
     }
 
