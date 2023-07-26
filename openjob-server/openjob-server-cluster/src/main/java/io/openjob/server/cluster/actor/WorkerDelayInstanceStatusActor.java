@@ -4,6 +4,7 @@ import io.openjob.common.actor.BaseActor;
 import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
+import io.openjob.server.cluster.service.WorkerDelayService;
 import io.openjob.server.scheduler.service.DelayInstanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,11 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkerDelayInstanceStatusActor extends BaseActor {
 
-    private final DelayInstanceService delayInstanceService;
+    private final WorkerDelayService workerDelayService;
 
     @Autowired
-    public WorkerDelayInstanceStatusActor(DelayInstanceService delayInstanceService) {
-        this.delayInstanceService = delayInstanceService;
+    public WorkerDelayInstanceStatusActor(WorkerDelayService workerDelayService) {
+        this.workerDelayService = workerDelayService;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class WorkerDelayInstanceStatusActor extends BaseActor {
      * @param statusRequest statusRequest
      */
     public void handleDelayStatus(WorkerDelayStatusRequest statusRequest) {
-        this.delayInstanceService.handleDelayStatus(statusRequest);
+        this.workerDelayService.handleDelayStatus(statusRequest);
 
         ServerResponse serverResponse = new ServerResponse(statusRequest.getDeliveryId());
         getSender().tell(Result.success(serverResponse), getSelf());

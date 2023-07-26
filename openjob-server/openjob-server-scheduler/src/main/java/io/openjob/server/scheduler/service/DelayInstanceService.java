@@ -101,7 +101,7 @@ public class DelayInstanceService {
      *
      * @param workerDelayStatusRequest workerDelayStatusRequest
      */
-    public void handleDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
+    public void handleConsumerDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
         List<DelayInstanceStatusRequestDTO> statusList = BeanMapperUtil.mapList(workerDelayStatusRequest.getTaskList(), WorkerDelayTaskRequest.class, DelayInstanceStatusRequestDTO.class);
 
         this.addAlarmEvent(statusList);

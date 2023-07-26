@@ -114,6 +114,7 @@ public abstract class BaseConsumer<T> {
                 },
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
+        consumerExecutor.allowCoreThreadTimeOut(true);
 
         this.pullExecutor = new ThreadPoolExecutor(
                 1,

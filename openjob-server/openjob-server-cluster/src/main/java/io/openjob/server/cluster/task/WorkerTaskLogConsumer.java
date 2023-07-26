@@ -5,6 +5,7 @@ import io.openjob.common.request.WorkerJobInstanceTaskLogRequest;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;
 import io.openjob.server.cluster.service.JobInstanceTaskLogService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @author stelin swoft@qq.com
  * @since 1.0.3
  */
+@Slf4j
 public class WorkerTaskLogConsumer extends BaseConsumer<WorkerJobInstanceTaskLogRequest> {
 
     public WorkerTaskLogConsumer(Long id,
@@ -38,7 +40,11 @@ public class WorkerTaskLogConsumer extends BaseConsumer<WorkerJobInstanceTaskLog
 
         @Override
         public void run() {
-            OpenjobSpringContext.getBean(JobInstanceTaskLogService.class).batchInstanceTaskLog(this.tasks);
+            try {
+                OpenjobSpringContext.getBean(JobInstanceTaskLogService.class).batchInstanceTaskLog(this.tasks);
+            } catch (Throwable throwable) {
+                log.error("Job instance log failed!", throwable);
+            }
         }
     }
 }
