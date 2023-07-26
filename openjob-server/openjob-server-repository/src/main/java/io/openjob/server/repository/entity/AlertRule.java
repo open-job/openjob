@@ -1,7 +1,9 @@
 package io.openjob.server.repository.entity;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.openjob.common.util.JsonUtil;
 import io.openjob.server.repository.constant.AlertMethodEnum;
-import io.openjob.server.repository.constant.AlertRuleStatus;
+import io.openjob.server.repository.constant.AlertRuleStatusEnum;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -12,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * @author stelin swoft@qq.com
@@ -68,7 +71,7 @@ public class AlertRule {
     /**
      * Status
      *
-     * @see AlertRuleStatus#getStatus()
+     * @see AlertRuleStatusEnum#getStatus()
      */
     @Column(name = "`status`")
     private Integer status;
@@ -96,4 +99,14 @@ public class AlertRule {
      */
     @Column(name = "`update_time`")
     private Long updateTime;
+
+    public List<Long> getNamespaceAppIdsByJson() {
+        return JsonUtil.decode(this.namespaceAppIds, new TypeReference<List<Long>>() {
+        });
+    }
+
+    public List<String> getEventsByJson() {
+        return JsonUtil.decode(this.getEvents(), new TypeReference<List<String>>() {
+        });
+    }
 }

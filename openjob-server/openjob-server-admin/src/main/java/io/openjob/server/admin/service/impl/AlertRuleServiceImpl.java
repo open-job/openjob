@@ -114,12 +114,10 @@ public class AlertRuleServiceImpl implements AlertRuleService {
             listAlertRuleVO.setUpdateTime(r.getUpdateTime());
 
             // App ids
-            listAlertRuleVO.setNamespaceAppIds(JsonUtil.decode(r.getNamespaceAppIds(), new TypeReference<List<Integer>>() {
-            }));
+            listAlertRuleVO.setNamespaceAppIds(r.getNamespaceAppIdsByJson());
 
             // Events
-            listAlertRuleVO.setEvents(JsonUtil.decode(r.getEvents(), new TypeReference<List<String>>() {
-            }));
+            listAlertRuleVO.setEvents(r.getEventsByJson());
 
             // Metrics
             listAlertRuleVO.setMetrics(JsonUtil.decode(r.getMetrics(), new TypeReference<List<ListAlertRuleVO.AlertRuleMetricsVO>>() {

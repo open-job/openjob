@@ -21,7 +21,7 @@ public class ListAlertRuleVO {
     private String name;
 
     @ApiModelProperty(value = "Name", required = true)
-    private List<Integer> namespaceAppIds;
+    private List<Long> namespaceAppIds;
 
     @ApiModelProperty(value = "Events")
     private List<String> events;

@@ -1,6 +1,8 @@
 package io.openjob.alarm.task;
 
 import io.openjob.alarm.dto.AlarmEventDTO;
+import io.openjob.alarm.service.AlarmService;
+import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,11 @@ public class EventTaskConsumer extends BaseConsumer<AlarmEventDTO> {
 
         @Override
         public void run() {
-            System.out.println(tasks);
+            try {
+                OpenjobSpringContext.getBean(AlarmService.class).alarm(this.tasks);
+            } catch (Throwable throwable) {
+                log.error("Alarm event consume failed!", throwable);
+            }
         }
     }
 }

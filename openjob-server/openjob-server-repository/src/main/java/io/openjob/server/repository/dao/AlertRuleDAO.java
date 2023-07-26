@@ -3,6 +3,8 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.entity.AlertRule;
 
+import java.util.List;
+
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.5
@@ -39,6 +41,13 @@ public interface AlertRuleDAO {
      * @return Long
      */
     Long update(AlertRule alertRule);
+
+    /**
+     * Get enable list.
+     *
+     * @return list
+     */
+    List<AlertRule> getEnableList();
 
     /**
      * Page list

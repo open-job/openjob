@@ -5,11 +5,13 @@ import io.openjob.server.repository.entity.AlertRule;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.Job;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author stelin swoft@qq.com
@@ -48,7 +50,10 @@ public class AlarmContext {
         log.info("Refresh alarm delay map success!");
     }
 
-    public static List<AlertRule> getAlarmRules() {
+    public static synchronized List<AlertRule> getAlarmRules(Supplier<List<AlertRule>> supplier) {
+        if (CollectionUtils.isEmpty(ALARM_RULES)) {
+            ALARM_RULES.addAll(supplier.get());
+        }
         return ALARM_RULES;
     }
 
