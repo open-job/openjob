@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
- * @deprecated
  */
 @Component
 @Log4j2
