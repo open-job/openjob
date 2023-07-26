@@ -1,4 +1,4 @@
-package io.openjob.alarm.dto;
+package io.openjob.server.alarm.dto;
 
 import io.openjob.server.repository.entity.AlertRule;
 import io.openjob.server.repository.entity.Delay;

@@ -1,8 +1,8 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.alarm.AlarmEvent;
-import io.openjob.alarm.constant.AlarmEventEnum;
-import io.openjob.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.AlarmEvent;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;

@@ -1,6 +1,6 @@
-package io.openjob.alarm.channel;
+package io.openjob.server.alarm.channel;
 
-import io.openjob.alarm.dto.AlarmDTO;
+import io.openjob.server.alarm.dto.AlarmDTO;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.6
  */
 @Component
-public class FeishuChannel implements AlarmChannel {
+public class WecomChannel implements AlarmChannel {
     @Override
     public void send(AlarmDTO alarmDTO) {
 
@@ -17,6 +17,6 @@ public class FeishuChannel implements AlarmChannel {
 
     @Override
     public AlertMethodEnum channel() {
-        return AlertMethodEnum.FEISHU;
+        return AlertMethodEnum.WECOM;
     }
 }

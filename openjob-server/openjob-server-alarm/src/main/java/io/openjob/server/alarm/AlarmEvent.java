@@ -1,7 +1,7 @@
-package io.openjob.alarm;
+package io.openjob.server.alarm;
 
-import io.openjob.alarm.dto.AlarmEventDTO;
-import io.openjob.alarm.task.EventTaskConsumer;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.task.EventTaskConsumer;
 import io.openjob.common.task.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 

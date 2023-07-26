@@ -1,4 +1,4 @@
-package io.openjob.alarm.constant;
+package io.openjob.server.alarm.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

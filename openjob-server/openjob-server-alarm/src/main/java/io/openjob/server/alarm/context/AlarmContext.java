@@ -1,4 +1,4 @@
-package io.openjob.alarm.context;
+package io.openjob.server.alarm.context;
 
 import com.google.common.collect.Maps;
 import io.openjob.server.repository.entity.AlertRule;

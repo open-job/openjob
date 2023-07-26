@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.data;
 
-import io.openjob.alarm.context.AlarmContext;
+import io.openjob.server.alarm.context.AlarmContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.exception.ClusterNodeOperatingException;
 import io.openjob.server.cluster.util.ClusterUtil;

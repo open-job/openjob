@@ -1,7 +1,7 @@
-package io.openjob.alarm.task;
+package io.openjob.server.alarm.task;
 
-import io.openjob.alarm.dto.AlarmEventDTO;
-import io.openjob.alarm.service.AlarmService;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.service.AlarmService;
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;

@@ -1,6 +1,6 @@
-package io.openjob.alarm.channel;
+package io.openjob.server.alarm.channel;
 
-import io.openjob.alarm.dto.AlarmDTO;
+import io.openjob.server.alarm.dto.AlarmDTO;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 
 /**

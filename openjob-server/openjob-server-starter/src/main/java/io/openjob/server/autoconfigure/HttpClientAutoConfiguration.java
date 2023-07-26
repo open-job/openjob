@@ -67,7 +67,6 @@ public class HttpClientAutoConfiguration {
         return connectionManager;
     }
 
-
     @Bean
     @ConditionalOnMissingBean
     public CloseableHttpClient httpClient(ApacheHttpClientFactory httpClientFactory,

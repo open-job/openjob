@@ -1,10 +1,10 @@
-package io.openjob.alarm.service;
+package io.openjob.server.alarm.service;
 
-import io.openjob.alarm.channel.AlarmChannel;
-import io.openjob.alarm.constant.AlarmEventEnum;
-import io.openjob.alarm.context.AlarmContext;
-import io.openjob.alarm.dto.AlarmDTO;
-import io.openjob.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.channel.AlarmChannel;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.context.AlarmContext;
+import io.openjob.server.alarm.dto.AlarmDTO;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.server.repository.dao.AlertRuleDAO;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dao.JobDAO;
@@ -70,7 +70,7 @@ public class AlarmService {
         Job job = AlarmContext.getJobById(Long.valueOf(eventDTO.getJobUniqueId()), this.jobDAO::getById);
         rules.forEach(r -> {
             // Not match
-            if (!r.getNamespaceAppIdsByJson().contains(job.getAppId())) {
+            if (!r.getNamespaceAppIdsByJson().contains(job.getAppId()) || !r.getEventsByJson().contains(eventDTO.getName())) {
                 return;
             }
 
@@ -91,7 +91,7 @@ public class AlarmService {
         Delay delay = AlarmContext.getDelayByTopic(eventDTO.getJobUniqueId(), this.delayDAO::findByTopic);
         rules.forEach(r -> {
             // Not match
-            if (!r.getNamespaceAppIdsByJson().contains(delay.getAppId())) {
+            if (!r.getNamespaceAppIdsByJson().contains(delay.getAppId()) || !r.getEventsByJson().contains(eventDTO.getName())) {
                 return;
             }
 
