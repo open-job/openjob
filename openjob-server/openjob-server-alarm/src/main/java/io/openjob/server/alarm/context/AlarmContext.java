@@ -2,6 +2,7 @@ package io.openjob.server.alarm.context;
 
 import com.google.common.collect.Maps;
 import io.openjob.server.repository.entity.AlertRule;
+import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.Job;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,11 @@ public class AlarmContext {
     private static final List<AlertRule> ALARM_RULES = new ArrayList<>();
 
     /**
+     * appId => App
+     */
+    private static final Map<Long, App> APP_MAP = Maps.newConcurrentMap();
+
+    /**
      * jobId => Job
      */
     private static final Map<Long, Job> JOB_MAP = Maps.newConcurrentMap();
@@ -38,6 +44,11 @@ public class AlarmContext {
     public static synchronized void refreshAlarmRules() {
         ALARM_RULES.clear();
         log.info("Refresh alarm rules success!");
+    }
+
+    public static synchronized void refreshAppMap() {
+        APP_MAP.clear();
+        log.info("Refresh alarm app map success!");
     }
 
     public static synchronized void refreshJobMap() {
@@ -55,6 +66,10 @@ public class AlarmContext {
             ALARM_RULES.addAll(supplier.get());
         }
         return ALARM_RULES;
+    }
+
+    public static synchronized App getAppById(Long appid, Function<Long, App> function) {
+        return APP_MAP.computeIfAbsent(appid, function);
     }
 
     public static synchronized Job getJobById(Long jobId, Function<Long, Job> function) {

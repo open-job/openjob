@@ -12,6 +12,12 @@ import java.util.List;
  */
 @Data
 public class FeishuRequest {
+    @JsonProperty(value = "timestamp")
+    private String timestamp;
+
+    @JsonProperty(value = "sign")
+    private String sign;
+
     @JsonProperty(value = "msg_type")
     private String msgType = "interactive";
 

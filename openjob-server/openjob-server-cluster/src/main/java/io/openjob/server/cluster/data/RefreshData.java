@@ -189,6 +189,9 @@ public class RefreshData {
         // Refresh rules
         AlarmContext.refreshAlarmRules();
 
+        // Refresh app amp
+        AlarmContext.refreshAppMap();
+
         // Refresh job map
         AlarmContext.refreshJobMap();
 

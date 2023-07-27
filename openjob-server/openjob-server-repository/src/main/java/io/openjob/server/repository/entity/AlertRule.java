@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import io.openjob.server.repository.constant.AlertRuleStatusEnum;
+import lombok.CustomLog;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -55,6 +56,12 @@ public class AlertRule {
     private String metrics;
 
     /**
+     * Locale
+     */
+    @Column(name = "`locale`")
+    private String locale;
+
+    /**
      * Method
      *
      * @see AlertMethodEnum#getType()
@@ -67,6 +74,12 @@ public class AlertRule {
      */
     @Column(name = "`url`")
     private String url;
+
+    /**
+     * Secret
+     */
+    @Column(name = "`secret`")
+    private String secret;
 
     /**
      * Status
