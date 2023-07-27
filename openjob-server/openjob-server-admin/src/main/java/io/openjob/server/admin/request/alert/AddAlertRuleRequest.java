@@ -31,6 +31,10 @@ public class AddAlertRuleRequest {
     @ApiModelProperty(value = "metrics")
     private List<AlertRuleMetricsRequest> metrics;
 
+    @NotNull
+    @ApiModelProperty(value = "locale")
+    private String locale;
+
     @NotBlank
     @ApiModelProperty(value = "Method", required = true)
     private String method;
@@ -38,6 +42,9 @@ public class AddAlertRuleRequest {
     @NotBlank
     @ApiModelProperty(value = "Url", required = true)
     private String url;
+
+    @ApiModelProperty(value = "Secret")
+    private String secret;
 
     @NotNull
     @ApiModelProperty(value = "Status", required = true)

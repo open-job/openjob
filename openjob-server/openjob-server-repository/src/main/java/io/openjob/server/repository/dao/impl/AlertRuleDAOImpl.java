@@ -65,8 +65,10 @@ public class AlertRuleDAOImpl implements AlertRuleDAO {
                     a.setNamespaceAppIds(alertRule.getNamespaceAppIds());
                     a.setEvents(alertRule.getEvents());
                     a.setMetrics(alertRule.getMetrics());
+                    a.setLocale(alertRule.getLocale());
                     a.setMethod(alertRule.getMethod());
                     a.setUrl(alertRule.getUrl());
+                    a.setSecret(alertRule.getSecret());
                     a.setStatus(alertRule.getStatus());
                     a.setUpdateTime(DateUtil.timestamp());
                     this.alertRuleRepository.save(a);

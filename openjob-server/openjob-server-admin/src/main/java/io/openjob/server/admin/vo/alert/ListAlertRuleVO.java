@@ -29,11 +29,17 @@ public class ListAlertRuleVO {
     @ApiModelProperty(value = "metrics")
     private List<AlertRuleMetricsVO> metrics;
 
+    @ApiModelProperty(value = "locale")
+    private String locale;
+
     @ApiModelProperty(value = "Method", required = true)
     private String method;
 
     @ApiModelProperty(value = "Url", required = true)
     private String url;
+
+    @ApiModelProperty(value = "Secret")
+    private String secret;
 
     @ApiModelProperty(value = "Status", required = true)
     private Integer status;

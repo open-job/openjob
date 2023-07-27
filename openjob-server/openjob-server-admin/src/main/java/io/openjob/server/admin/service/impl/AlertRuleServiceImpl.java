@@ -107,8 +107,10 @@ public class AlertRuleServiceImpl implements AlertRuleService {
             ListAlertRuleVO listAlertRuleVO = new ListAlertRuleVO();
             listAlertRuleVO.setId(r.getId());
             listAlertRuleVO.setName(r.getName());
+            listAlertRuleVO.setLocale(r.getLocale());
             listAlertRuleVO.setMethod(r.getMethod());
             listAlertRuleVO.setUrl(r.getUrl());
+            listAlertRuleVO.setSecret(r.getSecret());
             listAlertRuleVO.setStatus(r.getStatus());
             listAlertRuleVO.setCreateTime(r.getCreateTime());
             listAlertRuleVO.setUpdateTime(r.getUpdateTime());
