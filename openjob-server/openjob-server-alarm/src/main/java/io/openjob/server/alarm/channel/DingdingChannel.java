@@ -64,18 +64,16 @@ public class DingdingChannel extends AbstractChannel {
      * @param content    content
      */
     private void doSend(String secret, String url, String headerTile, String content) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // Sign
-        Long now = DateUtil.timestamp();
-        DingdingRequest dingdingRequest = new DingdingRequest();
-        dingdingRequest.setTimestamp(now);
-        dingdingRequest.setSign(this.getSign(secret, now));
-
         // Header and content
+        DingdingRequest dingdingRequest = new DingdingRequest();
         dingdingRequest.getMarkdown().setTitle(headerTile);
         dingdingRequest.getMarkdown().setText(content);
 
         //Request
-        String responseBody = this.postJson(url, JsonUtil.encode(dingdingRequest));
+        Long now = DateUtil.milliLongTime();
+        String requestUrl = String.format("%s&timestamp=%s&sign=%s", url, now, this.getSign(secret, now));
+        String responseBody = this.postJson(requestUrl, JsonUtil.encode(dingdingRequest));
+        System.out.println("dingding");
         System.out.println(responseBody);
     }
 

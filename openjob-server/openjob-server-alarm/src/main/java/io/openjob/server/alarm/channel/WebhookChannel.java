@@ -5,8 +5,6 @@ import io.openjob.common.util.JsonUtil;
 import io.openjob.server.alarm.constant.AlarmEventEnum;
 import io.openjob.server.alarm.dto.AlarmDTO;
 import io.openjob.server.alarm.request.WebhookRequest;
-import io.openjob.server.alarm.request.WecomRequest;
-import io.openjob.server.alarm.response.FeishuResponse;
 import io.openjob.server.alarm.response.WebhookResponse;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Optional;
 
 /**
@@ -42,7 +39,7 @@ public class WebhookChannel extends AbstractChannel {
 
     @Override
     public AlertMethodEnum channel() {
-        return AlertMethodEnum.webhook;
+        return AlertMethodEnum.WEBHOOK;
     }
 
     private void doSend(String url, AlarmDTO alarmDTO) throws IOException {

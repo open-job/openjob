@@ -10,6 +10,12 @@ import lombok.Data;
 @Data
 public class WebhookRequest {
 
+    @JsonProperty(value = "timestamp")
+    private Long timestamp;
+
+    @JsonProperty(value = "sign")
+    private String sign;
+
     @JsonProperty(value = "app_name")
     private String appName;
 
@@ -36,7 +42,4 @@ public class WebhookRequest {
 
     @JsonProperty(value = "message")
     private String message;
-
-    @JsonProperty(value = "timestamp")
-    private Long timestamp;
 }

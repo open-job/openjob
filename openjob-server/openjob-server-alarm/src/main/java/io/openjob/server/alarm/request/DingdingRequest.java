@@ -9,12 +9,6 @@ import lombok.Data;
  */
 @Data
 public class DingdingRequest {
-    @JsonProperty(value = "timestamp")
-    private Long timestamp;
-
-    @JsonProperty(value = "sign")
-    private String sign;
-
     @JsonProperty(value = "msgtype")
     private String msgType = "markdown";
 

@@ -5,6 +5,7 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.server.alarm.constant.AlarmEventEnum;
 import io.openjob.server.alarm.dto.AlarmDTO;
 import io.openjob.server.repository.entity.AlertRule;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -12,8 +13,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -90,6 +95,14 @@ public abstract class AbstractChannel implements AlarmChannel {
         }
 
         return responseBody;
+    }
+
+    protected String getFeishuOrWebhookSign(String secret, Long timestamp) throws NoSuchAlgorithmException, InvalidKeyException {
+        String signStr = String.format("%s\n%s", timestamp, secret);
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(signStr.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        byte[] signData = mac.doFinal(new byte[]{});
+        return new String(Base64.encodeBase64(signData));
     }
 
     /**

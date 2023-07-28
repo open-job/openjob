@@ -2,6 +2,7 @@ package io.openjob.server.admin.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.openjob.common.util.JsonUtil;
+import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.alert.AddAlertRuleRequest;
 import io.openjob.server.admin.request.alert.DeleteAlertRuleRequest;
 import io.openjob.server.admin.request.alert.ListAlertRuleRequest;
@@ -18,8 +19,10 @@ import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
+import io.openjob.server.repository.constant.AlertMethodEnum;
 import io.openjob.server.repository.dao.AlertRuleDAO;
 import io.openjob.server.repository.entity.AlertRule;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,9 @@ public class AlertRuleServiceImpl implements AlertRuleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public AddAlertRuleVO add(AddAlertRuleRequest request) {
+        // Check rule
+        this.checkRule(request);
+
         AlertRule alertRule = BeanMapperUtil.map(request, AlertRule.class);
         alertRule.setNamespaceAppIds(JsonUtil.encode(request.getNamespaceAppIds()));
         alertRule.setEvents(JsonUtil.encode(request.getEvents()));
@@ -72,6 +78,9 @@ public class AlertRuleServiceImpl implements AlertRuleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UpdateAlertRuleVO update(UpdateAlertRuleRequest request) {
+        // Check rule
+        this.checkRule(request);
+
         AlertRule alertRule = BeanMapperUtil.map(request, AlertRule.class);
         alertRule.setNamespaceAppIds(JsonUtil.encode(request.getNamespaceAppIds()));
         alertRule.setEvents(JsonUtil.encode(request.getEvents()));
@@ -126,5 +135,13 @@ public class AlertRuleServiceImpl implements AlertRuleService {
             }));
             return listAlertRuleVO;
         });
+    }
+
+    private void checkRule(AddAlertRuleRequest request) {
+        if (AlertMethodEnum.isWecom(request.getMethod())) {
+            return;
+        }
+
+        CodeEnum.ALERT_SECRET_EMPTY.assertIsTrue(StringUtils.isNotBlank(request.getSecret()));
     }
 }

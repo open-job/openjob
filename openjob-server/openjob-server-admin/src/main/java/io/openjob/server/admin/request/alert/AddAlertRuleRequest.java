@@ -31,7 +31,7 @@ public class AddAlertRuleRequest {
     @ApiModelProperty(value = "metrics")
     private List<AlertRuleMetricsRequest> metrics;
 
-    @NotNull
+    @NotBlank
     @ApiModelProperty(value = "locale")
     private String locale;
 

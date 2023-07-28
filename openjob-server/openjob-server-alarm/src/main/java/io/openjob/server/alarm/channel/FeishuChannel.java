@@ -8,17 +8,13 @@ import io.openjob.server.alarm.request.FeishuRequest;
 import io.openjob.server.alarm.response.FeishuResponse;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -87,7 +83,7 @@ public class FeishuChannel extends AbstractChannel {
         Long now = DateUtil.timestamp();
         FeishuRequest feishuRequest = new FeishuRequest();
         feishuRequest.setTimestamp(String.valueOf(now));
-        feishuRequest.setSign(this.getSign(secret, now));
+        feishuRequest.setSign(this.getFeishuOrWebhookSign(secret, now));
 
         // Header
         FeishuRequest.CardHeaderRequest header = feishuRequest.getCard().getHeader();
@@ -112,13 +108,5 @@ public class FeishuChannel extends AbstractChannel {
 
     private String getHeaderColor(String eventName) {
         return Optional.ofNullable(COLOR_MAP.get(eventName)).orElse("red");
-    }
-
-    private String getSign(String secret, Long timestamp) throws NoSuchAlgorithmException, InvalidKeyException {
-        String signStr = String.format("%s\n%s", timestamp, secret);
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(new SecretKeySpec(signStr.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-        byte[] signData = mac.doFinal(new byte[]{});
-        return new String(Base64.encodeBase64(signData));
     }
 }

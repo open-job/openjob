@@ -10,6 +10,7 @@ import lombok.Getter;
  * Application: 300+
  * Job: 400+
  * Delay: 500+
+ * Alert: 1000+
  *
  * @author stelin swoft@qq.com
  * @since 1.0.0
@@ -44,6 +45,9 @@ public enum CodeEnum implements CodeExceptionAssert {
     // Delay
     DELAY_TOPIC_EXIST(500, "Topic is exist!"),
     DELAY_DELETE_INVALID(501, "Delay can not be deleted!"),
+
+    // Alert
+    ALERT_SECRET_EMPTY(1001, "Secret can not be empty!"),
     ;
 
 
