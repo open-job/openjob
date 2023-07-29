@@ -56,6 +56,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 + "`delay_params`, "
                 + "`delay_extra`, "
                 + "`status`, "
+                + "`fail_status`, "
                 + "`execute_time`, "
                 + "`deleted`, "
                 + "`delete_time`, "
@@ -63,7 +64,7 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 + "`create_time_date`, "
                 + "`create_time_hour`, "
                 + "`update_time`) "
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -77,13 +78,14 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
                 ps.setString(6, d.getDelayParams());
                 ps.setString(7, d.getDelayExtra());
                 ps.setInt(8, d.getStatus());
-                ps.setLong(9, d.getExecuteTime());
-                ps.setInt(10, d.getDeleted());
-                ps.setLong(11, d.getDeleteTime());
-                ps.setLong(12, d.getCreateTime());
-                ps.setInt(13, DateUtil.formatDateByTimestamp(d.getCreateTime()));
-                ps.setInt(14, DateUtil.formatHourByTimestamp(d.getCreateTime()));
-                ps.setLong(15, d.getUpdateTime());
+                ps.setLong(9, d.getFailStatus());
+                ps.setLong(10, d.getExecuteTime());
+                ps.setInt(11, d.getDeleted());
+                ps.setLong(12, d.getDeleteTime());
+                ps.setLong(13, d.getCreateTime());
+                ps.setInt(14, DateUtil.formatDateByTimestamp(d.getCreateTime()));
+                ps.setInt(15, DateUtil.formatHourByTimestamp(d.getCreateTime()));
+                ps.setLong(16, d.getUpdateTime());
             }
 
             @Override
@@ -131,10 +133,12 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
     public Integer batchUpdateStatus(List<DelayInstance> updateList) {
         // When then sql.
         StringBuilder statusWhenThen = new StringBuilder();
+        StringBuilder failStatusWhenThen = new StringBuilder();
         StringBuilder addressWhenThen = new StringBuilder();
         StringBuilder completeWhenThen = new StringBuilder();
         updateList.forEach(d -> {
             statusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getStatus()));
+            failStatusWhenThen.append(String.format(" when '%s' then %d ", d.getTaskId(), d.getFailStatus()));
             addressWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getWorkerAddress()));
             completeWhenThen.append(String.format(" when '%s' then '%s' ", d.getTaskId(), d.getCompleteTime()));
         });
@@ -142,11 +146,14 @@ public class DelayInstanceDAOImpl implements DelayInstanceDAO {
         // Update sql.
         String sql = String.format("update `delay_instance` set `worker_address`=(case `task_id` %s ELSE `worker_address` END),"
                         + "`complete_time`=(case `task_id` %s ELSE `complete_time` END),`update_time`=%d, "
-                        + "`status`=(case `task_id` %s ELSE `status` END) where `status`< (case `task_id` %s ELSE `status` END)",
+                        + "`status`=(case `task_id` %s ELSE `status` END),"
+                        + "`fail_status`=(case `task_id` %s ELSE `fail_status` END)"
+                        + " where `status`< (case `task_id` %s ELSE `status` END)",
                 addressWhenThen,
                 completeWhenThen,
                 DateUtil.timestamp(),
                 statusWhenThen,
+                failStatusWhenThen,
                 statusWhenThen);
         return this.jdbcTemplate.update(sql);
     }

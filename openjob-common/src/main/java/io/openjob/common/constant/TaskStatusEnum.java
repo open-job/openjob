@@ -104,12 +104,20 @@ public enum TaskStatusEnum {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("TaskStatusEnum parseValue(%s) failed!", status)));
     }
 
+    public static Boolean isNotFinishStatus(Integer status) {
+        return NON_FINISH_LIST.contains(status);
+    }
+
     public static Boolean isRunning(Integer status) {
         return RUNNING.getStatus().equals(status);
     }
 
     public static Boolean isSuccess(Integer status) {
         return SUCCESS.getStatus().equals(status);
+    }
+
+    public static Boolean isFailed(Integer status) {
+        return FAILED.getStatus().equals(status);
     }
 
     public static Boolean isDelayComplete(Integer status) {

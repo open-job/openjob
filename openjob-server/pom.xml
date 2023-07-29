@@ -13,6 +13,7 @@
     <modules>
         <module>openjob-server-common</module>
         <module>openjob-server-log</module>
+        <module>openjob-server-alarm</module>
         <module>openjob-server-repository</module>
         <module>openjob-server-cluster</module>
         <module>openjob-server-admin</module>
@@ -32,6 +33,12 @@
             <dependency>
                 <groupId>io.openjob</groupId>
                 <artifactId>openjob-server-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.openjob</groupId>
+                <artifactId>openjob-server-alarm</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

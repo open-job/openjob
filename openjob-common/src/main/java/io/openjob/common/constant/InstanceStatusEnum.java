@@ -67,4 +67,14 @@ public enum InstanceStatusEnum {
     public static Boolean isRunning(Integer status) {
         return RUNNING.getStatus().equals(status);
     }
+
+    /**
+     * Is failed
+     *
+     * @param status status
+     * @return Boolean
+     */
+    public static Boolean isFailed(Integer status) {
+        return FAIL.getStatus().equals(status);
+    }
 }

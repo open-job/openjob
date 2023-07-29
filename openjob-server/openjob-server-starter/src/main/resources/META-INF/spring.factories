@@ -1,3 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.openjob.server.autoconfigure.ServerAutoConfiguration
+io.openjob.server.autoconfigure.ServerAutoConfiguration,\
+io.openjob.server.autoconfigure.HttpClientAutoConfiguration

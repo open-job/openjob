@@ -28,8 +28,12 @@ public enum AlertMethodEnum {
     /**
      * Webhook
      */
-    webhook("webhook"),
+    WEBHOOK("webhook"),
     ;
 
     private final String type;
+
+    public static Boolean isWecom(String method) {
+        return WECOM.getType().equals(method);
+    }
 }

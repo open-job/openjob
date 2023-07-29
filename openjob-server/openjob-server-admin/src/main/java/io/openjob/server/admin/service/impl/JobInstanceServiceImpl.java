@@ -3,6 +3,7 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
@@ -70,7 +71,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
         // Stop success to update status.
         if (CommonConstant.INT_ZERO.equals(stop.getType())) {
-            this.jobInstanceDAO.updateStatusById(killRequest.getId(), InstanceStatusEnum.STOP.getStatus());
+            this.jobInstanceDAO.updateStatusById(killRequest.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
         }
 
         // Response

@@ -1,5 +1,6 @@
 package io.openjob.worker.container;
 
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.context.JobContext;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -85,7 +87,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         } catch (Throwable ex) {
             Throwable cause = Objects.nonNull(ex.getCause()) ? ex.getCause() : ex;
 
-            result.setResult(cause.getMessage());
+            result.setResult(getStackTraceAsString(cause));
             logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
             log.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
         } finally {
@@ -117,8 +119,16 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         request.setWorkerAddress(workerAddress);
         request.setMasterActorPath(this.jobContext.getMasterActorPath());
         request.setStatus(result.getStatus().getStatus());
+        request.setFailStatus(FailStatusEnum.NONE.getStatus());
         request.setResult(result.getResult());
 
         TaskStatusReporter.report(request);
+    }
+
+    private String getStackTraceAsString(Throwable e) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(e.getClass().getName()).append(": ").append(e.getMessage()).append("\n");
+        Arrays.stream(e.getStackTrace()).forEach(s -> sb.append(s.toString()).append("\n"));
+        return sb.toString();
     }
 }

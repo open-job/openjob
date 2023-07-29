@@ -22,6 +22,7 @@
         <module>openjob-common</module>
         <module>openjob-worker</module>
         <module>openjob-server</module>
+        <module>openjob-server/openjob-server-alarm</module>
     </modules>
 
     <licenses>

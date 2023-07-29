@@ -32,11 +32,12 @@ public interface JobInstanceDAO {
     /**
      * Update
      *
-     * @param id     id
-     * @param status status
+     * @param id         id
+     * @param status     status
+     * @param failStatus failStatus
      * @return Integer
      */
-    Integer updateStatusById(Long id, Integer status);
+    Integer updateStatusById(Long id, Integer status, Integer failStatus);
 
     /**
      * Update

@@ -74,6 +74,9 @@ public class Job {
     @Column(name = "`fail_retry_interval`")
     private Integer failRetryInterval;
 
+    @Column(name = "`execute_timeout`")
+    private Integer executeTimeout;
+
     @Column(name = "`concurrency`")
     private Integer concurrency;
 

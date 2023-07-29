@@ -41,15 +41,18 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
         });
 
         this.dispatchTasks(startContainerRequestList, false, Collections.emptySet());
+
+        // Add task manager
+        this.addTask2Manager();
     }
 
     @Override
-    public void stop() {
+    public void stop(Integer type) {
         // Stop scheduled thread poll
         this.scheduledService.shutdown();
 
         // Stop master
-        super.stop();
+        super.stop(type);
     }
 
     @Override

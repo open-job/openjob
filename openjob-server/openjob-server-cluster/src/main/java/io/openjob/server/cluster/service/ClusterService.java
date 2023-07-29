@@ -9,7 +9,7 @@ import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
 import io.openjob.server.cluster.manager.FailManager;
-import io.openjob.server.cluster.manager.RefreshManager;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.scheduler.Scheduler;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class ClusterService {
 
-    private final RefreshManager refreshManager;
+    private final RefreshData refreshData;
     private final Scheduler scheduler;
     private final ClusterProperties clusterProperties;
     private final FailManager failManager;
@@ -41,8 +41,8 @@ public class ClusterService {
     private final AtomicBoolean nodeRunning = new AtomicBoolean(false);
 
     @Autowired
-    public ClusterService(RefreshManager refreshManager, Scheduler scheduler, ClusterProperties clusterProperties, FailManager failManager) {
-        this.refreshManager = refreshManager;
+    public ClusterService(RefreshData refreshData, Scheduler scheduler, ClusterProperties clusterProperties, FailManager failManager) {
+        this.refreshData = refreshData;
         this.scheduler = scheduler;
         this.clusterProperties = clusterProperties;
         this.failManager = failManager;
@@ -63,19 +63,19 @@ public class ClusterService {
             log.info("Node ping refresh beginning!");
 
             // Refresh nodes.
-            this.refreshManager.refreshClusterNodes();
+            this.refreshData.refreshClusterNodes();
 
             // Refresh current slots.
-            Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+            Set<Long> removeSlots = this.refreshData.refreshCurrentSlots();
 
             // Refresh scheduler.
             this.scheduler.refresh(removeSlots);
 
             // Refresh app workers.
-            this.refreshManager.refreshAppWorkers();
+            this.refreshData.refreshAppWorkers();
 
             // Refresh system.
-            this.refreshManager.refreshSystem(false);
+            this.refreshData.refreshSystem(false);
         } finally {
             log.info("Node ping refresh completed!");
             this.refreshing.set(false);
@@ -98,16 +98,16 @@ public class ClusterService {
             log.info("Node join! {}({})", join.getAkkaAddress(), join.getServerId());
 
             // Refresh nodes.
-            this.refreshManager.refreshClusterNodes();
+            this.refreshData.refreshClusterNodes();
 
             // Refresh slots.
-            Set<Long> removeSlots = this.refreshManager.refreshCurrentSlots();
+            Set<Long> removeSlots = this.refreshData.refreshCurrentSlots();
 
             // Refresh scheduler.
             this.scheduler.refresh(removeSlots);
 
             // Refresh system.
-            this.refreshManager.refreshSystem(false);
+            this.refreshData.refreshSystem(false);
 
             // Forward message.
             this.forwardMessage(join);
@@ -133,13 +133,13 @@ public class ClusterService {
             log.info("Node fail {}({})", fail.getAkkaAddress(), fail.getServerId());
 
             // Refresh nodes.
-            this.refreshManager.refreshClusterNodes();
+            this.refreshData.refreshClusterNodes();
 
             // Refresh slots.
-            this.refreshManager.refreshCurrentSlots();
+            this.refreshData.refreshCurrentSlots();
 
             // Refresh system.
-            this.refreshManager.refreshSystem(false);
+            this.refreshData.refreshSystem(false);
 
             // Forward message.
             this.forwardMessage(fail);
@@ -178,10 +178,10 @@ public class ClusterService {
 
         try {
             // Refresh system.
-            this.refreshManager.refreshSystem(false);
+            this.refreshData.refreshSystem(false);
 
             // Refresh app workers.
-            this.refreshManager.refreshAppWorkers();
+            this.refreshData.refreshAppWorkers();
 
             // Forward message.
             this.forwardMessage(workerJoinDTO);
@@ -205,10 +205,10 @@ public class ClusterService {
 
         try {
             // Refresh system.
-            this.refreshManager.refreshSystem(false);
+            this.refreshData.refreshSystem(false);
 
             // Refresh app workers.
-            this.refreshManager.refreshAppWorkers();
+            this.refreshData.refreshAppWorkers();
 
             // Forward message.
             this.forwardMessage(workerFailDTO);

@@ -18,7 +18,7 @@ public interface TaskContainer {
     /**
      * Stop
      */
-    void stop();
+    void stop(Integer type);
 
     /**
      * Destroy

@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -33,5 +34,8 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
         FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3000L);
+
+        // Add task manager
+        this.addTask2Manager();
     }
 }

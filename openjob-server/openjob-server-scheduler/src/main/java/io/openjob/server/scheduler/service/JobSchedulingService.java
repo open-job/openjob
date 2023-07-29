@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.service;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
@@ -192,6 +193,7 @@ public class JobSchedulingService {
             jobInstance.setCreateTime(now);
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
+            jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
             jobInstance.setCompleteTime(0L);
             jobInstance.setLastReportTime(0L);
             jobInstance.setProcessorType(j.getProcessorType());
@@ -202,6 +204,7 @@ public class JobSchedulingService {
             jobInstance.setTimeExpressionType(j.getTimeExpressionType());
             jobInstance.setTimeExpression(j.getTimeExpression());
             jobInstance.setExecuteStrategy(j.getExecuteStrategy());
+            jobInstance.setExecuteTimeout(j.getExecuteTimeout());
             jobInstance.setConcurrency(j.getConcurrency());
             jobInstance.setWorkerAddress("");
             jobInstance.setExtendParamsType(j.getExtendParamsType());
@@ -232,6 +235,7 @@ public class JobSchedulingService {
         schedulerTask.setExecuteType(js.getExecuteType());
         schedulerTask.setFailRetryTimes(js.getFailRetryTimes());
         schedulerTask.setFailRetryInterval(js.getFailRetryInterval());
+        schedulerTask.setExecuteTimeout(js.getExecuteTimeout());
         schedulerTask.setConcurrency(js.getConcurrency());
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());

@@ -3,6 +3,7 @@ package io.openjob.server.repository.dao.impl;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.constant.AlertRuleStatusEnum;
 import io.openjob.server.repository.dao.AlertRuleDAO;
 import io.openjob.server.repository.entity.AlertRule;
 import io.openjob.server.repository.repository.AlertRuleRepository;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author stelin swoft@qq.com
@@ -62,13 +65,22 @@ public class AlertRuleDAOImpl implements AlertRuleDAO {
                     a.setNamespaceAppIds(alertRule.getNamespaceAppIds());
                     a.setEvents(alertRule.getEvents());
                     a.setMetrics(alertRule.getMetrics());
+                    a.setLocale(alertRule.getLocale());
                     a.setMethod(alertRule.getMethod());
                     a.setUrl(alertRule.getUrl());
+                    a.setSecret(alertRule.getSecret());
                     a.setStatus(alertRule.getStatus());
                     a.setUpdateTime(DateUtil.timestamp());
                     this.alertRuleRepository.save(a);
                 });
         return alertRule.getId();
+    }
+
+    @Override
+    public List<AlertRule> getEnableList() {
+        AlertRule alertRule = new AlertRule();
+        alertRule.setStatus(AlertRuleStatusEnum.ON.getStatus());
+        return this.alertRuleRepository.findAll(Example.of(alertRule));
     }
 
     @Override

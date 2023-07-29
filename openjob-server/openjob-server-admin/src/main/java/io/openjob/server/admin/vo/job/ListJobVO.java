@@ -73,6 +73,9 @@ public class ListJobVO {
     @ApiModelProperty(value = "Job execute fail retry interval")
     private Integer failRetryInterval;
 
+    @ApiModelProperty(value = "Job execute timeout", required = true)
+    private Integer executeTimeout;
+
     @ApiModelProperty(value = "Job execute concurrency, default(1)")
     private Integer concurrency;
 

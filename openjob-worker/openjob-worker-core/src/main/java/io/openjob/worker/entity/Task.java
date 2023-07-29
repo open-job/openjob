@@ -29,4 +29,10 @@ public class Task {
         this.taskId = taskId;
         this.status = status;
     }
+
+    public Task(String taskId, Integer status, String result) {
+        this.taskId = taskId;
+        this.status = status;
+        this.result = result;
+    }
 }

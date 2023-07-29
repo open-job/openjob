@@ -1,6 +1,5 @@
 package io.openjob.server.admin.service.impl;
 
-import io.openjob.common.constant.CommonConstant;
 import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.app.AddAppRequest;
 import io.openjob.server.admin.request.app.DeleteAppRequest;
@@ -11,6 +10,7 @@ import io.openjob.server.admin.vo.app.AddAppVO;
 import io.openjob.server.admin.vo.app.DeleteAppVO;
 import io.openjob.server.admin.vo.app.ListAppVO;
 import io.openjob.server.admin.vo.app.UpdateAppVO;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -25,6 +25,7 @@ import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -43,14 +44,16 @@ public class AppServiceImpl implements AppService {
     private final NamespaceDAO namespaceDAO;
     private final JobDAO jobDAO;
     private final DelayDAO delayDAO;
+    private final RefreshData refreshData;
 
 
     @Autowired
-    public AppServiceImpl(AppDAO appDAO, NamespaceDAO namespaceDAO, JobDAO jobDAO, DelayDAO delayDAO) {
+    public AppServiceImpl(AppDAO appDAO, NamespaceDAO namespaceDAO, JobDAO jobDAO, DelayDAO delayDAO, RefreshData refreshData) {
         this.appDAO = appDAO;
         this.namespaceDAO = namespaceDAO;
         this.jobDAO = jobDAO;
         this.delayDAO = delayDAO;
+        this.refreshData = refreshData;
     }
 
     @Override
@@ -66,6 +69,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UpdateAppVO update(UpdateAppRequest updateRequest) {
         // App name is exist and not self!
         App nameApp = this.appDAO.getAppByName(updateRequest.getName());
@@ -73,8 +77,12 @@ public class AppServiceImpl implements AppService {
             CodeEnum.APP_NAME_EXIST.throwException();
         }
 
+        // Update
         App app = BeanMapperUtil.map(BeanMapperUtil.map(updateRequest, App.class), App.class);
         this.appDAO.update(app);
+
+        // Refresh cluster version.
+        this.refreshData.refreshSystemClusterVersion();
         return new UpdateAppVO();
     }
 

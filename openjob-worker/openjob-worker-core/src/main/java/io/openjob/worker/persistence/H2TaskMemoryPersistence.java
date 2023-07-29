@@ -167,7 +167,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
 
         // Not running.
         if (!isRunning) {
-            sql = "UPDATE `task` SET `status`=? WHERE `task_id`=?";
+            sql = "UPDATE `task` SET `status`=?,`result`=? WHERE `task_id`=?";
         }
 
         PreparedStatement ps = null;
@@ -176,11 +176,14 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
             ps = connection.prepareStatement(sql);
             for (Task task : tasks) {
                 ps.setInt(1, task.getStatus());
-                ps.setString(2, task.getTaskId());
 
                 // Update to running must be init status.
                 if (isRunning) {
+                    ps.setString(2, task.getTaskId());
                     ps.setInt(3, TaskStatusEnum.INIT.getStatus());
+                } else {
+                    ps.setString(2, task.getResult());
+                    ps.setString(3, task.getTaskId());
                 }
                 ps.addBatch();
             }

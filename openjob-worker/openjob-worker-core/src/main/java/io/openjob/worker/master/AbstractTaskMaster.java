@@ -4,11 +4,14 @@ import akka.actor.ActorContext;
 import com.google.common.collect.Sets;
 import io.openjob.common.constant.AkkaConstant;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
 import io.openjob.worker.dao.TaskDAO;
@@ -20,12 +23,14 @@ import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -64,6 +69,15 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected AtomicBoolean running = new AtomicBoolean(false);
 
     /**
+     * 0 = init
+     * 1 = normal
+     * 2 = timeout
+     *
+     * @see JobInstanceStopEnum#getType()
+     */
+    protected AtomicInteger stopping = new AtomicInteger(0);
+
+    /**
      * New AbstractTaskMaster
      *
      * @param jobInstanceDTO job instance context.
@@ -88,6 +102,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Do complete task.
         this.doCompleteTask();
 
+        // Remove task from manager
+        this.removeTaskFromManager();
+
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
             this.destroyTaskContainer();
@@ -95,7 +112,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         }
 
         // Circle second delay task.
-        this.circleSecondDelayTask();
+        if (NumberUtils.INTEGER_ZERO.equals(this.stopping.get())) {
+            this.circleSecondDelayTask();
+        }
     }
 
     @Override
@@ -110,7 +129,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Update list
         List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
             String taskUniqueId = s.getTaskUniqueId();
-            return new Task(taskUniqueId, s.getStatus());
+            return new Task(taskUniqueId, s.getStatus(), s.getResult());
         }).collect(Collectors.toList());
 
         // Update by status.
@@ -134,7 +153,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     @Override
-    public void stop() {
+    public void stop(Integer type) {
+        // Update status
+        this.stopping.set(type);
+
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
 
@@ -144,8 +166,19 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             request.setJobId(this.jobInstanceDTO.getJobId());
             request.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
             request.setWorkerAddress(w);
+            request.setStopType(type);
             WorkerActorSystem.atLeastOnceDelivery(request, null);
         });
+
+        // Remove task from manager
+        this.removeTaskFromManager();
+
+        // Complete task
+        try {
+            this.completeTask();
+        } catch (Throwable e) {
+            log.error("Stop and complete task failed!", e);
+        }
     }
 
     @Override
@@ -161,6 +194,18 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             destroyRequest.setWorkerAddress(w);
             WorkerActorSystem.atLeastOnceDelivery(destroyRequest, null);
         });
+    }
+
+    protected void addTask2Manager() {
+        if (this.jobInstanceDTO.getExecuteTimeout() > 0) {
+            TaskMasterManager.INSTANCE.addTask(this.jobInstanceDTO.getJobInstanceId(), DateUtil.timestamp() + this.jobInstanceDTO.getExecuteTimeout());
+        }
+    }
+
+    protected void removeTaskFromManager() {
+        if (this.jobInstanceDTO.getExecuteTimeout() > 0) {
+            TaskMasterManager.INSTANCE.remove(this.jobInstanceDTO.getJobInstanceId());
+        }
     }
 
     protected Long acquireTaskId() {
@@ -227,7 +272,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         taskRequest.setTaskId(task.getTaskId());
         taskRequest.setTaskName(task.getTaskName());
         taskRequest.setParentTaskId(task.getTaskParentId());
-        taskRequest.setStatus(task.getStatus());
+        taskRequest.setStatus(this.getTaskStatus(task.getStatus()));
         taskRequest.setResult(task.getResult());
         taskRequest.setWorkerAddress(task.getWorkerAddress());
         taskRequest.setCreateTime(task.getCreateTime());
@@ -245,9 +290,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         long circleId = this.circleIdGenerator.get();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
 
-        // Failed task count.
-        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
-        int instanceStatus = failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
+        // Instance status and fail status
+        int instanceStatus = this.getInstanceStatus();
+        int failStatus = this.getFailStatus();
 
         long size = 100;
         long page = CommonConstant.FIRST_PAGE;
@@ -269,6 +314,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             instanceRequest.setJobInstanceId(instanceId);
             instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
             instanceRequest.setStatus(instanceStatus);
+            instanceRequest.setFailStatus(failStatus);
             instanceRequest.setTaskRequestList(taskRequestList);
             instanceRequest.setPage(page);
 
@@ -292,6 +338,41 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                 break;
             }
         }
+    }
+
+    protected Integer getInstanceStatus() {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get())) {
+            return InstanceStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get())) {
+            return InstanceStatusEnum.FAIL.getStatus();
+        }
+
+        // Not stop
+        long circleId = this.circleIdGenerator.get();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
+        return failedCount > 0 ? InstanceStatusEnum.FAIL.getStatus() : InstanceStatusEnum.SUCCESS.getStatus();
+    }
+
+    protected Integer getFailStatus() {
+        return (JobInstanceStopEnum.isTimeout(this.stopping.get())) ? FailStatusEnum.EXECUTE_TIMEOUT.getStatus() : FailStatusEnum.NONE.getStatus();
+    }
+
+    protected Integer getTaskStatus(Integer status) {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
+            return TaskStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
+            return TaskStatusEnum.FAILED.getStatus();
+        }
+        return status;
     }
 
     protected void circleSecondDelayTask() throws InterruptedException {

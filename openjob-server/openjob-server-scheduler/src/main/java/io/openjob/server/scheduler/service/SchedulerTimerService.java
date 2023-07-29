@@ -2,11 +2,16 @@ package io.openjob.server.scheduler.service;
 
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.constant.ExecuteStrategyEnum;
@@ -86,6 +91,7 @@ public class SchedulerTimerService {
         submitReq.setConcurrency(task.getConcurrency());
         submitReq.setTimeExpressionType(task.getTimeExpressionType());
         submitReq.setTimeExpression(task.getTimeExpression());
+        submitReq.setExecuteTimeout(task.getExecuteTimeout());
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
@@ -131,7 +137,7 @@ public class SchedulerTimerService {
 
         // Running to update.
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
-            //Fixed update last report time.otherwise repeat dispatch.
+            //Fixed update last report time. otherwise repeat dispatch.
             this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
         }
     }
@@ -146,12 +152,24 @@ public class SchedulerTimerService {
         // Exist one task.
         if (Objects.nonNull(jobInstance)) {
             this.addInstanceLog(task.getJobId(), task.getTaskId(), "Discard after task!");
-            this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus());
+            this.jobInstanceDAO.updateStatusById(task.getTaskId(), InstanceStatusEnum.FAIL.getStatus(), FailStatusEnum.EXECUTE_DISCARD.getStatus());
+
+            // Add alarm event.
+            this.addAlarmEvent(task);
             return;
         }
 
         // Do run.
         this.doRun(task, Collections.emptySet());
+    }
+
+    private void addAlarmEvent(SchedulerTimerTask task) {
+        AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+        alarmEventDTO.setJobUniqueId(String.valueOf(task.getJobId()));
+        alarmEventDTO.setInstanceId(String.valueOf(task.getTaskId()));
+        alarmEventDTO.setName(AlarmEventEnum.JOB_DISCARD.getEvent());
+        alarmEventDTO.setMessage("Discard after task!");
+        AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
     }
 
     private void doOverlay(SchedulerTimerTask task) {

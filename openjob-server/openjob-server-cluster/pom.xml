@@ -19,6 +19,11 @@
 
         <dependency>
             <groupId>io.openjob</groupId>
+            <artifactId>openjob-server-alarm</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.openjob</groupId>
             <artifactId>openjob-server-repository</artifactId>
         </dependency>
 

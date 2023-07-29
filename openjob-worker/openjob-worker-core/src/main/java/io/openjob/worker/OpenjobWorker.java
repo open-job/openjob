@@ -9,8 +9,10 @@ import io.openjob.worker.init.WorkerChecker;
 import io.openjob.worker.init.WorkerConfig;
 import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.init.WorkerHeartbeat;
+import io.openjob.worker.init.WorkerInitializer;
 import io.openjob.worker.init.WorkerRegister;
 import io.openjob.worker.init.WorkerShutdown;
+import io.openjob.worker.master.TaskMasterManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,7 +34,7 @@ public class OpenjobWorker implements InitializingBean {
     private final WorkerActorSystem workerActorSystem;
     private final WorkerRegister workerRegister;
     private final WorkerHeartbeat workerHeartbeat;
-    private final DelayManager delayManager;
+    private final WorkerInitializer workerInitializer;
     private final WorkerShutdown workerShutdown;
     private final WorkerContext workerContext;
 
@@ -45,7 +47,7 @@ public class OpenjobWorker implements InitializingBean {
         this.workerActorSystem = new WorkerActorSystem();
         this.workerRegister = new WorkerRegister(this);
         this.workerHeartbeat = new WorkerHeartbeat(this);
-        this.delayManager = new DelayManager();
+        this.workerInitializer = new WorkerInitializer();
         this.workerShutdown = new WorkerShutdown(this);
         this.workerContext = new WorkerContext();
     }
@@ -107,8 +109,8 @@ public class OpenjobWorker implements InitializingBean {
             // Initialize worker heartbeat.
             this.workerHeartbeat.init();
 
-            // Initialize delay.
-            this.delayManager.init();
+            // Initialize worker initializer
+            this.workerInitializer.init();
 
             // Initialize shutdown.
             this.workerShutdown.init();

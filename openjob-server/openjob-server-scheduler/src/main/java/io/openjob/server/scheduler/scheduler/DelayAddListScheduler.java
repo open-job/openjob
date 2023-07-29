@@ -157,6 +157,7 @@ public class DelayAddListScheduler extends AbstractDelayScheduler {
                 delayInstance.setTaskId(d.getTaskId());
                 delayInstance.setTopic(d.getTopic());
                 delayInstance.setStatus(TaskStatusEnum.INIT.getStatus());
+                delayInstance.setFailStatus(0);
                 delayInstance.setDelayParams(Optional.ofNullable(d.getParams()).orElse(""));
                 delayInstance.setDelayExtra(Optional.ofNullable(d.getExtra()).orElse(""));
                 delayInstance.setDeleted(CommonConstant.NO);

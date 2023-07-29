@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.cluster.dto.NodeJoinDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
@@ -31,17 +32,17 @@ import java.util.Optional;
 public class JoinManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
-    private final RefreshManager refreshManager;
+    private final RefreshData refreshData;
     private final ClusterProperties clusterProperties;
 
     /**
      * Refresh status.
      */
     @Autowired
-    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshManager refreshManager, ClusterProperties clusterProperties) {
+    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshData refreshData, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
-        this.refreshManager = refreshManager;
+        this.refreshData = refreshData;
         this.clusterProperties = clusterProperties;
     }
 
@@ -78,7 +79,7 @@ public class JoinManager {
     public Boolean doJoin(String hostname, Integer port) {
         // Refresh system.
         // Lock system cluster version.
-        this.refreshManager.refreshSystem(true);
+        this.refreshData.refreshSystem(true);
 
         // Register server.
         Server currentServer = this.registerOrUpdateServer(hostname, port);
@@ -93,10 +94,10 @@ public class JoinManager {
         ClusterUtil.refreshNodes(servers);
 
         // Refresh current slots.
-        this.refreshManager.refreshCurrentSlots();
+        this.refreshData.refreshCurrentSlots();
 
         // Refresh app workers;
-        this.refreshManager.refreshAppWorkers();
+        this.refreshData.refreshAppWorkers();
         return true;
     }
 

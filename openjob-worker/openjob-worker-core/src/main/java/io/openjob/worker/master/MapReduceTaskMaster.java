@@ -98,6 +98,9 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 
         this.dispatchTasks(startRequests, false, Collections.emptySet());
+
+        // Add task manager
+        this.addTask2Manager();
     }
 
     @Override
@@ -107,7 +110,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     @Override
-    public void stop() {
+    public void stop(Integer type) {
         // Stop task container.
 
         // Stop child task consumer
@@ -117,7 +120,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         this.scheduledService.shutdown();
 
         // Stop master
-        super.stop();
+        super.stop(type);
     }
 
     @Override

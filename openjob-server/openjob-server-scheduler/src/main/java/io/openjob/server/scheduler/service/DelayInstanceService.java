@@ -1,5 +1,7 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayAddRequest;
 import io.openjob.common.request.WorkerDelayPullRequest;
 import io.openjob.common.request.WorkerDelayStatusRequest;
@@ -10,6 +12,10 @@ import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.response.ServerDelayTopicPullResponse;
 import io.openjob.common.response.ServerDelayTopicResponse;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
@@ -99,6 +105,28 @@ public class DelayInstanceService {
     public void handleConsumerDelayStatus(WorkerDelayStatusRequest workerDelayStatusRequest) {
         List<DelayInstanceStatusRequestDTO> statusList = BeanMapperUtil.mapList(workerDelayStatusRequest.getTaskList(), WorkerDelayTaskRequest.class, DelayInstanceStatusRequestDTO.class);
 
+        this.addAlarmEvent(statusList);
         this.delayInstanceScheduler.report(statusList);
+    }
+
+    protected void addAlarmEvent(List<DelayInstanceStatusRequestDTO> statusList) {
+        statusList.forEach(s -> {
+            if (TaskStatusEnum.isFailed(s.getStatus())) {
+                AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+                alarmEventDTO.setJobUniqueId(s.getTopic());
+                alarmEventDTO.setInstanceId(s.getTaskId());
+
+                // Delay worker task status(fail/timeout)
+                if (FailStatusEnum.isExecuteFail(s.getFailStatus())) {
+                    alarmEventDTO.setName(AlarmEventEnum.DELAY_EXECUTE_FAIL.getEvent());
+                } else {
+                    alarmEventDTO.setName(AlarmEventEnum.DELAY_EXECUTE_TIMEOUT.getEvent());
+                }
+
+                // Event message
+                alarmEventDTO.setMessage(s.getResult());
+                AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
+            }
+        });
     }
 }
