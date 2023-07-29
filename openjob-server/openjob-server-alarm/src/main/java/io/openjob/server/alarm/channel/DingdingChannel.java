@@ -7,6 +7,7 @@ import io.openjob.server.alarm.request.DingdingRequest;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -45,8 +46,10 @@ public class DingdingChannel extends AbstractChannel {
     public void send(AlarmDTO alarmDTO) {
         try {
             Locale locale = this.getLocale(alarmDTO.getAlertRule());
+            String[] contentArgs = this.getContentArgs(alarmDTO);
             String title = this.resourceBundleMessageSource.getMessage(alarmDTO.getEvent().getName(), null, locale);
-            String content = this.resourceBundleMessageSource.getMessage("alarm.dingding.content", this.getContentArgs(alarmDTO), locale);
+            String[] bodyArgs = ArrayUtils.addFirst(contentArgs, title);
+            String content = this.resourceBundleMessageSource.getMessage("alarm.dingding.content", bodyArgs, locale);
             this.doSend(alarmDTO.getAlertRule().getSecret(), alarmDTO.getAlertRule().getUrl(), title, content);
         } catch (Throwable e) {
             log.error("Dingding alarm failed!", e);
