@@ -4,10 +4,12 @@ import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.server.alarm.dto.AlarmDTO;
 import io.openjob.server.alarm.request.DingdingRequest;
+import io.openjob.server.alarm.response.DingdingResponse;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -76,8 +78,13 @@ public class DingdingChannel extends AbstractChannel {
         Long now = DateUtil.milliLongTime();
         String requestUrl = String.format("%s&timestamp=%s&sign=%s", url, now, this.getSign(secret, now));
         String responseBody = this.postJson(requestUrl, JsonUtil.encode(dingdingRequest));
-        System.out.println("dingding");
         System.out.println(responseBody);
+
+        // Response code
+        DingdingResponse dingdingResponse = JsonUtil.decode(responseBody, DingdingResponse.class);
+        if (!NumberUtils.INTEGER_ZERO.equals(dingdingResponse.getErrCode())) {
+            throw new RuntimeException("Dingding send failed! response=" + responseBody);
+        }
     }
 
     private String getSign(String secret, Long timestamp)

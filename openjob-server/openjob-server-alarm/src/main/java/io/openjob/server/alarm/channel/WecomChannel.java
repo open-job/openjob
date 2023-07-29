@@ -1,11 +1,9 @@
 package io.openjob.server.alarm.channel;
 
-import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.server.alarm.dto.AlarmDTO;
-import io.openjob.server.alarm.request.FeishuRequest;
 import io.openjob.server.alarm.request.WecomRequest;
-import io.openjob.server.alarm.response.FeishuResponse;
+import io.openjob.server.alarm.response.WecomResponse;
 import io.openjob.server.repository.constant.AlertMethodEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,8 +14,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 /**
@@ -69,6 +65,11 @@ public class WecomChannel extends AbstractChannel {
 
         //Request
         String responseBody = this.postJson(url, JsonUtil.encode(wecomRequest));
-        System.out.println(responseBody);
+
+        // Response code
+        WecomResponse wecomResponse = JsonUtil.decode(responseBody, WecomResponse.class);
+        if (!NumberUtils.INTEGER_ZERO.equals(wecomResponse.getErrCode())) {
+            throw new RuntimeException("Wecom send failed! response=" + responseBody);
+        }
     }
 }

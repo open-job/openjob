@@ -9,10 +9,9 @@ import lombok.Data;
  */
 @Data
 public class WebhookResponse {
+    @JsonProperty(value = "errcode")
+    private Integer errCode;
 
-    @JsonProperty(value = "code")
-    private Integer code;
-
-    @JsonProperty(value = "message")
-    private Integer message;
+    @JsonProperty(value = "errmsg")
+    private String errMsg;
 }
