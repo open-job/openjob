@@ -1,14 +1,15 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.server.alarm.AlarmEvent;
-import io.openjob.server.alarm.constant.AlarmEventEnum;
-import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.cluster.executor.WorkerJobInstanceExecutor;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
@@ -134,7 +135,7 @@ public class JobInstanceService {
             if (!CollectionUtils.isEmpty(statusRequest.getTaskRequestList())) {
                 alarmEventDTO.setMessage(statusRequest.getTaskRequestList().get(0).getResult());
             }
-            AlarmEvent.add(alarmEventDTO);
+            AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
         }
     }
 }

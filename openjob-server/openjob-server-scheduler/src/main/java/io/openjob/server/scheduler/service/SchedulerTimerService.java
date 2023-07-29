@@ -1,8 +1,5 @@
 package io.openjob.server.scheduler.service;
 
-import io.openjob.server.alarm.AlarmEvent;
-import io.openjob.server.alarm.constant.AlarmEventEnum;
-import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
@@ -11,6 +8,10 @@ import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.common.dto.WorkerDTO;
 import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.constant.ExecuteStrategyEnum;
@@ -168,7 +169,7 @@ public class SchedulerTimerService {
         alarmEventDTO.setInstanceId(String.valueOf(task.getTaskId()));
         alarmEventDTO.setName(AlarmEventEnum.JOB_DISCARD.getEvent());
         alarmEventDTO.setMessage("Discard after task!");
-        AlarmEvent.add(alarmEventDTO);
+        AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
     }
 
     private void doOverlay(SchedulerTimerTask task) {

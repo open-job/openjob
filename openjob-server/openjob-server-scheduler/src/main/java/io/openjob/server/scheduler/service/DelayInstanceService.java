@@ -1,8 +1,5 @@
 package io.openjob.server.scheduler.service;
 
-import io.openjob.server.alarm.AlarmEvent;
-import io.openjob.server.alarm.constant.AlarmEventEnum;
-import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayAddRequest;
@@ -15,6 +12,10 @@ import io.openjob.common.response.ServerDelayInstanceResponse;
 import io.openjob.common.response.ServerDelayPullResponse;
 import io.openjob.common.response.ServerDelayTopicPullResponse;
 import io.openjob.common.response.ServerDelayTopicResponse;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
@@ -124,7 +125,7 @@ public class DelayInstanceService {
 
                 // Event message
                 alarmEventDTO.setMessage(s.getResult());
-                AlarmEvent.add(alarmEventDTO);
+                AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
             }
         });
     }
