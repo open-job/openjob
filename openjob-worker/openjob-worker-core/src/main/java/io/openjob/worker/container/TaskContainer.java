@@ -17,6 +17,7 @@ public interface TaskContainer {
 
     /**
      * Stop
+     * @param type type
      */
     void stop(Integer type);
 

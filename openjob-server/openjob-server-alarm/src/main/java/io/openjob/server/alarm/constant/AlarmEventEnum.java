@@ -13,12 +13,40 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum AlarmEventEnum {
+
+    /**
+     * Job execute fail
+     */
     JOB_EXECUTE_FAIL("alarm.job.001", "Job execute failed"),
+
+    /**
+     * Job discard
+     */
     JOB_DISCARD("alarm.job.002", "Job discard"),
+
+    /**
+     * Job execute timeout
+     */
     JOB_EXECUTE_TIMEOUT("alarm.job.003", "Job execute timeout"),
+
+    /**
+     * Job reach retry times
+     */
     JOB_REACH_RETRY_TIMES("alarm.job.004", "Job reach retry times"),
+
+    /**
+     *
+     */
     DELAY_EXECUTE_FAIL("alarm.delay.001", "Delay execute failed"),
+
+    /**
+     * Delay execute timeout
+     */
     DELAY_EXECUTE_TIMEOUT("alarm.delay.002", "Delay execute timeout"),
+
+    /**
+     * Delay task ignore
+     */
     DELAY_TASK_IGNORE("alarm.delay.003", "Delay task ignore"),
     ;
 

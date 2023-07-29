@@ -18,6 +18,9 @@ public class WorkerInitializer {
         this.taskMasterManager = TaskMasterManager.INSTANCE;
     }
 
+    /**
+     * Init
+     */
     public void init() {
         // Initialize task master.
         this.taskMasterManager.init();
@@ -26,6 +29,9 @@ public class WorkerInitializer {
         this.delayManager.init();
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
         this.taskMasterManager.stop();
 

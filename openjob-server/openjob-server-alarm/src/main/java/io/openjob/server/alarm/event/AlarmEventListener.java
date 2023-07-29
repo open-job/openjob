@@ -32,6 +32,11 @@ public class AlarmEventListener {
         consumer.start();
     }
 
+    /**
+     * Alarm listener
+     *
+     * @param alarmEvent alarmEvent
+     */
     @EventListener
     public void alarmListener(AlarmEvent alarmEvent) {
         try {

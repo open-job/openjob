@@ -61,6 +61,12 @@ public class AlarmContext {
         log.info("Refresh alarm delay map success!");
     }
 
+    /**
+     * Get alarm rules
+     *
+     * @param supplier supplier
+     * @return List
+     */
     public static synchronized List<AlertRule> getAlarmRules(Supplier<List<AlertRule>> supplier) {
         if (CollectionUtils.isEmpty(ALARM_RULES)) {
             ALARM_RULES.addAll(supplier.get());
