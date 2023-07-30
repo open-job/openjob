@@ -1,5 +1,6 @@
 package io.openjob.server.autoconfigure;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.server.httpclient.ApacheHttpClientConnectionManagerFactory;
 import io.openjob.server.httpclient.ApacheHttpClientFactory;
 import io.openjob.server.httpclient.DefaultApacheHttpClientConnectionManagerFactory;
@@ -8,14 +9,17 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PreDestroy;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author stelin swoft@qq.com
@@ -24,9 +28,17 @@ import java.util.TimerTask;
 @Configuration
 @EnableConfigurationProperties(value = {HttpClientProperties.class})
 public class HttpClientAutoConfiguration {
-    private final Timer connectionManagerTimer = new Timer(
-            "HttpClientAutoConfiguration.connectionManagerTimer", true);
+    private final ScheduledExecutorService scheduledService;
     private CloseableHttpClient httpClient;
+
+    @Autowired
+    public HttpClientAutoConfiguration() {
+        this.scheduledService = new ScheduledThreadPoolExecutor(
+                1,
+                new ThreadFactoryBuilder().setNameFormat("Openjob-http-client-manager").build(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -47,6 +59,9 @@ public class HttpClientAutoConfiguration {
         return new DefaultApacheHttpClientFactory(builder);
     }
 
+    /**
+     * Connection manager
+     */
     @Bean
     @ConditionalOnMissingBean
     public HttpClientConnectionManager connectionManager(
@@ -58,15 +73,17 @@ public class HttpClientAutoConfiguration {
                         httpClientProperties.getMaxConnectionsPerRoute(),
                         httpClientProperties.getTimeToLive(),
                         httpClientProperties.getTimeToLiveUnit());
-        this.connectionManagerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                connectionManager.closeExpiredConnections();
-            }
-        }, 30000, httpClientProperties.getConnectionTimerRepeat());
+
+
+        this.scheduledService.scheduleWithFixedDelay(connectionManager::closeExpiredConnections, 1000,
+                httpClientProperties.getConnectionTimerRepeat(), TimeUnit.MILLISECONDS);
+
         return connectionManager;
     }
 
+    /**
+     * Http client
+     */
     @Bean
     @ConditionalOnMissingBean
     public CloseableHttpClient httpClient(ApacheHttpClientFactory httpClientFactory,
@@ -85,9 +102,12 @@ public class HttpClientAutoConfiguration {
         return this.httpClient;
     }
 
+    /**
+     * Destroy
+     */
     @PreDestroy
     public void destroy() throws Exception {
-        this.connectionManagerTimer.cancel();
+        this.scheduledService.shutdown();
         if (this.httpClient != null) {
             this.httpClient.close();
         }

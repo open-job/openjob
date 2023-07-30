@@ -10,7 +10,15 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum JobInstanceStopEnum {
+
+    /**
+     * Normal stop
+     */
     NORMAL(1, "Normal stop"),
+
+    /**
+     * Timout stop
+     */
     TIMEOUT(2, "Timeout stop"),
     ;
 

@@ -29,6 +29,11 @@ import java.util.Optional;
 public abstract class AbstractChannel implements AlarmChannel {
 
     /**
+     * Locale size
+     */
+    protected static final Integer LOCALE_SIZE = 2;
+
+    /**
      * Http client
      */
     protected final CloseableHttpClient httpClient;
@@ -114,7 +119,7 @@ public abstract class AbstractChannel implements AlarmChannel {
     protected Locale getLocale(AlertRule alertRule) {
         String locale = alertRule.getLocale();
         String[] splitLocale = locale.split("_");
-        if (splitLocale.length != 2) {
+        if (splitLocale.length != LOCALE_SIZE) {
             return Locale.US;
         }
 

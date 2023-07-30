@@ -31,6 +31,9 @@ public class TaskMasterManager {
 
     }
 
+    /**
+     * Init
+     */
     public void init() {
         // Already initialized
         if (this.isInit.get()) {

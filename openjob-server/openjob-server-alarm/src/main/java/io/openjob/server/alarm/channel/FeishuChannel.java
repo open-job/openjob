@@ -33,16 +33,17 @@ public class FeishuChannel extends AbstractChannel {
     /**
      * Header color map
      */
-    private static final Map<String, String> COLOR_MAP = new HashMap<String, String>() {{
-        put(AlarmEventEnum.JOB_EXECUTE_FAIL.getEvent(), "red");
-        put(AlarmEventEnum.JOB_DISCARD.getEvent(), "yellow");
-        put(AlarmEventEnum.JOB_EXECUTE_TIMEOUT.getEvent(), "red");
-        put(AlarmEventEnum.JOB_REACH_RETRY_TIMES.getEvent(), "yellow");
-
-        put(AlarmEventEnum.DELAY_EXECUTE_FAIL.getEvent(), "red");
-        put(AlarmEventEnum.DELAY_EXECUTE_TIMEOUT.getEvent(), "red");
-        put(AlarmEventEnum.DELAY_TASK_IGNORE.getEvent(), "yellow");
-    }};
+    private static final Map<String, String> COLOR_MAP = new HashMap<String, String>() {
+        {
+            put(AlarmEventEnum.JOB_EXECUTE_FAIL.getEvent(), "red");
+            put(AlarmEventEnum.JOB_DISCARD.getEvent(), "yellow");
+            put(AlarmEventEnum.JOB_EXECUTE_TIMEOUT.getEvent(), "red");
+            put(AlarmEventEnum.JOB_REACH_RETRY_TIMES.getEvent(), "yellow");
+            put(AlarmEventEnum.DELAY_EXECUTE_FAIL.getEvent(), "red");
+            put(AlarmEventEnum.DELAY_EXECUTE_TIMEOUT.getEvent(), "red");
+            put(AlarmEventEnum.DELAY_TASK_IGNORE.getEvent(), "yellow");
+        }
+    };
 
     /**
      * Resource bundle
