@@ -10,6 +10,15 @@ import java.util.List;
  * @since 1.0.0
  */
 public interface JobRepository extends JpaRepository<Job, Long> {
+
+    /**
+     * Find by ids
+     *
+     * @param ids ids
+     * @return List
+     */
+    List<Job> findByIdIn(List<Long> ids);
+
     /**
      * Find jobs by condition.
      *

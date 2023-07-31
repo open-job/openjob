@@ -23,9 +23,11 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
+import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceLog;
 import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
@@ -36,7 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -45,22 +50,35 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class JobInstanceServiceImpl implements JobInstanceService {
     private final LogDAO logDAO;
+    private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
     private final JobInstanceLogDAO jobInstanceLogDAO;
     private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceScheduler jobInstanceScheduler) {
+    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO, JobDAO jobDAO, JobInstanceScheduler jobInstanceScheduler) {
         this.logDAO = logDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
+        this.jobDAO = jobDAO;
         this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
     @Override
     public PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request) {
         PageDTO<JobInstance> pageDTO = this.jobInstanceDAO.pageList(BeanMapperUtil.map(request, JobInstancePageDTO.class));
-        return PageUtil.convert(pageDTO, n -> BeanMapperUtil.map(n, ListJobInstanceVO.class));
+
+        // Job map
+        List<Long> jobIds = pageDTO.getList().stream().map(JobInstance::getJobId).distinct().collect(Collectors.toList());
+        Map<Long, Job> jobMap = this.jobDAO.getByIds(jobIds).stream().collect(Collectors.toMap(Job::getId, j -> j));
+        return PageUtil.convert(pageDTO, n -> {
+            ListJobInstanceVO listJobInstanceVO = BeanMapperUtil.map(n, ListJobInstanceVO.class);
+            Job job = jobMap.get(n.getJobId());
+            if (Objects.nonNull(job)) {
+                listJobInstanceVO.setJobName(job.getName());
+            }
+            return listJobInstanceVO;
+        });
     }
 
     @Override

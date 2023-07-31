@@ -22,6 +22,9 @@ public class ListJobInstanceVO {
     private Long jobId;
 
     @ApiModelProperty(value = "Job name")
+    private String jobName;
+
+    @ApiModelProperty(value = "Job name")
     private String name;
 
     @ApiModelProperty(value = "Job desc")

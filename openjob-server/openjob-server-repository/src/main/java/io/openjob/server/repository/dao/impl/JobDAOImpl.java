@@ -124,6 +124,11 @@ public class JobDAOImpl implements JobDAO {
     }
 
     @Override
+    public List<Job> getByIds(List<Long> ids) {
+        return this.jobRepository.findByIdIn(ids);
+    }
+
+    @Override
     public Job getFirstByNamespaceAndAppid(Long namespaceId, Long appId) {
         return this.jobRepository.findFirstByNamespaceIdAndAppIdAndDeleted(namespaceId, appId, CommonConstant.NO);
     }

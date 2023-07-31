@@ -8,11 +8,15 @@ import io.openjob.server.admin.constant.CodeEnum;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
 import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
+import io.openjob.server.admin.request.admin.UpdateUserPasswordRequest;
 import io.openjob.server.admin.service.AdminLoginService;
 import io.openjob.server.admin.vo.admin.AdminUserLoginVO;
 import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
 import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
+import io.openjob.server.admin.vo.admin.UpdateUserPasswordVO;
+import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.HmacUtil;
+import io.openjob.server.common.util.IpUtil;
 import io.openjob.server.repository.constant.PermissionTypeEnum;
 import io.openjob.server.repository.dao.AdminPermissionDAO;
 import io.openjob.server.repository.dao.AdminRoleDAO;
@@ -64,12 +68,23 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
         // Check login user.
         checkLoginUser(user, reqDTO.getPassword());
+
+        // Update login
+        this.adminUserDAO.updateLogin(user.getId(), IpUtil.getRequestIp(), DateUtil.timestamp());
         return buildUserLoginVO(user);
     }
 
     @Override
-    public LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey) {
-        return LoginUserInfoVO.builder().build();
+    public LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request) {
+        AdminUser adminUser = this.adminUserDAO.getById(request.getId());
+        return BeanMapperUtil.map(adminUser, LoginUserInfoVO.class);
+    }
+
+    @Override
+    public UpdateUserPasswordVO updatePassword(UpdateUserPasswordRequest request) {
+        String encrypt = HmacUtil.encrypt(request.getPassword(), this.userProperties.getPasswdSalt(), HmacUtil.HMAC_SHA256);
+        this.adminUserDAO.updatePassword(request.getId(), request.getNickname(), encrypt, request.getToken());
+        return new UpdateUserPasswordVO();
     }
 
     private void checkLoginUser(AdminUser user, String passwd) {

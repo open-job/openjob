@@ -28,8 +28,11 @@ public class ListDelayInstanceVO {
     @ApiModelProperty(value = "Topic", required = true)
     private String topic;
 
-    @ApiModelProperty(value = "DelayId", required = true)
+    @ApiModelProperty(value = "Delay id", required = true)
     private Long delayId;
+
+    @ApiModelProperty(value = "Delay name", required = true)
+    private String delayName;
 
     @ApiModelProperty(value = "Delay params", required = true)
     private String delayParams;

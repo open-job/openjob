@@ -61,6 +61,8 @@ public interface DelayDAO {
      */
     PageDTO<Delay> pageList(DelayPageDTO delayPageDTO);
 
+    List<Delay> findByIds(List<Long> ids);
+
     /**
      * Find by namespaceId and topic.
      *
