@@ -3,6 +3,7 @@ package io.openjob.worker.container;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.util.ExceptionUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.processor.ProcessResult;
 import io.openjob.worker.processor.ProcessorHandler;
@@ -13,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
@@ -76,20 +77,32 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
                 log.error("Processor(jobInstanceId={} type={} processorInfo={}) can not find!",
                         this.jobContext.getJobInstanceId(), this.jobContext.getProcessorType(), this.jobContext.getProcessorInfo());
             }
-        } catch (InterruptedException ex) {
-            // Stop processor.
-            this.stop();
+        } catch (InvocationTargetException invocationException) {
+            Throwable target = Objects.nonNull(invocationException.getTargetException()) ? invocationException.getTargetException() : invocationException;
 
-            // Result
-            result.setResult(ex.getMessage());
-            logger.info("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
-            log.info("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
+            // InterruptedException(stop/timeout)
+            if (target instanceof InterruptedException) {
+                // Stop processor.
+                this.stop();
+
+                // Result
+                result.setResult(target.getMessage());
+                logger.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
+                log.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
+                return;
+            }
+
+            // Exception
+            logger.error(String.format("Processor invoke exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), target.getMessage()), target);
+            log.error(String.format("Processor invoke exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), target.getMessage()), target);
+            result.setResult(target.getMessage());
         } catch (Throwable ex) {
             Throwable cause = Objects.nonNull(ex.getCause()) ? ex.getCause() : ex;
 
-            result.setResult(getStackTraceAsString(cause));
-            logger.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
-            log.error(String.format("Processor execute exception! jobInstanceId=%s", this.jobContext.getJobInstanceId()), cause);
+            //Result
+            result.setResult(ExceptionUtil.formatStackTraceAsString(ex));
+            logger.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
+            log.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
         } finally {
             // Remove job context
             ThreadLocalUtil.removeJobContext();
@@ -123,12 +136,5 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         request.setResult(result.getResult());
 
         TaskStatusReporter.report(request);
-    }
-
-    private String getStackTraceAsString(Throwable e) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(e.getClass().getName()).append(": ").append(e.getMessage()).append("\n");
-        Arrays.stream(e.getStackTrace()).forEach(s -> sb.append(s.toString()).append("\n"));
-        return sb.toString();
     }
 }

@@ -85,15 +85,15 @@ public class DelayThreadTaskProcessor implements Runnable {
             }
 
             // Execute fail
-            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
-            log.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            logger.error(String.format("Delay processor invoke exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            log.error(String.format("Delay processor invoke exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
             result.setResult(target.getMessage());
             failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } catch (Throwable throwable) {
             // Execute fail
             Throwable cause = Objects.nonNull(throwable.getCause()) ? throwable.getCause() : throwable;
-            logger.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
-            log.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            logger.error(String.format("Delay processor execute exception! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            log.error(String.format("Delay processor execute exception! taskId=%s", this.jobContext.getDelayTaskId()), cause);
             result.setResult(cause.getMessage());
             failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } finally {
