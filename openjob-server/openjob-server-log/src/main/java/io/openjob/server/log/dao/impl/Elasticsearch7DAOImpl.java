@@ -2,8 +2,8 @@ package io.openjob.server.log.dao.impl;
 
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.common.dto.PageDTO;
 import io.openjob.common.util.JsonUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.dao.LogDAO;
@@ -54,10 +54,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Elasticsearch7DAOImpl implements LogDAO {
-    /**
-     * Index prefix
-     */
-    private static final String INDEX_PREFIX = "openjob";
 
     /**
      * Index split size
@@ -252,10 +248,10 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     }
 
     private String getCreateIndex() {
-        return String.format("%s_%d", INDEX_PREFIX, DateUtil.getNowFormatDate());
+        return String.format("%s_%d", this.properties.getIndex(), DateUtil.getNowFormatDate());
     }
 
     private String getIndex() {
-        return String.format("%s*", INDEX_PREFIX);
+        return String.format("%s*", this.properties.getIndex());
     }
 }
