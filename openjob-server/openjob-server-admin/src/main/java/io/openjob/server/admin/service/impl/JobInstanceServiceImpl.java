@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -67,6 +68,11 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     @Override
     public PageVO<ListJobInstanceVO> getPageList(ListJobInstanceRequest request) {
         PageDTO<JobInstance> pageDTO = this.jobInstanceDAO.pageList(BeanMapperUtil.map(request, JobInstancePageDTO.class));
+
+        // Empty
+        if (CollectionUtils.isEmpty(pageDTO.getList())) {
+            return PageUtil.empty(pageDTO);
+        }
 
         // Job map
         List<Long> jobIds = pageDTO.getList().stream().map(JobInstance::getJobId).distinct().collect(Collectors.toList());

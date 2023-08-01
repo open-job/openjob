@@ -54,7 +54,7 @@ public class AdminController {
      */
     @ApiOperation("Login user")
     @GetMapping("/user-info")
-    public Result<LoginUserInfoVO> userInfo(@ModelAttribute LoginUserInfoRequest loginUserInfoRequest, HttpServletRequest request) {
+    public Result<LoginUserInfoVO> userInfo(@Valid @ModelAttribute LoginUserInfoRequest loginUserInfoRequest, HttpServletRequest request) {
         if (Objects.isNull(loginUserInfoRequest.getId())) {
             loginUserInfoRequest.setId((Long) request.getAttribute(AdminConstant.REQUEST_UID_KEY));
         }
@@ -66,8 +66,8 @@ public class AdminController {
      * Login user info
      */
     @ApiOperation("Update password")
-    @GetMapping("/update-password")
-    public Result<UpdateUserPasswordVO> updatePassword(@RequestBody UpdateUserPasswordRequest updateUserPasswordRequest) {
+    @PostMapping("/update-password")
+    public Result<UpdateUserPasswordVO> updatePassword(@Valid @RequestBody UpdateUserPasswordRequest updateUserPasswordRequest) {
         return Result.success(this.adminLoginService.updatePassword(updateUserPasswordRequest));
     }
 

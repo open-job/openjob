@@ -62,6 +62,11 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         DelayInstancePageDTO delayInstancePageDTO = BeanMapperUtil.map(request, DelayInstancePageDTO.class);
         PageDTO<DelayInstance> pageDTO = this.delayInstanceDAO.pageList(delayInstancePageDTO);
 
+        // Empty
+        if (CollectionUtils.isEmpty(pageDTO.getList())) {
+            return PageUtil.empty(pageDTO);
+        }
+
         // Delay map
         List<Long> delayIds = pageDTO.getList().stream().map(DelayInstance::getDelayId)
                 .distinct()
