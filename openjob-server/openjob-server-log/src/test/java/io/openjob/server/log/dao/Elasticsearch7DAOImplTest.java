@@ -65,6 +65,12 @@ public class Elasticsearch7DAOImplTest {
         elasticsearch7DAO.deleteByLastTime(DateUtil.timestamp());
     }
 
+    @Test
+    @Disabled
+    public void testDoCreateIndex() {
+        elasticsearch7DAO.doCreateIndex("openjob_test");
+    }
+
     @BeforeAll
     public static void CreateElasticsearch7() throws Exception {
         LogProperties.Elasticsearch7Properties elasticsearch7Properties = new LogProperties.Elasticsearch7Properties();
