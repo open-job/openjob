@@ -1,5 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
+import com.google.common.collect.Lists;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
@@ -129,6 +130,7 @@ public class HomeServiceImpl implements HomeService {
         List<String> xData = new ArrayList<>();
         List<Long> successData = new ArrayList<>();
         List<Long> failData = new ArrayList<>();
+        List<Long> runningData = new ArrayList<>();
 
         // Query by date
         if (this.isQueryByDay(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())) {
@@ -138,6 +140,9 @@ public class HomeServiceImpl implements HomeService {
             Map<Integer, Long> failDateMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
                             jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
                     .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> runningMap = this.jobInstanceDAO.countByNamespaceGroupByDateTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.RUNNING.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
 
             // Date list data
             ChartUtil.getDateList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
@@ -145,6 +150,7 @@ public class HomeServiceImpl implements HomeService {
                         xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
                         successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                        runningData.add(Optional.ofNullable(runningMap.get(d)).orElse(0L));
                     });
         } else {
             // Query by hour
@@ -154,6 +160,9 @@ public class HomeServiceImpl implements HomeService {
             Map<Integer, Long> failHourMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
                             jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.FAIL.getStatus())
                     .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> runningMap = this.jobInstanceDAO.countByNamespaceGroupByHourTime(
+                            jobChartRequest.getNamespaceId(), jobChartRequest.getBeginTime(), jobChartRequest.getEndTime(), InstanceStatusEnum.RUNNING.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
 
             // Hour list data
             ChartUtil.getHourList(jobChartRequest.getBeginTime(), jobChartRequest.getEndTime())
@@ -161,6 +170,7 @@ public class HomeServiceImpl implements HomeService {
                         xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
                         successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                        runningData.add(Optional.ofNullable(runningMap.get(d)).orElse(0L));
                     });
         }
 
@@ -182,6 +192,7 @@ public class HomeServiceImpl implements HomeService {
         jobChartVO.setAxisData(xData);
         jobChartVO.setSuccessData(successData);
         jobChartVO.setFailData(failData);
+        jobChartVO.setRunningData(runningData);
         jobChartVO.setPercentList(percentList);
         return jobChartVO;
     }
@@ -190,9 +201,10 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public DelayChartVO delayChart(DelayChartRequest delayChartRequest) {
         DelayChartVO delayChartVO = new DelayChartVO();
-        List<String> xData = new ArrayList<>();
+        List<String> xData = Lists.newArrayList();
         List<Long> successData = new ArrayList<>();
         List<Long> failData = new ArrayList<>();
+        List<Long> runningData = new ArrayList<>();
 
         // Query by date
         if (this.isQueryByDay(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())) {
@@ -202,12 +214,16 @@ public class HomeServiceImpl implements HomeService {
             Map<Integer, Long> failDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
                             delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
                     .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> runningDateMap = this.delayInstanceDAO.countByNamespaceGroupByDateTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.RUNNING.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
 
             // Date list data
             ChartUtil.getDateList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
                     .forEach(d -> {
                         successData.add(Optional.ofNullable(successDateMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failDateMap.get(d)).orElse(0L));
+                        runningData.add(Optional.ofNullable(runningDateMap.get(d)).orElse(0L));
                         xData.add(DateUtil.formatDatePattern(String.valueOf(d)));
                     });
         } else {
@@ -218,12 +234,16 @@ public class HomeServiceImpl implements HomeService {
             Map<Integer, Long> failHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
                             delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.FAILED.getStatus())
                     .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
+            Map<Integer, Long> runningHourMap = this.delayInstanceDAO.countByNamespaceGroupByHourTime(
+                            delayChartRequest.getNamespaceId(), delayChartRequest.getBeginTime(), delayChartRequest.getEndTime(), TaskStatusEnum.RUNNING.getStatus())
+                    .stream().collect(Collectors.toMap(GroupCountDTO::getGroupBy, GroupCountDTO::getCount));
 
             // Hour list data
             ChartUtil.getHourList(delayChartRequest.getBeginTime(), delayChartRequest.getEndTime())
                     .forEach(d -> {
                         successData.add(Optional.ofNullable(successHourMap.get(d)).orElse(0L));
                         failData.add(Optional.ofNullable(failHourMap.get(d)).orElse(0L));
+                        runningData.add(Optional.ofNullable(runningHourMap.get(d)).orElse(0L));
                         xData.add(DateUtil.formatHourPattern(String.valueOf(d)));
                     });
         }
@@ -246,6 +266,7 @@ public class HomeServiceImpl implements HomeService {
         delayChartVO.setAxisData(xData);
         delayChartVO.setSuccessData(successData);
         delayChartVO.setFailData(failData);
+        delayChartVO.setRunningData(runningData);
         delayChartVO.setPercentList(percentList);
         return delayChartVO;
     }
