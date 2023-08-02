@@ -43,6 +43,9 @@ public class ListDelayInstanceVO {
     @ApiModelProperty(value = "Status", required = true)
     private Integer status;
 
+    @ApiModelProperty(value = "Fail status", required = true)
+    private Integer failStatus;
+
     @ApiModelProperty(value = "Execute time", required = true)
     private Long executeTime;
 
