@@ -78,7 +78,6 @@ public class DingdingChannel extends AbstractChannel {
         Long now = DateUtil.milliLongTime();
         String requestUrl = String.format("%s&timestamp=%s&sign=%s", url, now, this.getSign(secret, now));
         String responseBody = this.postJson(requestUrl, JsonUtil.encode(dingdingRequest));
-        System.out.println(responseBody);
 
         // Response code
         DingdingResponse dingdingResponse = JsonUtil.decode(responseBody, DingdingResponse.class);

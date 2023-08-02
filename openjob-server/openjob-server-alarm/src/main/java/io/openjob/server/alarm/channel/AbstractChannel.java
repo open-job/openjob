@@ -61,7 +61,7 @@ public abstract class AbstractChannel implements AlarmChannel {
                     alarmDTO.getApp().getName(),
                     String.format("%s(%s)", alarmDTO.getDelay().getName(), alarmDTO.getDelay().getTopic()),
                     alarmDTO.getEvent().getInstanceId(),
-                    String.valueOf(alarmDTO.getJob().getExecuteTimeout()),
+                    String.valueOf(alarmDTO.getDelay().getExecuteTimeout()),
                     alarmDTO.getDelay().getProcessorInfo(),
                     DateUtil.formatTimestamp(DateUtil.milliLongTime()),
                     message
@@ -73,7 +73,7 @@ public abstract class AbstractChannel implements AlarmChannel {
     protected String postJson(String url, String body) throws IOException {
         RequestConfig requestConfig = RequestConfig.custom()
                 // 200 ms
-                .setConnectionRequestTimeout(100)
+                .setConnectionRequestTimeout(1000)
                 // 1000ms
                 .setSocketTimeout(1000)
                 .build();

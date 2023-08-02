@@ -86,7 +86,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
                 this.stop();
 
                 // Result
-                result.setResult(target.getMessage());
+                result.setResult(ExceptionUtil.formatStackTraceAsString(target));
                 logger.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
                 log.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
                 return;
@@ -95,7 +95,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             // Exception
             logger.error(String.format("Processor invoke exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), target.getMessage()), target);
             log.error(String.format("Processor invoke exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), target.getMessage()), target);
-            result.setResult(target.getMessage());
+            result.setResult(ExceptionUtil.formatStackTraceAsString(target));
         } catch (Throwable ex) {
             Throwable cause = Objects.nonNull(ex.getCause()) ? ex.getCause() : ex;
 
