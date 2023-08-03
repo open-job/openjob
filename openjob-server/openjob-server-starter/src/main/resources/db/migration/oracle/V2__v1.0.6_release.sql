@@ -61,10 +61,10 @@ INSERT INTO "admin_permission" ("id", "pid", "type", "name", "path", "meta", "hi
 VALUES  (106, 0, 1, 'userProfile', '/personal', '{"icon": "ele-ColdDrink", "roles": ["admin"], "title": "message.router.userProfile", "isLink": "", "isAffix": false, "isIframe": false, "component": "/personal/index", "isKeepAlive": true}', 1, 0, 2, 0, 1669972320, 1669972320);
 COMMIT;
 INSERT INTO "admin_permission" ("id", "pid", "type", "name", "path", "meta", "hidden", "sort", "deleted", "delete_time", "update_time", "create_time")
-VALUES  (170, 0, 1, 'Alert', '/e', '{"icon": "ele-Setting", "roles": ["admin"], "title": "message.router.alert", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320);
+VALUES  (170, 0, 1, 'Alert', '/e', '{"icon": "ele-Aim", "roles": ["admin"], "title": "message.router.alert", "isLink": "", "isAffix": false, "isIframe": false, "component": "", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320);
 COMMIT;
 INSERT INTO "admin_permission" ("id", "pid", "type", "name", "path", "meta", "hidden", "sort", "deleted", "delete_time", "update_time", "create_time")
-VALUES  (171, 170, 1, 'AlertRule', '/admin/alert/list', '{"icon": "ele-Connection", "roles": ["admin"], "title": "message.router.alertRule", "isLink": "", "isAffix": false, "isIframe": false, "component": "/alert/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320);
+VALUES  (171, 170, 1, 'AlertRule', '/admin/alert/list', '{"icon": "ele-DocumentCopy", "roles": ["admin"], "title": "message.router.alertRule", "isLink": "", "isAffix": false, "isIframe": false, "component": "/alert/index", "isKeepAlive": true}', 2, 0, 2, 0, 1669972320, 1669972320);
 COMMIT;
 
 - ----------------------------
