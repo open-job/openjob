@@ -57,6 +57,14 @@ public interface JobDAO {
     Job getById(Long id);
 
     /**
+     * Get by ids
+     *
+     * @param ids ids
+     * @return List
+     */
+    List<Job> getByIds(List<Long> ids);
+
+    /**
      * Get first by namespace id and appid
      *
      * @param namespaceId namespaceId

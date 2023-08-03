@@ -20,6 +20,14 @@ public interface DelayRepository extends JpaRepository<Delay, Long> {
     Delay findByTopic(String topic);
 
     /**
+     * Find by ids
+     *
+     * @param ids ids
+     * @return list
+     */
+    List<Delay> findByIdIn(List<Long> ids);
+
+    /**
      * Find by topics
      *
      * @param topics topic list.

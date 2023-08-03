@@ -1,6 +1,7 @@
 package io.openjob.server.repository.dao.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.util.DateUtil;
 import io.openjob.server.repository.dao.AdminUserDAO;
 import io.openjob.server.repository.entity.AdminUser;
 import io.openjob.server.repository.repository.AdminUserRepository;
@@ -32,28 +33,32 @@ public class AdminUserDAOImpl implements AdminUserDAO {
 
     @Override
     public void batchAdd(List<AdminUser> entityList) {
-        adminUserRepository.saveAll(entityList);
+        this.adminUserRepository.saveAll(entityList);
+    }
+
+    @Override
+    public void updateLogin(Long id, String ip, Long time) {
+        this.adminUserRepository.updateLogin(id, ip, time);
+    }
+
+    @Override
+    public void updatePassword(Long id, String nickname, String password, String token) {
+        this.adminUserRepository.updatePassword(id, nickname, password, token, DateUtil.timestamp());
     }
 
     @Override
     public AdminUser getById(Long id) {
-        return adminUserRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Integer updateById(AdminUser entity) {
-        adminUserRepository.save(entity);
-        return 1;
+        return this.adminUserRepository.findById(id).orElse(null);
     }
 
     @Override
     public AdminUser getByUsername(String username) {
-        return adminUserRepository.findByUsername(username);
+        return this.adminUserRepository.findByUsername(username);
     }
 
     @Override
     public AdminUser getByToken(String token) {
-        return adminUserRepository.findByTokenAndDeleted(token, CommonConstant.NO);
+        return this.adminUserRepository.findByTokenAndDeleted(token, CommonConstant.NO);
     }
 
     @Override
@@ -66,7 +71,7 @@ public class AdminUserDAOImpl implements AdminUserDAO {
         // TIP: page start from 0 on JPA.
         PageRequest pageReq = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createTime"));
 
-        return adminUserRepository.findAll(pageReq);
+        return this.adminUserRepository.findAll(pageReq);
     }
 }
 

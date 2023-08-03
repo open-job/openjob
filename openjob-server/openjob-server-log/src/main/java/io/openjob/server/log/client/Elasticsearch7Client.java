@@ -37,6 +37,9 @@ public class Elasticsearch7Client implements Client {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        //Check
+        this.check();
+
         // Connect client
         this.connect();
 
@@ -113,5 +116,14 @@ public class Elasticsearch7Client implements Client {
         builder.setHttpAsyncResponseConsumerFactory(
                 new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(this.properties.getBufferLimit()));
         this.requestOptions = builder.build();
+    }
+
+    /**
+     * Check
+     */
+    private void check() {
+        if (StringUtils.isBlank(this.properties.getIndex())) {
+            throw new RuntimeException("Elasticsearch7 index can not be empty!");
+        }
     }
 }

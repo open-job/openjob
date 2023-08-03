@@ -40,7 +40,7 @@ public class AccessInterceptor implements HandlerInterceptor {
         noLoginRoutes.add("/");
         noLoginRoutes.add("/csrf");
         noLoginRoutes.add("/error");
-        noLoginRoutes.add("/admin/login");
+        noLoginRoutes.add("/admin/user/login");
         noLoginRoutes.add("/favicon.ico");
         noLoginRoutes.add("/swagger-ui.html");
 

@@ -1,9 +1,10 @@
 package io.openjob.server.log.dao.impl;
 
+import com.google.common.collect.Maps;
 import io.openjob.common.constant.LogFieldConstant;
 import io.openjob.common.util.DateUtil;
-import io.openjob.server.common.dto.PageDTO;
 import io.openjob.common.util.JsonUtil;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.log.autoconfigure.LogProperties;
 import io.openjob.server.log.client.Elasticsearch7Client;
 import io.openjob.server.log.dao.LogDAO;
@@ -21,6 +22,8 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.unit.TimeValue;
@@ -43,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -54,10 +58,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Elasticsearch7DAOImpl implements LogDAO {
-    /**
-     * Index prefix
-     */
-    private static final String INDEX_PREFIX = "openjob";
 
     /**
      * Index split size
@@ -65,6 +65,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
     private static final Integer INDEX_SPLIT_SIZE = 2;
     private final Elasticsearch7Client elasticsearch7Client;
     private final LogProperties.Elasticsearch7Properties properties;
+    private final Map<String, Boolean> indexMap = Maps.newConcurrentMap();
 
     public Elasticsearch7DAOImpl(Elasticsearch7Client elasticsearch7Client, LogProperties.Elasticsearch7Properties properties) {
         this.elasticsearch7Client = elasticsearch7Client;
@@ -251,11 +252,47 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         }
     }
 
-    private String getCreateIndex() {
-        return String.format("%s_%d", INDEX_PREFIX, DateUtil.getNowFormatDate());
+    public String getCreateIndex() {
+        String formatIndex = String.format("%s_%d", this.properties.getIndex(), DateUtil.getNowFormatDate());
+        if (this.indexMap.containsKey(formatIndex)) {
+            return formatIndex;
+        }
+
+        // Create index
+        this.doCreateIndex(formatIndex);
+        return formatIndex;
     }
 
-    private String getIndex() {
-        return String.format("%s*", INDEX_PREFIX);
+    public synchronized void doCreateIndex(String indexName) {
+        try {
+            RequestOptions requestOptions = this.elasticsearch7Client.getRequestOptions();
+            GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
+            boolean exists = this.elasticsearch7Client.getClient().indices().exists(getIndexRequest, requestOptions);
+            if (!exists) {
+                CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
+                CreateIndexResponse createIndexResponse = this.elasticsearch7Client.getClient().indices().create(createIndexRequest, RequestOptions.DEFAULT);
+                if (createIndexResponse.isAcknowledged()) {
+                    log.info("Elasticsearch7 create index success! index={}", indexName);
+                }
+            }
+            this.indexMap.clear();
+            this.indexMap.put(indexName, true);
+        } catch (Throwable throwable) {
+            // Create index already exists
+            // Elasticsearch exception [type=resource_already_exists_exception, reason=index [openjob_test/jDZBK4ECRy6yMgVb89cKUg] already exists]
+            String message = throwable.getMessage();
+            if (message.contains("resource_already_exists_exception")) {
+                this.indexMap.clear();
+                this.indexMap.put(indexName, true);
+                log.info("Elasticsearch7 index already exists! index={}", indexName);
+                return;
+            }
+
+            log.error("Elasticsearch7 create index failed!", throwable);
+        }
+    }
+
+    public String getIndex() {
+        return String.format("%s*", this.properties.getIndex());
     }
 }

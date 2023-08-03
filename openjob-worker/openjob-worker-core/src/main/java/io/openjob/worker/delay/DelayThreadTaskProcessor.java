@@ -4,6 +4,7 @@ import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.request.WorkerDelayTaskRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.common.util.ExceptionUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.DelayDAO;
 import io.openjob.worker.init.WorkerConfig;
@@ -71,7 +72,7 @@ public class DelayThreadTaskProcessor implements Runnable {
                     logger.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
                     log.info("Delay processor is stopped! taskId={}", this.jobContext.getDelayTaskId());
                     result.setStatus(TaskStatusEnum.STOP);
-                    result.setResult(target.getMessage());
+                    result.setResult(ExceptionUtil.formatStackTraceAsString(target));
                     return;
                 }
 
@@ -79,22 +80,22 @@ public class DelayThreadTaskProcessor implements Runnable {
                 logger.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
                 log.info("Delay processor is timeout! taskId={}", this.jobContext.getDelayTaskId());
                 result.setStatus(TaskStatusEnum.FAILED);
-                result.setResult(target.getMessage());
+                result.setResult(ExceptionUtil.formatStackTraceAsString(target));
                 failStatus = FailStatusEnum.EXECUTE_TIMEOUT.getStatus();
                 return;
             }
 
             // Execute fail
-            logger.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
-            log.error(String.format("Delay processor run exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
-            result.setResult(target.getMessage());
+            logger.error(String.format("Delay processor invoke exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            log.error(String.format("Delay processor invoke exception! taskId=%s", this.jobContext.getDelayTaskId()), target);
+            result.setResult(ExceptionUtil.formatStackTraceAsString(target));
             failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } catch (Throwable throwable) {
             // Execute fail
             Throwable cause = Objects.nonNull(throwable.getCause()) ? throwable.getCause() : throwable;
-            logger.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
-            log.error(String.format("Delay processor run throwable! taskId=%s", this.jobContext.getDelayTaskId()), cause);
-            result.setResult(cause.getMessage());
+            logger.error(String.format("Delay processor execute exception! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            log.error(String.format("Delay processor execute exception! taskId=%s", this.jobContext.getDelayTaskId()), cause);
+            result.setResult(ExceptionUtil.formatStackTraceAsString(cause));
             failStatus = FailStatusEnum.EXECUTE_FAIL.getStatus();
         } finally {
             // Remove job context
