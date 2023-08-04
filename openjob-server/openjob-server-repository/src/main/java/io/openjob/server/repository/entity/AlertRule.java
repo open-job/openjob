@@ -28,7 +28,7 @@ public class AlertRule {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "app_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "alert_rule_id")})
     private Long id;
 
     /**

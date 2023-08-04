@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +62,12 @@ public class Elasticsearch7DAOImpl implements LogDAO {
      * Index split size
      */
     private static final Integer INDEX_SPLIT_SIZE = 2;
+
+    /**
+     * Index already message
+     */
+    private static final String INDEX_ALREADY_MESSAGE = "resource_already_exists_exception";
+
     private final Elasticsearch7Client elasticsearch7Client;
     private final LogProperties.Elasticsearch7Properties properties;
     private final Map<String, Boolean> indexMap = Maps.newConcurrentMap();
@@ -252,6 +257,11 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         }
     }
 
+    /**
+     * Get create index
+     *
+     * @return String
+     */
     public String getCreateIndex() {
         String formatIndex = String.format("%s_%d", this.properties.getIndex(), DateUtil.getNowFormatDate());
         if (this.indexMap.containsKey(formatIndex)) {
@@ -263,6 +273,11 @@ public class Elasticsearch7DAOImpl implements LogDAO {
         return formatIndex;
     }
 
+    /**
+     * Do create index
+     *
+     * @param indexName indexName
+     */
     public synchronized void doCreateIndex(String indexName) {
         try {
             RequestOptions requestOptions = this.elasticsearch7Client.getRequestOptions();
@@ -281,7 +296,7 @@ public class Elasticsearch7DAOImpl implements LogDAO {
             // Create index already exists
             // Elasticsearch exception [type=resource_already_exists_exception, reason=index [openjob_test/jDZBK4ECRy6yMgVb89cKUg] already exists]
             String message = throwable.getMessage();
-            if (message.contains("resource_already_exists_exception")) {
+            if (message.contains(INDEX_ALREADY_MESSAGE)) {
                 this.indexMap.clear();
                 this.indexMap.put(indexName, true);
                 log.info("Elasticsearch7 index already exists! index={}", indexName);
