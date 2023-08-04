@@ -33,7 +33,9 @@ public interface AdminLoginService {
 
     /**
      * Update user password
+     *
      * @param request request
+     * @return UpdateUserPasswordVO
      */
     UpdateUserPasswordVO updatePassword(UpdateUserPasswordRequest request);
 
