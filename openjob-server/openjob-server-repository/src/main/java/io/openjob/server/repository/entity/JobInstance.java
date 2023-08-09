@@ -80,6 +80,9 @@ public class JobInstance {
     @Column(name = "`last_report_time`")
     private Long lastReportTime;
 
+    @Column(name = "`dispatch_version`")
+    private Integer dispatchVersion;
+
     @Column(name = "`processor_type`")
     private String processorType;
 

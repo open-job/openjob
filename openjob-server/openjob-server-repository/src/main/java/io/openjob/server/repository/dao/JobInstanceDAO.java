@@ -88,6 +88,14 @@ public interface JobInstanceDAO {
     Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime);
 
     /**
+     * Update dispatch version
+     *
+     * @param id id
+     * @return Integer
+     */
+    Integer updateDispatchVersion(Long id);
+
+    /**
      * Get one by id and status.
      *
      * @param jobId      jobId

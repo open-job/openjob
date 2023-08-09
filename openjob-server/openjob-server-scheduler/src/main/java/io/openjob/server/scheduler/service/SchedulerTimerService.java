@@ -78,6 +78,7 @@ public class SchedulerTimerService {
         ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
         submitReq.setJobId(task.getJobId());
         submitReq.setJobInstanceId(task.getTaskId());
+        submitReq.setDispatchVersion(task.getDispatchVersion());
         submitReq.setJobParamType(task.getJobParamType());
         submitReq.setJobParams(task.getJobParams());
         submitReq.setJobExtendParamsType(task.getJobExtendParamsType());
@@ -137,9 +138,14 @@ public class SchedulerTimerService {
 
         // Running to update.
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
-            //Fixed update last report time. otherwise repeat dispatch.
+            // Fixed update last report time. otherwise repeat dispatch.
+            // And update dispatch version.
             this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
+            return;
         }
+
+        // Update dispatch version.
+        this.jobInstanceDAO.updateDispatchVersion(instanceId);
     }
 
     private void doDiscard(SchedulerTimerTask task) {

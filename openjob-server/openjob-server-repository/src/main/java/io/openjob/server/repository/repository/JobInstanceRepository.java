@@ -55,8 +55,20 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4 where j.id=?1")
+    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4,j.dispatchVersion=j.dispatchVersion+1 where j.id=?1")
     Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime);
+
+    /**
+     * Update dispatch version
+     *
+     * @param id id
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update JobInstance  as j set j.dispatchVersion=j.dispatchVersion+1 where j.id=?1")
+    Integer updateDispatchVersion(Long id);
+
 
     /**
      * Find failover list.

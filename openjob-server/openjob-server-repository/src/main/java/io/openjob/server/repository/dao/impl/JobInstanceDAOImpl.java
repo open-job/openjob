@@ -81,6 +81,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public Integer updateDispatchVersion(Long id) {
+        return this.jobInstanceRepository.updateDispatchVersion(id);
+    }
+
+    @Override
     public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList) {
         return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeleted(jobId, id, statusList, CommonConstant.NO);
     }

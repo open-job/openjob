@@ -194,6 +194,7 @@ public class JobSchedulingService {
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
             jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
+            jobInstance.setDispatchVersion(0);
             jobInstance.setCompleteTime(0L);
             jobInstance.setLastReportTime(0L);
             jobInstance.setProcessorType(j.getProcessorType());
@@ -236,6 +237,7 @@ public class JobSchedulingService {
         schedulerTask.setFailRetryTimes(js.getFailRetryTimes());
         schedulerTask.setFailRetryInterval(js.getFailRetryInterval());
         schedulerTask.setExecuteTimeout(js.getExecuteTimeout());
+        schedulerTask.setDispatchVersion(js.getDispatchVersion());
         schedulerTask.setConcurrency(js.getConcurrency());
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());
