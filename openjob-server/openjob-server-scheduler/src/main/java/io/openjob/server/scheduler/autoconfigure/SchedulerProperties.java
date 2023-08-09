@@ -14,7 +14,7 @@ public class SchedulerProperties {
     private Integer instanceFailPeriodTime = 15;
     private SchedulerProperties.Scheduler scheduler = new SchedulerProperties.Scheduler();
     private SchedulerProperties.Workflow workflow = new SchedulerProperties.Workflow();
-    private Delay delay;
+    private Delay delay = new Delay();
 
     @Data
     public static class Scheduler {
