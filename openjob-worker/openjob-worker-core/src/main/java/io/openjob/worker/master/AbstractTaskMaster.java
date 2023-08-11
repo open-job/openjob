@@ -120,32 +120,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
-        // Distribute task.
-        // Submit to queue.
-        if (!(this instanceof StandaloneTaskMaster)) {
-            DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
-            return;
-        }
-
-        // Update list
-        List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
-            String taskUniqueId = s.getTaskUniqueId();
-            return new Task(taskUniqueId, s.getStatus(), s.getResult());
-        }).collect(Collectors.toList());
-
-        // Update by status.
-        updateList.stream().collect(Collectors.groupingBy(Task::getStatus))
-                .forEach((status, groupList) -> taskDAO.batchUpdateStatusByTaskId(groupList, status));
-
-        // Standalone task.
-        // Do Complete task.
-        if (this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
-            try {
-                this.completeTask();
-            } catch (InterruptedException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
+        // Handle status
+        DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
     }
 
     @Override
@@ -393,6 +369,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Second delay task.
         long delayTime = Long.parseLong(this.jobInstanceDTO.getTimeExpression());
         Thread.sleep(delayTime * 1000L);
+
+        // Rest task id
+        this.taskIdGenerator.set(1L);
 
         // Next circle id.
         long jobId = this.jobInstanceDTO.getJobId();
