@@ -10,6 +10,7 @@ import io.openjob.server.alarm.dto.AlarmEventDTO;
 import io.openjob.server.alarm.event.AlarmEvent;
 import io.openjob.server.alarm.event.AlarmEventPublisher;
 import io.openjob.server.cluster.executor.WorkerJobInstanceExecutor;
+import io.openjob.server.cluster.executor.WorkerJobInstanceTaskExecutor;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.JobInstanceTask;
@@ -19,12 +20,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -36,14 +35,17 @@ public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
     private final JobInstanceDAO jobInstanceDAO;
     private final WorkerJobInstanceExecutor workerJobInstanceExecutor;
+    private final WorkerJobInstanceTaskExecutor workerJobInstanceTaskExecutor;
 
     @Autowired
     public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO,
                               JobInstanceDAO jobInstanceDAO,
-                              WorkerJobInstanceExecutor workerJobInstanceExecutor) {
+                              WorkerJobInstanceExecutor workerJobInstanceExecutor,
+                              WorkerJobInstanceTaskExecutor workerJobInstanceTaskExecutor) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.workerJobInstanceExecutor = workerJobInstanceExecutor;
+        this.workerJobInstanceTaskExecutor = workerJobInstanceTaskExecutor;
     }
 
     @Transactional(rollbackFor = Exception.class, timeout = 1)
@@ -66,8 +68,8 @@ public class JobInstanceService {
     }
 
     @Transactional(rollbackFor = Exception.class, timeout = 1)
-    public void handleInstanceTasks(WorkerJobInstanceTaskBatchRequest taskList) {
-        this.workerJobInstanceExecutor.submit(taskList);
+    public void handleInstanceTasks(WorkerJobInstanceTaskBatchRequest taskBatchRequest) {
+        this.workerJobInstanceTaskExecutor.submit(taskBatchRequest);
     }
 
     /**
