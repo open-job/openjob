@@ -128,6 +128,8 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
         request.setJobInstanceId(this.jobContext.getJobInstanceId());
+        request.setDispatchVersion(this.jobContext.getDispatchVersion());
+        request.setCircleId(this.jobContext.getCircleId());
         request.setTaskId(this.jobContext.getTaskId());
         request.setWorkerAddress(workerAddress);
         request.setMasterActorPath(this.jobContext.getMasterActorPath());

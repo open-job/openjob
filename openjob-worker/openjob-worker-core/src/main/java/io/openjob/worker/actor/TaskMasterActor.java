@@ -44,11 +44,10 @@ public class TaskMasterActor extends BaseActor {
             throw new RuntimeException(String.format("Task master is running! jobInstanceId=%s", submitReq.getJobInstanceId()));
         }
 
-        getSender().tell(Result.success(new WorkerResponse()), getSelf());
-
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         jobInstanceDTO.setJobId(submitReq.getJobId());
         jobInstanceDTO.setJobInstanceId(submitReq.getJobInstanceId());
+        jobInstanceDTO.setDispatchVersion(submitReq.getDispatchVersion());
         jobInstanceDTO.setJobParamType(submitReq.getJobParamType());
         jobInstanceDTO.setJobParams(submitReq.getJobParams());
         jobInstanceDTO.setJobExtendParamsType(submitReq.getJobExtendParamsType());
@@ -66,6 +65,9 @@ public class TaskMasterActor extends BaseActor {
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
+
+        // Result
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
     /**

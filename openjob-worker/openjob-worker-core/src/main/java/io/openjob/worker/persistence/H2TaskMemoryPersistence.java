@@ -44,10 +44,11 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 + "  `job_id` bigint(20) unsigned NOT NULL,"
                 + "  `instance_id` bigint(20)  unsigned NOT NULL,"
+                + "  `dispatch_version` bigint(20)  unsigned NOT NULL,"
                 + "  `circle_id` bigint(20) unsigned NOT NULL DEFAULT '0',"
-                + "  `task_id` varchar(64) NOT NULL DEFAULT '',"
+                + "  `task_id` varchar(128) NOT NULL DEFAULT '',"
                 + "  `task_name` varchar(128) NOT NULL DEFAULT '',"
-                + "  `task_parent_id` varchar(64) NOT NULL DEFAULT '0',"
+                + "  `task_parent_id` varchar(128) NOT NULL DEFAULT '0',"
                 + "  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',"
                 + "  `worker_address` varchar(64) NOT NULL DEFAULT '',"
                 + "  `result` longtext,"
@@ -70,6 +71,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         String sql = "INSERT INTO task ("
                 + "`job_id`,"
                 + "`instance_id`,"
+                + "`dispatch_version`,"
                 + "`circle_id`,"
                 + "`task_id`,"
                 + "`task_name`,"
@@ -80,7 +82,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "`task_body`,"
                 + "`create_time`,"
                 + "`update_time`"
-                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -89,16 +91,17 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
             for (Task task : tasks) {
                 ps.setLong(1, task.getJobId());
                 ps.setLong(2, task.getInstanceId());
-                ps.setLong(3, task.getCircleId());
-                ps.setString(4, task.getTaskId());
-                ps.setString(5, task.getTaskName());
-                ps.setString(6, task.getTaskParentId());
-                ps.setInt(7, task.getStatus());
-                ps.setString(8, task.getWorkerAddress());
-                ps.setString(9, task.getResult());
-                ps.setBytes(10, task.getTaskBody());
-                ps.setLong(11, task.getCreateTime());
-                ps.setLong(12, task.getUpdateTime());
+                ps.setLong(3, task.getDispatchVersion());
+                ps.setLong(4, task.getCircleId());
+                ps.setString(5, task.getTaskId());
+                ps.setString(6, task.getTaskName());
+                ps.setString(7, task.getTaskParentId());
+                ps.setInt(8, task.getStatus());
+                ps.setString(9, task.getWorkerAddress());
+                ps.setString(10, task.getResult());
+                ps.setBytes(11, task.getTaskBody());
+                ps.setLong(12, task.getCreateTime());
+                ps.setLong(13, task.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -324,6 +327,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         Task task = new Task();
         task.setJobId(rs.getLong("job_id"));
         task.setInstanceId(rs.getLong("instance_id"));
+        task.setDispatchVersion(rs.getLong("dispatch_version"));
         task.setCircleId(rs.getLong("circle_id"));
         task.setTaskId(rs.getString("task_id"));
         task.setTaskName(rs.getString("task_name"));

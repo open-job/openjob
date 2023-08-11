@@ -21,6 +21,7 @@ public class JobContext {
     private String delayExtra;
     private Long jobId;
     private Long jobInstanceId;
+    private Long dispatchVersion;
     private Long taskId;
     private String jobParamType;
     private String jobParams;

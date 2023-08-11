@@ -10,6 +10,7 @@ import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
@@ -41,9 +42,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractTaskMaster implements TaskMaster {
 
-    protected AtomicLong taskIdGenerator = new AtomicLong(0);
+    protected AtomicLong taskIdGenerator = new AtomicLong(1);
 
-    protected AtomicLong circleIdGenerator = new AtomicLong(0);
+    protected AtomicLong circleIdGenerator = new AtomicLong(1);
 
     protected JobInstanceDTO jobInstanceDTO;
 
@@ -216,6 +217,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         MasterStartContainerRequest startReq = this.getJobMasterStartContainerRequest();
         startReq.setJobId(this.jobInstanceDTO.getJobId());
         startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        startReq.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         startReq.setTaskId(this.acquireTaskId());
         startReq.setCircleId(circleIdGenerator.get());
         return startReq;
@@ -225,6 +227,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         Task task = new Task();
         task.setJobId(startRequest.getJobId());
         task.setInstanceId(startRequest.getJobInstanceId());
+        task.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         task.setCircleId(startRequest.getCircleId());
         task.setTaskId(startRequest.getTaskUniqueId());
         task.setTaskParentId(startRequest.getParentTaskUniqueId());
@@ -238,6 +241,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         MasterStartContainerRequest containerRequest = this.getJobMasterStartContainerRequest();
         containerRequest.setJobId(task.getJobId());
         containerRequest.setJobInstanceId(task.getInstanceId());
+        containerRequest.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         containerRequest.setTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskId()));
         containerRequest.setParentTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskParentId()));
         containerRequest.setCircleId(task.getCircleId());
@@ -269,6 +273,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         taskRequest.setJobId(task.getJobId());
         taskRequest.setJobInstanceId(task.getInstanceId());
         taskRequest.setCircleId(task.getCircleId());
+        taskRequest.setDispatchVersion(task.getDispatchVersion());
         taskRequest.setTaskId(task.getTaskId());
         taskRequest.setTaskName(task.getTaskName());
         taskRequest.setParentTaskId(task.getTaskParentId());
@@ -285,19 +290,33 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         return nonFinishCount <= 0;
     }
 
-    @SuppressWarnings("all")
+    /**
+     * Job instance status and tasks
+     */
     protected void doCompleteTask() {
-        long circleId = this.circleIdGenerator.get();
-        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        // Job instance status
+        this.doJobInstanceStatus();
 
-        // Instance status and fail status
-        int instanceStatus = this.getInstanceStatus();
-        int failStatus = this.getFailStatus();
+        // Job instance tasks
+        this.doJobInstanceTasks();
+    }
 
+    protected void doJobInstanceStatus() {
+        WorkerJobInstanceStatusRequest instanceRequest = new WorkerJobInstanceStatusRequest();
+        instanceRequest.setCircleId(this.circleIdGenerator.get());
+        instanceRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
+        instanceRequest.setStatus(this.getInstanceStatus());
+        instanceRequest.setFailStatus(this.getFailStatus());
+        WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
+    }
+
+    @SuppressWarnings("all")
+    protected void doJobInstanceTasks() {
         long size = 100;
         long page = CommonConstant.FIRST_PAGE;
         while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), size);
 
             // Empty query.
             if (CollectionUtils.isEmpty(queryTask)) {
@@ -309,16 +328,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                     .map(this::convertToTaskRequest)
                     .collect(Collectors.toList());
 
-            WorkerJobInstanceStatusRequest instanceRequest = new WorkerJobInstanceStatusRequest();
-            instanceRequest.setCircleId(circleId);
-            instanceRequest.setJobInstanceId(instanceId);
-            instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
-            instanceRequest.setStatus(instanceStatus);
-            instanceRequest.setFailStatus(failStatus);
-            instanceRequest.setTaskRequestList(taskRequestList);
-            instanceRequest.setPage(page);
-
-            WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
+            WorkerJobInstanceTaskBatchRequest workerJobInstanceTaskBatchRequest = new WorkerJobInstanceTaskBatchRequest();
+            workerJobInstanceTaskBatchRequest.setTaskRequestList(taskRequestList);
+            WorkerActorSystem.atLeastOnceDelivery(workerJobInstanceTaskBatchRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());

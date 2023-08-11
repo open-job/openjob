@@ -81,7 +81,7 @@ public class JobInstance {
     private Long lastReportTime;
 
     @Column(name = "`dispatch_version`")
-    private Integer dispatchVersion;
+    private Long dispatchVersion;
 
     @Column(name = "`processor_type`")
     private String processorType;

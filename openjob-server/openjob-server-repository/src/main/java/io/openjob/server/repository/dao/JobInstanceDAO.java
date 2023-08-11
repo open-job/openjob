@@ -40,6 +40,14 @@ public interface JobInstanceDAO {
     Integer updateStatusById(Long id, Integer status, Integer failStatus);
 
     /**
+     * Batch update status
+     *
+     * @param updateList updateList
+     * @return Integer
+     */
+    Integer batchUpdateStatus(List<JobInstance> updateList);
+
+    /**
      * Update
      *
      * @param ids            ids
@@ -83,17 +91,19 @@ public interface JobInstanceDAO {
      * @param workerAddress      worker address
      * @param instanceStatusEnum instance status
      * @param lastReportTime     last report time.
+     * @param dispatchVersion    dispatchVersion
      * @return Integer
      */
-    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime);
+    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime, Long dispatchVersion);
 
     /**
      * Update dispatch version
      *
-     * @param id id
+     * @param id              id
+     * @param dispatchVersion
      * @return Integer
      */
-    Integer updateDispatchVersion(Long id);
+    Integer updateDispatchVersion(Long id, Long dispatchVersion);
 
     /**
      * Get one by id and status.

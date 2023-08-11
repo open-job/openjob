@@ -13,12 +13,12 @@ public class TaskUtil {
 
     }
 
-    public static String getReduceParentUniqueId(Long jobId, Long instanceId, Long circleId) {
-        return String.format("%d_%d_%d_reduce", jobId, instanceId, circleId);
+    public static String getReduceParentUniqueId(Long jobId, Long instanceId, Long version, Long circleId) {
+        return String.format("%d_%d_%s_%d_reduce", jobId, instanceId, version, circleId);
     }
 
-    public static String getRandomUniqueId(Long jobId, Long instanceId, Long circleId, Long taskId) {
-        return String.format("%d_%d_%d_%d", jobId, instanceId, circleId, taskId);
+    public static String getRandomUniqueId(Long jobId, Long instanceId, Long version, Long circleId, Long taskId) {
+        return String.format("%d_%d_%d_%d_%d", jobId, instanceId, version, circleId, taskId);
     }
 
     /**

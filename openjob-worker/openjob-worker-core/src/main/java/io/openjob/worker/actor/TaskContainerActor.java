@@ -104,6 +104,8 @@ public class TaskContainerActor extends BaseActor {
         JobContext jobContext = new JobContext();
         jobContext.setJobId(startReq.getJobId());
         jobContext.setJobInstanceId(startReq.getJobInstanceId());
+        jobContext.setDispatchVersion(startReq.getDispatchVersion());
+        jobContext.setCircleId(startReq.getCircleId());
         jobContext.setTaskId(startReq.getTaskId());
         jobContext.setJobParamType(startReq.getJobParamType());
         jobContext.setJobParams(startReq.getJobParams());

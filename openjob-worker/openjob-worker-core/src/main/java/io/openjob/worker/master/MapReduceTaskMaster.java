@@ -175,17 +175,19 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     protected void persistReduceTask(ProcessResult processResult) {
         long jobId = this.jobInstanceDTO.getJobId();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long version = this.jobInstanceDTO.getDispatchVersion();
         long circleId = this.circleIdGenerator.get();
 
         Task task = new Task();
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        task.setDispatchVersion(version);
         task.setCircleId(this.circleIdGenerator.get());
-        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
+        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
         task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
         task.setWorkerAddress(this.localWorkerAddress);
-        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, circleId));
+        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, version, circleId));
         task.setStatus(processResult.getStatus().getStatus());
         task.setResult(processResult.getResult());
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));

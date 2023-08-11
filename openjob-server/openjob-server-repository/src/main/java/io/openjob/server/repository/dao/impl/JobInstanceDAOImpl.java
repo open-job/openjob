@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.Predicate;
@@ -30,10 +31,12 @@ import java.util.Set;
 @Component
 public class JobInstanceDAOImpl implements JobInstanceDAO {
     private final JobInstanceRepository jobInstanceRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository) {
+    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository, JdbcTemplate jdbcTemplate) {
         this.jobInstanceRepository = jobInstanceRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -52,6 +55,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     public Integer updateStatusById(Long id, Integer status, Integer failStatus) {
         long now = DateUtil.timestamp();
         return this.jobInstanceRepository.update(id, status, failStatus, now, now);
+    }
+
+    @Override
+    public Integer batchUpdateStatus(List<JobInstance> updateList) {
+        return null;
     }
 
     @Override
@@ -76,13 +84,13 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance, Long lastReportTime) {
-        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), lastReportTime);
+    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance, Long lastReportTime, Long dispatchVersion) {
+        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), lastReportTime, dispatchVersion);
     }
 
     @Override
-    public Integer updateDispatchVersion(Long id) {
-        return this.jobInstanceRepository.updateDispatchVersion(id);
+    public Integer updateDispatchVersion(Long id, Long dispatchVersion) {
+        return this.jobInstanceRepository.updateDispatchVersion(id, dispatchVersion);
     }
 
     @Override

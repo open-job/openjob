@@ -194,7 +194,7 @@ public class JobSchedulingService {
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
             jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
-            jobInstance.setDispatchVersion(0);
+            jobInstance.setDispatchVersion(0L);
             jobInstance.setCompleteTime(0L);
             jobInstance.setLastReportTime(0L);
             jobInstance.setProcessorType(j.getProcessorType());
@@ -225,6 +225,7 @@ public class JobSchedulingService {
     private AbstractTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
         schedulerTask.setJobId(js.getJobId());
+        schedulerTask.setDispatchVersion(js.getDispatchVersion());
         schedulerTask.setJobParamType(js.getParamsType());
         schedulerTask.setJobParams(js.getParams());
         schedulerTask.setJobExtendParamsType(js.getExtendParamsType());

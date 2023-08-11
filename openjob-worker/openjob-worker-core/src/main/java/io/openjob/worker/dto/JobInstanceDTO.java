@@ -12,6 +12,7 @@ import java.util.List;
 public class JobInstanceDTO {
     private Long jobId;
     private Long jobInstanceId;
+    private Long dispatchVersion;
     private String jobParamType;
     private String jobParams;
     private String jobExtendParamsType;

@@ -47,27 +47,29 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Update by running
      *
-     * @param id             id
-     * @param workerAddress  worker address.
-     * @param status         status
-     * @param lastReportTime last report time.
+     * @param id              id
+     * @param workerAddress   worker address.
+     * @param status          status
+     * @param lastReportTime  last report time.
+     * @param dispatchVersion dispatchVersion
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4,j.dispatchVersion=j.dispatchVersion+1 where j.id=?1")
-    Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime);
+    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4,j.dispatchVersion=?5 where j.id=?1")
+    Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime, Long dispatchVersion);
 
     /**
      * Update dispatch version
      *
-     * @param id id
+     * @param id              id
+     * @param dispatchVersion dispatchVersion
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance  as j set j.dispatchVersion=j.dispatchVersion+1 where j.id=?1")
-    Integer updateDispatchVersion(Long id);
+    @Query(value = "update JobInstance  as j set j.dispatchVersion=?2 where j.id=?1")
+    Integer updateDispatchVersion(Long id, Long dispatchVersion);
 
 
     /**

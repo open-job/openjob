@@ -75,10 +75,11 @@ public class SchedulerTimerService {
      * @param task task
      */
     public void doRun(SchedulerTimerTask task, Set<String> failoverList) {
+        Long dispatchVersion = DateUtil.milliLongTime();
         ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
         submitReq.setJobId(task.getJobId());
         submitReq.setJobInstanceId(task.getTaskId());
-        submitReq.setDispatchVersion(task.getDispatchVersion());
+        submitReq.setDispatchVersion(dispatchVersion);
         submitReq.setJobParamType(task.getJobParamType());
         submitReq.setJobParams(task.getJobParams());
         submitReq.setJobExtendParamsType(task.getJobExtendParamsType());
@@ -110,6 +111,7 @@ public class SchedulerTimerService {
                     .updateByDispatcher(workerDTO.getAddress(),
                             task.getJobId(),
                             task.getTaskId(),
+                            dispatchVersion,
                             InstanceStatusEnum.RUNNING,
                             "Dispatch  task success!");
         } catch (Throwable ex) {
@@ -125,14 +127,15 @@ public class SchedulerTimerService {
     /**
      * Update by dispatcher.
      *
-     * @param workerAddress worker addres.
-     * @param jobId         job id.
-     * @param instanceId    instance id.
-     * @param statusEnum    status
-     * @param message       message
+     * @param workerAddress   worker address
+     * @param jobId           job id.
+     * @param instanceId      instance id.
+     * @param dispatchVersion dispatchVersion
+     * @param statusEnum      status
+     * @param message         message
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateByDispatcher(String workerAddress, Long jobId, Long instanceId, InstanceStatusEnum statusEnum, String message) {
+    public void updateByDispatcher(String workerAddress, Long jobId, Long instanceId, Long dispatchVersion, InstanceStatusEnum statusEnum, String message) {
         // Add instance log.
         this.addInstanceLog(jobId, instanceId, message);
 
@@ -140,12 +143,12 @@ public class SchedulerTimerService {
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
             // Fixed update last report time. otherwise repeat dispatch.
             // And update dispatch version.
-            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
+            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp(), dispatchVersion);
             return;
         }
 
         // Update dispatch version.
-        this.jobInstanceDAO.updateDispatchVersion(instanceId);
+        this.jobInstanceDAO.updateDispatchVersion(instanceId, dispatchVersion);
     }
 
     private void doDiscard(SchedulerTimerTask task) {

@@ -1,7 +1,6 @@
 package io.openjob.server.cluster.actor;
 
 import io.openjob.common.actor.BaseActor;
-import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
@@ -31,7 +30,6 @@ public class WorkerJobInstanceActor extends BaseActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(WorkerJobInstanceStatusRequest.class, this::handleStatus)
-                .match(WorkerJobInstanceLogRequest.class, this::handleInstanceLog)
                 .build();
     }
 
@@ -46,20 +44,6 @@ public class WorkerJobInstanceActor extends BaseActor {
 
         // Response
         ServerResponse serverResponse = new ServerResponse(statusRequest.getDeliveryId());
-        getSender().tell(Result.success(serverResponse), getSelf());
-    }
-
-    /**
-     * Handle instance log.
-     *
-     * @param logRequest log request.
-     */
-    public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
-        // Handle instance log.
-        this.instanceService.handleInstanceLog(logRequest);
-
-        // Response
-        ServerResponse serverResponse = new ServerResponse(logRequest.getDeliveryId());
         getSender().tell(Result.success(serverResponse), getSelf());
     }
 }

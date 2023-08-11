@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class SchedulerTimerTask extends AbstractTimerTask {
     protected Long jobId;
-    private Integer dispatchVersion;
+    private Long dispatchVersion;
     protected String jobParamType;
     protected String jobParams;
     protected String jobExtendParamsType;

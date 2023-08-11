@@ -16,6 +16,8 @@ public class MasterStartContainerRequest implements Serializable {
 
     private Long jobInstanceId;
 
+    private Long dispatchVersion;
+
     private Long taskId;
 
     private Long parentTaskId;
@@ -60,6 +62,7 @@ public class MasterStartContainerRequest implements Serializable {
     public MasterStartContainerRequest() {
         this.jobId = 0L;
         this.jobInstanceId = 0L;
+        this.dispatchVersion = 0L;
         this.taskId = 0L;
         this.circleId = 0L;
         this.parentTaskId = 0L;
@@ -67,10 +70,10 @@ public class MasterStartContainerRequest implements Serializable {
     }
 
     public String getTaskUniqueId() {
-        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.dispatchVersion, this.circleId, this.taskId);
     }
 
     public String getParentTaskUniqueId() {
-        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.parentTaskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.dispatchVersion, this.circleId, this.parentTaskId);
     }
 }
