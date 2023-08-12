@@ -108,19 +108,6 @@ public class JobSchedulingService {
         this.schedulerWheel.addTimerTask(timerTasks);
     }
 
-    private Boolean checkTaskMaster(JobInstance js) {
-        try {
-            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
-            checkRequest.setJobInstanceId(js.getId());
-            checkRequest.setJobId(js.getJobId());
-            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
-            return true;
-        } catch (Throwable e) {
-            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
-            return false;
-        }
-    }
-
     /**
      * Schedule cron job.
      *
@@ -281,5 +268,18 @@ public class JobSchedulingService {
 
         // Update
         jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
+    }
+
+    private Boolean checkTaskMaster(JobInstance js) {
+        try {
+            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
+            checkRequest.setJobInstanceId(js.getId());
+            checkRequest.setJobId(js.getJobId());
+            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
+            return true;
+        } catch (Throwable e) {
+            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
+            return false;
+        }
     }
 }

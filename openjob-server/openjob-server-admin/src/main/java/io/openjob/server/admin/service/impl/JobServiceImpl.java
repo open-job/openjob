@@ -3,9 +3,12 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.CodeEnum;
@@ -37,6 +40,7 @@ import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
+import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +82,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public AddJobVO add(AddJobRequest addJobRequest) {
         // Pre handle request
         this.preHandleJob(addJobRequest);
@@ -92,9 +97,18 @@ public class JobServiceImpl implements JobService {
             job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression()));
         } else if (TimeExpressionTypeEnum.isOneTime(addJobRequest.getTimeExpressionType())) {
             job.setNextExecuteTime(Long.valueOf(addJobRequest.getTimeExpression()));
+        } else if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType())) {
+            job.setNextExecuteTime(DateUtil.timestamp());
         }
 
         long id = this.jobDAO.save(job);
+        job.setId(id);
+
+        // Second delay to create job instance
+        if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
+            this.createJobInstance(job);
+        }
+
         return new AddJobVO().setId(id);
     }
 
@@ -270,6 +284,29 @@ public class JobServiceImpl implements JobService {
 
             request.setParams(request.getShardingParams());
         }
+    }
+
+    /**
+     * Create job instance
+     *
+     * @param job job
+     */
+    private void createJobInstance(Job job) {
+        Long timestamp = DateUtil.timestamp();
+        JobInstance jobInstance = BeanMapperUtil.map(job, JobInstance.class);
+        jobInstance.setJobId(job.getId());
+        jobInstance.setDeleteTime(0L);
+        jobInstance.setDeleted(CommonConstant.NO);
+        jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
+        jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
+        jobInstance.setDispatchVersion(0L);
+        jobInstance.setCompleteTime(0L);
+        jobInstance.setLastReportTime(0L);
+        jobInstance.setWorkerAddress("");
+        jobInstance.setExecuteTime(job.getNextExecuteTime());
+        jobInstance.setCreateTime(timestamp);
+        jobInstance.setUpdateTime(timestamp);
+        this.jobInstanceDAO.save(jobInstance);
     }
 
     /**
