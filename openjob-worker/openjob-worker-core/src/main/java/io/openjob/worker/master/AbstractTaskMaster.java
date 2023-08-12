@@ -150,12 +150,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Remove task from manager
         this.removeTaskFromManager();
 
-        // Complete task
-        try {
-            this.completeTask();
-        } catch (Throwable e) {
-            log.error("Stop and complete task failed!", e);
-        }
+        // Remove task from manager
+        this.removeTaskFromManager();
+
+        // Not second delay task.
+        this.destroyTaskContainer();
     }
 
     @Override
@@ -270,8 +269,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
      * Job instance status and tasks
      */
     protected void doCompleteTask() {
-        // Job instance status
-        this.doJobInstanceStatus();
+        // Not second delay to do job instance status
+        if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            // Job instance status
+            this.doJobInstanceStatus();
+        }
 
         // Job instance tasks
         this.doJobInstanceTasks();

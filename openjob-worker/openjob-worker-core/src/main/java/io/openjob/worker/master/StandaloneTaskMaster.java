@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class StandaloneTaskMaster extends AbstractTaskMaster {
+    private ScheduledExecutorService secondDelayService;
+
     public StandaloneTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }
@@ -35,14 +37,14 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
     protected void init() {
         // Second delay scheduler
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            ScheduledExecutorService secondDelayService = new ScheduledThreadPoolExecutor(
+            this.secondDelayService = new ScheduledThreadPoolExecutor(
                     1,
                     new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
                     new ThreadPoolExecutor.AbortPolicy()
             );
 
             // Runnable
-            secondDelayService.scheduleWithFixedDelay(() -> {
+            this.secondDelayService.scheduleWithFixedDelay(() -> {
                 try {
                     this.doTaskComplete();
                 } catch (Throwable throwable) {
@@ -50,6 +52,20 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
                 }
             }, 5, 1, TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    public void stop(Integer type) {
+        super.stop(type);
+
+        // Second delay to shut down scheduler
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.secondDelayService.shutdown();
+            return;
+        }
+
+        // Do complete task.
+        this.doCompleteTask();
     }
 
     @Override
