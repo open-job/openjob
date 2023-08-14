@@ -2,7 +2,9 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import com.google.common.collect.Lists;
+import com.sun.jna.platform.mac.SystemB;
 import io.openjob.common.constant.TaskConstant;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
@@ -94,6 +96,13 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     @Override
     public void submit() {
         MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
+
+        // Second delay to persist circle task
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.persistParentCircleTask(masterStartContainerRequest);
+        }
+
+        // Dispatch tasks
         masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 

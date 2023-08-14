@@ -4,6 +4,7 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
@@ -68,6 +69,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
      *
      * @param startRequests start requests.
      * @param isFailover    is failover
+     * @param failWorkers   fail workers
      */
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests, Boolean isFailover, Set<String> failWorkers) {
         String workerAddress = WorkerUtil.selectOneWorker(failWorkers);
@@ -149,6 +151,26 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         jobContext.setTimeExpression(this.jobInstanceDTO.getTimeExpression());
         jobContext.setTimeExpressionType(this.jobInstanceDTO.getTimeExpressionType());
         return jobContext;
+    }
+
+    /**
+     * Persist parent circle task
+     *
+     * @param startRequest startRequest
+     */
+    protected void persistParentCircleTask(MasterStartContainerRequest startRequest) {
+        Task task = this.convertToTask(startRequest, this.localWorkerAddress);
+
+        // Parent task name
+        task.setTaskName("");
+        task.setStatus(TaskStatusEnum.SUCCESS.getStatus());
+        task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
+        taskDAO.add(task);
+
+        // Init next task
+        Long parentTaskId = this.taskIdGenerator.get();
+        startRequest.setTaskId(this.acquireTaskId());
+        startRequest.setParentTaskId(parentTaskId);
     }
 
     protected static class TaskStatusChecker implements Runnable {

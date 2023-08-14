@@ -7,6 +7,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.JobInstanceStopEnum;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractTaskMaster implements TaskMaster {
 
-    protected AtomicLong taskIdGenerator = new AtomicLong(1);
+    protected AtomicLong taskIdGenerator = new AtomicLong(0);
 
     protected AtomicLong circleIdGenerator = new AtomicLong(1);
 
@@ -188,7 +189,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Long acquireTaskId() {
-        return taskIdGenerator.getAndIncrement();
+        return taskIdGenerator.incrementAndGet();
     }
 
     protected MasterStartContainerRequest getMasterStartContainerRequest() {
