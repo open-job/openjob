@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.response.WorkerResponse;
@@ -14,8 +15,10 @@ import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
+import io.openjob.server.repository.entity.JobInstanceTask;
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
@@ -50,14 +53,20 @@ public class JobSchedulingService {
     private final JobInstanceDAO jobInstanceDAO;
     private final SchedulerWheel schedulerWheel;
     private final SchedulerProperties schedulerProperties;
+    private final JobInstanceTaskDAO jobInstanceTaskDAO;
 
 
     @Autowired
-    public JobSchedulingService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel, SchedulerProperties schedulerProperties) {
+    public JobSchedulingService(JobDAO jobDAO,
+                                JobInstanceDAO jobInstanceDAO,
+                                SchedulerWheel schedulerWheel,
+                                SchedulerProperties schedulerProperties,
+                                JobInstanceTaskDAO jobInstanceTaskDAO) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.schedulerWheel = schedulerWheel;
         this.schedulerProperties = schedulerProperties;
+        this.jobInstanceTaskDAO = jobInstanceTaskDAO;
     }
 
     /**
@@ -101,7 +110,7 @@ public class JobSchedulingService {
             }
 
             // Add time wheel.
-            timerTasks.add(this.convertToTimerTask(js));
+            timerTasks.add(this.convertToTimerTaskByFailover(js));
         });
 
         // Batch add time task to timing wheel.
@@ -209,9 +218,10 @@ public class JobSchedulingService {
         this.schedulerWheel.addTimerTask(timerTasks);
     }
 
-    private AbstractTimerTask convertToTimerTask(JobInstance js) {
+    private SchedulerTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
         schedulerTask.setJobId(js.getJobId());
+        schedulerTask.setCircleId(TaskConstant.DEFAULT_CIRCLE_ID);
         schedulerTask.setDispatchVersion(js.getDispatchVersion());
         schedulerTask.setJobParamType(js.getParamsType());
         schedulerTask.setJobParams(js.getParams());
@@ -268,6 +278,32 @@ public class JobSchedulingService {
 
         // Update
         jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
+    }
+
+    private SchedulerTimerTask convertToTimerTaskByFailover(JobInstance js) {
+        SchedulerTimerTask schedulerTimerTask = this.convertToTimerTask(js);
+
+        // Second delay to init circle id
+        if (TimeExpressionTypeEnum.isSecondDelay(js.getTimeExpressionType())) {
+            schedulerTimerTask.setCircleId(this.getDispatchCircleId(js.getJobId(), js.getId()));
+        }
+        return schedulerTimerTask;
+    }
+
+    /**
+     * Get dispatch circle id
+     *
+     * @param jobId      jobId
+     * @param instanceId instanceId
+     * @return Long
+     */
+    private Long getDispatchCircleId(Long jobId, Long instanceId) {
+        JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(jobId, instanceId, TaskConstant.DEFAULT_PARENT_ID);
+        if (Objects.isNull(latestParentTask)) {
+            return TaskConstant.DEFAULT_CIRCLE_ID;
+        }
+
+        return latestParentTask.getCircleId() + 1;
     }
 
     private Boolean checkTaskMaster(JobInstance js) {

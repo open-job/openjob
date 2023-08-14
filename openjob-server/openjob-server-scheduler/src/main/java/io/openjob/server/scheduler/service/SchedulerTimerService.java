@@ -79,6 +79,7 @@ public class SchedulerTimerService {
         ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
         submitReq.setJobId(task.getJobId());
         submitReq.setJobInstanceId(task.getTaskId());
+        submitReq.setCircleId(task.getCircleId());
         submitReq.setDispatchVersion(dispatchVersion);
         submitReq.setJobParamType(task.getJobParamType());
         submitReq.setJobParams(task.getJobParams());

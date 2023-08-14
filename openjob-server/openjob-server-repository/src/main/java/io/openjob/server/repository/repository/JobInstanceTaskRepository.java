@@ -16,4 +16,11 @@ public interface JobInstanceTaskRepository extends JpaRepository<JobInstanceTask
      * @return JobInstanceTask
      */
     JobInstanceTask findByJobInstanceId(Long jobInstanceId);
+
+    /**
+     * Find first  job instance task
+     *
+     * @return JobInstanceTask
+     */
+    JobInstanceTask findFirstByJobIdAndJobInstanceIdAndParentTaskIdOrderByCircleIdDesc(Long jobId, Long instanceId, String parentTaskId);
 }

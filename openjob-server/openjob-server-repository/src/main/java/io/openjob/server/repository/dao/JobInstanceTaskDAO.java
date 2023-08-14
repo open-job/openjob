@@ -28,6 +28,16 @@ public interface JobInstanceTaskDAO {
     Integer batchSave(List<JobInstanceTask> taskList);
 
     /**
+     * Get latest parent task
+     *
+     * @param jobId        jobId
+     * @param instanceId   instanceId
+     * @param parentTaskId parentTaskId
+     * @return JobInstanceTask
+     */
+    JobInstanceTask getLatestParentTask(Long jobId, Long instanceId, String parentTaskId);
+
+    /**
      * Get job instance task
      *
      * @param jobInstanceId jobInstanceId

@@ -95,7 +95,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected void init() {
-
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.circleIdGenerator.set(this.jobInstanceDTO.getCircleId());
+        }
     }
 
     @Override

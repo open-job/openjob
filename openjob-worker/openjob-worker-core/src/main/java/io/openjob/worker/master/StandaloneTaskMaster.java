@@ -35,6 +35,8 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
     @Override
     protected void init() {
+        super.init();
+
         // Second delay scheduler
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
             this.secondDelayService = new ScheduledThreadPoolExecutor(

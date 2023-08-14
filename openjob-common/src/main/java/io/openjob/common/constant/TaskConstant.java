@@ -11,4 +11,9 @@ public class TaskConstant {
      * Default parent task id
      */
     public static final String DEFAULT_PARENT_ID = "0_0_0_0_0";
+
+    /**
+     * Default circle id
+     */
+    public static final Long DEFAULT_CIRCLE_ID = 1L;
 }

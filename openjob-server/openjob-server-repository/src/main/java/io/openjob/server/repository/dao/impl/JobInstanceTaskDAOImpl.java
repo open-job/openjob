@@ -4,6 +4,7 @@ import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.JobInstanceTask;
 import io.openjob.server.repository.repository.JobInstanceTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,6 +30,11 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     @Override
     public Integer batchSave(List<JobInstanceTask> taskList) {
         return this.jobInstanceTaskRepository.saveAll(taskList).size();
+    }
+
+    @Override
+    public JobInstanceTask getLatestParentTask(Long jobId, Long instanceId, String parentTaskId) {
+        return this.jobInstanceTaskRepository.findFirstByJobIdAndJobInstanceIdAndParentTaskIdOrderByCircleIdDesc(jobId, instanceId, parentTaskId);
     }
 
     @Override
