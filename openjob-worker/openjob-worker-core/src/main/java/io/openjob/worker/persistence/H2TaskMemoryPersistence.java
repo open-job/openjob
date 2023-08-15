@@ -253,6 +253,22 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
     }
 
     @Override
+    public Integer updateStatusByTaskId(String taskId, Integer status) throws SQLException {
+        String sql = "UPDATE `task` SET `status`=? WHERE `task_id`=?";
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            ps = connection.prepareStatement(sql);
+            ps.setInt(1, status);
+            ps.setString(2, taskId);
+            return ps.executeUpdate();
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
     public List<Task> pullFailoverListBySize(Long instanceId, Long size) throws SQLException {
         ResultSet rs = null;
         String sql = "SELECT * FROM `task` WHERE `instance_id`=? AND `status`=? LIMIT ?";
@@ -283,6 +299,28 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, instanceId);
             ps.setLong(2, circleId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
+    }
+
+    @Override
+    public Integer countTaskAndExcludeId(Long instanceId, Long circleId, List<Integer> statusList, String excludeTaskId) throws SQLException {
+        String statusStr = StringUtils.join(statusList, ",");
+        String sql = String.format("SELECT COUNT(*) FROM `task` WHERE `instance_id`=? AND `circle_id`=? AND `task_id` <> ? AND `status` IN (%s)", statusStr);
+
+        ResultSet rs = null;
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, instanceId);
+            ps.setLong(2, circleId);
+            ps.setString(3, excludeTaskId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);

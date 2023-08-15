@@ -56,6 +56,29 @@ public interface TaskPersistence {
      */
     Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) throws SQLException;
 
+
+    /**
+     * Count task by status list and exclude id.
+     *
+     * @param instanceId    instanceId
+     * @param circleId      circleId
+     * @param statusList    statusList
+     * @param excludeTaskId excludeTaskId
+     * @return count
+     * @throws SQLException SQLException
+     */
+    Integer countTaskAndExcludeId(Long instanceId, Long circleId, List<Integer> statusList, String excludeTaskId) throws SQLException;
+
+    /**
+     * Update status by id
+     *
+     * @param taskId taskId
+     * @param status status
+     * @return Integer
+     * @throws SQLException SQLException
+     */
+    Integer updateStatusByTaskId(String taskId, Integer status) throws SQLException;
+
     /**
      * Batch update by task id.
      *

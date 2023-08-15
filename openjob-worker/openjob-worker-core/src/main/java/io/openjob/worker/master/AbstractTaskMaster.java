@@ -273,14 +273,20 @@ public abstract class AbstractTaskMaster implements TaskMaster {
      * Job instance status and tasks
      */
     protected void doCompleteTask() {
-        // Not second delay to do job instance status
+        // Second delay to do circle status
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.doSecondCircleStatus();
+        } else {
             // Job instance status
             this.doJobInstanceStatus();
         }
 
         // Job instance tasks
         this.doJobInstanceTasks();
+    }
+
+    protected void doSecondCircleStatus() {
+
     }
 
     protected void doJobInstanceStatus() {
@@ -377,7 +383,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         Thread.sleep(delayTime * 1000L);
 
         // Rest task id
-        this.taskIdGenerator.set(1L);
+        this.taskIdGenerator.set(0L);
 
         // Next circle id.
         long jobId = this.jobInstanceDTO.getJobId();

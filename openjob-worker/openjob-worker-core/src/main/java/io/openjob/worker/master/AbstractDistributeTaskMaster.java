@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
@@ -27,6 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
+    protected String circleTaskId;
 
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -62,6 +65,18 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         // Pull failover task to redispatch.
         this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void doSecondCircleStatus() {
+        super.doSecondCircleStatus();
+        this.taskDAO.updateStatusByTaskId(this.circleTaskId, this.getInstanceStatus());
+    }
+
+    @Override
+    protected Boolean isTaskComplete(Long instanceId, Long circleId) {
+        Integer nonFinishCount = taskDAO.countTaskAndExcludeId(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST, this.circleTaskId);
+        return nonFinishCount <= 0;
     }
 
     /**
@@ -166,6 +181,9 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         task.setStatus(TaskStatusEnum.SUCCESS.getStatus());
         task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
         taskDAO.add(task);
+
+        // Circle task id
+        this.circleTaskId = task.getTaskId();
 
         // Init next task
         Long parentTaskId = this.taskIdGenerator.get();
