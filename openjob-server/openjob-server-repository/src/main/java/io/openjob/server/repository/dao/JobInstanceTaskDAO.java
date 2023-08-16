@@ -1,5 +1,7 @@
 package io.openjob.server.repository.dao;
 
+import io.openjob.server.common.dto.PageDTO;
+import io.openjob.server.repository.dto.TaskGroupCountDTO;
 import io.openjob.server.repository.entity.JobInstanceTask;
 import scala.Int;
 
@@ -30,18 +32,37 @@ public interface JobInstanceTaskDAO {
     /**
      * Get latest parent task
      *
-     * @param jobId        jobId
      * @param instanceId   instanceId
      * @param parentTaskId parentTaskId
      * @return JobInstanceTask
      */
-    JobInstanceTask getLatestParentTask(Long jobId, Long instanceId, String parentTaskId);
+    JobInstanceTask getLatestParentTask(Long instanceId, String parentTaskId);
 
     /**
-     * Get job instance task
+     * Get circle list
      *
-     * @param jobInstanceId jobInstanceId
-     * @return JobInstanceTask
+     * @param instanceId instanceId
+     * @param page       page
+     * @param size       size
+     * @return PageDTO
      */
-    JobInstanceTask getByJobInstanceId(Long jobInstanceId);
+    PageDTO<JobInstanceTask> getCircleList(Long instanceId, Integer page, Integer size);
+
+    /**
+     * Get child list
+     *
+     * @param parentTaskId parentTaskId
+     * @param page         page
+     * @param size         size
+     * @return return
+     */
+    PageDTO<JobInstanceTask> getChildList(String parentTaskId, Integer page, Integer size);
+
+    /**
+     * Count by parent task id
+     *
+     * @param parentTaskIds parentTaskIds
+     * @return List
+     */
+    List<TaskGroupCountDTO> countByParentTaskIds(List<String> parentTaskIds);
 }

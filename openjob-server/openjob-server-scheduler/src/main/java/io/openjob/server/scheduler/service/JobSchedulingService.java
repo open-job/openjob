@@ -298,7 +298,7 @@ public class JobSchedulingService {
      * @return Long
      */
     private Long getDispatchCircleId(Long jobId, Long instanceId) {
-        JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(jobId, instanceId, TaskConstant.DEFAULT_PARENT_ID);
+        JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(instanceId, TaskConstant.DEFAULT_PARENT_ID);
         if (Objects.isNull(latestParentTask)) {
             return TaskConstant.DEFAULT_CIRCLE_ID;
         }

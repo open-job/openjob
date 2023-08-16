@@ -1,9 +1,16 @@
 package io.openjob.server.repository.dao.impl;
 
+import io.openjob.common.constant.TaskConstant;
+import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
+import io.openjob.server.repository.dto.TaskGroupCountDTO;
+import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceTask;
 import io.openjob.server.repository.repository.JobInstanceTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -33,12 +40,51 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     }
 
     @Override
-    public JobInstanceTask getLatestParentTask(Long jobId, Long instanceId, String parentTaskId) {
-        return this.jobInstanceTaskRepository.findFirstByJobIdAndJobInstanceIdAndParentTaskIdOrderByCircleIdDesc(jobId, instanceId, parentTaskId);
+    public JobInstanceTask getLatestParentTask(Long instanceId, String parentTaskId) {
+        return this.jobInstanceTaskRepository.findFirstByJobInstanceIdAndParentTaskIdOrderByCircleIdDesc(instanceId, parentTaskId);
     }
 
     @Override
-    public JobInstanceTask getByJobInstanceId(Long jobInstanceId) {
-        return this.jobInstanceTaskRepository.findByJobInstanceId(jobInstanceId);
+    public PageDTO<JobInstanceTask> getCircleList(Long instanceId, Integer page, Integer size) {
+        JobInstanceTask jobInstanceTask = new JobInstanceTask();
+        jobInstanceTask.setJobInstanceId(instanceId);
+        jobInstanceTask.setParentTaskId(TaskConstant.DEFAULT_PARENT_ID);
+
+        // Pagination
+        PageDTO<JobInstanceTask> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "circleId"));
+
+        // Page query
+        this.pageQuery(page, size, jobInstanceTask, pageDTO, pageRequest);
+        return pageDTO;
+    }
+
+    @Override
+    public PageDTO<JobInstanceTask> getChildList(String parentTaskId, Integer page, Integer size) {
+        JobInstanceTask jobInstanceTask = new JobInstanceTask();
+        jobInstanceTask.setParentTaskId(parentTaskId);
+
+        // Pagination
+        PageDTO<JobInstanceTask> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // Page query
+        this.pageQuery(page, size, jobInstanceTask, pageDTO, pageRequest);
+        return pageDTO;
+    }
+
+    @Override
+    public List<TaskGroupCountDTO> countByParentTaskIds(List<String> parentTaskIds) {
+        return this.jobInstanceTaskRepository.countByParentTaskIds(parentTaskIds);
+    }
+
+    private void pageQuery(Integer page, Integer size, JobInstanceTask jobInstanceTask, PageDTO<JobInstanceTask> pageDTO, PageRequest pageRequest) {
+        Page<JobInstanceTask> pageList = this.jobInstanceTaskRepository.findAll(Example.of(jobInstanceTask), pageRequest);
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(page);
+            pageDTO.setSize(size);
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
+        }
     }
 }

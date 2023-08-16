@@ -1,4 +1,4 @@
-package io.openjob.server.admin.request.delay;
+package io.openjob.server.admin.request.task;
 
 import io.openjob.server.admin.request.PageRequest;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ListChildTaskRequest extends PageRequest {
-    @ApiModelProperty(value = "Task id", required = true)
-    private String taskId;
+public class ListSecondRequest extends PageRequest {
+    @ApiModelProperty(value = "Job instance id", required = true)
+    private Long jobInstanceId;
 }
