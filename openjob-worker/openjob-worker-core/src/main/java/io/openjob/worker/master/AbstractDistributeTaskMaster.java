@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
-    protected String circleTaskId;
+    protected String circleTaskId = "";
 
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
