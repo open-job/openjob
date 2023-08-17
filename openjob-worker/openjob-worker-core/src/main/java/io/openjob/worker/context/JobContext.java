@@ -1,5 +1,6 @@
 package io.openjob.worker.context;
 
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.dto.JobInstanceDTO;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.processor.TaskResult;
@@ -86,7 +87,7 @@ public class JobContext {
      * @return Boolean
      */
     public Boolean isRoot() {
-        return WorkerConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
+        return TaskConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
     }
 
     /**

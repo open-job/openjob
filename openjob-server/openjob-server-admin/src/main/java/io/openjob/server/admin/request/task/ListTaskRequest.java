@@ -14,8 +14,16 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ListChildTaskRequest extends PageRequest {
+public class ListTaskRequest extends PageRequest {
+    @NotNull
+    @ApiModelProperty(value = "Job instance id", required = true)
+    private Long jobInstanceId;
+
+    @NotNull
+    @ApiModelProperty(value = "Job dispatch version", required = true)
+    private Long dispatchVersion;
+
     @NotBlank
-    @ApiModelProperty(value = "Task id", required = true)
-    private String taskId;
+    @ApiModelProperty(value = "Job execute type", required = true)
+    private String executeType;
 }

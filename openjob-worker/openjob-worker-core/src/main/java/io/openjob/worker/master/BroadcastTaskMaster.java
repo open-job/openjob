@@ -2,9 +2,9 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.init.WorkerContext;
@@ -38,7 +38,7 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
         // Preprocess
         try {
             JobContext jobContext = this.getBaseJobContext();
-            jobContext.setTaskName(WorkerConstant.BROADCAST_NAME);
+            jobContext.setTaskName(TaskConstant.BROADCAST_NAME);
             ProcessorHandler processorHandler = ProcessorUtil.getProcessor(this.jobInstanceDTO.getProcessorInfo());
             assert processorHandler != null;
             processorHandler.preProcess(jobContext);

@@ -2,10 +2,10 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import com.google.common.collect.Lists;
-import com.sun.jna.platform.mac.SystemB;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
-import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.common.task.TaskQueue;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
@@ -17,9 +17,7 @@ import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
-import io.openjob.common.task.TaskQueue;
 import io.openjob.worker.util.ProcessorUtil;
-import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -103,7 +101,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         }
 
         // Dispatch tasks
-        masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
+        masterStartContainerRequest.setTaskName(TaskConstant.MAP_TASK_ROOT_NAME);
         ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
 
         this.dispatchTasks(startRequests, false, Collections.emptySet());
@@ -172,7 +170,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     protected JobContext getReduceJobContext() {
         JobContext jobContext = this.getBaseJobContext();
-        jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
+        jobContext.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
         jobContext.setTaskResultList(this.getReduceTaskResultList());
         return jobContext;
     }
@@ -194,7 +192,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         task.setCircleId(this.circleIdGenerator.get());
         String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
-        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
+        task.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
         task.setWorkerAddress(this.localWorkerAddress);
         task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, version, circleId));
         task.setStatus(processResult.getStatus().getStatus());

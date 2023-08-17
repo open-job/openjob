@@ -4,7 +4,6 @@ import io.openjob.common.constant.TaskConstant;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
-import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceTask;
 import io.openjob.server.repository.repository.JobInstanceTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,11 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     @Override
     public Long save(JobInstanceTask jobInstanceTask) {
         return this.jobInstanceTaskRepository.save(jobInstanceTask).getId();
+    }
+
+    @Override
+    public JobInstanceTask getByTaskId(String taskId) {
+        return this.jobInstanceTaskRepository.findByTaskId(taskId);
     }
 
     @Override
@@ -70,6 +74,37 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
 
         // Page query
         this.pageQuery(page, size, jobInstanceTask, pageDTO, pageRequest);
+        return pageDTO;
+    }
+
+    @Override
+    public PageDTO<JobInstanceTask> getTaskList(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size) {
+        JobInstanceTask jobInstanceTask = new JobInstanceTask();
+        jobInstanceTask.setJobInstanceId(jobInstanceId);
+        jobInstanceTask.setDispatchVersion(dispatchVersion);
+
+        // Pagination
+        PageDTO<JobInstanceTask> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        // Page query
+        this.pageQuery(page, size, jobInstanceTask, pageDTO, pageRequest);
+        return pageDTO;
+    }
+
+    @Override
+    public PageDTO<JobInstanceTask> getMrTaskList(Long jobInstanceId, Long dispatchVersion, List<String> taskNames, Integer page, Integer size) {
+        // Pagination
+        PageDTO<JobInstanceTask> pageDTO = new PageDTO<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<JobInstanceTask> pageList = this.jobInstanceTaskRepository.findMrTaskList(jobInstanceId, dispatchVersion, taskNames, pageRequest);
+        if (!pageList.isEmpty()) {
+            pageDTO.setPage(page);
+            pageDTO.setSize(size);
+            pageDTO.setTotal(pageList.getTotalElements());
+            pageDTO.setList(pageList.toList());
+        }
         return pageDTO;
     }
 

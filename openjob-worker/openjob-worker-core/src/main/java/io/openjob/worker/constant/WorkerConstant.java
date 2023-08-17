@@ -57,13 +57,4 @@ public class WorkerConstant {
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_TIMEOUT = 3000L;
-
-
-    /**
-     * Task
-     */
-    public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
-    public static final String MAP_TASK_REDUCE_NAME = "MR_TASK_REDUCE";
-
-    public static final String BROADCAST_NAME = "BROADCAST_TASK";
 }

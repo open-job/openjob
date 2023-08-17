@@ -5,7 +5,15 @@ package io.openjob.common.constant;
  * @since 1.0.0
  */
 public class TaskConstant {
-    public static final String REDUCE_PARENT_TASK_NAME = "reduce";
+
+    /**
+     * Task
+     */
+    public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
+    public static final String MAP_TASK_REDUCE_NAME = "MR_TASK_REDUCE";
+
+    public static final String BROADCAST_NAME = "BROADCAST_TASK";
+
 
     /**
      * Default parent task id

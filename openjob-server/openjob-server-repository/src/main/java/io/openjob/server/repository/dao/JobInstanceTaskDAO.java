@@ -3,6 +3,7 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
 import io.openjob.server.repository.entity.JobInstanceTask;
+import org.springframework.expression.spel.ast.Literal;
 import scala.Int;
 
 import java.util.List;
@@ -20,6 +21,14 @@ public interface JobInstanceTaskDAO {
      * @return Long
      */
     Long save(JobInstanceTask jobInstanceTask);
+
+    /**
+     * Get by task id
+     *
+     * @param taskId taskId
+     * @return JobInstanceTask
+     */
+    JobInstanceTask getByTaskId(String taskId);
 
     /**
      * Batch save.
@@ -57,6 +66,29 @@ public interface JobInstanceTaskDAO {
      * @return return
      */
     PageDTO<JobInstanceTask> getChildList(String parentTaskId, Integer page, Integer size);
+
+    /**
+     * Get task list
+     *
+     * @param jobInstanceId   jobInstanceId
+     * @param dispatchVersion dispatchVersion
+     * @param page            page
+     * @param size            size
+     * @return PageDTO
+     */
+    PageDTO<JobInstanceTask> getTaskList(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size);
+
+    /**
+     * Get mr task list
+     *
+     * @param jobInstanceId   jobInstanceId
+     * @param dispatchVersion dispatchVersion
+     * @param taskNames       taskNames
+     * @param page            page
+     * @param size            size
+     * @return PageDTO
+     */
+    PageDTO<JobInstanceTask> getMrTaskList(Long jobInstanceId, Long dispatchVersion, List<String> taskNames, Integer page, Integer size);
 
     /**
      * Count by parent task id
