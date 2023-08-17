@@ -41,4 +41,7 @@ public class ListSecondVO {
 
     @ApiModelProperty(value = "Create time")
     private Long createTime;
+
+    @ApiModelProperty(value = "Update time")
+    private Long updateTime;
 }
