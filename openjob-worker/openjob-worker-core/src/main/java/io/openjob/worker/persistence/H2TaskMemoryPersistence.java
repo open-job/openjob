@@ -355,6 +355,16 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         }
     }
 
+    @Override
+    public List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Task> findChildTaskList(String taskId) throws SQLException {
+        return null;
+    }
+
     /**
      * Convert result set to Task object.
      *

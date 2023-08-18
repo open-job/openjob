@@ -10,9 +10,13 @@ import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -162,6 +166,16 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     @Override
+    public WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
+        return null;
+    }
+
+    @Override
+    public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
+        return null;
+    }
+
+    @Override
     public void destroyTaskContainer() {
         // Remove from task master pool.
         TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
@@ -274,7 +288,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
      */
     protected void doCompleteTask() {
         // Second delay to do circle status
-        if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
             this.doSecondCircleStatus();
         } else {
             // Job instance status

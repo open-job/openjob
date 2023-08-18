@@ -3,9 +3,13 @@ package io.openjob.worker.actor;
 import io.openjob.common.actor.BaseActor;
 import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.Result;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.master.MapReduceTaskMaster;
@@ -31,6 +35,8 @@ public class TaskMasterActor extends BaseActor {
                 .match(ServerCheckTaskMasterRequest.class, this::checkJobInstance)
                 .match(ContainerBatchTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ProcessorMapTaskRequest.class, this::handleProcessorMapTask)
+                .match(ServerInstanceTaskListPullRequest.class, this::handlePullInstanceTaskList)
+                .match(ServerInstanceTaskChildListPullRequest.class, this::handlePullInstanceTaskChildList)
                 .build();
     }
 
@@ -129,5 +135,31 @@ public class TaskMasterActor extends BaseActor {
         }
 
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
+    }
+
+    /**
+     * Pull instance task list
+     * @param request request
+     */
+    public void handlePullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
+        TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId());
+        if (Objects.isNull(taskMaster)) {
+            getSender().tell(Result.success(new WorkerInstanceTaskListPullResponse()), getSelf());
+            return;
+        }
+
+        WorkerInstanceTaskListPullResponse response = taskMaster.pullInstanceTaskList(request);
+        getSender().tell(Result.success(response), getSelf());
+    }
+
+    public void handlePullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
+        TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId());
+        if (Objects.isNull(taskMaster)) {
+            getSender().tell(Result.success(new WorkerInstanceTaskChildListPullResponse()), getSelf());
+            return;
+        }
+
+        WorkerInstanceTaskChildListPullResponse response = taskMaster.pullInstanceTaskChildList(request);
+        getSender().tell(Result.success(response), getSelf());
     }
 }

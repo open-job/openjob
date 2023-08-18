@@ -1,8 +1,6 @@
 package io.openjob.server.admin.service.impl;
 
-import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
-import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
@@ -23,9 +21,7 @@ import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
-import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.repository.entity.JobInstanceTask;
-import org.codehaus.janino.IClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -91,11 +87,6 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
 
     @Override
     public PageVO<ListTaskVO> getTaskList(ListTaskRequest request) {
-        // Second delay
-        if (ExecuteTypeEnum.isMapReduce(request.getExecuteType())) {
-            return this.getMrTaskList(request);
-        }
-
         PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getTaskList(request.getJobInstanceId(), request.getDispatchVersion(), request.getPage(), request.getSize());
         return PageUtil.convert(pageDTO, t -> {
             ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
@@ -136,16 +127,5 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         listTaskLogVO.setTime(nextTime.get());
         listTaskLogVO.setComplete(isComplete);
         return listTaskLogVO;
-    }
-
-    private PageVO<ListTaskVO> getMrTaskList(ListTaskRequest request) {
-        List<String> taskNames = Arrays.asList(TaskConstant.MAP_TASK_ROOT_NAME, TaskConstant.MAP_TASK_REDUCE_NAME);
-        PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getMrTaskList(request.getJobInstanceId(), request.getDispatchVersion(), taskNames, request.getPage(), request.getSize());
-
-        return PageUtil.convert(pageDTO, t -> {
-            ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
-            listTaskVO.setChildCount(1L);
-            return listTaskVO;
-        });
     }
 }

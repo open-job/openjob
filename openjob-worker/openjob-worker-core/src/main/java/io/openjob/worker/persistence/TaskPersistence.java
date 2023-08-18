@@ -112,6 +112,26 @@ public interface TaskPersistence {
     List<Task> findListBySize(Long instanceId, Long circleId, Long size) throws SQLException;
 
     /**
+     * Find circle parent task list
+     *
+     * @param instanceId   instanceId
+     * @param circleId     circleId
+     * @param parentTaskId parentTaskId
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) throws SQLException;
+
+    /**
+     * Find child task list
+     *
+     * @param taskId taskId
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> findChildTaskList(String taskId) throws SQLException;
+
+    /**
      * Batch update exception by worker address list.
      *
      * @param workerAddressList worker address list

@@ -194,7 +194,14 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         task.setTaskId(uniqueId);
         task.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
         task.setWorkerAddress(this.localWorkerAddress);
-        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, version, circleId));
+
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            task.setTaskParentId(this.circleTaskId);
+        } else {
+            task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
+        }
+
         task.setStatus(processResult.getStatus().getStatus());
         task.setResult(processResult.getResult());
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));

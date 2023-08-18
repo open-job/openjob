@@ -7,6 +7,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
@@ -48,6 +52,26 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     @Override
     public void submit() {
 
+    }
+
+    @Override
+    public WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+
+        return super.pullInstanceTaskList(request);
+    }
+
+    @Override
+    public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        return super.pullInstanceTaskChildList(request);
     }
 
     @Override
@@ -178,8 +202,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         // Parent task name
         task.setTaskName("");
-        task.setStatus(TaskStatusEnum.SUCCESS.getStatus());
-        task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
+        task.setStatus(TaskStatusEnum.INIT.getStatus());
+        task.setTaskParentId(startRequest.getParentTaskUniqueId());
         taskDAO.add(task);
 
         // Circle task id

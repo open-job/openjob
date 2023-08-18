@@ -1,7 +1,9 @@
 package io.openjob.worker.request;
 
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.util.TaskUtil;
 import lombok.Data;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -74,6 +76,10 @@ public class MasterStartContainerRequest implements Serializable {
     }
 
     public String getParentTaskUniqueId() {
+        if (NumberUtils.LONG_ZERO.equals(this.parentTaskId)) {
+            return TaskConstant.DEFAULT_PARENT_ID;
+        }
+
         return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.dispatchVersion, this.circleId, this.parentTaskId);
     }
 }

@@ -196,6 +196,39 @@ public class TaskDAO {
     }
 
     /**
+     * Find circle parent task list
+     *
+     * @param instanceId   instanceId
+     * @param circleId     circleId
+     * @param parentTaskId parentTaskId
+     * @return List
+     */
+    public List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) {
+        try {
+            return taskPersistence.findCircleParentTaskList(instanceId, circleId, parentTaskId);
+        } catch (SQLException e) {
+            log.error("Task findCircleParentTaskList failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Find child task list
+     *
+     * @param taskId taskId
+     * @return List
+     */
+    public List<Task> findChildTaskList(String taskId) {
+        try {
+            return taskPersistence.findChildTaskList(taskId);
+        } catch (SQLException e) {
+            log.error("Task findChildTaskList failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
      * Count task.
      *
      * @param instanceId instance id.

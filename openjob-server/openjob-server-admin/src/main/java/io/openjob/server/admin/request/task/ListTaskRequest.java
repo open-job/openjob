@@ -22,8 +22,4 @@ public class ListTaskRequest extends PageRequest {
     @NotNull
     @ApiModelProperty(value = "Job dispatch version", required = true)
     private Long dispatchVersion;
-
-    @NotBlank
-    @ApiModelProperty(value = "Job execute type", required = true)
-    private String executeType;
 }
