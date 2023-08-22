@@ -13,6 +13,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.6.8'
     implementation project(':openjob-server-admin')
     implementation project(':openjob-server-openapi')
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.6.8'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.11.2'
 }
 
 description = 'openjob-server-starter'
