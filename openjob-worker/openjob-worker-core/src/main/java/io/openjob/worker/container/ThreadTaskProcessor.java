@@ -104,6 +104,9 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             logger.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
             log.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
         } finally {
+            // Remove task future
+            TaskContainerManager.INSTANCE.removeTask(this.jobContext.getTaskUniqueId());
+
             // Remove job context
             ThreadLocalUtil.removeJobContext();
 

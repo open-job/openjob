@@ -2,7 +2,7 @@ package io.openjob.worker.context;
 
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.dto.JobInstanceDTO;
-import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.processor.TaskResult;
 import lombok.Data;
 
@@ -81,6 +81,15 @@ public class JobContext {
         this.circleId = 0L;
         this.shardingNum = 0;
         this.failAttemptTimes = 0;
+    }
+
+    /**
+     * Get task unique id
+     *
+     * @return String
+     */
+    public String getTaskUniqueId() {
+        return TaskUtil.getRandomUniqueId(this.jobId, this.getJobInstanceId(), this.dispatchVersion, this.circleId, this.taskId);
     }
 
     /**

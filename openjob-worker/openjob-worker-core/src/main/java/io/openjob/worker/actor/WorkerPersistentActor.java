@@ -12,6 +12,7 @@ import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +46,7 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
                 .match(WorkerDelayStatusRequest.class, this::handleDelayStatus)
                 .match(MasterDestroyContainerRequest.class, this::handleDestroyContainer)
                 .match(MasterStopContainerRequest.class, this::handleStopContainer)
+                .match(MasterStopInstanceTaskRequest.class, this::handleStopInstanceTask)
                 .match(Result.class, this::handleResult)
                 .build();
     }
@@ -124,6 +126,14 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         deliver(workerContainerActor, deliveryId -> {
             stopRequest.setDeliveryId(deliveryId);
             return stopRequest;
+        });
+    }
+
+    public void handleStopInstanceTask(MasterStopInstanceTaskRequest stopTaskRequest) {
+        ActorSelection workerContainerActor = WorkerUtil.getWorkerContainerActor(stopTaskRequest.getWorkerAddress());
+        deliver(workerContainerActor, deliveryId -> {
+            stopTaskRequest.setDeliveryId(deliveryId);
+            return stopTaskRequest;
         });
     }
 

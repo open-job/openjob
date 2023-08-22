@@ -17,6 +17,7 @@ import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
+import io.openjob.worker.util.AddressUtil;
 import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -193,7 +194,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
         task.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
-        task.setWorkerAddress(this.localWorkerAddress);
+        task.setWorkerAddress(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
 
         // Second delay
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {

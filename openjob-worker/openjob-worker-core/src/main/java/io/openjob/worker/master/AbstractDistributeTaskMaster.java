@@ -9,8 +9,10 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
 import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
 import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
 import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
@@ -18,15 +20,21 @@ import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.ref.ReferenceQueue;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -61,7 +69,19 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             return new WorkerInstanceTaskListPullResponse();
         }
 
-        return super.pullInstanceTaskList(request);
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+
+        WorkerInstanceTaskListPullResponse response = new WorkerInstanceTaskListPullResponse();
+        List<Task> tasks = this.taskDAO.findCircleParentTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), TaskConstant.DEFAULT_PARENT_ID);
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
     }
 
     @Override
@@ -71,7 +91,51 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             return new WorkerInstanceTaskChildListPullResponse();
         }
 
-        return super.pullInstanceTaskChildList(request);
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        WorkerInstanceTaskChildListPullResponse response = new WorkerInstanceTaskChildListPullResponse();
+        List<Task> tasks = this.taskDAO.findChildTaskList(request.getTaskId());
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
+    }
+
+    @Override
+    public void stopTask(ServerStopInstanceTaskRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return;
+        }
+
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return;
+        }
+
+        // Not exist
+        Task task = this.taskDAO.getByTaskId(request.getTaskId());
+        if (Objects.isNull(task)) {
+            return;
+        }
+
+        // Not running
+        if (!TaskStatusEnum.isRunning(task.getStatus())) {
+            return;
+        }
+
+        MasterStopInstanceTaskRequest stopRequest = new MasterStopInstanceTaskRequest();
+        stopRequest.setJobInstanceId(request.getJobInstanceId());
+        stopRequest.setDispatchVersion(request.getDispatchVersion());
+        stopRequest.setCircleId(request.getCircleId());
+        stopRequest.setTaskId(request.getTaskId());
+        stopRequest.setWorkerAddress(task.getWorkerAddress());
+        WorkerActorSystem.atLeastOnceDelivery(stopRequest, null);
     }
 
     @Override
@@ -94,7 +158,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     @Override
     protected void doSecondCircleStatus() {
         super.doSecondCircleStatus();
-        this.taskDAO.updateStatusByTaskId(this.circleTaskId, this.getInstanceStatus());
+        this.taskDAO.updateStatusByTaskId(this.circleTaskId, this.getCircleTaskStatus());
     }
 
     @Override
@@ -213,6 +277,29 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         Long parentTaskId = this.taskIdGenerator.get();
         startRequest.setTaskId(this.acquireTaskId());
         startRequest.setParentTaskId(parentTaskId);
+    }
+
+    /**
+     * Convert to WorkerInstanceTaskResponse
+     *
+     * @param task task
+     * @return WorkerInstanceTaskResponse
+     */
+    protected WorkerInstanceTaskResponse convert2WorkerInstanceTaskResponse(Task task) {
+        WorkerInstanceTaskResponse response = new WorkerInstanceTaskResponse();
+        response.setJobId(task.getJobId());
+        response.setJobInstanceId(task.getInstanceId());
+        response.setDispatchVersion(task.getDispatchVersion());
+        response.setCircleId(task.getCircleId());
+        response.setTaskId(task.getTaskId());
+        response.setParentTaskId(task.getTaskParentId());
+        response.setTaskName(task.getTaskName());
+        response.setStatus(task.getStatus());
+        response.setResult(task.getResult());
+        response.setWorkerAddress(task.getWorkerAddress());
+        response.setCreateTime(task.getCreateTime());
+        response.setUpdateTime(task.getUpdateTime());
+        return response;
     }
 
     protected static class TaskStatusChecker implements Runnable {

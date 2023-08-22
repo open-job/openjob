@@ -357,12 +357,44 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
 
     @Override
     public List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) throws SQLException {
-        return null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM `task` WHERE `instance_id`=? AND `circle_id`=? AND `task_parent_id`=?";
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, instanceId);
+            ps.setLong(2, circleId);
+            ps.setString(3, parentTaskId);
+            rs = ps.executeQuery();
+
+            List<Task> taskList = new ArrayList<>();
+            while (rs.next()) {
+                taskList.add(convert(rs));
+            }
+            return taskList;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
     }
 
     @Override
     public List<Task> findChildTaskList(String taskId) throws SQLException {
-        return null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM `task` WHERE `task_parent_id`=?";
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, taskId);
+            rs = ps.executeQuery();
+
+            List<Task> taskList = new ArrayList<>();
+            while (rs.next()) {
+                taskList.add(convert(rs));
+            }
+            return taskList;
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
+            }
+        }
     }
 
     /**

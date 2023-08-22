@@ -12,6 +12,7 @@ import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,6 +45,7 @@ public class TaskContainerActor extends BaseActor {
                 .match(MasterStartContainerRequest.class, this::handleStartContainer)
                 .match(MasterBatchStartContainerRequest.class, this::handleBatchStartContainer)
                 .match(MasterStopContainerRequest.class, this::handleStopContainer)
+                .match(MasterStopInstanceTaskRequest.class, this::handleStopInstanceTask)
                 .match(MasterDestroyContainerRequest.class, this::handleDestroyContainer)
                 .build();
     }
@@ -76,6 +78,17 @@ public class TaskContainerActor extends BaseActor {
 
         WorkerResponse workerResponse = new WorkerResponse();
         workerResponse.setDeliveryId(stopReq.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
+    }
+
+    public void handleStopInstanceTask(MasterStopInstanceTaskRequest request) {
+        TaskContainer taskContainer = TaskContainerPool.get(request.getJobInstanceId());
+        if (Objects.nonNull(taskContainer)) {
+            taskContainer.stopTask(request.getTaskId());
+        }
+
+        WorkerResponse workerResponse = new WorkerResponse();
+        workerResponse.setDeliveryId(request.getDeliveryId());
         getSender().tell(Result.success(workerResponse), getSelf());
     }
 

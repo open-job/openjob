@@ -60,7 +60,9 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
 
         return PageUtil.convert(pageDTO, t -> {
             ListSecondVO listSecondVO = BeanMapperUtil.map(t, ListSecondVO.class);
-            listSecondVO.setChildCount(1L);
+            if (!TaskConstant.MAP_TASK_REDUCE_NAME.equals(listSecondVO.getTaskName())){
+                listSecondVO.setChildCount(1L);
+            }
             return listSecondVO;
         });
     }

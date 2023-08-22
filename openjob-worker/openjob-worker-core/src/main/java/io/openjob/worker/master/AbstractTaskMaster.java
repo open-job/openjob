@@ -7,11 +7,11 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.JobInstanceStopEnum;
-import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
 import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
@@ -173,6 +173,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     @Override
     public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
         return null;
+    }
+
+    @Override
+    public void stopTask(ServerStopInstanceTaskRequest request) {
+
     }
 
     @Override
@@ -352,6 +357,24 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                 break;
             }
         }
+    }
+
+    protected Integer getCircleTaskStatus() {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get())) {
+            return TaskStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get())) {
+            return TaskStatusEnum.FAILED.getStatus();
+        }
+
+        // Not stop
+        long circleId = this.circleIdGenerator.get();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
+        return failedCount > 0 ? TaskStatusEnum.FAILED.getStatus() : TaskStatusEnum.SUCCESS.getStatus();
     }
 
     protected Integer getInstanceStatus() {

@@ -5,14 +5,11 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * Second delay to pull the latest instance task
- *
  * @author stelin swoft@qq.com
  * @since 1.0.7
  */
 @Data
-public class ServerInstanceTaskListPullRequest implements Serializable {
-
+public class ServerStopInstanceTaskRequest implements Serializable {
     /**
      * Job instance id
      */
@@ -26,5 +23,10 @@ public class ServerInstanceTaskListPullRequest implements Serializable {
     /**
      * Circle id
      */
-    private final Long circleId;
+    private Long circleId;
+
+    /**
+     * Task id
+     */
+    private String taskId;
 }
