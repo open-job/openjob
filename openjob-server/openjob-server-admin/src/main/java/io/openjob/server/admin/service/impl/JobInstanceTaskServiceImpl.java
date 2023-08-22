@@ -22,6 +22,7 @@ import io.openjob.server.log.dto.ProcessorLogDTO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
 import io.openjob.server.repository.entity.JobInstanceTask;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -58,13 +59,21 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
             return PageUtil.empty(pageDTO);
         }
 
-        return PageUtil.convert(pageDTO, t -> {
+        // Convert
+        PageVO<ListSecondVO> pageVO = PageUtil.convert(pageDTO, t -> {
             ListSecondVO listSecondVO = BeanMapperUtil.map(t, ListSecondVO.class);
-            if (!TaskConstant.MAP_TASK_REDUCE_NAME.equals(listSecondVO.getTaskName())){
+            if (!TaskConstant.MAP_TASK_REDUCE_NAME.equals(listSecondVO.getTaskName())) {
                 listSecondVO.setChildCount(1L);
             }
             return listSecondVO;
         });
+
+        // Pull task from worker
+        if (NumberUtils.INTEGER_ZERO.equals(request.getPage() - 1)) {
+            this.jobInstanceTaskDAO.getLatestParentTask(request.getJobInstanceId(), TaskConstant.DEFAULT_PARENT_ID);
+        }
+
+        return pageVO;
     }
 
     @Override

@@ -68,9 +68,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
             return new WorkerInstanceTaskListPullResponse();
         }
-
-        // Circle id difference
-        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+        // Not new circle running
+        if (request.getCircleId() >= this.circleIdGenerator.get()) {
             return new WorkerInstanceTaskListPullResponse();
         }
 

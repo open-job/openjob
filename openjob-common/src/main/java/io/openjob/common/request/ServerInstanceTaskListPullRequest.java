@@ -26,5 +26,5 @@ public class ServerInstanceTaskListPullRequest implements Serializable {
     /**
      * Circle id
      */
-    private final Long circleId;
+    private Long circleId;
 }
