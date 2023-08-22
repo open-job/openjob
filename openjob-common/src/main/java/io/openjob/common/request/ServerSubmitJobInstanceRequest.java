@@ -23,6 +23,7 @@ public class ServerSubmitJobInstanceRequest implements Serializable {
     private String executeType;
     private Integer failRetryTimes;
     private Integer failRetryInterval;
+    private Integer executeTimeout;
     private Integer concurrency;
     private String timeExpressionType;
     private String timeExpression;

@@ -59,9 +59,30 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
                 e.printStackTrace();
             }
         });
+
+        // Add task manager
+        this.addTask2Manager();
     }
 
     protected void postProcess() {
 
+    }
+
+    @Override
+    public void stop(Integer type) {
+        // Stop scheduled thread poll
+        this.scheduledService.shutdown();
+
+        // Stop master
+        super.stop(type);
+    }
+
+    @Override
+    public void destroyTaskContainer() {
+        // Stop scheduled thread poll
+        this.scheduledService.shutdown();
+
+        // Destroy task container
+        super.destroyTaskContainer();
     }
 }

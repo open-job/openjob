@@ -25,7 +25,7 @@ public class WorkerTaskLogExecutor {
         WorkerTaskLogConsumer consumer = new WorkerTaskLogConsumer(
                 0L,
                 1,
-                16,
+                32,
                 "Openjob-log-executor",
                 50,
                 "Openjob-log-consumer",

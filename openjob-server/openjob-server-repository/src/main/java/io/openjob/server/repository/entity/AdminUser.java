@@ -81,6 +81,18 @@ public class AdminUser {
     private String roleIds;
 
     /**
+     * Login ip
+     */
+    @Column(name = "`login_ip`")
+    private String loginIp;
+
+    /**
+     * Login time
+     */
+    @Column(name = "`login_time`")
+    private Long loginTime;
+
+    /**
      * Delete status. 1=yes 2=no
      */
     @Column(name = "`deleted`")

@@ -88,6 +88,7 @@ public class JobDAOImpl implements JobDAO {
                     j.setStatus(job.getStatus());
                     j.setFailRetryInterval(job.getFailRetryInterval());
                     j.setFailRetryTimes(job.getFailRetryTimes());
+                    j.setExecuteTimeout(job.getExecuteTimeout());
                     j.setConcurrency(job.getConcurrency());
                     j.setTimeExpression(job.getTimeExpression());
                     j.setTimeExpressionType(job.getTimeExpressionType());
@@ -120,6 +121,11 @@ public class JobDAOImpl implements JobDAO {
     @Override
     public Job getById(Long id) {
         return this.jobRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Job> getByIds(List<Long> ids) {
+        return this.jobRepository.findByIdIn(ids);
     }
 
     @Override

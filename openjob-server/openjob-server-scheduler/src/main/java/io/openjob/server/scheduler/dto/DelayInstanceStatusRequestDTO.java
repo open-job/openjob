@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.dto;
 
+import io.openjob.common.constant.FailStatusEnum;
 import lombok.Data;
 
 /**
@@ -33,6 +34,13 @@ public class DelayInstanceStatusRequestDTO {
      * Task status.
      */
     private Integer status;
+
+    /**
+     * Fail status
+     *
+     * @see FailStatusEnum#getStatus()
+     */
+    private Integer failStatus;
 
     /**
      * Task result.

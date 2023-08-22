@@ -11,12 +11,9 @@ import java.io.Serializable;
 @Data
 public class MasterStopContainerRequest implements Serializable {
     private Long deliveryId;
-
     private Long jobId;
-
     private Long jobInstanceId;
-
     private String workerAddress;
-
     private Long taskId;
+    private Integer stopType;
 }

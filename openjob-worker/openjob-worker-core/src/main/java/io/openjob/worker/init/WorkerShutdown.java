@@ -43,7 +43,6 @@ public class WorkerShutdown {
 
     /**
      * Openjob worker stop.
-     *
      */
     private void stop() {
         String serverAddress = WorkerConfig.getServerHost();
@@ -68,8 +67,8 @@ public class WorkerShutdown {
         // Stop worker heartbeat service.
         this.openjobWorker.getWorkerHeartbeat().shutdown();
 
-        // Stop delay.
-        this.openjobWorker.getDelayManager().stop();
+        // Stop worker initializer.
+        this.openjobWorker.getWorkerInitializer().stop();
 
         // Stop worker.
         try {

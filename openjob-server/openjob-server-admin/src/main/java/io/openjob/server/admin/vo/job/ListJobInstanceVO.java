@@ -22,6 +22,9 @@ public class ListJobInstanceVO {
     private Long jobId;
 
     @ApiModelProperty(value = "Job name")
+    private String jobName;
+
+    @ApiModelProperty(value = "Job name")
     private String name;
 
     @ApiModelProperty(value = "Job desc")
@@ -68,6 +71,9 @@ public class ListJobInstanceVO {
 
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;
+
+    @ApiModelProperty(value = "Job fail status")
+    private Integer failStatus;
 
     @ApiModelProperty(value = "Worker address")
     private String workerAddress;

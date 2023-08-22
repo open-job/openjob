@@ -57,6 +57,7 @@ public class LogProperties {
         private String username;
         private String password;
         private String protocol = "http";
+        private String index = "openjob";
         private Integer connectTimeout = 3000;
         private Integer socketTimeout = 3000;
         private Integer responseTimeout = 3000;

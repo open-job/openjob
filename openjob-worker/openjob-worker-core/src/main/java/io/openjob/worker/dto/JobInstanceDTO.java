@@ -22,6 +22,7 @@ public class JobInstanceDTO {
     private String processorInfo;
     private Integer failRetryTimes;
     private Integer failRetryInterval;
+    private Integer executeTimeout;
     private Integer concurrency;
     private String timeExpressionType;
     private String timeExpression;

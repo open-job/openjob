@@ -1,5 +1,6 @@
 package io.openjob.server.admin.request.delay;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  * @since 1.0.0
  */
 @Data
+@ApiModel
 public class AddDelayRequest {
     @NotNull
     @ApiModelProperty(value = "Namespace id", required = true)

@@ -123,6 +123,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                 DelayInstance delayInstance = new DelayInstance();
                 delayInstance.setTaskId(delayStatus.getTaskId());
                 delayInstance.setStatus(delayStatus.getStatus());
+                delayInstance.setFailStatus(delayStatus.getFailStatus());
                 delayInstance.setWorkerAddress(delayStatus.getWorkerAddress());
                 delayInstance.setCompleteTime(delayStatus.getCompleteTime());
 

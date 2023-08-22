@@ -25,8 +25,16 @@ public class Task {
     public Task() {
     }
 
-    public Task(String taskId, Integer status) {
+    /**
+     * New task
+     *
+     * @param taskId taskId
+     * @param status status
+     * @param result result
+     */
+    public Task(String taskId, Integer status, String result) {
         this.taskId = taskId;
         this.status = status;
+        this.result = result;
     }
 }

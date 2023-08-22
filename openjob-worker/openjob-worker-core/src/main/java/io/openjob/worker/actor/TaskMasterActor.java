@@ -1,6 +1,7 @@
 package io.openjob.worker.actor;
 
 import io.openjob.common.actor.BaseActor;
+import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
@@ -58,6 +59,7 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setProcessorInfo(submitReq.getProcessorInfo());
         jobInstanceDTO.setFailRetryInterval(submitReq.getFailRetryInterval());
         jobInstanceDTO.setFailRetryTimes(submitReq.getFailRetryTimes());
+        jobInstanceDTO.setExecuteTimeout(submitReq.getExecuteTimeout());
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
@@ -79,7 +81,7 @@ public class TaskMasterActor extends BaseActor {
 
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         TaskMaster taskMaster = TaskMasterPool.get(stopReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
-        taskMaster.stop();
+        taskMaster.stop(JobInstanceStopEnum.NORMAL.getType());
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 

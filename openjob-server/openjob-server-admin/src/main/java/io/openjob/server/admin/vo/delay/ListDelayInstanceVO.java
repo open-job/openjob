@@ -28,8 +28,11 @@ public class ListDelayInstanceVO {
     @ApiModelProperty(value = "Topic", required = true)
     private String topic;
 
-    @ApiModelProperty(value = "DelayId", required = true)
+    @ApiModelProperty(value = "Delay id", required = true)
     private Long delayId;
+
+    @ApiModelProperty(value = "Delay name", required = true)
+    private String delayName;
 
     @ApiModelProperty(value = "Delay params", required = true)
     private String delayParams;
@@ -39,6 +42,9 @@ public class ListDelayInstanceVO {
 
     @ApiModelProperty(value = "Status", required = true)
     private Integer status;
+
+    @ApiModelProperty(value = "Fail status", required = true)
+    private Integer failStatus;
 
     @ApiModelProperty(value = "Execute time", required = true)
     private Long executeTime;

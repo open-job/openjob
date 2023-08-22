@@ -1,9 +1,16 @@
 package io.openjob.server.cluster.service;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.util.DateUtil;
+import io.openjob.server.alarm.constant.AlarmEventEnum;
+import io.openjob.server.alarm.dto.AlarmEventDTO;
+import io.openjob.server.alarm.event.AlarmEvent;
+import io.openjob.server.alarm.event.AlarmEventPublisher;
+import io.openjob.server.cluster.executor.WorkerJobInstanceExecutor;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
@@ -15,6 +22,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +36,24 @@ import java.util.stream.Collectors;
 @Log4j2
 public class JobInstanceService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
-
     private final JobInstanceLogDAO jobInstanceLogDAO;
-
     private final JobInstanceDAO jobInstanceDAO;
+    private final WorkerJobInstanceExecutor workerJobInstanceExecutor;
 
     @Autowired
-    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO, JobInstanceLogDAO jobInstanceLogDAO, JobInstanceDAO jobInstanceDAO) {
+    public JobInstanceService(JobInstanceTaskDAO jobInstanceTaskDAO,
+                              JobInstanceLogDAO jobInstanceLogDAO,
+                              JobInstanceDAO jobInstanceDAO,
+                              WorkerJobInstanceExecutor workerJobInstanceExecutor) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
         this.jobInstanceDAO = jobInstanceDAO;
+        this.workerJobInstanceExecutor = workerJobInstanceExecutor;
+    }
+
+    @Transactional(rollbackFor = Exception.class, timeout = 1)
+    public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
+        this.workerJobInstanceExecutor.submit(statusRequest);
     }
 
     /**
@@ -46,10 +62,12 @@ public class JobInstanceService {
      * @param statusRequest status request.
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
+    public void handleConsumerInstanceStatus(WorkerJobInstanceStatusRequest statusRequest) {
         // First page to update job instance status.
         if (CommonConstant.FIRST_PAGE.equals(statusRequest.getPage())) {
-            this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus());
+            // Update status
+            this.jobInstanceDAO.updateStatusById(statusRequest.getJobInstanceId(), statusRequest.getStatus(), statusRequest.getFailStatus());
+            this.addAlarmEvent(statusRequest);
         }
 
         // Save job instance task
@@ -87,7 +105,7 @@ public class JobInstanceService {
     @Transactional(rollbackFor = Exception.class)
     public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
         // Update job instance status.
-        this.jobInstanceDAO.updateStatusById(logRequest.getJobInstanceId(), logRequest.getStatus());
+        this.jobInstanceDAO.updateStatusById(logRequest.getJobInstanceId(), logRequest.getStatus(), FailStatusEnum.NONE.getStatus());
 
         JobInstanceLog jobInstanceLog = new JobInstanceLog();
         jobInstanceLog.setJobId(logRequest.getJobId());
@@ -98,5 +116,26 @@ public class JobInstanceService {
         jobInstanceLog.setCreateTime(logRequest.getTime());
         jobInstanceLog.setUpdateTime(logRequest.getTime());
         this.jobInstanceLogDAO.save(jobInstanceLog);
+    }
+
+    protected void addAlarmEvent(WorkerJobInstanceStatusRequest statusRequest) {
+        if (InstanceStatusEnum.isFailed(statusRequest.getStatus())) {
+            AlarmEventDTO alarmEventDTO = new AlarmEventDTO();
+            alarmEventDTO.setJobUniqueId(String.valueOf(statusRequest.getJobId()));
+            alarmEventDTO.setInstanceId(String.valueOf(statusRequest.getJobInstanceId()));
+
+            // Fail status
+            if (FailStatusEnum.isExecuteTimeout(statusRequest.getFailStatus())) {
+                alarmEventDTO.setName(AlarmEventEnum.JOB_EXECUTE_TIMEOUT.getEvent());
+            } else {
+                alarmEventDTO.setName(AlarmEventEnum.JOB_EXECUTE_FAIL.getEvent());
+            }
+
+            // Event message
+            if (!CollectionUtils.isEmpty(statusRequest.getTaskRequestList())) {
+                alarmEventDTO.setMessage(statusRequest.getTaskRequestList().get(0).getResult());
+            }
+            AlarmEventPublisher.publishEvent(new AlarmEvent(alarmEventDTO));
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
@@ -159,6 +160,14 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Task status checker failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;
@@ -192,6 +201,14 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Task failover puller failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;

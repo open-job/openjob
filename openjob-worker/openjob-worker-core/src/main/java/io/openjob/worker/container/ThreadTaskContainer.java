@@ -1,5 +1,7 @@
 package io.openjob.worker.container;
 
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.ContainerTaskStatusRequest;
@@ -42,12 +44,12 @@ public class ThreadTaskContainer extends BaseTaskContainer {
     }
 
     @Override
-    public void stop() {
+    public void stop(Integer type) {
         // stop
         this.executorService.shutdownNow();
 
         // report status.
-        this.reportStopStatus();
+        this.reportStopStatus(type);
 
         // remove from pool
         TaskContainerPool.remove(startRequest.getJobInstanceId());
@@ -62,15 +64,23 @@ public class ThreadTaskContainer extends BaseTaskContainer {
         TaskContainerPool.remove(startRequest.getJobInstanceId());
     }
 
-    private void reportStopStatus() {
+    private void reportStopStatus(Integer type) {
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(startRequest.getJobId());
         request.setJobInstanceId(startRequest.getJobInstanceId());
         request.setTaskId(startRequest.getTaskId());
         request.setWorkerAddress("");
         request.setMasterActorPath(startRequest.getMasterAkkaPath());
-        request.setStatus(TaskStatusEnum.FAILED.getStatus());
-        request.setResult("stopped");
+
+        if (JobInstanceStopEnum.isNormal(type)) {
+            request.setStatus(TaskStatusEnum.FAILED.getStatus());
+            request.setFailStatus(FailStatusEnum.NONE.getStatus());
+            request.setResult("stopped");
+        } else {
+            request.setStatus(TaskStatusEnum.FAILED.getStatus());
+            request.setFailStatus(FailStatusEnum.EXECUTE_TIMEOUT.getStatus());
+            request.setResult("timeout");
+        }
 
         TaskStatusReporter.report(request);
     }

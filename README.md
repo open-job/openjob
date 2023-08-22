@@ -44,7 +44,7 @@
 
 ## Maven dependency
 ```xml
-<openjob.worker.version>1.0.4</openjob.worker.version>
+<openjob.worker.version>1.0.6</openjob.worker.version>
 <dependency>
     <groupId>io.openjob.worker</groupId>
     <artifactId>openjob-worker-core</artifactId>

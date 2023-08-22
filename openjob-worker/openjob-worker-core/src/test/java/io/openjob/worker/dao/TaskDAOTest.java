@@ -81,17 +81,21 @@ public class TaskDAOTest {
         Task ut = new Task();
         ut.setTaskId(taskId);
         ut.setStatus(6);
+        ut.setResult("result");
         updateList.add(ut);
 
         Task ut2 = new Task();
         ut2.setTaskId(taskId2);
         ut2.setStatus(6);
+        ut2.setResult("result");
         updateList.add(ut2);
 
         Task ut3 = new Task();
         ut3.setTaskId(taskId3);
         ut3.setStatus(6);
+        ut3.setResult("result");
         updateList.add(ut3);
+
 
         // Update by status.
         int updateRows = TaskDAO.INSTANCE.batchUpdateStatusByTaskId(updateList, TaskStatusEnum.UNKNOWN.getStatus());

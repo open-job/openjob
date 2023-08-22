@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.context.Node;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
+import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.cluster.dto.NodeFailDTO;
 import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.util.ClusterUtil;
@@ -36,15 +37,15 @@ public class FailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final ClusterProperties clusterProperties;
-    private final RefreshManager refreshManager;
+    private final RefreshData refreshData;
     private final Scheduler scheduler;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshManager refreshManager, Scheduler scheduler) {
+    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshData refreshData, Scheduler scheduler) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.clusterProperties = clusterProperties;
-        this.refreshManager = refreshManager;
+        this.refreshData = refreshData;
         this.scheduler = scheduler;
     }
 
@@ -86,7 +87,7 @@ public class FailManager {
     public Boolean doFail(Node stopNode) {
         // Refresh system.
         // Lock system cluster version.
-        this.refreshManager.refreshSystem(true);
+        this.refreshData.refreshSystem(true);
 
         // Update server status.
         Integer effectRows = this.serverDAO.update(stopNode.getServerId(), ServerStatusEnum.FAIL.getStatus(), ServerStatusEnum.OK.getStatus());
@@ -102,10 +103,10 @@ public class FailManager {
 
         // Not shutdown.
         // Refresh nodes.
-        this.refreshManager.refreshClusterNodes();
+        this.refreshData.refreshClusterNodes();
 
         // Refresh slots.
-        this.refreshManager.refreshCurrentSlots();
+        this.refreshData.refreshCurrentSlots();
 
         // Refresh scheduler.
         this.scheduler.refresh(Collections.emptySet());

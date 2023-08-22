@@ -19,8 +19,10 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
+import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceStopRequestDTO;
@@ -31,7 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -40,12 +45,14 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class DelayInstanceServiceImpl implements DelayInstanceService {
     private final LogDAO logDAO;
+    private final DelayDAO delayDAO;
     private final DelayInstanceDAO delayInstanceDAO;
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceServiceImpl(LogDAO logDAO, DelayInstanceDAO delayInstanceDAO, DelayInstanceScheduler delayInstanceScheduler) {
+    public DelayInstanceServiceImpl(LogDAO logDAO, DelayDAO delayDAO, DelayInstanceDAO delayInstanceDAO, DelayInstanceScheduler delayInstanceScheduler) {
         this.logDAO = logDAO;
+        this.delayDAO = delayDAO;
         this.delayInstanceDAO = delayInstanceDAO;
         this.delayInstanceScheduler = delayInstanceScheduler;
     }
@@ -55,7 +62,25 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         DelayInstancePageDTO delayInstancePageDTO = BeanMapperUtil.map(request, DelayInstancePageDTO.class);
         PageDTO<DelayInstance> pageDTO = this.delayInstanceDAO.pageList(delayInstancePageDTO);
 
-        return PageUtil.convert(pageDTO, ds -> BeanMapperUtil.map(ds, ListDelayInstanceVO.class));
+        // Empty
+        if (CollectionUtils.isEmpty(pageDTO.getList())) {
+            return PageUtil.empty(pageDTO);
+        }
+
+        // Delay map
+        List<Long> delayIds = pageDTO.getList().stream().map(DelayInstance::getDelayId)
+                .distinct()
+                .collect(Collectors.toList());
+        Map<Long, Delay> delayMap = this.delayDAO.findByIds(delayIds).stream().collect(Collectors.toMap(Delay::getId, d -> d));
+
+        return PageUtil.convert(pageDTO, ds -> {
+            ListDelayInstanceVO listDelayInstanceVO = BeanMapperUtil.map(ds, ListDelayInstanceVO.class);
+            Delay delay = delayMap.get(ds.getDelayId());
+            if (Objects.nonNull(delay)) {
+                listDelayInstanceVO.setDelayName(delay.getName());
+            }
+            return listDelayInstanceVO;
+        });
     }
 
     @Override

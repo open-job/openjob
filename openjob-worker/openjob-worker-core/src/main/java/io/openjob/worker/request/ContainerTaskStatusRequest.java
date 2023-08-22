@@ -16,6 +16,7 @@ public class ContainerTaskStatusRequest implements Serializable {
     private Long taskId;
     private Long circleId;
     private Integer status;
+    private Integer failStatus;
     private String workerAddress;
     private String masterActorPath;
     private String result;

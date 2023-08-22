@@ -3,6 +3,7 @@ package io.openjob.worker.delay;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class DelayTaskManager {
     public static final DelayTaskManager INSTANCE = new DelayTaskManager();
 
@@ -25,7 +27,7 @@ public class DelayTaskManager {
     private ScheduledExecutorService scheduledService;
 
     private final Map<String, Future<?>> taskId2Future = Maps.newConcurrentMap();
-    private final Map<String, Long> taskId2Timeout = Maps.newConcurrentMap();
+    private final Map<String, Long> taskId2timeout = Maps.newConcurrentMap();
 
 
     private DelayTaskManager() {
@@ -53,7 +55,7 @@ public class DelayTaskManager {
      * @param atTimeout atTimeout
      */
     public void addTask(String taskId, Future<?> future, Long atTimeout) {
-        this.taskId2Timeout.put(taskId, atTimeout);
+        this.taskId2timeout.put(taskId, atTimeout);
         this.taskId2Future.put(taskId, future);
     }
 
@@ -63,8 +65,12 @@ public class DelayTaskManager {
      * @param taskId taskId
      */
     public void remove(String taskId) {
-        this.taskId2Timeout.remove(taskId);
+        this.taskId2timeout.remove(taskId);
         this.taskId2Future.remove(taskId);
+    }
+
+    public Boolean contains(String taskId) {
+        return this.taskId2Future.containsKey(taskId) || this.taskId2timeout.containsKey(taskId);
     }
 
     /**
@@ -100,14 +106,26 @@ public class DelayTaskManager {
 
         @Override
         public void run() {
+            try {
+                this.doRun();
+            } catch (Throwable throwable) {
+                log.error("Delay task timeout executor run failed!", throwable);
+            }
+        }
+
+        protected void doRun() {
             Long timestamp = DateUtil.timestamp();
-            this.delayTaskManager.taskId2Timeout.forEach((tid, time) -> {
+            this.delayTaskManager.taskId2timeout.forEach((tid, time) -> {
                 if (time > timestamp) {
                     return;
                 }
 
                 // Stop and remove
-                this.delayTaskManager.stopAndRemoveTaskInstance(tid);
+                try {
+                    this.delayTaskManager.stopAndRemoveTaskInstance(tid);
+                } catch (Throwable throwable) {
+                    log.error("Delay task timeout and stop failed!", throwable);
+                }
             });
         }
     }

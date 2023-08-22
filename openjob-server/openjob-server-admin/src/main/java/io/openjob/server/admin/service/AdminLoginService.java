@@ -3,9 +3,11 @@ package io.openjob.server.admin.service;
 import io.openjob.server.admin.request.admin.AdminUserLoginRequest;
 import io.openjob.server.admin.request.admin.AdminUserLogoutRequest;
 import io.openjob.server.admin.request.admin.LoginUserInfoRequest;
+import io.openjob.server.admin.request.admin.UpdateUserPasswordRequest;
 import io.openjob.server.admin.vo.admin.AdminUserLoginVO;
 import io.openjob.server.admin.vo.admin.AdminUserLogoutVO;
 import io.openjob.server.admin.vo.admin.LoginUserInfoVO;
+import io.openjob.server.admin.vo.admin.UpdateUserPasswordVO;
 
 /**
  * @author inhere
@@ -30,11 +32,18 @@ public interface AdminLoginService {
     AdminUserLogoutVO logout(AdminUserLogoutRequest request, String sessKey);
 
     /**
+     * Update user password
+     *
+     * @param request request
+     * @return UpdateUserPasswordVO
+     */
+    UpdateUserPasswordVO updatePassword(UpdateUserPasswordRequest request);
+
+    /**
      * login user info
      *
      * @param request request
-     * @param sessKey sessKey
      * @return vo
      */
-    LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request, String sessKey);
+    LoginUserInfoVO loginUserInfo(LoginUserInfoRequest request);
 }
