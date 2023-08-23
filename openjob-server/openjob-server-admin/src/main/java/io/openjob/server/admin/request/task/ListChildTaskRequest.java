@@ -18,4 +18,7 @@ public class ListChildTaskRequest extends PageRequest {
     @NotBlank
     @ApiModelProperty(value = "Task id", required = true)
     private String taskId;
+
+    @ApiModelProperty(value = "Pull", required = true)
+    private String pull;
 }

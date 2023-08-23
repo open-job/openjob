@@ -9,5 +9,5 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ListChildTaskVO extends ListSecondVO{
+public class ListChildTaskVO extends ListTaskVO {
 }

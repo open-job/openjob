@@ -2,10 +2,10 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
-import io.openjob.server.admin.request.task.ListSecondRequest;
+import io.openjob.server.admin.request.task.ListTaskRequest;
 import io.openjob.server.admin.service.JobInstanceTaskService;
 import io.openjob.server.admin.vo.task.ListChildTaskVO;
-import io.openjob.server.admin.vo.task.ListSecondVO;
+import io.openjob.server.admin.vo.task.ListTaskVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,9 +34,9 @@ public class JobInstanceTaskController {
     }
 
     @ApiOperation("List second")
-    @GetMapping("/list-second")
-    public Result<PageVO<ListSecondVO>> listSecond(@Valid @ModelAttribute ListSecondRequest listJobRequest) {
-        return Result.success(this.jobInstanceTaskService.getCircleList(listJobRequest));
+    @GetMapping("/list")
+    public Result<PageVO<ListTaskVO>> listSecond(@Valid @ModelAttribute ListTaskRequest listTaskRequest) {
+        return Result.success(this.jobInstanceTaskService.getTaskList(listTaskRequest));
     }
 
     @ApiOperation("List second")

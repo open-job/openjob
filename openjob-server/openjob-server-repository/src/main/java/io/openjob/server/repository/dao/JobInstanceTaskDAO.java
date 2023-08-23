@@ -3,8 +3,6 @@ package io.openjob.server.repository.dao;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
 import io.openjob.server.repository.entity.JobInstanceTask;
-import org.springframework.expression.spel.ast.Literal;
-import scala.Int;
 
 import java.util.List;
 
@@ -48,14 +46,14 @@ public interface JobInstanceTaskDAO {
     JobInstanceTask getLatestParentTask(Long instanceId, String parentTaskId);
 
     /**
-     * Get circle list
+     * Get task list
      *
      * @param instanceId instanceId
      * @param page       page
      * @param size       size
      * @return PageDTO
      */
-    PageDTO<JobInstanceTask> getCircleList(Long instanceId, Integer page, Integer size);
+    PageDTO<JobInstanceTask> getTaskList(Long instanceId, Integer page, Integer size);
 
     /**
      * Get child list

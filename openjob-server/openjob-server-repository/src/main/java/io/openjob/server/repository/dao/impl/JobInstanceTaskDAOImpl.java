@@ -49,7 +49,7 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     }
 
     @Override
-    public PageDTO<JobInstanceTask> getCircleList(Long instanceId, Integer page, Integer size) {
+    public PageDTO<JobInstanceTask> getTaskList(Long instanceId, Integer page, Integer size) {
         JobInstanceTask jobInstanceTask = new JobInstanceTask();
         jobInstanceTask.setJobInstanceId(instanceId);
         jobInstanceTask.setParentTaskId(TaskConstant.DEFAULT_PARENT_ID);

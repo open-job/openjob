@@ -17,5 +17,5 @@ public class TaskListPullRequestDTO {
     /**
      * Circle id
      */
-    private final Long circleId;
+    private Long circleId;
 }

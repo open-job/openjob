@@ -1,16 +1,17 @@
 package io.openjob.server.admin.service.impl;
 
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
-import io.openjob.server.admin.request.task.ListSecondRequest;
 import io.openjob.server.admin.request.task.ListTaskLogRequest;
 import io.openjob.server.admin.request.task.ListTaskRequest;
 import io.openjob.server.admin.service.JobInstanceTaskService;
 import io.openjob.server.admin.util.LogFormatUtil;
 import io.openjob.server.admin.vo.task.ListChildTaskVO;
-import io.openjob.server.admin.vo.task.ListSecondVO;
 import io.openjob.server.admin.vo.task.ListTaskLogVO;
 import io.openjob.server.admin.vo.task.ListTaskVO;
 import io.openjob.server.common.dto.PageDTO;
@@ -19,18 +20,22 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
+import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceTask;
+import io.openjob.server.scheduler.dto.TaskListPullRequestDTO;
+import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -43,37 +48,25 @@ import java.util.stream.Collectors;
 public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
     private final JobInstanceTaskDAO jobInstanceTaskDAO;
     private final LogDAO logDAO;
+    private final JobInstanceDAO jobInstanceDAO;
+    private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobInstanceTaskServiceImpl(JobInstanceTaskDAO jobInstanceTaskDAO, LogDAO logDAO) {
+    public JobInstanceTaskServiceImpl(JobInstanceTaskDAO jobInstanceTaskDAO, LogDAO logDAO, JobInstanceDAO jobInstanceDAO, JobInstanceScheduler jobInstanceScheduler) {
         this.jobInstanceTaskDAO = jobInstanceTaskDAO;
         this.logDAO = logDAO;
+        this.jobInstanceDAO = jobInstanceDAO;
+        this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
     @Override
-    public PageVO<ListSecondVO> getCircleList(ListSecondRequest request) {
-        PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getCircleList(request.getJobInstanceId(), request.getPage(), request.getSize());
-
-        // Empty
-        if (CollectionUtils.isEmpty(pageDTO.getList())) {
-            return PageUtil.empty(pageDTO);
+    public PageVO<ListTaskVO> getTaskList(ListTaskRequest request) {
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(request.getTimeExpressionType())) {
+            return this.getTaskListBySecond(request);
         }
 
-        // Convert
-        PageVO<ListSecondVO> pageVO = PageUtil.convert(pageDTO, t -> {
-            ListSecondVO listSecondVO = BeanMapperUtil.map(t, ListSecondVO.class);
-            if (!TaskConstant.MAP_TASK_REDUCE_NAME.equals(listSecondVO.getTaskName())) {
-                listSecondVO.setChildCount(1L);
-            }
-            return listSecondVO;
-        });
-
-        // Pull task from worker
-        if (NumberUtils.INTEGER_ZERO.equals(request.getPage() - 1)) {
-            this.jobInstanceTaskDAO.getLatestParentTask(request.getJobInstanceId(), TaskConstant.DEFAULT_PARENT_ID);
-        }
-
-        return pageVO;
+        return this.getTaskListByOther(request);
     }
 
     @Override
@@ -93,16 +86,6 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
             ListChildTaskVO listSecondVO = BeanMapperUtil.map(t, ListChildTaskVO.class);
             listSecondVO.setChildCount(Optional.ofNullable(countMap.get(t.getTaskId())).orElse(0L));
             return listSecondVO;
-        });
-    }
-
-    @Override
-    public PageVO<ListTaskVO> getTaskList(ListTaskRequest request) {
-        PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getTaskList(request.getJobInstanceId(), request.getDispatchVersion(), request.getPage(), request.getSize());
-        return PageUtil.convert(pageDTO, t -> {
-            ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
-            listTaskVO.setChildCount(1L);
-            return listTaskVO;
         });
     }
 
@@ -138,5 +121,117 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         listTaskLogVO.setTime(nextTime.get());
         listTaskLogVO.setComplete(isComplete);
         return listTaskLogVO;
+    }
+
+    /**
+     * Get task list by second
+     *
+     * @param request request
+     * @return PageVO
+     */
+    private PageVO<ListTaskVO> getTaskListBySecond(ListTaskRequest request) {
+        JobInstance jobInstance = this.jobInstanceDAO.getById(request.getJobInstanceId());
+        PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getTaskList(request.getJobInstanceId(), request.getPage(), request.getSize());
+
+        // Convert
+        PageVO<ListTaskVO> pageVO = PageUtil.convert(pageDTO, t -> {
+            ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
+            listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+            listTaskVO.setPull(CommonConstant.NO);
+            return listTaskVO;
+        });
+
+        // Pull task from worker at first page
+        if (NumberUtils.INTEGER_ZERO.equals(request.getPage() - 1)) {
+            JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(request.getJobInstanceId(), TaskConstant.DEFAULT_PARENT_ID);
+            if (Objects.isNull(latestParentTask)) {
+                return pageVO;
+            }
+
+            List<ListTaskVO> taskList = pullTaskListFromWorker(latestParentTask.getCircleId(), jobInstance);
+            pageVO.getList().addAll(0, taskList);
+        }
+        return pageVO;
+    }
+
+
+    /**
+     * Get task list by other
+     *
+     * @param request request
+     * @return PageVO
+     */
+    private PageVO<ListTaskVO> getTaskListByOther(ListTaskRequest request) {
+        JobInstance jobInstance = this.jobInstanceDAO.getById(request.getJobInstanceId());
+
+        // Pull from worker
+        if (InstanceStatusEnum.isRunning(jobInstance.getStatus())) {
+            List<ListTaskVO> taskList = pullTaskListFromWorker(1L, jobInstance);
+
+            PageVO<ListTaskVO> pageVO = new PageVO<>();
+            pageVO.setPage(1);
+            pageVO.setSize(taskList.size());
+            pageVO.setTotal((long) taskList.size());
+            pageVO.setList(taskList);
+            return pageVO;
+        }
+
+        // Query from instance task
+        PageDTO<JobInstanceTask> pageDTO = this.jobInstanceTaskDAO.getTaskList(request.getJobInstanceId(), request.getPage(), request.getSize());
+
+        // Empty
+        if (CollectionUtils.isEmpty(pageDTO.getList())) {
+            return PageUtil.empty(pageDTO);
+        }
+
+        // Convert
+        return PageUtil.convert(pageDTO, t -> {
+            ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
+            listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+            listTaskVO.setPull(CommonConstant.NO);
+            return listTaskVO;
+        });
+    }
+
+    /**
+     * Pull task list from worker
+     *
+     * @param circleId    circleId
+     * @param jobInstance jobInstance
+     * @return List
+     */
+    private List<ListTaskVO> pullTaskListFromWorker(Long circleId, JobInstance jobInstance) {
+        TaskListPullRequestDTO taskListPullRequestDTO = new TaskListPullRequestDTO();
+        taskListPullRequestDTO.setJobInstanceId(jobInstance.getId());
+        taskListPullRequestDTO.setCircleId(circleId);
+        return this.jobInstanceScheduler.pullTaskList(taskListPullRequestDTO)
+                .stream().map(t -> {
+                    ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
+                    listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+                    listTaskVO.setPull(CommonConstant.YES);
+                    return listTaskVO;
+                }).collect(Collectors.toList());
+    }
+
+    /**
+     * Get child count
+     *
+     * @param executeType executeType
+     * @param taskName    taskName
+     * @return Long
+     */
+    private Long getChildCount(String executeType, String taskName) {
+        // Not MR
+        if (!ExecuteTypeEnum.isMapReduce(executeType)) {
+            return 0L;
+        }
+
+        // MR reduce task
+        if (TaskConstant.MAP_TASK_REDUCE_NAME.equals(taskName)) {
+            return 0L;
+        }
+
+        // MR root task
+        return 1L;
     }
 }
