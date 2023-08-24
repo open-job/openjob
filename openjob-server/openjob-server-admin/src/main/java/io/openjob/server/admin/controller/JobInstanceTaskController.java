@@ -2,9 +2,11 @@ package io.openjob.server.admin.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
+import io.openjob.server.admin.request.task.ListTaskLogRequest;
 import io.openjob.server.admin.request.task.ListTaskRequest;
 import io.openjob.server.admin.service.JobInstanceTaskService;
 import io.openjob.server.admin.vo.task.ListChildTaskVO;
+import io.openjob.server.admin.vo.task.ListTaskLogVO;
 import io.openjob.server.admin.vo.task.ListTaskVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
@@ -33,15 +35,21 @@ public class JobInstanceTaskController {
         this.jobInstanceTaskService = jobInstanceTaskService;
     }
 
-    @ApiOperation("List second")
+    @ApiOperation("List task")
     @GetMapping("/list")
     public Result<PageVO<ListTaskVO>> listSecond(@Valid @ModelAttribute ListTaskRequest listTaskRequest) {
         return Result.success(this.jobInstanceTaskService.getTaskList(listTaskRequest));
     }
 
-    @ApiOperation("List second")
+    @ApiOperation("List child")
     @GetMapping("/list-child")
     public Result<PageVO<ListChildTaskVO>> listSecond(@Valid @ModelAttribute ListChildTaskRequest listChildTaskRequest) {
         return Result.success(this.jobInstanceTaskService.getChildList(listChildTaskRequest));
+    }
+
+    @ApiOperation("List task log")
+    @GetMapping("/list-task-log")
+    public Result<ListTaskLogVO> listTaskLog(@Valid @ModelAttribute ListTaskLogRequest listTaskLogRequest) {
+        return Result.success(this.jobInstanceTaskService.getTaskLogList(listTaskLogRequest));
     }
 }
