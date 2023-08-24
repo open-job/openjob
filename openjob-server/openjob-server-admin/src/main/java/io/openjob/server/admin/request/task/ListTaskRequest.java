@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -18,7 +19,7 @@ public class ListTaskRequest extends PageRequest {
     @ApiModelProperty(value = "Job instance id", required = true)
     private Long jobInstanceId;
 
-    @NotNull
+    @NotBlank
     @ApiModelProperty(value = "Time expression type", required = true)
     private String timeExpressionType;
 }

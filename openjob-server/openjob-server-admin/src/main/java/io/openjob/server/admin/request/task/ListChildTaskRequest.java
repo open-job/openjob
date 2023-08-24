@@ -19,6 +19,15 @@ public class ListChildTaskRequest extends PageRequest {
     @ApiModelProperty(value = "Task id", required = true)
     private String taskId;
 
+    @NotNull
+    @ApiModelProperty(value = "Instance id", required = true)
+    private Long jobInstanceId;
+
+    @NotNull
+    @ApiModelProperty(value = "Circle id", required = true)
+    private Long circleId;
+
+    @NotNull
     @ApiModelProperty(value = "Pull", required = true)
-    private String pull;
+    private Integer pull;
 }

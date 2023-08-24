@@ -69,7 +69,7 @@ public class JobInstanceScheduler {
             return Optional.ofNullable(response.getTaskList()).orElseGet(ArrayList::new)
                     .stream().map(t -> BeanMapperUtil.map(t, TaskListPullResponseDTO.class)).collect(Collectors.toList());
         } catch (Throwable ex) {
-            log.error("Pull instance task list failed!", ex);
+            log.warn("Pull instance task list failed!", ex);
             return new ArrayList<>();
         }
     }
@@ -91,11 +91,11 @@ public class JobInstanceScheduler {
             pullRequest.setCircleId(request.getCircleId());
 
             ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(jobInstance.getWorkerAddress());
-            WorkerInstanceTaskChildListPullResponse response = FutureUtil.mustAsk(masterActor, pullRequest, WorkerInstanceTaskChildListPullResponse.class, 3000L);
+            WorkerInstanceTaskChildListPullResponse response = FutureUtil.mustAsk(masterActor, pullRequest, WorkerInstanceTaskChildListPullResponse.class, 1000L);
             return Optional.ofNullable(response.getTaskList()).orElseGet(ArrayList::new)
                     .stream().map(t -> BeanMapperUtil.map(t, TaskChildPullResponseDTO.class)).collect(Collectors.toList());
         } catch (Throwable ex) {
-            log.error("Pull instance child task list failed!", ex);
+            log.warn("Pull instance child task list failed!", ex);
             return new ArrayList<>();
         }
     }
@@ -131,7 +131,7 @@ public class JobInstanceScheduler {
             serverStopJobInstanceRequest.setJobId(jobInstance.getJobId());
             serverStopJobInstanceRequest.setJobInstanceId(jobInstance.getId());
             ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(jobInstance.getWorkerAddress());
-            FutureUtil.mustAsk(masterActor, serverStopJobInstanceRequest, WorkerResponse.class, 3000L);
+            FutureUtil.mustAsk(masterActor, serverStopJobInstanceRequest, WorkerResponse.class, 1000L);
         } catch (Throwable throwable) {
             log.error("Job instance exception!", throwable);
             throw new RuntimeException("Job instance exception! message=" + throwable.getMessage());
