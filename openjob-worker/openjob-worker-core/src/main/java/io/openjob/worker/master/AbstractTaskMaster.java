@@ -107,6 +107,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     @Override
+    public void submit() {
+
+    }
+
+    @Override
     public void completeTask() throws InterruptedException {
         // Do complete task.
         this.doCompleteTask();

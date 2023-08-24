@@ -2,11 +2,9 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
-import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
 import io.openjob.common.request.ServerInstanceTaskListPullRequest;
 import io.openjob.common.request.ServerStopInstanceTaskRequest;
@@ -14,7 +12,6 @@ import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
 import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.common.response.WorkerInstanceTaskResponse;
 import io.openjob.common.response.WorkerResponse;
-import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
@@ -23,13 +20,11 @@ import io.openjob.worker.entity.Task;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
-import io.openjob.worker.request.MasterStopContainerRequest;
 import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +35,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -51,14 +46,38 @@ import java.util.stream.Collectors;
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
-    protected String circleTaskId = "";
+    protected String circleTaskUniqueId = "";
+    protected Long circleTaskId;
+    protected AtomicBoolean submitting = new AtomicBoolean(false);
 
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
     }
 
     @Override
+    protected void init() {
+        super.init();
+
+        this.scheduledService = new ScheduledThreadPoolExecutor(
+                1,
+                new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+
+        // Check task complete status.
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
+
+        // Pull failover task to redispatch.
+        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
+    }
+
+    @Override
     public void submit() {
+        // Async submit many tasks
+        this.submitting.set(true);
+    }
+
+    protected void doSubmit() {
 
     }
 
@@ -138,31 +157,14 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     }
 
     @Override
-    protected void init() {
-        super.init();
-
-        this.scheduledService = new ScheduledThreadPoolExecutor(
-                1,
-                new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
-                new ThreadPoolExecutor.AbortPolicy()
-        );
-
-        // Check task complete status.
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
-
-        // Pull failover task to redispatch.
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
-    }
-
-    @Override
     protected void doSecondCircleStatus() {
         super.doSecondCircleStatus();
-        this.taskDAO.updateStatusByTaskId(this.circleTaskId, this.getCircleTaskStatus());
+        this.taskDAO.updateStatusByTaskId(this.circleTaskUniqueId, this.getCircleTaskStatus());
     }
 
     @Override
     protected Boolean isTaskComplete(Long instanceId, Long circleId) {
-        Integer nonFinishCount = taskDAO.countTaskAndExcludeId(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST, this.circleTaskId);
+        Integer nonFinishCount = taskDAO.countTaskAndExcludeId(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST, this.circleTaskUniqueId);
         return nonFinishCount <= 0;
     }
 
@@ -209,11 +211,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             this.persistTasks(workerAddress, startRequests);
         }
 
-        // Switch running status.
-        if (!this.running.get()) {
-            this.running.set(true);
-        }
-
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
         batchRequest.setJobId(this.jobInstanceDTO.getJobId());
         batchRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
@@ -257,10 +254,9 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     /**
      * Persist parent circle task
-     *
-     * @param startRequest startRequest
      */
-    protected void persistParentCircleTask(MasterStartContainerRequest startRequest) {
+    protected void persistCircleTask() {
+        MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
         Task task = this.convertToTask(startRequest, this.localWorkerAddress);
 
         // Parent task name
@@ -270,12 +266,19 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         taskDAO.add(task);
 
         // Circle task id
-        this.circleTaskId = task.getTaskId();
+        this.circleTaskUniqueId = task.getTaskId();
 
-        // Init next task
-        Long parentTaskId = this.taskIdGenerator.get();
-        startRequest.setTaskId(this.acquireTaskId());
-        startRequest.setParentTaskId(parentTaskId);
+        // Parent task id
+        this.circleTaskId = this.taskIdGenerator.get();
+    }
+
+    @Override
+    protected MasterStartContainerRequest getMasterStartContainerRequest() {
+        MasterStartContainerRequest startRequest = super.getMasterStartContainerRequest();
+        if (Objects.nonNull(this.circleTaskId)) {
+            startRequest.setParentTaskId(this.circleTaskId);
+        }
+        return startRequest;
     }
 
     /**
@@ -311,10 +314,26 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         @Override
         public void run() {
             try {
-                this.doRun();
+                // First to submit task, then run task status
+                if (this.taskMaster.submitting.get()) {
+                    this.submit();
+                } else {
+                    this.doRun();
+                }
             } catch (Throwable throwable) {
                 log.error("Task status checker failed!", throwable);
             }
+        }
+
+        protected void submit() {
+            // Running status.
+            this.taskMaster.running.set(true);
+
+            // Do submit
+            this.taskMaster.doSubmit();
+
+            // Submit status
+            this.taskMaster.submitting.set(false);
         }
 
         protected void doRun() {

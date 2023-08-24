@@ -3,6 +3,7 @@ package io.openjob.worker.master;
 import akka.actor.ActorContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,8 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     @Override
-    public void submit() {
+    public void doSubmit() {
+        // Parse sharding
         Map<Long, String> shardingMap = Maps.newHashMap();
         String[] shardingParams = StringUtils.split(this.jobInstanceDTO.getJobParams(), "&");
         Arrays.stream(shardingParams).forEach(s -> {
@@ -30,6 +32,12 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
             shardingMap.put(Long.valueOf(params[0]), params[1]);
         });
 
+        // Second delay to persist circle task
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.persistCircleTask();
+        }
+
+        // Dispatch tasks
         int shardingNum = shardingMap.size();
         List<MasterStartContainerRequest> startContainerRequestList = Lists.newArrayList();
         shardingMap.forEach((i, p) -> {
@@ -39,7 +47,6 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
             startRequest.setShardingNum(shardingNum);
             startContainerRequestList.add(startRequest);
         });
-
         this.dispatchTasks(startContainerRequestList, false, Collections.emptySet());
 
         // Add task manager

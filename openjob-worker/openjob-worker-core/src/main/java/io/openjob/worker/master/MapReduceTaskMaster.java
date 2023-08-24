@@ -1,7 +1,6 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
-import com.google.common.collect.Lists;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.task.TaskQueue;
@@ -22,7 +21,6 @@ import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -93,19 +91,16 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     @Override
-    public void submit() {
-        MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
-
+    public void doSubmit() {
         // Second delay to persist circle task
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            this.persistParentCircleTask(masterStartContainerRequest);
+            this.persistCircleTask();
         }
 
         // Dispatch tasks
+        MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
         masterStartContainerRequest.setTaskName(TaskConstant.MAP_TASK_ROOT_NAME);
-        ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
-
-        this.dispatchTasks(startRequests, false, Collections.emptySet());
+        this.dispatchTasks(Collections.singletonList(masterStartContainerRequest), false, Collections.emptySet());
 
         // Add task manager
         this.addTask2Manager();
@@ -198,7 +193,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
         // Second delay
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            task.setTaskParentId(this.circleTaskId);
+            task.setTaskParentId(this.circleTaskUniqueId);
         } else {
             task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
         }

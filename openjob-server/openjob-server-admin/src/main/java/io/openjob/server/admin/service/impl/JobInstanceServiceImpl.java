@@ -126,7 +126,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
         Integer isComplete = CommonConstant.NO;
         try {
-            String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 1L,1L, 1L);
+            String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), request.getDispatchVersion(), 1L, 1L);
             List<ProcessorLogDTO> processorLogs = this.logDAO.queryByScroll(taskId, request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {

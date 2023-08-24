@@ -101,6 +101,9 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
     @Override
     public void submit() {
+        // Switch running status.
+        super.submit();
+
         // Create container
         MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
 
@@ -111,11 +114,6 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
         // Add address.
         this.containerWorkers.add(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
-
-        // Switch running status.
-        if (!this.running.get()) {
-            this.running.set(true);
-        }
 
         ActorSelection actorSelection = actorContext.actorSelection(this.localContainerPath);
         FutureUtil.mustAsk(actorSelection, startRequest, WorkerResponse.class, 3000L);
