@@ -39,6 +39,9 @@ public class ListJobInstanceVO {
     @ApiModelProperty(value = "Execute type: standalone, broadcast, MR")
     private String executeType;
 
+    @ApiModelProperty(value = "Dispatch version")
+    private Long dispatchVersion;
+
     @ApiModelProperty(value = "Job params type")
     private String paramsType;
 
