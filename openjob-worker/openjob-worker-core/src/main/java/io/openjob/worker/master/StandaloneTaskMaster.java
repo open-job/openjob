@@ -101,7 +101,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
     @Override
     public void submit() {
-        // Switch running status.
+        // Super submit
         super.submit();
 
         // Create container
@@ -120,6 +120,9 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
         // Add task manager
         this.addTask2Manager();
+
+        // Running status.
+        this.running.set(true);
     }
 
     private void doTaskComplete() {

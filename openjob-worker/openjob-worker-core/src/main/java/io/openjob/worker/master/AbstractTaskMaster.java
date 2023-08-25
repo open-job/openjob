@@ -131,6 +131,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Not second delay task.
         if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            // When task complete reset status.
+            this.running.set(false);
+
+            // Destroy task container
             this.destroyTaskContainer();
             return;
         }
@@ -149,6 +153,11 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public Boolean getRunning() {
+        // Second delay always running
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            return true;
+        }
+
         return this.running.get();
     }
 
@@ -429,6 +438,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected void doCircleSecondDelayTask() throws InterruptedException {
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
+
+        // When task complete reset status.
+        this.running.set(false);
 
         // Second delay task.
         long delayTime = Long.parseLong(this.jobInstanceDTO.getTimeExpression());

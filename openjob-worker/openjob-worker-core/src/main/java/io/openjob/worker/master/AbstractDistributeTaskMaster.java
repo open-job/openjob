@@ -64,7 +64,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         );
 
         // Check task complete status.
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new TaskSubmitterAndChecker(this), 1, 3L, TimeUnit.SECONDS);
 
         // Pull failover task to redispatch.
         this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
@@ -303,10 +303,10 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         return response;
     }
 
-    protected static class TaskStatusChecker implements Runnable {
+    protected static class TaskSubmitterAndChecker implements Runnable {
         private final AbstractDistributeTaskMaster taskMaster;
 
-        public TaskStatusChecker(AbstractDistributeTaskMaster taskMaster) {
+        public TaskSubmitterAndChecker(AbstractDistributeTaskMaster taskMaster) {
             this.taskMaster = taskMaster;
         }
 
@@ -325,11 +325,11 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         }
 
         protected void submit() {
-            // Running status.
-            this.taskMaster.running.set(true);
-
-            // Do submit
+            // First to do submit
             this.taskMaster.doSubmit();
+
+            // Then running status.
+            this.taskMaster.running.set(true);
 
             // Submit status
             this.taskMaster.submitting.set(false);
@@ -349,11 +349,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                 try {
                     this.taskMaster.completeTask();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("TaskSubmitterAndChecker completeTask failed!", e);
                 }
-
-                // When task complete reset status.
-                this.taskMaster.running.set(false);
             }
         }
     }
