@@ -84,6 +84,16 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected AtomicInteger stopping = new AtomicInteger(0);
 
     /**
+     * Circle task unique id
+     */
+    protected String circleTaskUniqueId = "";
+
+    /**
+     * Circle task id
+     */
+    protected Long circleTaskId;
+
+    /**
      * New AbstractTaskMaster
      *
      * @param jobInstanceDTO job instance context.
@@ -127,7 +137,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Circle second delay task.
         if (NumberUtils.INTEGER_ZERO.equals(this.stopping.get())) {
-            this.circleSecondDelayTask();
+            this.doCircleSecondDelayTask();
         }
     }
 
@@ -299,7 +309,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected void doCompleteTask() {
         // Second delay to do circle status
         if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
-            this.doSecondCircleStatus();
+            this.doCircleSecondStatus();
         } else {
             // Job instance status
             this.doJobInstanceStatus();
@@ -309,7 +319,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.doJobInstanceTasks();
     }
 
-    protected void doSecondCircleStatus() {
+    protected void doCircleSecondStatus() {
 
     }
 
@@ -417,7 +427,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         return status;
     }
 
-    protected void circleSecondDelayTask() throws InterruptedException {
+    protected void doCircleSecondDelayTask() throws InterruptedException {
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
 
         // Second delay task.
@@ -426,6 +436,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
         // Rest task id
         this.taskIdGenerator.set(0L);
+
+        // Reset circle task id
+        this.circleTaskId = null;
 
         // Next circle id.
         long jobId = this.jobInstanceDTO.getJobId();

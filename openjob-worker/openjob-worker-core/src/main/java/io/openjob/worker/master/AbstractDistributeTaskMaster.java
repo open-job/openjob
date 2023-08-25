@@ -21,6 +21,7 @@ import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopInstanceTaskRequest;
+import io.openjob.worker.util.AddressUtil;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -46,8 +47,6 @@ import java.util.stream.Collectors;
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
-    protected String circleTaskUniqueId = "";
-    protected Long circleTaskId;
     protected AtomicBoolean submitting = new AtomicBoolean(false);
 
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
@@ -157,8 +156,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     }
 
     @Override
-    protected void doSecondCircleStatus() {
-        super.doSecondCircleStatus();
+    protected void doCircleSecondStatus() {
+        super.doCircleSecondStatus();
         this.taskDAO.updateStatusByTaskId(this.circleTaskUniqueId, this.getCircleTaskStatus());
     }
 
@@ -257,7 +256,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
      */
     protected void persistCircleTask() {
         MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
-        Task task = this.convertToTask(startRequest, this.localWorkerAddress);
+        Task task = this.convertToTask(startRequest, AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
 
         // Parent task name
         task.setTaskName("");

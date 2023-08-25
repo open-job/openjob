@@ -108,7 +108,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
 
         // Task
-        Task task = this.convertToTask(startRequest, this.localWorkerAddress);
+        Task task = this.convertToTask(startRequest, AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
         task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
         taskDAO.add(task);
 
