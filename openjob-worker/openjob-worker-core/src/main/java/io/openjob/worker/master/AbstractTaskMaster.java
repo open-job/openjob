@@ -7,6 +7,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.JobInstanceStopEnum;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
@@ -17,6 +18,7 @@ import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
 import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
 import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -28,12 +30,16 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -191,17 +197,77 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     @Override
     public WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
-        return null;
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+        // Not new circle running
+        if (request.getCircleId() >= this.circleIdGenerator.get()) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+
+        WorkerInstanceTaskListPullResponse response = new WorkerInstanceTaskListPullResponse();
+        List<Task> tasks = this.taskDAO.findCircleParentTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), TaskConstant.DEFAULT_PARENT_ID);
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
     }
 
     @Override
     public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
-        return null;
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        WorkerInstanceTaskChildListPullResponse response = new WorkerInstanceTaskChildListPullResponse();
+        List<Task> tasks = this.taskDAO.findChildTaskList(request.getTaskId());
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
     }
 
     @Override
     public void stopTask(ServerStopInstanceTaskRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return;
+        }
 
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return;
+        }
+
+        // Not exist
+        Task task = this.taskDAO.getByTaskId(request.getTaskId());
+        if (Objects.isNull(task)) {
+            return;
+        }
+
+        // Not running
+        if (!TaskStatusEnum.isRunning(task.getStatus())) {
+            return;
+        }
+
+        MasterStopInstanceTaskRequest stopRequest = new MasterStopInstanceTaskRequest();
+        stopRequest.setJobInstanceId(request.getJobInstanceId());
+        stopRequest.setDispatchVersion(request.getDispatchVersion());
+        stopRequest.setCircleId(request.getCircleId());
+        stopRequest.setTaskId(request.getTaskId());
+        stopRequest.setWorkerAddress(task.getWorkerAddress());
+        WorkerActorSystem.atLeastOnceDelivery(stopRequest, null);
     }
 
     @Override
@@ -458,5 +524,28 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         log.info("Second delay task begin jobId={} instanceId={} circleId={}", jobId, instanceId, nextCircleId);
 
         this.submit();
+    }
+
+    /**
+     * Convert to WorkerInstanceTaskResponse
+     *
+     * @param task task
+     * @return WorkerInstanceTaskResponse
+     */
+    protected WorkerInstanceTaskResponse convert2WorkerInstanceTaskResponse(Task task) {
+        WorkerInstanceTaskResponse response = new WorkerInstanceTaskResponse();
+        response.setJobId(task.getJobId());
+        response.setJobInstanceId(task.getInstanceId());
+        response.setDispatchVersion(task.getDispatchVersion());
+        response.setCircleId(task.getCircleId());
+        response.setTaskId(task.getTaskId());
+        response.setParentTaskId(task.getTaskParentId());
+        response.setTaskName(task.getTaskName());
+        response.setStatus(task.getStatus());
+        response.setResult(task.getResult());
+        response.setWorkerAddress(task.getWorkerAddress());
+        response.setCreateTime(task.getCreateTime());
+        response.setUpdateTime(task.getUpdateTime());
+        return response;
     }
 }

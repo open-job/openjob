@@ -21,6 +21,9 @@ public class ListTaskVO {
     @ApiModelProperty(value = "Circle id")
     private Long circleId;
 
+    @ApiModelProperty(value = "Dispatch version")
+    private Long dispatchVersion;
+
     @ApiModelProperty(value = "Task id")
     private String taskId;
 

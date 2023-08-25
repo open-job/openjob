@@ -81,81 +81,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     }
 
     @Override
-    public WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
-        // Dispatch version difference
-        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
-            return new WorkerInstanceTaskListPullResponse();
-        }
-        // Not new circle running
-        if (request.getCircleId() >= this.circleIdGenerator.get()) {
-            return new WorkerInstanceTaskListPullResponse();
-        }
-
-        WorkerInstanceTaskListPullResponse response = new WorkerInstanceTaskListPullResponse();
-        List<Task> tasks = this.taskDAO.findCircleParentTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), TaskConstant.DEFAULT_PARENT_ID);
-
-        // Response
-        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
-                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
-        response.setTaskList(taskResponses);
-        return response;
-    }
-
-    @Override
-    public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
-        // Dispatch version difference
-        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
-            return new WorkerInstanceTaskChildListPullResponse();
-        }
-
-        // Circle id difference
-        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
-            return new WorkerInstanceTaskChildListPullResponse();
-        }
-
-        WorkerInstanceTaskChildListPullResponse response = new WorkerInstanceTaskChildListPullResponse();
-        List<Task> tasks = this.taskDAO.findChildTaskList(request.getTaskId());
-
-        // Response
-        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
-                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
-        response.setTaskList(taskResponses);
-        return response;
-    }
-
-    @Override
-    public void stopTask(ServerStopInstanceTaskRequest request) {
-        // Dispatch version difference
-        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
-            return;
-        }
-
-        // Circle id difference
-        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
-            return;
-        }
-
-        // Not exist
-        Task task = this.taskDAO.getByTaskId(request.getTaskId());
-        if (Objects.isNull(task)) {
-            return;
-        }
-
-        // Not running
-        if (!TaskStatusEnum.isRunning(task.getStatus())) {
-            return;
-        }
-
-        MasterStopInstanceTaskRequest stopRequest = new MasterStopInstanceTaskRequest();
-        stopRequest.setJobInstanceId(request.getJobInstanceId());
-        stopRequest.setDispatchVersion(request.getDispatchVersion());
-        stopRequest.setCircleId(request.getCircleId());
-        stopRequest.setTaskId(request.getTaskId());
-        stopRequest.setWorkerAddress(task.getWorkerAddress());
-        WorkerActorSystem.atLeastOnceDelivery(stopRequest, null);
-    }
-
-    @Override
     protected void doCircleSecondStatus() {
         super.doCircleSecondStatus();
         this.taskDAO.updateStatusByTaskId(this.circleTaskUniqueId, this.getCircleTaskStatus());
@@ -278,29 +203,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
             startRequest.setParentTaskId(this.circleTaskId);
         }
         return startRequest;
-    }
-
-    /**
-     * Convert to WorkerInstanceTaskResponse
-     *
-     * @param task task
-     * @return WorkerInstanceTaskResponse
-     */
-    protected WorkerInstanceTaskResponse convert2WorkerInstanceTaskResponse(Task task) {
-        WorkerInstanceTaskResponse response = new WorkerInstanceTaskResponse();
-        response.setJobId(task.getJobId());
-        response.setJobInstanceId(task.getInstanceId());
-        response.setDispatchVersion(task.getDispatchVersion());
-        response.setCircleId(task.getCircleId());
-        response.setTaskId(task.getTaskId());
-        response.setParentTaskId(task.getTaskParentId());
-        response.setTaskName(task.getTaskName());
-        response.setStatus(task.getStatus());
-        response.setResult(task.getResult());
-        response.setWorkerAddress(task.getWorkerAddress());
-        response.setCreateTime(task.getCreateTime());
-        response.setUpdateTime(task.getUpdateTime());
-        return response;
     }
 
     protected static class TaskSubmitterAndChecker implements Runnable {

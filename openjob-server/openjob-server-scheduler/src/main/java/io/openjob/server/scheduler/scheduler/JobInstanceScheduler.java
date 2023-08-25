@@ -4,6 +4,7 @@ import akka.actor.ActorSelection;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
 import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
 import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
@@ -18,6 +19,8 @@ import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.Worker;
 import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
 import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
+import io.openjob.server.scheduler.dto.StopTaskRequestDTO;
+import io.openjob.server.scheduler.dto.StopTaskResponseDTO;
 import io.openjob.server.scheduler.dto.TaskChildPullRequestDTO;
 import io.openjob.server.scheduler.dto.TaskChildPullResponseDTO;
 import io.openjob.server.scheduler.dto.TaskListPullRequestDTO;
@@ -98,6 +101,31 @@ public class JobInstanceScheduler {
             log.warn("Pull instance child task list failed!", ex);
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Stop task
+     *
+     * @param requestDTO requestDTO
+     * @return StopTaskResponseDTO
+     */
+    public StopTaskResponseDTO stopTask(StopTaskRequestDTO requestDTO) {
+        JobInstance jobInstance = this.jobInstanceDAO.getById(requestDTO.getJobInstanceId());
+
+        try {
+            ServerStopInstanceTaskRequest request = new ServerStopInstanceTaskRequest();
+            request.setJobInstanceId(requestDTO.getJobInstanceId());
+            request.setTaskId(requestDTO.getTaskId());
+            request.setDispatchVersion(requestDTO.getDispatchVersion());
+            request.setCircleId(requestDTO.getCircleId());
+
+            ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(jobInstance.getWorkerAddress());
+            FutureUtil.mustAsk(masterActor, request, WorkerInstanceTaskChildListPullResponse.class, 1000L);
+        } catch (Throwable ex) {
+            log.warn("Stop instance task failed!", ex);
+        }
+
+        return new StopTaskResponseDTO();
     }
 
     /**

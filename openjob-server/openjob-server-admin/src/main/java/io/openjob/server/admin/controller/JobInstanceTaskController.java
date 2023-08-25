@@ -4,16 +4,20 @@ import io.openjob.common.response.Result;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
 import io.openjob.server.admin.request.task.ListTaskLogRequest;
 import io.openjob.server.admin.request.task.ListTaskRequest;
+import io.openjob.server.admin.request.task.StopTaskRequest;
 import io.openjob.server.admin.service.JobInstanceTaskService;
 import io.openjob.server.admin.vo.task.ListChildTaskVO;
 import io.openjob.server.admin.vo.task.ListTaskLogVO;
 import io.openjob.server.admin.vo.task.ListTaskVO;
+import io.openjob.server.admin.vo.task.StopTaskVO;
 import io.openjob.server.common.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +50,13 @@ public class JobInstanceTaskController {
     public Result<PageVO<ListChildTaskVO>> listSecond(@Valid @ModelAttribute ListChildTaskRequest listChildTaskRequest) {
         return Result.success(this.jobInstanceTaskService.getChildList(listChildTaskRequest));
     }
+
+    @ApiOperation("Stop task")
+    @PostMapping("/stop-task")
+    public Result<StopTaskVO> stopTask(@Valid @RequestBody StopTaskRequest request) {
+        return Result.success(this.jobInstanceTaskService.stopTask(request));
+    }
+
 
     @ApiOperation("List task log")
     @GetMapping("/list-task-log")

@@ -9,11 +9,13 @@ import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.server.admin.request.task.ListChildTaskRequest;
 import io.openjob.server.admin.request.task.ListTaskLogRequest;
 import io.openjob.server.admin.request.task.ListTaskRequest;
+import io.openjob.server.admin.request.task.StopTaskRequest;
 import io.openjob.server.admin.service.JobInstanceTaskService;
 import io.openjob.server.admin.util.LogFormatUtil;
 import io.openjob.server.admin.vo.task.ListChildTaskVO;
 import io.openjob.server.admin.vo.task.ListTaskLogVO;
 import io.openjob.server.admin.vo.task.ListTaskVO;
+import io.openjob.server.admin.vo.task.StopTaskVO;
 import io.openjob.server.common.dto.PageDTO;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.common.util.PageUtil;
@@ -25,15 +27,17 @@ import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.dto.TaskGroupCountDTO;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceTask;
+import io.openjob.server.scheduler.dto.StopTaskRequestDTO;
+import io.openjob.server.scheduler.dto.StopTaskResponseDTO;
 import io.openjob.server.scheduler.dto.TaskChildPullRequestDTO;
 import io.openjob.server.scheduler.dto.TaskListPullRequestDTO;
 import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.ref.ReferenceQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +85,12 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
     }
 
     @Override
+    public StopTaskVO stopTask(StopTaskRequest request) {
+        StopTaskResponseDTO response = this.jobInstanceScheduler.stopTask(BeanMapperUtil.map(request, StopTaskRequestDTO.class));
+        return BeanMapperUtil.map(response, StopTaskVO.class);
+    }
+
+    @Override
     public ListTaskLogVO getTaskLogList(ListTaskLogRequest request) {
         List<String> list = new ArrayList<>();
         AtomicLong nextTime = new AtomicLong(0L);
@@ -98,7 +108,7 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
                     isComplete = CommonConstant.YES;
                 } else if (CommonConstant.YES.equals(request.getLoading())) {
                     JobInstanceTask jobInstanceTask = this.jobInstanceTaskDAO.getByTaskId(request.getTaskId());
-                    if (TaskStatusEnum.FINISH_LIST.contains(jobInstanceTask.getStatus())) {
+                    if (Objects.nonNull(jobInstanceTask) && TaskStatusEnum.FINISH_LIST.contains(jobInstanceTask.getStatus())) {
                         isComplete = CommonConstant.YES;
                     }
                 }
