@@ -58,16 +58,13 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
     @Override
     public void stop(Integer type) {
-        super.stop(type);
-
         // Second delay to shut down scheduler
         if (this.isSecondDelay()) {
             this.secondDelayService.shutdown();
             return;
         }
 
-        // Do complete task.
-        this.doCompleteTask();
+        super.stop(type);
     }
 
     @Override

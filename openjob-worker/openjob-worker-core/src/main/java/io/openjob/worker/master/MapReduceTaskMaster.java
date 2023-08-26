@@ -114,8 +114,6 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     @Override
     public void stop(Integer type) {
-        // Stop task container.
-
         // Stop child task consumer
         this.childTaskConsumer.stop();
 

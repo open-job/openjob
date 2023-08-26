@@ -2,7 +2,6 @@ package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
-import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.worker.dto.JobInstanceDTO;

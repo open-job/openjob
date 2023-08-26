@@ -172,9 +172,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Update status
         this.stopping.set(type);
 
-        // Remove from task master pool.
-        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
-
         // Stop task container.
         this.containerWorkers.forEach(w -> {
             MasterStopContainerRequest request = new MasterStopContainerRequest();
@@ -185,14 +182,12 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             WorkerActorSystem.atLeastOnceDelivery(request, null);
         });
 
-        // Remove task from manager
-        this.removeTaskFromManager();
-
-        // Remove task from manager
-        this.removeTaskFromManager();
-
-        // Not second delay task.
-        this.destroyTaskContainer();
+        // Complete task.
+        try {
+            this.completeTask();
+        } catch (InterruptedException interruptedException) {
+            log.error("Stop complete task failed!", interruptedException);
+        }
     }
 
     @Override
@@ -491,12 +486,12 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Integer getTaskStatus(Integer status) {
-        // Normal stop
+        // Normal stop and not finish
         if (JobInstanceStopEnum.isNormal(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
             return TaskStatusEnum.STOP.getStatus();
         }
 
-        // Timeout stop
+        // Timeout stop and not finish
         if (JobInstanceStopEnum.isTimeout(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
             return TaskStatusEnum.FAILED.getStatus();
         }
