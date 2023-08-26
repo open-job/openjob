@@ -80,12 +80,13 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         } catch (InvocationTargetException invocationException) {
             Throwable target = Objects.nonNull(invocationException.getTargetException()) ? invocationException.getTargetException() : invocationException;
 
-            // InterruptedException(stop/timeout)
+            // InterruptedException(stop)
             if (target instanceof InterruptedException) {
                 // Stop processor.
                 this.stop();
 
                 // Result
+                result.setStatus(TaskStatusEnum.STOP);
                 result.setResult(ExceptionUtil.formatStackTraceAsString(target));
                 logger.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
                 log.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());

@@ -4,6 +4,7 @@ import akka.actor.ActorContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,7 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
     public void doSubmit() {
         // Parse sharding
         Map<Long, String> shardingMap = Maps.newHashMap();
-        String[] shardingParams = StringUtils.split(this.jobInstanceDTO.getJobParams(), "&");
+        String[] shardingParams = StringUtils.split(this.jobInstanceDTO.getJobParams(), ",");
         Arrays.stream(shardingParams).forEach(s -> {
             String[] params = StringUtils.split(s, "=");
             shardingMap.put(Long.valueOf(params[0]), params[1]);
@@ -44,6 +45,7 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
             startRequest.setShardingId(i);
             startRequest.setShardingParam(p);
+            startRequest.setTaskName(TaskUtil.getShardingTaskName(i));
             startRequest.setShardingNum(shardingNum);
             startContainerRequestList.add(startRequest);
         });

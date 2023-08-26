@@ -1,6 +1,7 @@
 package io.openjob.worker.persistence;
 
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.util.DateUtil;
 import io.openjob.worker.entity.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -166,27 +167,29 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         boolean isRunning = TaskStatusEnum.RUNNING.getStatus().equals(currentStatus);
 
         // Running
-        String sql = "UPDATE `task` SET `status`=? WHERE `task_id`=? AND status=?";
+        String sql = "UPDATE `task` SET `status`=?,`update_time`=? WHERE `task_id`=? AND status=?";
 
         // Not running.
         if (!isRunning) {
-            sql = "UPDATE `task` SET `status`=?,`result`=? WHERE `task_id`=?";
+            sql = "UPDATE `task` SET `status`=?,`update_time`=?,`result`=? WHERE `task_id`=?";
         }
 
         PreparedStatement ps = null;
+        long timestamp = DateUtil.timestamp();
         try (Connection connection = this.connectionPool.getConnection()) {
             connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql);
             for (Task task : tasks) {
                 ps.setInt(1, task.getStatus());
+                ps.setLong(2, timestamp);
 
                 // Update to running must be init status.
                 if (isRunning) {
-                    ps.setString(2, task.getTaskId());
-                    ps.setInt(3, TaskStatusEnum.INIT.getStatus());
-                } else {
-                    ps.setString(2, task.getResult());
                     ps.setString(3, task.getTaskId());
+                    ps.setInt(4, TaskStatusEnum.INIT.getStatus());
+                } else {
+                    ps.setString(3, task.getResult());
+                    ps.setString(4, task.getTaskId());
                 }
                 ps.addBatch();
             }

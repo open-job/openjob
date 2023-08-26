@@ -115,6 +115,9 @@ public class TaskContainerActor extends BaseActor {
      */
     private void startContainer(MasterStartContainerRequest startReq) {
         JobContext jobContext = new JobContext();
+        jobContext.setShardingId(startReq.getShardingId());
+        jobContext.setShardingParam(startReq.getShardingParam());
+        jobContext.setShardingNum(startReq.getShardingNum());
         jobContext.setJobId(startReq.getJobId());
         jobContext.setJobInstanceId(startReq.getJobInstanceId());
         jobContext.setDispatchVersion(startReq.getDispatchVersion());
