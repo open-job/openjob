@@ -35,7 +35,7 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     @Override
     public void doSubmit() {
         // Second delay to persist circle task
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.persistCircleTask();
         }
 

@@ -34,7 +34,7 @@ public class ShardingTaskMaster extends AbstractDistributeTaskMaster {
         });
 
         // Second delay to persist circle task
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.persistCircleTask();
         }
 

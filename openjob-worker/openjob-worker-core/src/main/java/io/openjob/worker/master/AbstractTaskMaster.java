@@ -117,7 +117,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected void init() {
         // Second delay
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.circleIdGenerator.set(this.jobInstanceDTO.getCircleId());
         }
     }
@@ -136,7 +136,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         this.removeTaskFromManager();
 
         // Not second delay task.
-        if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (!this.isSecondDelay()) {
             // When task complete reset status.
             this.running.set(false);
 
@@ -160,7 +160,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     @Override
     public Boolean getRunning() {
         // Second delay always running
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             return true;
         }
 
@@ -201,8 +201,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
             return new WorkerInstanceTaskListPullResponse();
         }
-        // Not new circle running
-        if (request.getCircleId() >= this.circleIdGenerator.get()) {
+
+        // Second delay and not new circle running
+        if (this.isSecondDelay() && request.getCircleId() >= this.circleIdGenerator.get()) {
             return new WorkerInstanceTaskListPullResponse();
         }
 
@@ -383,7 +384,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
      */
     protected void doCompleteTask() {
         // Second delay to do circle status
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.doCircleSecondStatus();
         } else {
             // Job instance status
@@ -547,5 +548,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         response.setCreateTime(task.getCreateTime());
         response.setUpdateTime(task.getUpdateTime());
         return response;
+    }
+
+    /**
+     * Whether is second delay
+     *
+     * @return Boolean
+     */
+    protected Boolean isSecondDelay() {
+        return TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType());
     }
 }

@@ -38,7 +38,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         super.init();
 
         // Second delay scheduler
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.secondDelayService = new ScheduledThreadPoolExecutor(
                     1,
                     new ThreadFactoryBuilder().setNameFormat("Openjob-heartbeat-thread").build(),
@@ -61,7 +61,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         super.stop(type);
 
         // Second delay to shut down scheduler
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             this.secondDelayService.shutdown();
             return;
         }
@@ -84,7 +84,7 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
 
         // Second delay scheduler
         // Async to do complete
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             return;
         }
 

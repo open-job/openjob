@@ -192,7 +192,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         task.setWorkerAddress(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
 
         // Second delay
-        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        if (this.isSecondDelay()) {
             task.setTaskParentId(this.circleTaskUniqueId);
         } else {
             task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
