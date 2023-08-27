@@ -157,14 +157,27 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
      * @return PageVO
      */
     private PageVO<ListChildTaskVO> getListChildTaskByPull(ListChildTaskRequest request) {
+        JobInstance jobInstance = this.jobInstanceDAO.getById(request.getJobInstanceId());
+
+        // Request data
         TaskChildPullRequestDTO taskChildPullRequestDTO = new TaskChildPullRequestDTO();
         taskChildPullRequestDTO.setJobInstanceId(request.getJobInstanceId());
+        taskChildPullRequestDTO.setDispatchVersion(jobInstance.getDispatchVersion());
         taskChildPullRequestDTO.setCircleId(request.getCircleId());
         taskChildPullRequestDTO.setTaskId(request.getTaskId());
+        taskChildPullRequestDTO.setWorkerAddress(jobInstance.getWorkerAddress());
 
         List<ListChildTaskVO> taskList = this.jobInstanceScheduler.pullChildTask(taskChildPullRequestDTO).stream().map(t -> {
             ListChildTaskVO listChildTaskVO = BeanMapperUtil.map(t, ListChildTaskVO.class);
-            listChildTaskVO.setChildCount(1L);
+
+            // Map reduce
+            if (ExecuteTypeEnum.isMapReduce(jobInstance.getExecuteType())) {
+                listChildTaskVO.setChildCount(1L);
+            } else {
+                // Sharding or broadcast
+                listChildTaskVO.setChildCount(0L);
+            }
+
             listChildTaskVO.setPull(CommonConstant.YES);
             return listChildTaskVO;
         }).collect(Collectors.toList());
@@ -173,6 +186,7 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         pageVO.setPage(1);
         pageVO.setSize(taskList.size());
         pageVO.setTotal((long) taskList.size());
+        pageVO.setList(taskList);
         return pageVO;
     }
 
@@ -189,7 +203,7 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         // Convert
         PageVO<ListTaskVO> pageVO = PageUtil.convert(pageDTO, t -> {
             ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
-            listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+            listTaskVO.setChildCount(this.getChildCount(jobInstance.getTimeExpressionType(), jobInstance.getExecuteType(), listTaskVO.getTaskName()));
             listTaskVO.setPull(CommonConstant.NO);
             return listTaskVO;
         });
@@ -241,7 +255,7 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         // Convert
         return PageUtil.convert(pageDTO, t -> {
             ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
-            listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+            listTaskVO.setChildCount(this.getChildCount(jobInstance.getTimeExpressionType(), jobInstance.getExecuteType(), listTaskVO.getTaskName()));
             listTaskVO.setPull(CommonConstant.NO);
             return listTaskVO;
         });
@@ -261,7 +275,7 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
         return this.jobInstanceScheduler.pullTaskList(taskListPullRequestDTO)
                 .stream().map(t -> {
                     ListTaskVO listTaskVO = BeanMapperUtil.map(t, ListTaskVO.class);
-                    listTaskVO.setChildCount(this.getChildCount(jobInstance.getExecuteType(), listTaskVO.getTaskName()));
+                    listTaskVO.setChildCount(this.getChildCount(jobInstance.getTimeExpressionType(), jobInstance.getExecuteType(), listTaskVO.getTaskName()));
                     listTaskVO.setPull(CommonConstant.YES);
                     return listTaskVO;
                 }).collect(Collectors.toList());
@@ -270,11 +284,20 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
     /**
      * Get child count
      *
-     * @param executeType executeType
-     * @param taskName    taskName
+     * @param timeExpressionType timeExpressionType
+     * @param executeType        executeType
+     * @param taskName           taskName
      * @return Long
      */
-    private Long getChildCount(String executeType, String taskName) {
+    private Long getChildCount(String timeExpressionType, String executeType, String taskName) {
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(timeExpressionType)) {
+            if (ExecuteTypeEnum.isStandalone(executeType)) {
+                return 0L;
+            }
+            return 1L;
+        }
+
         // Not MR
         if (!ExecuteTypeEnum.isMapReduce(executeType)) {
             return 0L;

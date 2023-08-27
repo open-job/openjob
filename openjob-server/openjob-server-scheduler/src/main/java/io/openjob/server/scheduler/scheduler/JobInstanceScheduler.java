@@ -84,16 +84,14 @@ public class JobInstanceScheduler {
      * @return List
      */
     public List<TaskChildPullResponseDTO> pullChildTask(TaskChildPullRequestDTO request) {
-        JobInstance jobInstance = this.jobInstanceDAO.getById(request.getJobInstanceId());
-
         try {
             ServerInstanceTaskChildListPullRequest pullRequest = new ServerInstanceTaskChildListPullRequest();
             pullRequest.setTaskId(request.getTaskId());
             pullRequest.setJobInstanceId(request.getJobInstanceId());
-            pullRequest.setDispatchVersion(jobInstance.getDispatchVersion());
+            pullRequest.setDispatchVersion(request.getDispatchVersion());
             pullRequest.setCircleId(request.getCircleId());
 
-            ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(jobInstance.getWorkerAddress());
+            ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(request.getWorkerAddress());
             WorkerInstanceTaskChildListPullResponse response = FutureUtil.mustAsk(masterActor, pullRequest, WorkerInstanceTaskChildListPullResponse.class, 1000L);
             return Optional.ofNullable(response.getTaskList()).orElseGet(ArrayList::new)
                     .stream().map(t -> BeanMapperUtil.map(t, TaskChildPullResponseDTO.class)).collect(Collectors.toList());

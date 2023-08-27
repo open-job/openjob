@@ -15,6 +15,11 @@ public class TaskChildPullRequestDTO {
     private Long jobInstanceId;
 
     /**
+     * Dispatch version
+     */
+    private Long dispatchVersion;
+
+    /**
      * Circle id
      */
     private Long circleId;
@@ -23,4 +28,9 @@ public class TaskChildPullRequestDTO {
      * Task id
      */
     private String taskId;
+
+    /**
+     * Worker address
+     */
+    private String workerAddress;
 }

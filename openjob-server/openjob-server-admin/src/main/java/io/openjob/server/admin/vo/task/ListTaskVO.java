@@ -24,6 +24,9 @@ public class ListTaskVO {
     @ApiModelProperty(value = "Dispatch version")
     private Long dispatchVersion;
 
+    @ApiModelProperty(value = "Parent task id")
+    private String parentTaskId;
+
     @ApiModelProperty(value = "Task id")
     private String taskId;
 
