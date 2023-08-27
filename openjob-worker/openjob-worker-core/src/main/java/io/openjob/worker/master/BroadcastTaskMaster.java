@@ -4,6 +4,7 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.init.WorkerContext;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -11,6 +12,8 @@ import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author stelin swoft@qq.com
@@ -39,9 +42,11 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
         }
 
         // Dispatch tasks
+        AtomicLong index = new AtomicLong(1L);
         WorkerContext.getOnlineWorkers().forEach(workerAddress -> {
             ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
+            startRequest.setTaskName(TaskUtil.getBroadcastTaskName(index.get()));
 
             try {
                 // Dispatch task
@@ -49,6 +54,7 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
 
                 // Dispatch success to persist task.
                 this.persistTasks(workerAddress, Collections.singletonList(startRequest));
+                index.getAndIncrement();
             } catch (Exception e) {
                 log.warn(String.format("Broadcast failed! workerAddress=%s", workerAddress));
             }
