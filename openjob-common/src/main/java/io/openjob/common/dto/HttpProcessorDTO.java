@@ -2,6 +2,7 @@ package io.openjob.common.dto;
 
 import io.openjob.common.constant.HttpMethodEnum;
 import io.openjob.common.constant.MediaTypeEnum;
+import io.openjob.common.constant.RequestTypeEnum;
 import io.openjob.common.constant.ResponseModeEnum;
 
 /**
@@ -60,4 +61,11 @@ public class HttpProcessorDTO {
      * JSON => value or string
      */
     private String value;
+
+    /**
+     * Request type
+     *
+     * @see RequestTypeEnum#getType()
+     */
+    private String requestType;
 }
