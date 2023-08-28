@@ -104,6 +104,11 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public JobInstance getFirstByJobIdAndStatus(Long jobId, Integer status) {
+        return this.jobInstanceRepository.findFirstByJobIdAndStatusAndDeleted(jobId, status, CommonConstant.NO);
+    }
+
+    @Override
     public Long countTotalByNamespace(Long namespaceId) {
         return this.jobInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
     }

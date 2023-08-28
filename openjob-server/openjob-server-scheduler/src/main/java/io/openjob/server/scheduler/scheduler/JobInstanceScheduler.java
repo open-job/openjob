@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.scheduler;
 
 import akka.actor.ActorSelection;
+import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
 import io.openjob.common.request.ServerInstanceTaskListPullRequest;
@@ -149,6 +150,9 @@ public class JobInstanceScheduler {
         Worker byAddress = this.workerDAO.getByAddress(jobInstance.getWorkerAddress());
         if (WorkerStatusEnum.OFFLINE.getStatus().equals(byAddress.getStatus())) {
             jobInstanceStopResponseDTO.setType(0);
+
+            // Stop success to update status.
+            this.updateInstanceStatusByStop(stopRequest.getJobInstanceId());
             return jobInstanceStopResponseDTO;
         }
 
@@ -159,11 +163,22 @@ public class JobInstanceScheduler {
             ActorSelection masterActor = ServerUtil.getWorkerTaskMasterActor(jobInstance.getWorkerAddress());
             FutureUtil.mustAsk(masterActor, serverStopJobInstanceRequest, WorkerResponse.class, 1000L);
         } catch (Throwable throwable) {
-            log.error("Job instance exception!", throwable);
-            throw new RuntimeException("Job instance exception! message=" + throwable.getMessage());
+            log.warn("Job instance stop failed!", throwable);
         }
 
         jobInstanceStopResponseDTO.setType(0);
+
+        // Stop success to update status.
+        this.updateInstanceStatusByStop(stopRequest.getJobInstanceId());
         return jobInstanceStopResponseDTO;
+    }
+
+    /**
+     * Stop success to update status.
+     *
+     * @param instanceId instanceId
+     */
+    public void updateInstanceStatusByStop(Long instanceId) {
+        this.jobInstanceDAO.updateStatusById(instanceId, InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
     }
 }

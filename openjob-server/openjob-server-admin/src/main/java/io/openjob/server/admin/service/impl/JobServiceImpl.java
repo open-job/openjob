@@ -42,6 +42,9 @@ import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
+import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
+import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
+import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -71,14 +74,21 @@ public class JobServiceImpl implements JobService {
     private final JobInstanceDAO jobInstanceDAO;
     private final RefreshData refreshData;
     private final JobSchedulingService jobSchedulingService;
+    private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobInstanceDAO jobInstanceDAO, RefreshData refreshData, JobSchedulingService jobSchedulingService) {
+    public JobServiceImpl(JobDAO jobDAO,
+                          AppDAO appDAO,
+                          JobInstanceDAO jobInstanceDAO,
+                          RefreshData refreshData,
+                          JobSchedulingService jobSchedulingService,
+                          JobInstanceScheduler jobInstanceScheduler) {
         this.jobDAO = jobDAO;
         this.appDAO = appDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.refreshData = refreshData;
         this.jobSchedulingService = jobSchedulingService;
+        this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
     @Override
@@ -139,6 +149,11 @@ public class JobServiceImpl implements JobService {
         // Update
         this.jobDAO.update(updateJob);
 
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(updateJobRequest.getTimeExpressionType())) {
+            this.updateJobBySecond(updateJob);
+        }
+
         // Refresh cluster version.
         this.refreshData.refreshSystemClusterVersion();
         return new UpdateJobVO();
@@ -155,6 +170,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UpdateJobStatusVO updateStatus(UpdateJobStatusRequest request) {
         Long nextExecuteTime = null;
         Job originJob = this.jobDAO.getById(request.getId());
@@ -163,6 +179,13 @@ public class JobServiceImpl implements JobService {
         }
 
         this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null, nextExecuteTime);
+
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(originJob.getTimeExpressionType())) {
+            Job newJob = this.jobDAO.getById(request.getId());
+            this.updateJobBySecond(newJob);
+        }
+
         return new UpdateJobStatusVO();
     }
 
@@ -283,6 +306,27 @@ public class JobServiceImpl implements JobService {
             }
 
             request.setParams(request.getShardingParams());
+        }
+    }
+
+    /**
+     * Update job
+     *
+     * @param updateJob updateJob
+     */
+    private void updateJobBySecond(Job updateJob) {
+        JobInstance jobInstance = this.jobInstanceDAO.getFirstByJobIdAndStatus(updateJob.getId(), InstanceStatusEnum.RUNNING.getStatus());
+        Optional.ofNullable(jobInstance).ifPresent(ji -> {
+            // Stop all running job instance
+            JobInstanceStopRequestDTO stopRequest = new JobInstanceStopRequestDTO();
+            stopRequest.setJobInstanceId(ji.getId());
+            this.jobInstanceScheduler.stop(stopRequest);
+        });
+
+        // Job running status
+        // Dispatch scheduler for new configuration
+        if (JobStatusEnum.isRunning(updateJob.getStatus())) {
+            this.createJobInstance(updateJob);
         }
     }
 

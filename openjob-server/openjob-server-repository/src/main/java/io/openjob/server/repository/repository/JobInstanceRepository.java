@@ -117,6 +117,16 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     JobInstance findFirstByJobIdAndDeleted(Long jobId, Integer deleted);
 
     /**
+     * Find first by job id and status and deleted
+     *
+     * @param jobId   jobId
+     * @param status  status
+     * @param deleted deleted
+     * @return JobInstance
+     */
+    JobInstance findFirstByJobIdAndStatusAndDeleted(Long jobId, Integer status, Integer deleted);
+
+    /**
      * Count total
      *
      * @param namespaceId namespaceId

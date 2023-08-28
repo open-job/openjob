@@ -5,6 +5,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
@@ -23,6 +24,7 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
@@ -35,6 +37,7 @@ import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
 import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
@@ -88,14 +91,16 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StopJobInstanceVO stopInstance(StopJobInstanceRequest killRequest) {
         JobInstanceStopRequestDTO jobInstanceStopRequestDTO = new JobInstanceStopRequestDTO();
         jobInstanceStopRequestDTO.setJobInstanceId(killRequest.getId());
         JobInstanceStopResponseDTO stop = this.jobInstanceScheduler.stop(jobInstanceStopRequestDTO);
 
-        // Stop success to update status.
-        if (CommonConstant.INT_ZERO.equals(stop.getType())) {
-            this.jobInstanceDAO.updateStatusById(killRequest.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
+        // Second delay to stop job
+        JobInstance jobInstance = this.jobInstanceDAO.getById(killRequest.getId());
+        if (TimeExpressionTypeEnum.isSecondDelay(jobInstance.getTimeExpressionType())) {
+            this.jobDAO.updateByStatusOrDeleted(jobInstance.getJobId(), JobStatusEnum.STOP.getStatus(), null, null);
         }
 
         // Response
