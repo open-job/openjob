@@ -139,11 +139,12 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * Delete sever by create time and status
      *
      * @param lastTime lastTime
+     * @param statusList statusList
      * @return Long
      */
     @Modifying
     @Transactional(rollbackFor = Exception.class)
-    Long deleteByCreateTimeLessThanEqual(Long lastTime);
+    Long deleteByCreateTimeLessThanEqualAndStatusIn(Long lastTime, List<Integer> statusList);
 
     /**
      * Group by hour time

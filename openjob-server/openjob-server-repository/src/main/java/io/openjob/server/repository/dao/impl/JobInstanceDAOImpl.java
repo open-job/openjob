@@ -114,8 +114,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Long deleteByCreateTim(Long lastTime) {
-        return this.jobInstanceRepository.deleteByCreateTimeLessThanEqual(lastTime);
+    public Long deleteByCreateTim(Long lastTime, List<Integer> statusList) {
+        return this.jobInstanceRepository.deleteByCreateTimeLessThanEqualAndStatusIn(lastTime, statusList);
     }
 
     @Override

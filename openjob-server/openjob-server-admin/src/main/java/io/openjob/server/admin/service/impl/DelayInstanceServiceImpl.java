@@ -19,9 +19,11 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.DelayDAO;
 import io.openjob.server.repository.dao.DelayInstanceDAO;
 import io.openjob.server.repository.dto.DelayInstancePageDTO;
+import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Delay;
 import io.openjob.server.repository.entity.DelayInstance;
 import io.openjob.server.scheduler.dto.DelayInstanceDeleteRequestDTO;
@@ -34,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -44,13 +46,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class DelayInstanceServiceImpl implements DelayInstanceService {
+
+    private final AppDAO appDAO;
     private final LogDAO logDAO;
     private final DelayDAO delayDAO;
     private final DelayInstanceDAO delayInstanceDAO;
     private final DelayInstanceScheduler delayInstanceScheduler;
 
     @Autowired
-    public DelayInstanceServiceImpl(LogDAO logDAO, DelayDAO delayDAO, DelayInstanceDAO delayInstanceDAO, DelayInstanceScheduler delayInstanceScheduler) {
+    public DelayInstanceServiceImpl(LogDAO logDAO, DelayDAO delayDAO, DelayInstanceDAO delayInstanceDAO, DelayInstanceScheduler delayInstanceScheduler, AppDAO appDAO) {
+        this.appDAO = appDAO;
         this.logDAO = logDAO;
         this.delayDAO = delayDAO;
         this.delayInstanceDAO = delayInstanceDAO;
@@ -73,12 +78,13 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
                 .collect(Collectors.toList());
         Map<Long, Delay> delayMap = this.delayDAO.findByIds(delayIds).stream().collect(Collectors.toMap(Delay::getId, d -> d));
 
+        // App map
+        List<Long> appIds = pageDTO.getList().stream().map(DelayInstance::getAppId).collect(Collectors.toList());
+        Map<Long, App> appMap = this.appDAO.getByIds(appIds).stream().collect(Collectors.toMap(App::getId, a -> a));
         return PageUtil.convert(pageDTO, ds -> {
             ListDelayInstanceVO listDelayInstanceVO = BeanMapperUtil.map(ds, ListDelayInstanceVO.class);
-            Delay delay = delayMap.get(ds.getDelayId());
-            if (Objects.nonNull(delay)) {
-                listDelayInstanceVO.setDelayName(delay.getName());
-            }
+            Optional.ofNullable(delayMap.get(ds.getDelayId())).ifPresent(d -> listDelayInstanceVO.setDelayName(d.getName()));
+            Optional.ofNullable(appMap.get(ds.getAppId())).ifPresent(a->listDelayInstanceVO.setAppName(a.getName()));
             return listDelayInstanceVO;
         });
     }

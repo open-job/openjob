@@ -4,11 +4,13 @@ import io.openjob.common.constant.HttpMethodEnum;
 import io.openjob.common.constant.MediaTypeEnum;
 import io.openjob.common.constant.RequestTypeEnum;
 import io.openjob.common.constant.ResponseModeEnum;
+import lombok.Data;
 
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.7
  */
+@Data
 public class HttpProcessorDTO {
 
     /**

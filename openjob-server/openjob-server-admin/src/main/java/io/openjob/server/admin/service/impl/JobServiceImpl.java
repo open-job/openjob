@@ -6,6 +6,7 @@ import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
+import io.openjob.common.constant.ResponseModeEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
 import io.openjob.common.util.DateUtil;
@@ -43,7 +44,6 @@ import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
 import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
-import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
 import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -94,8 +95,8 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public AddJobVO add(AddJobRequest addJobRequest) {
-        // Pre handle request
-        this.preHandleJob(addJobRequest);
+        // Valid and init job.
+        this.validAndInitJob(addJobRequest);
 
         if (!TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType())) {
             addJobRequest.setTimeExpression(String.valueOf(addJobRequest.getTimeExpressionValue()));
@@ -125,8 +126,8 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UpdateJobVO update(UpdateJobRequest updateJobRequest) {
-        // Pre handle job
-        this.preHandleJob(updateJobRequest);
+        // Valid and init job.
+        this.validAndInitJob(updateJobRequest);
 
         if (!TimeExpressionTypeEnum.isCron(updateJobRequest.getTimeExpressionType())) {
             updateJobRequest.setTimeExpression(String.valueOf(updateJobRequest.getTimeExpressionValue()));
@@ -264,11 +265,11 @@ public class JobServiceImpl implements JobService {
     }
 
     /**
-     * Check job
+     * Valid job
      *
      * @param request request
      */
-    private void preHandleJob(AddJobRequest request) {
+    private void validAndInitJob(AddJobRequest request) {
         if (ProcessorTypeEnum.isShell(request.getProcessorType())) {
             // Shell
             if (StringUtils.isBlank(request.getShellProcessorType())) {
@@ -297,15 +298,38 @@ public class JobServiceImpl implements JobService {
             shellProcessorDTO.setContent(request.getKettleProcessorInfo());
             shellProcessorDTO.setType(request.getKettleProcessorType());
             request.setProcessorInfo(JsonUtil.encode(shellProcessorDTO));
+        } else if (ProcessorTypeEnum.isHttp(request.getProcessorType())) {
+            AddJobRequest.HttpProcessorRequest httpProcessor = request.getHttpProcessor();
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                CodeEnum.HTTP_PROCESSOR_STATUS_V_INVALID.assertIsFalse(StringUtils.isEmpty(httpProcessor.getValue()));
+            }
+
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                Boolean kvEmpty = StringUtils.isBlank(httpProcessor.getKey()) || StringUtils.isBlank(httpProcessor.getValue());
+                CodeEnum.HTTP_PROCESSOR_JSON_KV_INVALID.assertIsFalse(kvEmpty);
+            }
+
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                CodeEnum.HTTP_PROCESSOR_STRING_V_INVALID.assertIsFalse(StringUtils.isEmpty(httpProcessor.getValue()));
+            }
+            request.setProcessorInfo(JsonUtil.encode(httpProcessor));
         }
 
         // ShardingParams
         if (ExecuteTypeEnum.isSharding(request.getExecuteType())) {
-            if (StringUtils.isBlank(request.getShardingParams())) {
-                CodeEnum.SHARDING_PARAMS_INVALID.throwException();
-            }
+            Boolean isInvalid = StringUtils.isBlank(request.getShardingParams()) || !request.getShardingParams().contains("=");
+            CodeEnum.SHARDING_PARAMS_INVALID.assertIsFalse(isInvalid);
 
             request.setParams(request.getShardingParams());
+        }
+
+        // Cron
+        if (TimeExpressionTypeEnum.isCron(request.getTimeExpressionType())) {
+            long one = this.parseTimeExpression(request.getTimeExpression());
+            long two = this.parseTimeExpression(request.getTimeExpression());
+            if ((two - one) < TimeUnit.MINUTES.toSeconds(1)) {
+                CodeEnum.JOB_CRON_INTERVAL_INVALID.throwException();
+            }
         }
     }
 
@@ -366,7 +390,7 @@ public class JobServiceImpl implements JobService {
         } catch (ParseException e) {
             CodeEnum.TIME_EXPRESSION_INVALID.throwException();
             log.error("Parse time expression failed! timeExpression=" + timeExpression, e);
-            return null;
+            return 0L;
         }
     }
 }

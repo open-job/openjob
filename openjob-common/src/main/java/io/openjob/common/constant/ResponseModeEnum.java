@@ -27,4 +27,34 @@ public enum ResponseModeEnum {
     ;
 
     private final String mode;
+
+    /**
+     * Whether is status
+     *
+     * @param mode mode
+     * @return Boolean
+     */
+    public static Boolean isStatus(String mode) {
+        return HTTP_STATUS.getMode().equals(mode);
+    }
+
+    /**
+     * Whether is json
+     *
+     * @param mode mode
+     * @return Boolean
+     */
+    public static Boolean isJson(String mode) {
+        return HTTP_JSON.getMode().equals(mode);
+    }
+
+    /**
+     * Whether is string
+     *
+     * @param mode mode
+     * @return Boolean
+     */
+    public static Boolean isString(String mode) {
+        return HTTP_STRING.getMode().equals(mode);
+    }
 }

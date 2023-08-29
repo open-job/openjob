@@ -18,6 +18,9 @@ public class ListJobInstanceVO {
     @ApiModelProperty(value = "App primary id")
     private Long appId;
 
+    @ApiModelProperty(value = "App name")
+    private String appName;
+
     @ApiModelProperty(value = "Job id")
     private Long jobId;
 

@@ -1,10 +1,14 @@
 package io.openjob.server.admin.request.job;
 
+import io.openjob.common.constant.HttpMethodEnum;
+import io.openjob.common.constant.MediaTypeEnum;
+import io.openjob.common.constant.RequestTypeEnum;
+import io.openjob.common.constant.ResponseModeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -36,6 +40,10 @@ public class AddJobRequest {
 
     @ApiModelProperty(value = "Job process info")
     private String processorInfo;
+
+    @Valid
+    @ApiModelProperty(value = "Http processor")
+    private HttpProcessorRequest httpProcessor;
 
     @ApiModelProperty(value = "Shell processor info")
     private String shellProcessorInfo;
@@ -101,4 +109,44 @@ public class AddJobRequest {
     @NotNull
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)", required = true)
     private Integer status;
+
+    @Data
+    public static class HttpProcessorRequest {
+        @NotBlank
+        @ApiModelProperty(value = "Http url")
+        private String url;
+
+        @NotBlank
+        @ApiModelProperty(value = "Http method")
+        private String method;
+
+        @NotNull
+        @ApiModelProperty(value = "Timeout(ms)")
+        private Long timeout;
+
+        @NotBlank
+        @ApiModelProperty(value = "Content Type")
+        private String contentType;
+
+        @NotBlank
+        @ApiModelProperty(value = "Body")
+        private String body;
+
+        @ApiModelProperty(value = "Cookie")
+        private String cookie;
+
+        @NotBlank
+        @ApiModelProperty(value = "Response mode")
+        private String responseMode;
+
+        @ApiModelProperty(value = "JSON => key")
+        private String key;
+
+        @ApiModelProperty(value = "JSON => status,value or string")
+        private String value;
+
+        @NotBlank
+        @ApiModelProperty(value = "Request type")
+        private String requestType;
+    }
 }
