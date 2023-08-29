@@ -25,7 +25,7 @@
 
     <properties>
         <orika.version>1.5.4</orika.version>
-        <flyway.version>7.15.0</flyway.version>
+        <flyway.version>8.2.2</flyway.version>
     </properties>
 
     <dependencyManagement>
