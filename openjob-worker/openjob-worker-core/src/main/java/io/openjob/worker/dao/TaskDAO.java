@@ -196,6 +196,31 @@ public class TaskDAO {
     }
 
     /**
+     * Get redundant map task
+     *
+     * @param instanceId    instanceId
+     * @param circleId      circleId
+     * @param parentTaskId  parentTaskId
+     * @param lastMapTaskId lastMapTaskId
+     */
+    public void deleteRedundantMapTask(Long instanceId, Long circleId, Long parentTaskId, Long lastMapTaskId) {
+
+    }
+
+    /**
+     * Get redundant map task
+     *
+     * @param instanceId    instanceId
+     * @param circleId      circleId
+     * @param parentTaskId  parentTaskId
+     * @param mapTaskIdList mapTaskIdList
+     * @return List
+     */
+    public List<Long> getMapTaskList(Long instanceId, Long circleId, Long parentTaskId, List<Long> mapTaskIdList) {
+        return null;
+    }
+
+    /**
      * Find circle parent task list
      *
      * @param instanceId   instanceId

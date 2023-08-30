@@ -1,6 +1,7 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.task.TaskQueue;
@@ -24,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -35,7 +38,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     /**
      * Child tasks.
      */
-    protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
+    protected TaskQueue<ProcessorMapTaskRequest> childTaskQueue;
 
     protected MapReduceTaskConsumer childTaskConsumer;
 
@@ -78,16 +81,47 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
      */
     public void map(ProcessorMapTaskRequest mapTaskReq) {
         try {
-            for (byte[] task : mapTaskReq.getTasks()) {
-                MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
-                startReq.setTask(task);
-                startReq.setTaskName(mapTaskReq.getTaskName());
-                startReq.setParentTaskId(mapTaskReq.getTaskId());
-                childTaskQueue.submit(startReq);
-            }
+            childTaskQueue.submit(mapTaskReq);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            log.error("Map reduce do map failed!", throwable);
+            throw new RuntimeException(throwable);
         }
+    }
+
+    /**
+     * Do map
+     *
+     * @param mapTaskReq mapTaskReq
+     */
+    public void doMap(ProcessorMapTaskRequest mapTaskReq) {
+        AtomicLong idListGenerator = new AtomicLong(mapTaskReq.getInitValueId());
+        List<Long> mapTaskIds = mapTaskReq.getTasks().stream()
+                .map(t -> idListGenerator.addAndGet(1L)).collect(Collectors.toList());
+
+        // Last partition to delete redundant map task
+        if (mapTaskReq.getTaskNum() > 0){
+            this.taskDAO.deleteRedundantMapTask(this.jobInstanceDTO.getJobInstanceId(), this.circleTaskId, mapTaskReq.getTaskId(), Long.valueOf(mapTaskReq.getTaskNum()));
+        }
+
+        // Already map task ids by instanceId,parentTaskId
+        List<Long> existMapTaskIds = this.taskDAO.getMapTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleTaskId, mapTaskReq.getTaskId(), mapTaskIds);
+
+        AtomicLong idSetGenerator = new AtomicLong(mapTaskReq.getInitValueId());
+        List<MasterStartContainerRequest> startRequestList = mapTaskReq.getTasks().stream().map(t -> {
+            long mapTaskId = idSetGenerator.addAndGet(1L);
+            MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
+            startReq.setTask(t);
+            startReq.setTaskName(mapTaskReq.getTaskName());
+            startReq.setParentTaskId(mapTaskReq.getTaskId());
+            startReq.setMapTaskId(mapTaskId);
+
+            if (existMapTaskIds.contains(mapTaskId)){
+                startReq.setPersistent(CommonConstant.NO);
+            }
+            return startReq;
+        }).collect(Collectors.toList());
+
+        this.dispatchTasks(startRequestList, false, Collections.emptySet());
     }
 
     @Override

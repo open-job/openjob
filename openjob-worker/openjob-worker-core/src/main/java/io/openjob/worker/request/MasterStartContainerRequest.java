@@ -1,5 +1,6 @@
 package io.openjob.worker.request;
 
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.util.TaskUtil;
 import lombok.Data;
@@ -55,8 +56,10 @@ public class MasterStartContainerRequest implements Serializable {
     private String timeExpression;
     private String masterAkkaPath;
     private String taskName;
-
     private byte[] task;
+
+    private Long mapTaskId;
+    private Integer persistent;
 
     /**
      * New MasterStartContainerRequest
@@ -69,6 +72,7 @@ public class MasterStartContainerRequest implements Serializable {
         this.circleId = 0L;
         this.parentTaskId = 0L;
         this.taskName = "";
+        this.persistent = CommonConstant.YES;
     }
 
     public String getTaskUniqueId() {
