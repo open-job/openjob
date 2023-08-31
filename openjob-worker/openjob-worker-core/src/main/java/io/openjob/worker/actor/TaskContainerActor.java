@@ -9,12 +9,14 @@ import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.container.TaskContainerPool;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
+import io.openjob.worker.request.MasterCheckContainerRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
 import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +49,7 @@ public class TaskContainerActor extends BaseActor {
                 .match(MasterStopContainerRequest.class, this::handleStopContainer)
                 .match(MasterStopInstanceTaskRequest.class, this::handleStopInstanceTask)
                 .match(MasterDestroyContainerRequest.class, this::handleDestroyContainer)
+                .match(MasterCheckContainerRequest.class, this::handleCheckContainer)
                 .build();
     }
 
@@ -106,6 +109,18 @@ public class TaskContainerActor extends BaseActor {
         WorkerResponse workerResponse = new WorkerResponse();
         workerResponse.setDeliveryId(destroyReq.getDeliveryId());
         getSender().tell(Result.success(workerResponse), getSelf());
+    }
+
+    /**
+     * Handle check container
+     *
+     * @param checkRequest checkRequest
+     */
+    public void handleCheckContainer(MasterCheckContainerRequest checkRequest) {
+        Optional.ofNullable(TaskContainerPool.get(checkRequest.getJobInstanceId()))
+                .orElseThrow(() -> new RuntimeException(String.format("Task container is not exist!instanceId=%s", checkRequest.getJobInstanceId())));
+
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
     /**

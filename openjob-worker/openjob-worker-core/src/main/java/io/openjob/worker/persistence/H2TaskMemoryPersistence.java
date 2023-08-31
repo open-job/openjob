@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -50,6 +51,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "  `task_id` varchar(128) NOT NULL DEFAULT '',"
                 + "  `task_name` varchar(128) NOT NULL DEFAULT '',"
                 + "  `task_parent_id` varchar(128) NOT NULL DEFAULT '0',"
+                + "  `map_task_id` varchar(128) NOT NULL DEFAULT '0',"
                 + "  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',"
                 + "  `worker_address` varchar(64) NOT NULL DEFAULT '',"
                 + "  `result` longtext,"
@@ -58,6 +60,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "  `update_time` bigint(12) unsigned NOT NULL,"
                 + "  PRIMARY KEY (`id`),"
                 + "  UNIQUE KEY `udx_task_id` (`task_id`),"
+                + "  KEY `task_parent_id` (`task_parent_id`),"
                 + "  KEY `idx_worker_address` (`worker_address`),"
                 + "  KEY `idx_instance_id_circle_id` (`instance_id`,`circle_id`)"
                 + ")";
@@ -77,13 +80,14 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 + "`task_id`,"
                 + "`task_name`,"
                 + "`task_parent_id`,"
+                + "`map_task_id`,"
                 + "`status`,"
                 + "`worker_address`,"
                 + "`result`,"
                 + "`task_body`,"
                 + "`create_time`,"
                 + "`update_time`"
-                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = null;
         try (Connection connection = this.connectionPool.getConnection()) {
@@ -97,12 +101,13 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
                 ps.setString(5, task.getTaskId());
                 ps.setString(6, task.getTaskName());
                 ps.setString(7, task.getTaskParentId());
-                ps.setInt(8, task.getStatus());
-                ps.setString(9, task.getWorkerAddress());
-                ps.setString(10, task.getResult());
-                ps.setBytes(11, task.getTaskBody());
-                ps.setLong(12, task.getCreateTime());
-                ps.setLong(13, task.getUpdateTime());
+                ps.setLong(8, task.getMapTaskId());
+                ps.setInt(9, task.getStatus());
+                ps.setString(10, task.getWorkerAddress());
+                ps.setString(11, task.getResult());
+                ps.setBytes(12, task.getTaskBody());
+                ps.setLong(13, task.getCreateTime());
+                ps.setLong(14, task.getUpdateTime());
                 ps.addBatch();
             }
             int[] result = ps.executeBatch();
@@ -226,6 +231,44 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         } finally {
             if (Objects.nonNull(ps)) {
                 ps.close();
+            }
+        }
+    }
+
+    @Override
+    public Integer deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) throws SQLException {
+        String sql = "DELETE FROM `task` WHERE `task_parent_id` = ? AND `map_task_id` > ?";
+
+        PreparedStatement ps = null;
+        try (Connection connection = this.connectionPool.getConnection()) {
+            ps = connection.prepareStatement(sql);
+            ps.setString(1, parentTaskId);
+            ps.setLong(2, lastMapTaskId);
+            return ps.executeUpdate();
+        } finally {
+            if (Objects.nonNull(ps)) {
+                ps.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) throws SQLException {
+        ResultSet rs = null;
+        String sql = "SELECT `map_task_id` FROM `task` WHERE `task_parent_id` = ? AND `map_task_id` in (?)";
+        try (Connection connection = this.connectionPool.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, parentTaskId);
+            ps.setString(2, StringUtils.join(mapTaskIdList, ','));
+            rs = ps.executeQuery();
+
+            List<Task> taskList = new ArrayList<>();
+            while (rs.next()) {
+                taskList.add(convert(rs));
+            }
+            return taskList.stream().map(Task::getMapTaskId).collect(Collectors.toList());
+        } finally {
+            if (Objects.nonNull(rs)) {
+                rs.close();
             }
         }
     }
@@ -415,6 +458,7 @@ public class H2TaskMemoryPersistence implements TaskPersistence {
         task.setTaskId(rs.getString("task_id"));
         task.setTaskName(rs.getString("task_name"));
         task.setTaskParentId(rs.getString("task_parent_id"));
+        task.setMapTaskId(rs.getLong("map_task_id"));
         task.setStatus(rs.getInt("status"));
         task.setResult(rs.getString("result"));
         task.setWorkerAddress(rs.getString("worker_address"));

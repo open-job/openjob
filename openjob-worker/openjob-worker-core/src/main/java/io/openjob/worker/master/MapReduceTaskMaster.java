@@ -97,15 +97,18 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         AtomicLong idListGenerator = new AtomicLong(mapTaskReq.getInitValueId());
         List<Long> mapTaskIds = mapTaskReq.getTasks().stream()
                 .map(t -> idListGenerator.addAndGet(1L)).collect(Collectors.toList());
+        String parentTaskId = TaskUtil.getRandomUniqueId(mapTaskReq.getJobId(), mapTaskReq.getJobInstanceId(),
+                this.jobInstanceDTO.getDispatchVersion(), this.circleTaskId, mapTaskReq.getTaskId());
 
         // Last partition to delete redundant map task
-        if (mapTaskReq.getTaskNum() > 0){
-            this.taskDAO.deleteRedundantMapTask(this.jobInstanceDTO.getJobInstanceId(), this.circleTaskId, mapTaskReq.getTaskId(), Long.valueOf(mapTaskReq.getTaskNum()));
+        if (mapTaskReq.getTaskNum() > 0) {
+            this.taskDAO.deleteRedundantMapTask(parentTaskId, Long.valueOf(mapTaskReq.getTaskNum()));
         }
 
         // Already map task ids by instanceId,parentTaskId
-        List<Long> existMapTaskIds = this.taskDAO.getMapTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleTaskId, mapTaskReq.getTaskId(), mapTaskIds);
+        List<Long> existMapTaskIds = this.taskDAO.getMapTaskList(parentTaskId, mapTaskIds);
 
+        // Batch `MasterStartContainerRequest`
         AtomicLong idSetGenerator = new AtomicLong(mapTaskReq.getInitValueId());
         List<MasterStartContainerRequest> startRequestList = mapTaskReq.getTasks().stream().map(t -> {
             long mapTaskId = idSetGenerator.addAndGet(1L);
@@ -115,12 +118,13 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
             startReq.setParentTaskId(mapTaskReq.getTaskId());
             startReq.setMapTaskId(mapTaskId);
 
-            if (existMapTaskIds.contains(mapTaskId)){
+            if (existMapTaskIds.contains(mapTaskId)) {
                 startReq.setPersistent(CommonConstant.NO);
             }
             return startReq;
         }).collect(Collectors.toList());
 
+        // Dispatch tasks
         this.dispatchTasks(startRequestList, false, Collections.emptySet());
     }
 
@@ -217,6 +221,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
         task.setDispatchVersion(version);
+        task.setMapTaskId(0L);
         task.setCircleId(this.circleIdGenerator.get());
         String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);

@@ -198,26 +198,32 @@ public class TaskDAO {
     /**
      * Get redundant map task
      *
-     * @param instanceId    instanceId
-     * @param circleId      circleId
      * @param parentTaskId  parentTaskId
      * @param lastMapTaskId lastMapTaskId
      */
-    public void deleteRedundantMapTask(Long instanceId, Long circleId, Long parentTaskId, Long lastMapTaskId) {
-
+    public void deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) {
+        try {
+            this.taskPersistence.deleteRedundantMapTask(parentTaskId, lastMapTaskId);
+        } catch (Throwable e) {
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Get redundant map task
      *
-     * @param instanceId    instanceId
-     * @param circleId      circleId
      * @param parentTaskId  parentTaskId
      * @param mapTaskIdList mapTaskIdList
      * @return List
      */
-    public List<Long> getMapTaskList(Long instanceId, Long circleId, Long parentTaskId, List<Long> mapTaskIdList) {
-        return null;
+    public List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) {
+        try {
+            return this.taskPersistence.getMapTaskList(parentTaskId, mapTaskIdList);
+        } catch (Throwable e) {
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**

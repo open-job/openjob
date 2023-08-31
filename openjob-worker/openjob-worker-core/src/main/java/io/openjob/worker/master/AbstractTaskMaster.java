@@ -312,6 +312,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         task.setJobId(startRequest.getJobId());
         task.setInstanceId(startRequest.getJobInstanceId());
         task.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
+        task.setMapTaskId(Optional.ofNullable(startRequest.getMapTaskId()).orElse(0L));
         task.setCircleId(startRequest.getCircleId());
         task.setTaskId(startRequest.getTaskUniqueId());
         task.setTaskParentId(startRequest.getParentTaskUniqueId());

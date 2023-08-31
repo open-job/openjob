@@ -101,6 +101,24 @@ public interface TaskPersistence {
     Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException;
 
     /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param lastMapTaskId lastMapTaskId
+     * @return Integer
+     */
+    Integer deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) throws SQLException;
+
+    /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param mapTaskIdList mapTaskIdList
+     * @return List
+     */
+    List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) throws SQLException;
+
+    /**
      * Find list by page size
      *
      * @param instanceId instance id

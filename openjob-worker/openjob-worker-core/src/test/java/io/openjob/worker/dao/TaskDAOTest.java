@@ -27,6 +27,7 @@ public class TaskDAOTest {
         task.setJobId(1L);
         task.setInstanceId(1L);
         task.setDispatchVersion(1L);
+        task.setMapTaskId(1L);
         task.setCircleId(0L);
         task.setTaskId(taskId);
         task.setTaskName("ROOT");
@@ -50,6 +51,7 @@ public class TaskDAOTest {
         task2.setJobId(1L);
         task2.setInstanceId(1L);
         task.setDispatchVersion(1L);
+        task.setMapTaskId(1L);
         task2.setCircleId(0L);
         task2.setTaskId(taskId2);
         task2.setTaskName("ROOT");
@@ -64,6 +66,7 @@ public class TaskDAOTest {
         task3.setJobId(1L);
         task3.setInstanceId(1L);
         task.setDispatchVersion(1L);
+        task.setMapTaskId(1L);
         task3.setCircleId(0L);
         task3.setTaskId(taskId3);
         task3.setTaskName("ROOT");
@@ -125,6 +128,7 @@ public class TaskDAOTest {
             task.setJobId(i);
             task.setInstanceId(instanceId);
             task.setDispatchVersion(1L);
+            task.setMapTaskId(1L);
             task.setCircleId(circleId);
             task.setTaskId("taskId" + i);
             task.setTaskName("ROOT");
