@@ -41,7 +41,6 @@ public class AddJobRequest {
     @ApiModelProperty(value = "Job process info")
     private String processorInfo;
 
-    @Valid
     @ApiModelProperty(value = "Http processor")
     private HttpProcessorRequest httpProcessor;
 
@@ -112,30 +111,24 @@ public class AddJobRequest {
 
     @Data
     public static class HttpProcessorRequest {
-        @NotBlank
         @ApiModelProperty(value = "Http url")
         private String url;
 
-        @NotBlank
         @ApiModelProperty(value = "Http method")
         private String method;
 
-        @NotNull
         @ApiModelProperty(value = "Timeout(ms)")
         private Long timeout;
 
-        @NotBlank
         @ApiModelProperty(value = "Content Type")
         private String contentType;
 
-        @NotBlank
         @ApiModelProperty(value = "Body")
         private String body;
 
         @ApiModelProperty(value = "Cookie")
         private String cookie;
 
-        @NotBlank
         @ApiModelProperty(value = "Response mode")
         private String responseMode;
 
@@ -145,7 +138,6 @@ public class AddJobRequest {
         @ApiModelProperty(value = "JSON => status,value or string")
         private String value;
 
-        @NotBlank
         @ApiModelProperty(value = "Request type")
         private String requestType;
     }
