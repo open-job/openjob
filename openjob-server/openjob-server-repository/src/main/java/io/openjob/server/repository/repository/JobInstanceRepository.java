@@ -30,7 +30,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update JobInstance as j set j.status=?2,j.failStatus=?3,j.completeTime=?4,j.updateTime=?5 where j.id=?1")
-    Integer update(Long id, Integer status, Integer failStatus, Long completeTime, Long updateTime);
+    Integer updateStatus(Long id, Integer status, Integer failStatus, Long completeTime, Long updateTime);
 
     /**
      * Update for last report time.
@@ -120,11 +120,11 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * Find first by job id and status and deleted
      *
      * @param jobId   jobId
-     * @param status  status
+     * @param statusList  statusList
      * @param deleted deleted
      * @return JobInstance
      */
-    JobInstance findFirstByJobIdAndStatusAndDeleted(Long jobId, Integer status, Integer deleted);
+    List<JobInstance> findByJobIdAndStatusInAndDeleted(Long jobId, List<Integer> statusList, Integer deleted);
 
     /**
      * Count total

@@ -127,11 +127,11 @@ public interface JobInstanceDAO {
     /**
      * Get first by job id and status
      *
-     * @param jobId  jobId
-     * @param status status
+     * @param jobId      jobId
+     * @param statusList statusList
      * @return JobInstance
      */
-    JobInstance getFirstByJobIdAndStatus(Long jobId, Integer status);
+    List<JobInstance> getListByJobIdAndStatus(Long jobId, List<Integer> statusList);
 
     /**
      * Get page list.

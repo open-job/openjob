@@ -54,6 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +119,7 @@ public class JobServiceImpl implements JobService {
 
         // Second delay to create job instance
         if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
-            this.createJobInstance(job);
+            this.createSecondJobInstance(job);
         }
 
         return new AddJobVO().setId(id);
@@ -152,7 +154,7 @@ public class JobServiceImpl implements JobService {
 
         // Second delay
         if (TimeExpressionTypeEnum.isSecondDelay(updateJobRequest.getTimeExpressionType())) {
-            this.updateJobBySecond(updateJob);
+            this.updateJobBySecond(this.jobDAO.getById(updateJob.getId()));
         }
 
         // Refresh cluster version.
@@ -339,18 +341,27 @@ public class JobServiceImpl implements JobService {
      * @param updateJob updateJob
      */
     private void updateJobBySecond(Job updateJob) {
-        JobInstance jobInstance = this.jobInstanceDAO.getFirstByJobIdAndStatus(updateJob.getId(), InstanceStatusEnum.RUNNING.getStatus());
-        Optional.ofNullable(jobInstance).ifPresent(ji -> {
-            // Stop all running job instance
-            JobInstanceStopRequestDTO stopRequest = new JobInstanceStopRequestDTO();
-            stopRequest.setJobInstanceId(ji.getId());
-            this.jobInstanceScheduler.stop(stopRequest);
-        });
+        List<Integer> statusAry = Arrays.asList(InstanceStatusEnum.WAITING.getStatus(), InstanceStatusEnum.RUNNING.getStatus());
+        Optional.ofNullable(this.jobInstanceDAO.getListByJobIdAndStatus(updateJob.getId(), statusAry))
+                .orElseGet(ArrayList::new)
+                .forEach(ji -> {
+                    // Running status
+                    if (InstanceStatusEnum.isRunning(ji.getStatus())){
+                        JobInstanceStopRequestDTO stopRequest = new JobInstanceStopRequestDTO();
+                        stopRequest.setJobInstanceId(ji.getId());
+                        this.jobInstanceScheduler.stop(stopRequest);
+                        return;
+                    }
+
+                    // Waiting status
+                    this.jobInstanceDAO.updateStatusById(ji.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
+                });
+
 
         // Job running status
         // Dispatch scheduler for new configuration
         if (JobStatusEnum.isRunning(updateJob.getStatus())) {
-            this.createJobInstance(updateJob);
+            this.createSecondJobInstance(updateJob);
         }
     }
 
@@ -359,7 +370,7 @@ public class JobServiceImpl implements JobService {
      *
      * @param job job
      */
-    private void createJobInstance(Job job) {
+    private void createSecondJobInstance(Job job) {
         Long timestamp = DateUtil.timestamp();
         JobInstance jobInstance = BeanMapperUtil.map(job, JobInstance.class);
         jobInstance.setJobId(job.getId());
@@ -371,7 +382,7 @@ public class JobServiceImpl implements JobService {
         jobInstance.setCompleteTime(0L);
         jobInstance.setLastReportTime(0L);
         jobInstance.setWorkerAddress("");
-        jobInstance.setExecuteTime(job.getNextExecuteTime());
+        jobInstance.setExecuteTime(timestamp);
         jobInstance.setCreateTime(timestamp);
         jobInstance.setUpdateTime(timestamp);
         this.jobInstanceDAO.save(jobInstance);

@@ -39,7 +39,7 @@ public class JobInstanceDAOTest extends RepositoryTest {
         jobInstance.setDeleted(CommonConstant.NO);
         jobInstance.setDeleteTime(0L);
         jobInstance.setFailStatus(0);
-        jobInstance.setDispatchVersion(0);
+        jobInstance.setDispatchVersion(0L);
         jobInstance.setExecuteTimeout(0);
         jobInstance.setUpdateTime(DateUtil.timestamp());
         jobInstance.setCreateTime(DateUtil.timestamp());

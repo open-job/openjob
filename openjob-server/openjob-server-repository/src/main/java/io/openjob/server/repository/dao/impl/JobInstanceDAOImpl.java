@@ -54,7 +54,7 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public Integer updateStatusById(Long id, Integer status, Integer failStatus) {
         long now = DateUtil.timestamp();
-        return this.jobInstanceRepository.update(id, status, failStatus, now, now);
+        return this.jobInstanceRepository.updateStatus(id, status, failStatus, now, now);
     }
 
     @Override
@@ -104,8 +104,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public JobInstance getFirstByJobIdAndStatus(Long jobId, Integer status) {
-        return this.jobInstanceRepository.findFirstByJobIdAndStatusAndDeleted(jobId, status, CommonConstant.NO);
+    public List<JobInstance> getListByJobIdAndStatus(Long jobId, List<Integer> statusList) {
+        return this.jobInstanceRepository.findByJobIdAndStatusInAndDeleted(jobId, statusList, CommonConstant.NO);
     }
 
     @Override
