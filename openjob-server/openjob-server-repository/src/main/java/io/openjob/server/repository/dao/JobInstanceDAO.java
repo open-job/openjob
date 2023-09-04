@@ -167,7 +167,7 @@ public interface JobInstanceDAO {
      * @param statusList statusList
      * @return Long
      */
-    Long deleteByCreateTim(Long lastTime, List<Integer> statusList);
+    Long deleteByCreateTime(Long lastTime, List<Integer> statusList);
 
     /**
      * Group by hour time

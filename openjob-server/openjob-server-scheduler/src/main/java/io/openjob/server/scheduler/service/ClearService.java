@@ -85,7 +85,7 @@ public class ClearService {
         Integer logKeepDays = jobKeepDays >= delayKeepDays ? jobKeepDays : delayKeepDays;
 
         // Job instance
-        Long jobInstanceCount = this.jobInstanceDAO.deleteByCreateTim(timestamp - oneDay * jobKeepDays, InstanceStatusEnum.COMPLETE);
+        Long jobInstanceCount = this.jobInstanceDAO.deleteByCreateTime(timestamp - oneDay * jobKeepDays, InstanceStatusEnum.COMPLETE);
 
         // Delay instance
         Long delayInstanceCount = this.delayInstanceDAO.deleteByCreateTimeAndNotStatus(
