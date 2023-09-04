@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -52,8 +53,10 @@ public class SchedulerTimerService {
      * @param task task
      */
     public void run(SchedulerTimerTask task) {
-        // Concurrency
-        if (ExecuteStrategyEnum.isConcurrency(task.getExecuteStrategy())) {
+        // Concurrency and execute once
+        Boolean concurrency = ExecuteStrategyEnum.isConcurrency(task.getExecuteStrategy());
+        Boolean executeOnce = CommonConstant.YES.equals(task.getExecuteOnce());
+        if (concurrency || executeOnce) {
             this.doRun(task, Collections.emptySet());
             return;
         }
@@ -95,6 +98,7 @@ public class SchedulerTimerService {
         submitReq.setTimeExpressionType(task.getTimeExpressionType());
         submitReq.setTimeExpression(task.getTimeExpression());
         submitReq.setExecuteTimeout(task.getExecuteTimeout());
+        submitReq.setExecuteOnce(Optional.ofNullable(task.getExecuteOnce()).orElse(CommonConstant.NO));
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
@@ -157,7 +161,7 @@ public class SchedulerTimerService {
                 InstanceStatusEnum.WAITING.getStatus(),
                 InstanceStatusEnum.RUNNING.getStatus()
         );
-        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatus(task.getJobId(), task.getTaskId(), statusList);
+        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatusAndExcludeExecuteOnce(task.getJobId(), task.getTaskId(), statusList);
 
         // Exist one task.
         if (Objects.nonNull(jobInstance)) {

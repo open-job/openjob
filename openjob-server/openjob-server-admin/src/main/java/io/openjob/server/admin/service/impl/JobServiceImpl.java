@@ -194,7 +194,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public ExecuteJobVO execute(ExecuteJobRequest request) {
-        this.jobSchedulingService.execute(BeanMapperUtil.map(request, JobExecuteRequestDTO.class));
+        this.jobSchedulingService.executeByOnce(BeanMapperUtil.map(request, JobExecuteRequestDTO.class));
         return new ExecuteJobVO();
     }
 
@@ -342,7 +342,7 @@ public class JobServiceImpl implements JobService {
      */
     private void updateJobBySecond(Job updateJob) {
         List<Integer> statusAry = Arrays.asList(InstanceStatusEnum.WAITING.getStatus(), InstanceStatusEnum.RUNNING.getStatus());
-        Optional.ofNullable(this.jobInstanceDAO.getListByJobIdAndStatus(updateJob.getId(), statusAry))
+        Optional.ofNullable(this.jobInstanceDAO.getListByJobIdAndStatusAndExcludeExecuteOnce(updateJob.getId(), statusAry))
                 .orElseGet(ArrayList::new)
                 .forEach(ji -> {
                     // Running status
@@ -356,7 +356,6 @@ public class JobServiceImpl implements JobService {
                     // Waiting status
                     this.jobInstanceDAO.updateStatusById(ji.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
                 });
-
 
         // Job running status
         // Dispatch scheduler for new configuration
@@ -385,6 +384,7 @@ public class JobServiceImpl implements JobService {
         jobInstance.setExecuteTime(timestamp);
         jobInstance.setCreateTime(timestamp);
         jobInstance.setUpdateTime(timestamp);
+        jobInstance.setExecuteOnce(CommonConstant.NO);
         this.jobInstanceDAO.save(jobInstance);
     }
 

@@ -43,6 +43,7 @@ public class JobInstanceDAOTest extends RepositoryTest {
         jobInstance.setExecuteTimeout(0);
         jobInstance.setUpdateTime(DateUtil.timestamp());
         jobInstance.setCreateTime(DateUtil.timestamp());
+        jobInstance.setExecuteOnce(CommonConstant.NO);
 
         Long id = jobInstanceDAO.save(jobInstance);
 

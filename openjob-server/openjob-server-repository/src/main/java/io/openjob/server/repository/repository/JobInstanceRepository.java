@@ -99,13 +99,14 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Find first by id and status.
      *
-     * @param jobId      jobId
-     * @param id         id
-     * @param statusList statusList
-     * @param deleted    deleted
+     * @param jobId       jobId
+     * @param id          id
+     * @param statusList  statusList
+     * @param deleted     deleted
+     * @param executeOnce executeOnce
      * @return JobInstance
      */
-    JobInstance findFirstByJobIdAndIdNotAndStatusInAndDeleted(Long jobId, Long id, List<Integer> statusList, Integer deleted);
+    JobInstance findFirstByJobIdAndIdNotAndStatusInAndDeletedAndExecuteOnce(Long jobId, Long id, List<Integer> statusList, Integer deleted, Integer executeOnce);
 
     /**
      * Find first by job id and deleted
@@ -119,12 +120,13 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Find first by job id and status and deleted
      *
-     * @param jobId   jobId
+     * @param jobId       jobId
      * @param statusList  statusList
-     * @param deleted deleted
+     * @param deleted     deleted
+     * @param executeOnce executeOnce
      * @return JobInstance
      */
-    List<JobInstance> findByJobIdAndStatusInAndDeleted(Long jobId, List<Integer> statusList, Integer deleted);
+    List<JobInstance> findByJobIdAndStatusInAndDeletedAndExecuteOnce(Long jobId, List<Integer> statusList, Integer deleted, Integer executeOnce);
 
     /**
      * Count total
@@ -138,7 +140,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Delete sever by create time and status
      *
-     * @param lastTime lastTime
+     * @param lastTime   lastTime
      * @param statusList statusList
      * @return Long
      */

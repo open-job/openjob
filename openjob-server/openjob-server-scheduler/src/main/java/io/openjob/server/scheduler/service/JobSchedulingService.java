@@ -128,7 +128,7 @@ public class JobSchedulingService {
         List<Job> jobs = jobDAO.listScheduledJobs(currentSlots, maxExecuteTime);
 
         // Create job instance.
-        this.createJobInstance(jobs);
+        this.createJobInstance(jobs, CommonConstant.NO);
 
         // Update job next execute time.
         jobs.forEach(j -> {
@@ -154,7 +154,7 @@ public class JobSchedulingService {
      * @param executeRequestDTO executeRequestDTO
      * @return JobExecuteResponseDTO
      */
-    public JobExecuteResponseDTO execute(JobExecuteRequestDTO executeRequestDTO) {
+    public JobExecuteResponseDTO executeByOnce(JobExecuteRequestDTO executeRequestDTO) {
         Job job = this.jobDAO.getById(executeRequestDTO.getId());
         if (Objects.isNull(job)) {
             throw new RuntimeException("Job is not exist!");
@@ -163,7 +163,7 @@ public class JobSchedulingService {
         job.setParams(executeRequestDTO.getParams());
         job.setExtendParams(executeRequestDTO.getExtendParams());
         job.setNextExecuteTime(DateUtil.timestamp());
-        this.createJobInstance(Collections.singletonList(job));
+        this.createJobInstance(Collections.singletonList(job), CommonConstant.YES);
         return new JobExecuteResponseDTO();
     }
 
@@ -172,7 +172,7 @@ public class JobSchedulingService {
      *
      * @param jobs jobs
      */
-    private void createJobInstance(List<Job> jobs) {
+    private void createJobInstance(List<Job> jobs, Integer executeOnce) {
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
 
         jobs.forEach(j -> {
@@ -208,11 +208,16 @@ public class JobSchedulingService {
             jobInstance.setExtendParams(j.getExtendParams());
             jobInstance.setWorkflowId(j.getWorkflowId());
             jobInstance.setExecuteTime(j.getNextExecuteTime());
+            jobInstance.setExecuteOnce(executeOnce);
 
+            // Instance id
             Long instanceId = jobInstanceDAO.save(jobInstance);
             jobInstance.setId(instanceId);
 
-            timerTasks.add(this.convertToTimerTask(jobInstance));
+            // Execute once
+            SchedulerTimerTask schedulerTimerTask = this.convertToTimerTask(jobInstance);
+            schedulerTimerTask.setExecuteOnce(executeOnce);
+            timerTasks.add(schedulerTimerTask);
         });
 
         this.schedulerWheel.addTimerTask(timerTasks);
@@ -240,6 +245,7 @@ public class JobSchedulingService {
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());
         schedulerTask.setExecuteStrategy(js.getExecuteStrategy());
+        schedulerTask.setExecuteOnce(js.getExecuteOnce());
         return schedulerTask;
     }
 
@@ -270,7 +276,7 @@ public class JobSchedulingService {
         j.setUpdateTime(now);
 
         if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / SchedulerConstant.UNIT_MS)) {
-            this.createJobInstance(Collections.singletonList(j));
+            this.createJobInstance(Collections.singletonList(j), CommonConstant.NO);
 
             // Update next execute time.
             j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));

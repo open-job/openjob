@@ -280,6 +280,7 @@ CREATE TABLE `job_instance`
     execute_timeout      INT DEFAULT 0 NOT NULL COMMENT 'Execute timeout',
     worker_address       VARCHAR(32) DEFAULT '' NOT NULL COMMENT 'Worker address',
     execute_strategy     TINYINT DEFAULT 1 NOT NULL COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
+    execute_once         TINYINT DEFAULT 2 NOT NULL COMMENT 'Execute once, 1=yes 2=no',
     deleted              TINYINT DEFAULT 2 NOT NULL COMMENT 'Delete status. 1=yes 2=no',
     delete_time          BIGINT DEFAULT 0 NOT NULL COMMENT 'Delete time',
     update_time          BIGINT NOT NULL COMMENT 'Create time',

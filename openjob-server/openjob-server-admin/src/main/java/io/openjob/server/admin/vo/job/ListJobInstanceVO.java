@@ -75,6 +75,9 @@ public class ListJobInstanceVO {
     @ApiModelProperty(value = "Job execute strategy")
     private Integer executeStrategy;
 
+    @ApiModelProperty(value = "Execute once")
+    private Integer executeOnce;
+
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;
 

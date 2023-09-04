@@ -135,8 +135,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Remove task from manager
         this.removeTaskFromManager();
 
-        // Not second delay task.
-        if (!this.isSecondDelay()) {
+        // Not second delay task or execute once
+        if (!this.isSecondDelay() || CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
             // When task complete reset status.
             this.running.set(false);
 
@@ -392,7 +392,10 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected void doCircleSecondStatus() {
-
+        // Execute once
+        if (CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
+            this.doJobInstanceStatus();
+        }
     }
 
     protected void doJobInstanceStatus() {

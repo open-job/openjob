@@ -1,6 +1,7 @@
 package io.openjob.worker.actor;
 
 import io.openjob.common.actor.BaseActor;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
@@ -21,6 +22,7 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin swoft@qq.com
@@ -71,6 +73,7 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
+        jobInstanceDTO.setExecuteOnce(Optional.ofNullable(submitReq.getExecuteOnce()).orElse(CommonConstant.NO));
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();

@@ -116,6 +116,9 @@ public class JobInstance {
     @Column(name = "`execute_strategy`")
     private Integer executeStrategy;
 
+    @Column(name = "`execute_once`")
+    private Integer executeOnce;
+
     @Column(name = "`deleted`")
     private Integer deleted;
 

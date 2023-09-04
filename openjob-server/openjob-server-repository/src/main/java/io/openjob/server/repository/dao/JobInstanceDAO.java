@@ -113,7 +113,7 @@ public interface JobInstanceDAO {
      * @param statusList statusList
      * @return JobInstance
      */
-    JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList);
+    JobInstance getOneByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, Long id, List<Integer> statusList);
 
 
     /**
@@ -131,7 +131,7 @@ public interface JobInstanceDAO {
      * @param statusList statusList
      * @return JobInstance
      */
-    List<JobInstance> getListByJobIdAndStatus(Long jobId, List<Integer> statusList);
+    List<JobInstance> getListByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, List<Integer> statusList);
 
     /**
      * Get page list.

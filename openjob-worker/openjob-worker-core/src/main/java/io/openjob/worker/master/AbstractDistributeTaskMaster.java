@@ -72,8 +72,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     @Override
     protected void doCircleSecondStatus() {
-        super.doCircleSecondStatus();
         this.taskDAO.updateStatusByTaskId(this.circleTaskUniqueId, this.getCircleTaskStatus());
+        super.doCircleSecondStatus();
     }
 
     @Override

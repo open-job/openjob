@@ -94,8 +94,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList) {
-        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeleted(jobId, id, statusList, CommonConstant.NO);
+    public JobInstance getOneByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, Long id, List<Integer> statusList) {
+        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeletedAndExecuteOnce(jobId, id, statusList, CommonConstant.NO, CommonConstant.NO);
     }
 
     @Override
@@ -104,8 +104,8 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public List<JobInstance> getListByJobIdAndStatus(Long jobId, List<Integer> statusList) {
-        return this.jobInstanceRepository.findByJobIdAndStatusInAndDeleted(jobId, statusList, CommonConstant.NO);
+    public List<JobInstance> getListByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, List<Integer> statusList) {
+        return this.jobInstanceRepository.findByJobIdAndStatusInAndDeletedAndExecuteOnce(jobId, statusList, CommonConstant.NO, CommonConstant.NO);
     }
 
     @Override
