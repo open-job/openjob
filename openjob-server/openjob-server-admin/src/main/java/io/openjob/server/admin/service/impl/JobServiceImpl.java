@@ -48,6 +48,7 @@ import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,7 +108,7 @@ public class JobServiceImpl implements JobService {
         // Running status to parse next execute time.
         Job job = BeanMapperUtil.map(addJobRequest, Job.class);
         if (TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
-            job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression()));
+            job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression(), null));
         } else if (TimeExpressionTypeEnum.isOneTime(addJobRequest.getTimeExpressionType())) {
             job.setNextExecuteTime(Long.valueOf(addJobRequest.getTimeExpression()));
         } else if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType())) {
@@ -144,7 +145,7 @@ public class JobServiceImpl implements JobService {
 
         // Parse time expression
         if (isRunningStatus && isUpdateCron) {
-            updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression()));
+            updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression(), null));
         } else if (TimeExpressionTypeEnum.isOneTime(updateJobRequest.getTimeExpressionType())) {
             updateJob.setNextExecuteTime(Long.valueOf(updateJobRequest.getTimeExpression()));
         }
@@ -178,7 +179,7 @@ public class JobServiceImpl implements JobService {
         Long nextExecuteTime = null;
         Job originJob = this.jobDAO.getById(request.getId());
         if (TimeExpressionTypeEnum.isCron(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
-            nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression());
+            nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression(), null);
         }
 
         this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null, nextExecuteTime);
@@ -319,16 +320,21 @@ public class JobServiceImpl implements JobService {
 
         // ShardingParams
         if (ExecuteTypeEnum.isSharding(request.getExecuteType())) {
-            Boolean isInvalid = StringUtils.isBlank(request.getShardingParams()) || !request.getShardingParams().contains("=");
-            CodeEnum.SHARDING_PARAMS_INVALID.assertIsFalse(isInvalid);
+            CodeEnum.SHARDING_PARAMS_INVALID.assertIsFalse(StringUtils.isBlank(request.getShardingParams()));
+
+            // Format
+            Arrays.stream(request.getShardingParams().split(",")).forEach(p -> {
+                String[] split = p.split("=");
+                CodeEnum.SHARDING_PARAMS_INVALID.assertIsTrue(split.length == 2 && NumberUtils.isDigits(split[0]));
+            });
 
             request.setParams(request.getShardingParams());
         }
 
         // Cron
         if (TimeExpressionTypeEnum.isCron(request.getTimeExpressionType())) {
-            long one = this.parseTimeExpression(request.getTimeExpression());
-            long two = this.parseTimeExpression(request.getTimeExpression());
+            long one = this.parseTimeExpression(request.getTimeExpression(), null);
+            long two = this.parseTimeExpression(request.getTimeExpression(), new Date(one * 1000L));
             if ((two - one) < TimeUnit.MINUTES.toSeconds(1)) {
                 CodeEnum.JOB_CRON_INTERVAL_INVALID.throwException();
             }
@@ -346,7 +352,7 @@ public class JobServiceImpl implements JobService {
                 .orElseGet(ArrayList::new)
                 .forEach(ji -> {
                     // Running status
-                    if (InstanceStatusEnum.isRunning(ji.getStatus())){
+                    if (InstanceStatusEnum.isRunning(ji.getStatus())) {
                         JobInstanceStopRequestDTO stopRequest = new JobInstanceStopRequestDTO();
                         stopRequest.setJobInstanceId(ji.getId());
                         this.jobInstanceScheduler.stop(stopRequest);
@@ -392,12 +398,15 @@ public class JobServiceImpl implements JobService {
      * Parse time expression
      *
      * @param timeExpression timeExpression
+     * @param afterDate      afterDate
      * @return Long
      */
-    private Long parseTimeExpression(String timeExpression) {
+    private Long parseTimeExpression(String timeExpression, Date afterDate) {
+        Date date = Optional.ofNullable(afterDate).orElseGet(Date::new);
+
         try {
             CronExpression cronExpression = new CronExpression(timeExpression);
-            return cronExpression.getNextValidTimeAfter(new Date()).toInstant().getEpochSecond();
+            return cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
         } catch (ParseException e) {
             CodeEnum.TIME_EXPRESSION_INVALID.throwException();
             log.error("Parse time expression failed! timeExpression=" + timeExpression, e);
