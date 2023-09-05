@@ -38,7 +38,6 @@ public class WorkerConstant {
     public static final String WORKER_DELAY_TIMEOUT = "openjob.worker.delay.timeout";
 
 
-
     /**
      * Default worker config.
      */
@@ -61,4 +60,9 @@ public class WorkerConstant {
     public static final Long DEFAULT_WORKER_DELAY_PULL_SLEEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_TIMEOUT = 3000L;
+
+    /**
+     * Check worker retry times
+     */
+    public static final Integer CHECK_WORKER_RETRY_TIMES = 3;
 }

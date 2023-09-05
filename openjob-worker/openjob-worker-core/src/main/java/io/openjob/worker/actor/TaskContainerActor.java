@@ -84,6 +84,11 @@ public class TaskContainerActor extends BaseActor {
         getSender().tell(Result.success(workerResponse), getSelf());
     }
 
+    /**
+     * Handle stop instance task
+     *
+     * @param request request
+     */
     public void handleStopInstanceTask(MasterStopInstanceTaskRequest request) {
         TaskContainer taskContainer = TaskContainerPool.get(request.getJobInstanceId());
         if (Objects.nonNull(taskContainer)) {

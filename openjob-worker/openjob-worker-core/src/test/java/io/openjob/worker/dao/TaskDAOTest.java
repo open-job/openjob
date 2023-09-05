@@ -50,8 +50,8 @@ public class TaskDAOTest {
         Task task2 = new Task();
         task2.setJobId(1L);
         task2.setInstanceId(1L);
-        task.setDispatchVersion(1L);
-        task.setMapTaskId(1L);
+        task2.setDispatchVersion(1L);
+        task2.setMapTaskId(1L);
         task2.setCircleId(0L);
         task2.setTaskId(taskId2);
         task2.setTaskName("ROOT");
@@ -65,8 +65,8 @@ public class TaskDAOTest {
         Task task3 = new Task();
         task3.setJobId(1L);
         task3.setInstanceId(1L);
-        task.setDispatchVersion(1L);
-        task.setMapTaskId(1L);
+        task3.setDispatchVersion(1L);
+        task3.setMapTaskId(1L);
         task3.setCircleId(0L);
         task3.setTaskId(taskId3);
         task3.setTaskName("ROOT");

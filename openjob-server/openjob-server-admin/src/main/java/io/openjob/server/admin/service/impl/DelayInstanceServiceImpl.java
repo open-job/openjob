@@ -84,7 +84,7 @@ public class DelayInstanceServiceImpl implements DelayInstanceService {
         return PageUtil.convert(pageDTO, ds -> {
             ListDelayInstanceVO listDelayInstanceVO = BeanMapperUtil.map(ds, ListDelayInstanceVO.class);
             Optional.ofNullable(delayMap.get(ds.getDelayId())).ifPresent(d -> listDelayInstanceVO.setDelayName(d.getName()));
-            Optional.ofNullable(appMap.get(ds.getAppId())).ifPresent(a->listDelayInstanceVO.setAppName(a.getName()));
+            Optional.ofNullable(appMap.get(ds.getAppId())).ifPresent(a -> listDelayInstanceVO.setAppName(a.getName()));
             return listDelayInstanceVO;
         });
     }

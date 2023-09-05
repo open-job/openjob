@@ -75,10 +75,20 @@ public class MasterStartContainerRequest implements Serializable {
         this.persistent = CommonConstant.YES;
     }
 
+    /**
+     * Get task unique id
+     *
+     * @return String
+     */
     public String getTaskUniqueId() {
         return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.dispatchVersion, this.circleId, this.taskId);
     }
 
+    /**
+     * Get parent task unique id
+     *
+     * @return String
+     */
     public String getParentTaskUniqueId() {
         if (NumberUtils.LONG_ZERO.equals(this.parentTaskId)) {
             return TaskConstant.DEFAULT_PARENT_ID;

@@ -94,8 +94,8 @@ public class JobInstanceServiceImpl implements JobInstanceService {
         Map<Long, Job> jobMap = this.jobDAO.getByIds(jobIds).stream().collect(Collectors.toMap(Job::getId, j -> j));
         return PageUtil.convert(pageDTO, n -> {
             ListJobInstanceVO listJobInstanceVO = BeanMapperUtil.map(n, ListJobInstanceVO.class);
-            Optional.ofNullable(jobMap.get(n.getJobId())).ifPresent(j-> listJobInstanceVO.setJobName(j.getName()));
-            Optional.ofNullable(appMap.get(n.getAppId())).ifPresent(a->listJobInstanceVO.setAppName(a.getName()));
+            Optional.ofNullable(jobMap.get(n.getJobId())).ifPresent(j -> listJobInstanceVO.setJobName(j.getName()));
+            Optional.ofNullable(appMap.get(n.getAppId())).ifPresent(a -> listJobInstanceVO.setAppName(a.getName()));
             return listJobInstanceVO;
         });
     }

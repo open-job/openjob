@@ -78,7 +78,7 @@ public class JobInstanceTaskDAOImpl implements JobInstanceTaskDAO {
     }
 
     @Override
-    public PageDTO<JobInstanceTask> getTaskList(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size) {
+    public PageDTO<JobInstanceTask> getTaskListByDispatchVersion(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size) {
         JobInstanceTask jobInstanceTask = new JobInstanceTask();
         jobInstanceTask.setJobInstanceId(jobInstanceId);
         jobInstanceTask.setDispatchVersion(dispatchVersion);

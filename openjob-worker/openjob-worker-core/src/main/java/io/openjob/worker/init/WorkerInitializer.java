@@ -15,6 +15,9 @@ public class WorkerInitializer {
     private final TaskMasterManager taskMasterManager;
     private final TaskContainerManager taskContainerManager;
 
+    /**
+     * Init
+     */
     public WorkerInitializer() {
         this.delayManager = new DelayManager();
         this.taskMasterManager = TaskMasterManager.INSTANCE;

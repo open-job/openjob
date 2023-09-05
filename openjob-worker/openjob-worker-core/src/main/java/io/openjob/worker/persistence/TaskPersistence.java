@@ -106,6 +106,7 @@ public interface TaskPersistence {
      * @param parentTaskId  parentTaskId
      * @param lastMapTaskId lastMapTaskId
      * @return Integer
+     * @throws SQLException SQLException
      */
     Integer deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) throws SQLException;
 
@@ -115,6 +116,7 @@ public interface TaskPersistence {
      * @param parentTaskId  parentTaskId
      * @param mapTaskIdList mapTaskIdList
      * @return List
+     * @throws SQLException SQLException
      */
     List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) throws SQLException;
 

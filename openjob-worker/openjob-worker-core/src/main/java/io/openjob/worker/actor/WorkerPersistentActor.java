@@ -129,6 +129,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         });
     }
 
+    /**
+     * Handle stop instance task
+     *
+     * @param stopTaskRequest stopTaskRequest
+     */
     public void handleStopInstanceTask(MasterStopInstanceTaskRequest stopTaskRequest) {
         ActorSelection workerContainerActor = WorkerUtil.getWorkerContainerActor(stopTaskRequest.getWorkerAddress());
         deliver(workerContainerActor, deliveryId -> {

@@ -74,7 +74,7 @@ public interface JobInstanceTaskDAO {
      * @param size            size
      * @return PageDTO
      */
-    PageDTO<JobInstanceTask> getTaskList(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size);
+    PageDTO<JobInstanceTask> getTaskListByDispatchVersion(Long jobInstanceId, Long dispatchVersion, Integer page, Integer size);
 
     /**
      * Get mr task list

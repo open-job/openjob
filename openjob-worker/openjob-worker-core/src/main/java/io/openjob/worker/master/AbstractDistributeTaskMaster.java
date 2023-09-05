@@ -8,6 +8,7 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
@@ -101,7 +102,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                 .forEach(wd -> {
                     ActorSelection checkSelection = WorkerUtil.getWorkerContainerActor(wd);
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < WorkerConstant.CHECK_WORKER_RETRY_TIMES; i++) {
                         try {
                             MasterCheckContainerRequest checkRequest = new MasterCheckContainerRequest();
                             checkRequest.setJobId(this.jobInstanceDTO.getJobId());

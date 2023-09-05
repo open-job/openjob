@@ -99,6 +99,11 @@ public class TaskMasterActor extends BaseActor {
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
+    /**
+     * Stop instance task
+     *
+     * @param request request
+     */
     public void stopInstanceTask(ServerStopInstanceTaskRequest request) {
         if (!TaskMasterPool.contains(request.getJobInstanceId())) {
             getSender().tell(Result.fail(String.format("Task master is not running and stop task failed! jobInstanceId=%s", request.getJobInstanceId())), getSelf());
@@ -170,6 +175,11 @@ public class TaskMasterActor extends BaseActor {
         getSender().tell(Result.success(response), getSelf());
     }
 
+    /**
+     * Handle pull instance task child list
+     *
+     * @param request request
+     */
     public void handlePullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
         TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId());
         if (Objects.isNull(taskMaster)) {

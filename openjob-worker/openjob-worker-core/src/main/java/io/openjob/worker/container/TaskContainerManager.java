@@ -24,6 +24,9 @@ public class TaskContainerManager {
 
     }
 
+    /**
+     * Init
+     */
     public void init() {
         // Already initialized
         if (this.isInit.get()) {
@@ -38,10 +41,20 @@ public class TaskContainerManager {
         this.taskId2Future.put(taskId, future);
     }
 
+    /**
+     * Remove task
+     *
+     * @param taskId taskId
+     */
     public void removeTask(String taskId) {
         this.taskId2Future.remove(taskId);
     }
 
+    /**
+     * Stop and remove task
+     *
+     * @param taskId taskId
+     */
     public void stopAndRemoveTask(String taskId) {
         Optional.ofNullable(this.taskId2Future.get(taskId))
                 .ifPresent(f -> f.cancel(true));
@@ -50,6 +63,9 @@ public class TaskContainerManager {
         this.removeTask(taskId);
     }
 
+    /**
+     * Stop
+     */
     public void stop() {
 
     }
