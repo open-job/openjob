@@ -80,12 +80,13 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         } catch (InvocationTargetException invocationException) {
             Throwable target = Objects.nonNull(invocationException.getTargetException()) ? invocationException.getTargetException() : invocationException;
 
-            // InterruptedException(stop/timeout)
+            // InterruptedException(stop)
             if (target instanceof InterruptedException) {
                 // Stop processor.
                 this.stop();
 
                 // Result
+                result.setStatus(TaskStatusEnum.STOP);
                 result.setResult(ExceptionUtil.formatStackTraceAsString(target));
                 logger.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
                 log.warn("Processor is interrupted! jobInstanceId=" + this.jobContext.getJobInstanceId());
@@ -104,6 +105,9 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             logger.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
             log.error(String.format("Processor execute exception! jobInstanceId=%s message=%s", this.jobContext.getJobInstanceId(), cause.getMessage()), cause);
         } finally {
+            // Remove task future
+            TaskContainerManager.INSTANCE.removeTask(this.jobContext.getTaskUniqueId());
+
             // Remove job context
             ThreadLocalUtil.removeJobContext();
 
@@ -128,6 +132,8 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
         ContainerTaskStatusRequest request = new ContainerTaskStatusRequest();
         request.setJobId(this.jobContext.getJobId());
         request.setJobInstanceId(this.jobContext.getJobInstanceId());
+        request.setDispatchVersion(this.jobContext.getDispatchVersion());
+        request.setCircleId(this.jobContext.getCircleId());
         request.setTaskId(this.jobContext.getTaskId());
         request.setWorkerAddress(workerAddress);
         request.setMasterActorPath(this.jobContext.getMasterActorPath());

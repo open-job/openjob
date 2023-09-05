@@ -1,6 +1,5 @@
 package io.openjob.worker.dao;
 
-import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.exception.BatchUpdateStatusException;
@@ -12,8 +11,6 @@ import org.h2.jdbc.JdbcBatchUpdateException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -44,6 +41,23 @@ public class TaskDAO {
         } catch (SQLException e) {
             log.error("Task add failed!", e);
             return false;
+        }
+    }
+
+    /**
+     * Update status by task id
+     *
+     * @param taskId taskId
+     * @param status status
+     * @return Integer
+     */
+    public Integer updateStatusByTaskId(String taskId, Integer status) {
+        try {
+
+            return taskPersistence.updateStatusByTaskId(taskId, status);
+        } catch (SQLException e) {
+            log.error("Task updateStatusById failed!", e);
+            return 0;
         }
     }
 
@@ -182,6 +196,70 @@ public class TaskDAO {
     }
 
     /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param lastMapTaskId lastMapTaskId
+     */
+    public void deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) {
+        try {
+            this.taskPersistence.deleteRedundantMapTask(parentTaskId, lastMapTaskId);
+        } catch (Throwable e) {
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param mapTaskIdList mapTaskIdList
+     * @return List
+     */
+    public List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) {
+        try {
+            return this.taskPersistence.getMapTaskList(parentTaskId, mapTaskIdList);
+        } catch (Throwable e) {
+            log.error("Task batchUpdateStatusByTaskId failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Find circle parent task list
+     *
+     * @param instanceId   instanceId
+     * @param circleId     circleId
+     * @param parentTaskId parentTaskId
+     * @return List
+     */
+    public List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) {
+        try {
+            return taskPersistence.findCircleParentTaskList(instanceId, circleId, parentTaskId);
+        } catch (SQLException e) {
+            log.error("Task findCircleParentTaskList failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Find child task list
+     *
+     * @param taskId taskId
+     * @return List
+     */
+    public List<Task> findChildTaskList(String taskId) {
+        try {
+            return taskPersistence.findChildTaskList(taskId);
+        } catch (SQLException e) {
+            log.error("Task findChildTaskList failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
      * Count task.
      *
      * @param instanceId instance id.
@@ -194,6 +272,24 @@ public class TaskDAO {
             return taskPersistence.countTask(instanceId, circleId, statusList);
         } catch (SQLException e) {
             log.error("Task countTask failed!", e);
+            return 0;
+        }
+    }
+
+    /**
+     * Count task.
+     *
+     * @param instanceId    instance id.
+     * @param circleId      circle id.
+     * @param statusList    status list.
+     * @param excludeTaskId excludeTaskId
+     * @return count numbers.
+     */
+    public Integer countTaskAndExcludeId(Long instanceId, Long circleId, List<Integer> statusList, String excludeTaskId) {
+        try {
+            return taskPersistence.countTaskAndExcludeId(instanceId, circleId, statusList, excludeTaskId);
+        } catch (SQLException e) {
+            log.error("Task countTaskAndExcludeId failed!", e);
             return 0;
         }
     }

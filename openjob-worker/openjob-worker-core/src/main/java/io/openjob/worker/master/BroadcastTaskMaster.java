@@ -4,21 +4,22 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
-import io.openjob.worker.constant.WorkerConstant;
-import io.openjob.worker.context.JobContext;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.init.WorkerContext;
-import io.openjob.worker.processor.ProcessorHandler;
 import io.openjob.worker.request.MasterStartContainerRequest;
-import io.openjob.worker.util.ProcessorUtil;
 import io.openjob.worker.util.WorkerUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
+@Slf4j
 public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     public BroadcastTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
@@ -34,29 +35,28 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     }
 
     @Override
-    public void submit() {
-        // Preprocess
-        try {
-            JobContext jobContext = this.getBaseJobContext();
-            jobContext.setTaskName(WorkerConstant.BROADCAST_NAME);
-            ProcessorHandler processorHandler = ProcessorUtil.getProcessor(this.jobInstanceDTO.getProcessorInfo());
-            assert processorHandler != null;
-            processorHandler.preProcess(jobContext);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void doSubmit() {
+        // Second delay to persist circle task
+        if (this.isSecondDelay()) {
+            this.persistCircleTask();
         }
 
+        // Dispatch tasks
+        AtomicLong index = new AtomicLong(1L);
         WorkerContext.getOnlineWorkers().forEach(workerAddress -> {
             ActorSelection workerSelection = WorkerUtil.getWorkerContainerActor(workerAddress);
             MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
-
-            // Persist tasks.
-            this.persistTasks(workerAddress, Collections.singletonList(startRequest));
+            startRequest.setTaskName(TaskUtil.getBroadcastTaskName(index.get()));
 
             try {
+                // Dispatch task
                 FutureUtil.mustAsk(workerSelection, startRequest, WorkerResponse.class, 3000L);
+
+                // Dispatch success to persist task.
+                this.persistTasks(workerAddress, Collections.singletonList(startRequest));
+                index.getAndIncrement();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.warn(String.format("Broadcast failed! workerAddress=%s", workerAddress));
             }
         });
 

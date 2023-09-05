@@ -1,9 +1,11 @@
 package io.openjob.worker.master;
 
 import akka.actor.ActorContext;
-import com.google.common.collect.Lists;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskConstant;
-import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.task.TaskQueue;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
@@ -15,16 +17,16 @@ import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 import io.openjob.worker.task.MapReduceTaskConsumer;
-import io.openjob.common.task.TaskQueue;
+import io.openjob.worker.util.AddressUtil;
 import io.openjob.worker.util.ProcessorUtil;
-import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author stelin swoft@qq.com
@@ -36,7 +38,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     /**
      * Child tasks.
      */
-    protected TaskQueue<MasterStartContainerRequest> childTaskQueue;
+    protected TaskQueue<ProcessorMapTaskRequest> childTaskQueue;
 
     protected MapReduceTaskConsumer childTaskConsumer;
 
@@ -79,25 +81,64 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
      */
     public void map(ProcessorMapTaskRequest mapTaskReq) {
         try {
-            for (byte[] task : mapTaskReq.getTasks()) {
-                MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
-                startReq.setTask(task);
-                startReq.setTaskName(mapTaskReq.getTaskName());
-                startReq.setParentTaskId(mapTaskReq.getTaskId());
-                childTaskQueue.submit(startReq);
-            }
+            childTaskQueue.submit(mapTaskReq);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            log.error("Map reduce do map failed!", throwable);
+            throw new RuntimeException(throwable);
         }
     }
 
-    @Override
-    public void submit() {
-        MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
-        masterStartContainerRequest.setTaskName(WorkerConstant.MAP_TASK_ROOT_NAME);
-        ArrayList<MasterStartContainerRequest> startRequests = Lists.newArrayList(masterStartContainerRequest);
+    /**
+     * Do map
+     *
+     * @param mapTaskReq mapTaskReq
+     */
+    public void doMap(ProcessorMapTaskRequest mapTaskReq) {
+        AtomicLong idListGenerator = new AtomicLong(mapTaskReq.getInitValueId());
+        List<Long> mapTaskIds = mapTaskReq.getTasks().stream()
+                .map(t -> idListGenerator.addAndGet(1L)).collect(Collectors.toList());
+        String parentTaskId = TaskUtil.getRandomUniqueId(mapTaskReq.getJobId(), mapTaskReq.getJobInstanceId(),
+                this.jobInstanceDTO.getDispatchVersion(), this.circleTaskId, mapTaskReq.getTaskId());
 
-        this.dispatchTasks(startRequests, false, Collections.emptySet());
+        // Last partition to delete redundant map task
+        if (mapTaskReq.getTaskNum() > 0) {
+            this.taskDAO.deleteRedundantMapTask(parentTaskId, Long.valueOf(mapTaskReq.getTaskNum()));
+        }
+
+        // Already map task ids by instanceId,parentTaskId
+        List<Long> existMapTaskIds = this.taskDAO.getMapTaskList(parentTaskId, mapTaskIds);
+
+        // Batch `MasterStartContainerRequest`
+        AtomicLong idSetGenerator = new AtomicLong(mapTaskReq.getInitValueId());
+        List<MasterStartContainerRequest> startRequestList = mapTaskReq.getTasks().stream().map(t -> {
+            long mapTaskId = idSetGenerator.addAndGet(1L);
+            MasterStartContainerRequest startReq = this.getMasterStartContainerRequest();
+            startReq.setTask(t);
+            startReq.setTaskName(mapTaskReq.getTaskName());
+            startReq.setParentTaskId(mapTaskReq.getTaskId());
+            startReq.setMapTaskId(mapTaskId);
+
+            if (existMapTaskIds.contains(mapTaskId)) {
+                startReq.setPersistent(CommonConstant.NO);
+            }
+            return startReq;
+        }).collect(Collectors.toList());
+
+        // Dispatch tasks
+        this.dispatchTasks(startRequestList, false, Collections.emptySet());
+    }
+
+    @Override
+    public void doSubmit() {
+        // Second delay to persist circle task
+        if (TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+            this.persistCircleTask();
+        }
+
+        // Dispatch tasks
+        MasterStartContainerRequest masterStartContainerRequest = this.getMasterStartContainerRequest();
+        masterStartContainerRequest.setTaskName(TaskConstant.MAP_TASK_ROOT_NAME);
+        this.dispatchTasks(Collections.singletonList(masterStartContainerRequest), false, Collections.emptySet());
 
         // Add task manager
         this.addTask2Manager();
@@ -111,8 +152,6 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     @Override
     public void stop(Integer type) {
-        // Stop task container.
-
         // Stop child task consumer
         this.childTaskConsumer.stop();
 
@@ -163,7 +202,7 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
 
     protected JobContext getReduceJobContext() {
         JobContext jobContext = this.getBaseJobContext();
-        jobContext.setTaskName(WorkerConstant.MAP_TASK_REDUCE_NAME);
+        jobContext.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
         jobContext.setTaskResultList(this.getReduceTaskResultList());
         return jobContext;
     }
@@ -175,17 +214,27 @@ public class MapReduceTaskMaster extends AbstractDistributeTaskMaster {
     protected void persistReduceTask(ProcessResult processResult) {
         long jobId = this.jobInstanceDTO.getJobId();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long version = this.jobInstanceDTO.getDispatchVersion();
         long circleId = this.circleIdGenerator.get();
 
         Task task = new Task();
         task.setJobId(this.jobInstanceDTO.getJobId());
         task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        task.setDispatchVersion(version);
+        task.setMapTaskId(0L);
         task.setCircleId(this.circleIdGenerator.get());
-        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, circleId, this.acquireTaskId());
+        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.acquireTaskId());
         task.setTaskId(uniqueId);
-        task.setTaskName(TaskConstant.REDUCE_PARENT_TASK_NAME);
-        task.setWorkerAddress(this.localWorkerAddress);
-        task.setTaskParentId(TaskUtil.getReduceParentUniqueId(jobId, instanceId, circleId));
+        task.setTaskName(TaskConstant.MAP_TASK_REDUCE_NAME);
+        task.setWorkerAddress(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
+
+        // Second delay
+        if (this.isSecondDelay()) {
+            task.setTaskParentId(this.circleTaskUniqueId);
+        } else {
+            task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
+        }
+
         task.setStatus(processResult.getStatus().getStatus());
         task.setResult(processResult.getResult());
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));

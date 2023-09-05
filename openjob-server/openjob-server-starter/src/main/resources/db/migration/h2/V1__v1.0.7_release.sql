@@ -268,6 +268,7 @@ CREATE TABLE `job_instance`
     execute_time         BIGINT NOT NULL COMMENT 'Execute time',
     complete_time        BIGINT DEFAULT 0 NOT NULL COMMENT 'Complete time',
     last_report_time     BIGINT DEFAULT 0 NOT NULL COMMENT 'Last report time',
+    dispatch_version     BIGINT DEFAULT 0 NOT NULL COMMENT 'Dispatch version',
     processor_type       VARCHAR(16) DEFAULT '' NOT NULL COMMENT 'Processor type',
     processor_info       TEXT NOT NULL COMMENT 'Processor info',
     execute_type         VARCHAR(16) DEFAULT '' NOT NULL COMMENT 'Execute time',
@@ -279,6 +280,7 @@ CREATE TABLE `job_instance`
     execute_timeout      INT DEFAULT 0 NOT NULL COMMENT 'Execute timeout',
     worker_address       VARCHAR(32) DEFAULT '' NOT NULL COMMENT 'Worker address',
     execute_strategy     TINYINT DEFAULT 1 NOT NULL COMMENT 'Execute strategy. 1=Discard after task 2=Overlay before task 3=Concurrency',
+    execute_once         TINYINT DEFAULT 2 NOT NULL COMMENT 'Execute once, 1=yes 2=no',
     deleted              TINYINT DEFAULT 2 NOT NULL COMMENT 'Delete status. 1=yes 2=no',
     delete_time          BIGINT DEFAULT 0 NOT NULL COMMENT 'Delete time',
     update_time          BIGINT NOT NULL COMMENT 'Create time',
@@ -315,20 +317,21 @@ CREATE INDEX job_instance_log_idx_job_instance_id_create_time ON `job_instance_l
 DROP TABLE IF EXISTS `job_instance_task`;
 CREATE TABLE `job_instance_task`
 (
-    id              INT AUTO_INCREMENT PRIMARY KEY COMMENT 'PK',
-    job_id          BIGINT NOT NULL COMMENT 'Job id',
-    job_instance_id BIGINT NOT NULL COMMENT 'Instance id',
-    circle_id       BIGINT NOT NULL COMMENT 'Circle id',
-    task_id         VARCHAR(64) DEFAULT '' NOT NULL COMMENT 'Task id',
-    parent_task_id  VARCHAR(64) DEFAULT '0' NOT NULL COMMENT 'Parent task id',
-    task_name       VARCHAR(128) DEFAULT '' NOT NULL COMMENT 'Task name',
-    status          TINYINT DEFAULT 1 NOT NULL COMMENT 'Instance task status',
-    result          CLOB COMMENT 'Task result',
-    worker_address  VARCHAR(128) DEFAULT '' NOT NULL COMMENT 'Worker address',
-    deleted         TINYINT DEFAULT 2 NOT NULL COMMENT 'Delete status. 1=yes 2=no',
-    delete_time     BIGINT DEFAULT 0 NOT NULL COMMENT 'Delete time',
-    create_time     BIGINT COMMENT 'Create time',
-    update_time     BIGINT COMMENT 'Update time'
+    id               INT AUTO_INCREMENT PRIMARY KEY COMMENT 'PK',
+    job_id           BIGINT NOT NULL COMMENT 'Job id',
+    job_instance_id  BIGINT NOT NULL COMMENT 'Instance id',
+    dispatch_version BIGINT DEFAULT 0 NOT NULL COMMENT 'Dispatch version',
+    circle_id        BIGINT NOT NULL COMMENT 'Circle id',
+    task_id          VARCHAR(64) DEFAULT '' NOT NULL COMMENT 'Task id',
+    parent_task_id   VARCHAR(64) DEFAULT '0' NOT NULL COMMENT 'Parent task id',
+    task_name        VARCHAR(128) DEFAULT '' NOT NULL COMMENT 'Task name',
+    status           TINYINT DEFAULT 1 NOT NULL COMMENT 'Instance task status',
+    result           CLOB COMMENT 'Task result',
+    worker_address   VARCHAR(128) DEFAULT '' NOT NULL COMMENT 'Worker address',
+    deleted          TINYINT DEFAULT 2 NOT NULL COMMENT 'Delete status. 1=yes 2=no',
+    delete_time      BIGINT DEFAULT 0 NOT NULL COMMENT 'Delete time',
+    create_time      BIGINT COMMENT 'Create time',
+    update_time      BIGINT COMMENT 'Update time'
 );
 
 CREATE INDEX job_instance_task_idx_job_instance_id_create_time ON `job_instance_task` (`job_instance_id`, `create_time`);

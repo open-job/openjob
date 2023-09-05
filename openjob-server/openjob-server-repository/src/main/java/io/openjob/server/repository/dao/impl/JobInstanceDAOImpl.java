@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.Predicate;
@@ -30,10 +31,12 @@ import java.util.Set;
 @Component
 public class JobInstanceDAOImpl implements JobInstanceDAO {
     private final JobInstanceRepository jobInstanceRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository) {
+    public JobInstanceDAOImpl(JobInstanceRepository jobInstanceRepository, JdbcTemplate jdbcTemplate) {
         this.jobInstanceRepository = jobInstanceRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -51,7 +54,12 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     @Override
     public Integer updateStatusById(Long id, Integer status, Integer failStatus) {
         long now = DateUtil.timestamp();
-        return this.jobInstanceRepository.update(id, status, failStatus, now, now);
+        return this.jobInstanceRepository.updateStatus(id, status, failStatus, now, now);
+    }
+
+    @Override
+    public Integer batchUpdateStatus(List<JobInstance> updateList) {
+        return null;
     }
 
     @Override
@@ -76,13 +84,18 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
-    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance, Long lastReportTime) {
-        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), lastReportTime);
+    public Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instance, Long lastReportTime, Long dispatchVersion) {
+        return this.jobInstanceRepository.updateByRunning(id, workerAddress, instance.getStatus(), lastReportTime, dispatchVersion);
     }
 
     @Override
-    public JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList) {
-        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeleted(jobId, id, statusList, CommonConstant.NO);
+    public Integer updateDispatchVersion(Long id, Long dispatchVersion) {
+        return this.jobInstanceRepository.updateDispatchVersion(id, dispatchVersion);
+    }
+
+    @Override
+    public JobInstance getOneByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, Long id, List<Integer> statusList) {
+        return this.jobInstanceRepository.findFirstByJobIdAndIdNotAndStatusInAndDeletedAndExecuteOnce(jobId, id, statusList, CommonConstant.NO, CommonConstant.NO);
     }
 
     @Override
@@ -91,13 +104,18 @@ public class JobInstanceDAOImpl implements JobInstanceDAO {
     }
 
     @Override
+    public List<JobInstance> getListByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, List<Integer> statusList) {
+        return this.jobInstanceRepository.findByJobIdAndStatusInAndDeletedAndExecuteOnce(jobId, statusList, CommonConstant.NO, CommonConstant.NO);
+    }
+
+    @Override
     public Long countTotalByNamespace(Long namespaceId) {
         return this.jobInstanceRepository.countByNamespaceIdAndDeleted(namespaceId, CommonConstant.NO);
     }
 
     @Override
-    public Long deleteByCreateTim(Long lastTime) {
-        return this.jobInstanceRepository.deleteByCreateTimeLessThanEqual(lastTime);
+    public Long deleteByCreateTime(Long lastTime, List<Integer> statusList) {
+        return this.jobInstanceRepository.deleteByCreateTimeLessThanEqualAndStatusIn(lastTime, statusList);
     }
 
     @Override

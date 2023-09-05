@@ -11,9 +11,11 @@ import java.util.List;
  */
 @Data
 public class ProcessorMapTaskRequest implements Serializable {
-    private long jobId;
-    private long jobInstanceId;
-    private long taskId;
+    private Long jobId;
+    private Long jobInstanceId;
+    private Long taskId;
     private String taskName;
+    private Integer initValueId;
+    private Integer taskNum;
     private List<byte[]> tasks;
 }

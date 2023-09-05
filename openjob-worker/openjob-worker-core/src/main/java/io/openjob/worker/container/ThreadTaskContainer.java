@@ -8,6 +8,7 @@ import io.openjob.worker.request.ContainerTaskStatusRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,11 @@ public class ThreadTaskContainer extends BaseTaskContainer {
 
     @Override
     public void execute(JobContext jobContext) {
-        this.executorService.submit(new ThreadTaskProcessor(jobContext));
+        // Submit future
+        Future<?> future = this.executorService.submit(new ThreadTaskProcessor(jobContext));
+
+        // Add task future
+        TaskContainerManager.INSTANCE.addTask(jobContext.getTaskUniqueId(), future);
     }
 
     @Override

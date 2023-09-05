@@ -1,6 +1,7 @@
 package io.openjob.server.scheduler.timer;
 
 import io.openjob.common.OpenjobSpringContext;
+import io.openjob.common.constant.CommonConstant;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class SchedulerTimerTask extends AbstractTimerTask {
     protected Long jobId;
+    private Long circleId;
+    private Long dispatchVersion;
     protected String jobParamType;
     protected String jobParams;
     protected String jobExtendParamsType;
@@ -29,8 +32,8 @@ public class SchedulerTimerTask extends AbstractTimerTask {
     protected Integer concurrency;
     protected String timeExpressionType;
     protected String timeExpression;
-
     private Integer executeStrategy;
+    private Integer executeOnce;
 
     public SchedulerTimerTask(Long taskId, Long slotsId, Long expiration) {
         super(taskId, slotsId, expiration);

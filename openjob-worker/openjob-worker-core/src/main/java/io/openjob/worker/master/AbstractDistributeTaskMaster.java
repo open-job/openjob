@@ -4,21 +4,26 @@ import akka.actor.ActorContext;
 import akka.actor.ActorSelection;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
-import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
+import io.openjob.worker.request.MasterCheckContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
+import io.openjob.worker.util.AddressUtil;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -36,14 +42,10 @@ import java.util.stream.Collectors;
 public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
     protected ScheduledExecutorService scheduledService;
+    protected AtomicBoolean submitting = new AtomicBoolean(false);
 
     public AbstractDistributeTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);
-    }
-
-    @Override
-    public void submit() {
-
     }
 
     @Override
@@ -57,10 +59,70 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         );
 
         // Check task complete status.
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskStatusChecker(this), 1, 3L, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new TaskSubmitterAndChecker(this), 1, 3L, TimeUnit.SECONDS);
 
         // Pull failover task to redispatch.
-        this.scheduledService.scheduleWithFixedDelay(new AbstractDistributeTaskMaster.TaskFailoverPuller(this), 1, 3L, TimeUnit.SECONDS);
+        this.scheduledService.scheduleWithFixedDelay(new TaskFailover(this), 1, 3L, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void submit() {
+        // Async submit many tasks
+        this.submitting.set(true);
+    }
+
+    @Override
+    protected void doCircleSecondStatus() {
+        this.taskDAO.updateStatusByTaskId(this.circleTaskUniqueId, this.getCircleTaskStatus());
+        super.doCircleSecondStatus();
+    }
+
+    @Override
+    protected Boolean isTaskComplete(Long instanceId, Long circleId) {
+        Integer nonFinishCount = taskDAO.countTaskAndExcludeId(instanceId, circleId, TaskStatusEnum.NON_FINISH_LIST, this.circleTaskUniqueId);
+        return nonFinishCount <= 0;
+    }
+
+    /**
+     * Do submit
+     */
+    protected void doSubmit() {
+
+    }
+
+    /**
+     * Do check worker container
+     */
+    protected void doCheckWorkerContainer() {
+        Set<String> failWorkers = Sets.newConcurrentHashSet();
+
+        // Do check worker container
+        this.containerWorkers.stream()
+                .filter((w) -> !AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress).equals(w))
+                .forEach(wd -> {
+                    ActorSelection checkSelection = WorkerUtil.getWorkerContainerActor(wd);
+
+                    for (int i = 0; i < WorkerConstant.CHECK_WORKER_RETRY_TIMES; i++) {
+                        try {
+                            MasterCheckContainerRequest checkRequest = new MasterCheckContainerRequest();
+                            checkRequest.setJobId(this.jobInstanceDTO.getJobId());
+                            checkRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+                            FutureUtil.mustAsk(checkSelection, checkRequest, WorkerResponse.class, 3000L);
+                            break;
+                        } catch (Throwable throwable) {
+                            failWorkers.add(wd);
+                            log.warn("Task worker container check failed!", throwable);
+                        }
+                    }
+                });
+
+        if (CollectionUtils.isEmpty(failWorkers)) {
+            return;
+        }
+
+        // Do failover
+        Integer count = TaskDAO.INSTANCE.batchUpdateFailoverByWorkerAddress(new ArrayList<>(failWorkers));
+        log.info("Do task worker container failover success! workers={} count={}", failWorkers, count);
     }
 
     /**
@@ -68,6 +130,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
      *
      * @param startRequests start requests.
      * @param isFailover    is failover
+     * @param failWorkers   fail workers
      */
     public void dispatchTasks(List<MasterStartContainerRequest> startRequests, Boolean isFailover, Set<String> failWorkers) {
         String workerAddress = WorkerUtil.selectOneWorker(failWorkers);
@@ -90,7 +153,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     /**
      * Dispatch tasks.
      *
-     * @param workerAddress worker dddress
+     * @param workerAddress worker address
      * @param startRequests start requests.
      * @param isFailover    is failover
      */
@@ -103,11 +166,6 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         // Not failover to persist tasks.
         if (!isFailover) {
             this.persistTasks(workerAddress, startRequests);
-        }
-
-        // Switch running status.
-        if (!this.running.get()) {
-            this.running.set(true);
         }
 
         MasterBatchStartContainerRequest batchRequest = new MasterBatchStartContainerRequest();
@@ -125,7 +183,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
     }
 
     protected void persistTasks(String workerAddress, List<MasterStartContainerRequest> startRequests) {
-        List<Task> taskList = startRequests.stream().map(m -> this.convertToTask(m, workerAddress)).collect(Collectors.toList());
+        List<Task> taskList = startRequests.stream().filter(s -> CommonConstant.YES.equals(s.getPersistent()))
+                .map(m -> this.convertToTask(m, workerAddress)).collect(Collectors.toList());
 
         // Batch add task.
         taskDAO.batchAdd(taskList);
@@ -151,23 +210,70 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         return jobContext;
     }
 
-    protected static class TaskStatusChecker implements Runnable {
+    /**
+     * Persist parent circle task
+     */
+    protected void persistCircleTask() {
+        MasterStartContainerRequest startRequest = this.getMasterStartContainerRequest();
+        Task task = this.convertToTask(startRequest, AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
+
+        // Parent task name
+        task.setTaskName("");
+        task.setStatus(TaskStatusEnum.INIT.getStatus());
+        task.setTaskParentId(startRequest.getParentTaskUniqueId());
+        taskDAO.add(task);
+
+        // Circle task id
+        this.circleTaskUniqueId = task.getTaskId();
+
+        // Parent task id
+        this.circleTaskId = this.taskIdGenerator.get();
+    }
+
+    @Override
+    protected MasterStartContainerRequest getMasterStartContainerRequest() {
+        MasterStartContainerRequest startRequest = super.getMasterStartContainerRequest();
+        if (Objects.nonNull(this.circleTaskId)) {
+            startRequest.setParentTaskId(this.circleTaskId);
+        }
+        return startRequest;
+    }
+
+    protected static class TaskSubmitterAndChecker implements Runnable {
         private final AbstractDistributeTaskMaster taskMaster;
 
-        public TaskStatusChecker(AbstractDistributeTaskMaster taskMaster) {
+        public TaskSubmitterAndChecker(AbstractDistributeTaskMaster taskMaster) {
             this.taskMaster = taskMaster;
         }
 
         @Override
         public void run() {
             try {
-                this.doRun();
+                // First to submit task, then run check task status
+                if (this.taskMaster.submitting.get()) {
+                    // Async to submit task
+                    this.submitTask();
+                } else {
+                    // Check task status
+                    this.checkTaskStatus();
+                }
             } catch (Throwable throwable) {
                 log.error("Task status checker failed!", throwable);
             }
         }
 
-        protected void doRun() {
+        protected void submitTask() {
+            // First to do submit
+            this.taskMaster.doSubmit();
+
+            // Then running status.
+            this.taskMaster.running.set(true);
+
+            // Submit status
+            this.taskMaster.submitting.set(false);
+        }
+
+        protected void checkTaskStatus() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;
@@ -181,34 +287,39 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
                 try {
                     this.taskMaster.completeTask();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("TaskSubmitterAndChecker completeTask failed!", e);
                 }
-
-                // When task complete reset status.
-                this.taskMaster.running.set(false);
             }
         }
     }
 
-    protected static class TaskFailoverPuller implements Runnable {
+    protected static class TaskFailover implements Runnable {
 
         protected TaskDAO taskDAO = TaskDAO.INSTANCE;
         private final AbstractDistributeTaskMaster taskMaster;
 
-        public TaskFailoverPuller(AbstractDistributeTaskMaster taskMaster) {
+        public TaskFailover(AbstractDistributeTaskMaster taskMaster) {
             this.taskMaster = taskMaster;
         }
 
         @Override
         public void run() {
             try {
-                this.doRun();
+                // Check task worker container.
+                this.checkTaskWorkerContainer();
+
+                // Dispatch failover task
+                this.dispatchPullFailoverTask();
             } catch (Throwable throwable) {
                 log.error("Task failover puller failed!", throwable);
             }
         }
 
-        protected void doRun() {
+        protected void checkTaskWorkerContainer() {
+            this.taskMaster.doCheckWorkerContainer();
+        }
+
+        protected void dispatchPullFailoverTask() {
             // When task is running to check status.
             if (!this.taskMaster.running.get()) {
                 return;

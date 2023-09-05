@@ -12,4 +12,9 @@ public abstract class BaseTaskContainer implements TaskContainer {
     public BaseTaskContainer(MasterStartContainerRequest startRequest) {
         this.startRequest = startRequest;
     }
+
+    @Override
+    public void stopTask(String taskId) {
+        TaskContainerManager.INSTANCE.stopAndRemoveTask(taskId);
+    }
 }

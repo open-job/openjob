@@ -40,7 +40,7 @@ public class WorkerJobInstanceConsumer extends BaseConsumer<WorkerJobInstanceSta
         @Override
         public void run() {
             try {
-                this.tasks.forEach(r -> OpenjobSpringContext.getBean(JobInstanceService.class).handleConsumerInstanceStatus(r));
+                OpenjobSpringContext.getBean(JobInstanceService.class).handleConsumerInstanceStatus(tasks);
             } catch (Throwable throwable) {
                 log.error("Handler consumer instance status failed!", throwable);
             }

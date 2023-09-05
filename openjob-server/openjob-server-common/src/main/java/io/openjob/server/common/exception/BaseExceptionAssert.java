@@ -42,6 +42,17 @@ public interface BaseExceptionAssert extends BaseEnum {
     }
 
     /**
+     * Assert is false.
+     *
+     * @param condition condition
+     */
+    default void assertIsFalse(Boolean condition) {
+        if (condition) {
+            throw newException();
+        }
+    }
+
+    /**
      * Assert is true.
      *
      * @param condition condition

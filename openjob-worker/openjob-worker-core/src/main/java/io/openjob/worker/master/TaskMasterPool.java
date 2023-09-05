@@ -60,6 +60,6 @@ public class TaskMasterPool {
     public static void offlineWorkers(Set<String> offlineWorkers) {
         // Set all task of offline worker to exception status.
         Integer size = TaskDAO.INSTANCE.batchUpdateFailoverByWorkerAddress(new ArrayList<>(offlineWorkers));
-        log.info("Update by offline workerAddress list success! count={}", size);
+        log.info("Update by offline workerAddress list success! workers={} count={}", offlineWorkers, size);
     }
 }

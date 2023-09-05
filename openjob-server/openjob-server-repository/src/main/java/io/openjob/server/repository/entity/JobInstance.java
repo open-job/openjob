@@ -80,6 +80,9 @@ public class JobInstance {
     @Column(name = "`last_report_time`")
     private Long lastReportTime;
 
+    @Column(name = "`dispatch_version`")
+    private Long dispatchVersion;
+
     @Column(name = "`processor_type`")
     private String processorType;
 
@@ -112,6 +115,9 @@ public class JobInstance {
 
     @Column(name = "`execute_strategy`")
     private Integer executeStrategy;
+
+    @Column(name = "`execute_once`")
+    private Integer executeOnce;
 
     @Column(name = "`deleted`")
     private Integer deleted;

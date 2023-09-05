@@ -50,6 +50,16 @@ public enum InstanceStatusEnum {
     private final String message;
 
     /**
+     * Complete status.
+     */
+    public static final List<Integer> COMPLETE = Arrays.asList(
+            SUCCESS.getStatus(),
+            FAIL.getStatus(),
+            STOP.getStatus(),
+            CANCEL.getStatus()
+    );
+
+    /**
      * Not complete status.
      */
     public static final List<Integer> NOT_COMPLETE = Arrays.asList(

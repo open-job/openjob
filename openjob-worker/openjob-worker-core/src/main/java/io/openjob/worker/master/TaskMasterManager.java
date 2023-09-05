@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.util.DateUtil;
-import io.openjob.worker.entity.Task;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -85,6 +84,8 @@ public class TaskMasterManager {
                     taskMaster.stop(JobInstanceStopEnum.TIMEOUT.getType());
                 } catch (Throwable throwable) {
                     log.error("Job task timeout and stop failed!", throwable);
+                } finally {
+                    this.taskMasterManager.remove(i);
                 }
             });
         }

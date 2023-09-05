@@ -32,6 +32,9 @@ public class JobInstanceTask {
     @Column(name = "`job_instance_id`")
     private Long jobInstanceId;
 
+    @Column(name = "`dispatch_version`")
+    private Long dispatchVersion;
+
     @Column(name = "`circle_id`")
     private Long circleId;
 

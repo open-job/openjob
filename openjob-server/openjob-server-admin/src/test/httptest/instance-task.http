@@ -1,0 +1,12 @@
+### list-second
+GET http://127.0.0.1:8080/admin/instance-task/list-second?jobInstanceId=137&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 79f74383e2c92ae01e172ced4c9267d5
+
+
+### list-child
+GET http://127.0.0.1:8080/admin/instance-task/list-child?taskId=9_137_1692101276049_60_3&page=1&size=10
+accept: */*
+Content-Type: application/json
+Session: 79f74383e2c92ae01e172ced4c9267d5

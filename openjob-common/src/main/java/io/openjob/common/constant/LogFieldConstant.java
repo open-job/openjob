@@ -21,6 +21,8 @@ public class LogFieldConstant {
 
     public static final String JOB_INSTANCE_TASK_ID = "job_instance_task_id";
 
+    public static final String JOB_DISPATCH_VERSION = "job_dispatch_version";
+
     public static final String TASK_ID = "job_instance_taskId";
 
     public static final String CIRCLE_ID = "circle_id";
