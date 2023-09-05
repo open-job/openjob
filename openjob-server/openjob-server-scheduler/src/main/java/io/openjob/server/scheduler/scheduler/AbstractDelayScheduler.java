@@ -106,5 +106,16 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         public void setFinish(Boolean finish) {
             this.finish.set(finish);
         }
+
+        /**
+         * Fail sleep
+         */
+        protected void failSleep(){
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
