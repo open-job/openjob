@@ -45,7 +45,7 @@ public enum CodeEnum implements CodeExceptionAssert {
     HTTP_PROCESSOR_JSON_KV_INVALID(421, "Http json kv cat not be empty!"),
     HTTP_PROCESSOR_STRING_V_INVALID(422, "Http string value cat not be empty!"),
     JOB_CRON_INTERVAL_INVALID(423, "Job cron interval invalid!"),
-
+    JOB_FIXED_RATE_INTERVAL_INVALID(424, "Job fixed rate interval invalid!"),
 
     // Delay
     DELAY_TOPIC_EXIST(500, "Topic is exist!"),

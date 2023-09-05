@@ -113,6 +113,8 @@ public class JobServiceImpl implements JobService {
             job.setNextExecuteTime(Long.valueOf(addJobRequest.getTimeExpression()));
         } else if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType())) {
             job.setNextExecuteTime(DateUtil.timestamp());
+        } else if (TimeExpressionTypeEnum.isFixedRate(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
+            job.setNextExecuteTime(DateUtil.timestamp() + Long.parseLong(addJobRequest.getTimeExpression()));
         }
 
         long id = this.jobDAO.save(job);
@@ -141,6 +143,7 @@ public class JobServiceImpl implements JobService {
 
         // Condition
         boolean isUpdateCron = TimeExpressionTypeEnum.isCron(updateJob.getTimeExpressionType());
+        boolean isUpdateFixRate = TimeExpressionTypeEnum.isFixedRate(updateJob.getTimeExpressionType());
         boolean isRunningStatus = JobStatusEnum.isRunning(updateJob.getStatus());
 
         // Parse time expression
@@ -148,6 +151,8 @@ public class JobServiceImpl implements JobService {
             updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression(), null));
         } else if (TimeExpressionTypeEnum.isOneTime(updateJobRequest.getTimeExpressionType())) {
             updateJob.setNextExecuteTime(Long.valueOf(updateJobRequest.getTimeExpression()));
+        } else if (isRunningStatus && isUpdateFixRate) {
+            updateJob.setNextExecuteTime(DateUtil.timestamp() + Long.parseLong(updateJobRequest.getTimeExpression()));
         }
 
         // Update
@@ -180,6 +185,8 @@ public class JobServiceImpl implements JobService {
         Job originJob = this.jobDAO.getById(request.getId());
         if (TimeExpressionTypeEnum.isCron(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
             nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression(), null);
+        } else if (TimeExpressionTypeEnum.isFixedRate(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
+            nextExecuteTime = DateUtil.timestamp() + Long.parseLong(originJob.getTimeExpression());
         }
 
         this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null, nextExecuteTime);
@@ -337,6 +344,13 @@ public class JobServiceImpl implements JobService {
             long two = this.parseTimeExpression(request.getTimeExpression(), new Date(one * 1000L));
             if ((two - one) < TimeUnit.MINUTES.toSeconds(1)) {
                 CodeEnum.JOB_CRON_INTERVAL_INVALID.throwException();
+            }
+        }
+
+        // Fixed rate
+        if (TimeExpressionTypeEnum.isFixedRate(request.getTimeExpressionType())) {
+            if (TimeUnit.MINUTES.toSeconds(1) >= request.getTimeExpressionValue()) {
+                CodeEnum.JOB_FIXED_RATE_INTERVAL_INVALID.throwException();
             }
         }
     }

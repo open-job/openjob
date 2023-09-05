@@ -132,17 +132,22 @@ public class JobSchedulingService {
 
         // Update job next execute time.
         jobs.forEach(j -> {
-            // Cron job
             if (TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
+                // Cron job
                 try {
                     calculateCronTimeExpression(j);
                 } catch (ParseException parseException) {
                     log.error("Cron expression({}) is invalid!", j.getTimeExpression());
                 }
-            }
+            } else if (TimeExpressionTypeEnum.isFixedRate(j.getTimeExpressionType())) {
+                // Fixed rate
+                Long timestamp = DateUtil.timestamp();
+                Long executeTime = j.getNextExecuteTime() > timestamp ? j.getNextExecuteTime() : timestamp;
+                Long nextTime = executeTime + Long.parseLong(j.getTimeExpression());
+                this.jobDAO.updateNextExecuteTime(j.getId(), nextTime, DateUtil.timestamp());
 
-            // One time
-            if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
+            } else if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
+                // One time
                 this.jobDAO.updateByStatusOrDeleted(j.getId(), JobStatusEnum.STOP.getStatus(), null, null);
             }
         });
