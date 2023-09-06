@@ -392,6 +392,9 @@ public class JobServiceImpl implements JobService {
     private void createSecondJobInstance(Job job) {
         Long timestamp = DateUtil.timestamp();
         JobInstance jobInstance = BeanMapperUtil.map(job, JobInstance.class);
+
+        // Fixed save to update bug
+        jobInstance.setId(null);
         jobInstance.setJobId(job.getId());
         jobInstance.setDeleteTime(0L);
         jobInstance.setDeleted(CommonConstant.NO);
