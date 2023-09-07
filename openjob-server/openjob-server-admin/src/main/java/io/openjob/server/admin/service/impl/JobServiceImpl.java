@@ -280,6 +280,7 @@ public class JobServiceImpl implements JobService {
      * @param request request
      */
     private void validAndInitJob(AddJobRequest request) {
+        // Processor type valid
         if (ProcessorTypeEnum.isShell(request.getProcessorType())) {
             // Shell
             if (StringUtils.isBlank(request.getShellProcessorType())) {
@@ -325,8 +326,9 @@ public class JobServiceImpl implements JobService {
             request.setProcessorInfo(JsonUtil.encode(httpProcessor));
         }
 
-        // ShardingParams
+        // Execute type valid
         if (ExecuteTypeEnum.isSharding(request.getExecuteType())) {
+            // ShardingParams
             CodeEnum.SHARDING_PARAMS_INVALID.assertIsFalse(StringUtils.isBlank(request.getShardingParams()));
 
             // Format
@@ -338,19 +340,24 @@ public class JobServiceImpl implements JobService {
             request.setParams(request.getShardingParams());
         }
 
-        // Cron
+        // Time expression type valid
         if (TimeExpressionTypeEnum.isCron(request.getTimeExpressionType())) {
+            // Cron
             long one = this.parseTimeExpression(request.getTimeExpression(), null);
             long two = this.parseTimeExpression(request.getTimeExpression(), new Date(one * 1000L));
             if ((two - one) < TimeUnit.MINUTES.toSeconds(1)) {
                 CodeEnum.JOB_CRON_INTERVAL_INVALID.throwException();
             }
-        }
-
-        // Fixed rate
-        if (TimeExpressionTypeEnum.isFixedRate(request.getTimeExpressionType())) {
+        } else if (TimeExpressionTypeEnum.isFixedRate(request.getTimeExpressionType())) {
+            // Fixed rate
             if (TimeUnit.MINUTES.toSeconds(1) >= request.getTimeExpressionValue()) {
                 CodeEnum.JOB_FIXED_RATE_INTERVAL_INVALID.throwException();
+            }
+        } else if (TimeExpressionTypeEnum.isSecondDelay(request.getTimeExpressionType())) {
+            // Second delay
+            long delay = Optional.ofNullable(request.getTimeExpressionValue()).orElse(0L);
+            if (delay <= 0 || delay > 60) {
+                CodeEnum.JOB_SECOND_DELAY_INTERVAL_INVALID.throwException();
             }
         }
     }
@@ -392,6 +399,9 @@ public class JobServiceImpl implements JobService {
     private void createSecondJobInstance(Job job) {
         Long timestamp = DateUtil.timestamp();
         JobInstance jobInstance = BeanMapperUtil.map(job, JobInstance.class);
+
+        // Fixed save to update bug
+        jobInstance.setId(null);
         jobInstance.setJobId(job.getId());
         jobInstance.setDeleteTime(0L);
         jobInstance.setDeleted(CommonConstant.NO);

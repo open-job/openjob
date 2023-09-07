@@ -210,13 +210,14 @@ public class JobInstanceTaskServiceImpl implements JobInstanceTaskService {
 
         // Pull task from worker at first page
         if (NumberUtils.INTEGER_ZERO.equals(request.getPage() - 1)) {
+            Long pullCircleId = 0L;
             JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(request.getJobInstanceId(), TaskConstant.DEFAULT_PARENT_ID);
-            if (Objects.isNull(latestParentTask)) {
-                return pageVO;
+            if (Objects.nonNull(latestParentTask)) {
+                pullCircleId = latestParentTask.getCircleId();
             }
 
             // Add pull tasks
-            List<ListTaskVO> taskList = this.pullTaskListFromWorker(latestParentTask.getCircleId(), jobInstance);
+            List<ListTaskVO> taskList = this.pullTaskListFromWorker(pullCircleId, jobInstance);
             pageVO.getList().addAll(0, taskList);
         }
         return pageVO;

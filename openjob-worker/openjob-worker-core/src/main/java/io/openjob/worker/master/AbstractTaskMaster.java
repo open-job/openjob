@@ -135,8 +135,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Remove task from manager
         this.removeTaskFromManager();
 
-        // Not second delay task or execute once
-        if (!this.isSecondDelay() || CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
+        // Stop complete: any task to destroy task container
+        // Normal complete: not second delay task or execute once to destroy task container
+        if (this.stopping.get() > 0 || !this.isSecondDelay() || CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
             // When task complete reset status.
             this.running.set(false);
 

@@ -61,7 +61,6 @@ public class StandaloneTaskMaster extends AbstractTaskMaster {
         // Second delay to shut down scheduler
         if (this.isSecondDelay()) {
             this.secondDelayService.shutdown();
-            return;
         }
 
         super.stop(type);

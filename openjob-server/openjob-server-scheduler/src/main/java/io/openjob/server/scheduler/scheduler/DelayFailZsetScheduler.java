@@ -103,6 +103,7 @@ public class DelayFailZsetScheduler extends AbstractDelayZsetScheduler {
                     break;
                 } catch (Throwable ex) {
                     log.error("Range delay fail instance failed!", ex);
+                    this.failSleep();
                 }
             }
 
