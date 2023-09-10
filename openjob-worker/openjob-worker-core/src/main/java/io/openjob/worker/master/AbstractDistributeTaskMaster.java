@@ -236,7 +236,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         this.circleTaskId = this.taskIdGenerator.get();
     }
 
-    protected void persistProcessResultTask(String taskName,ProcessResult processResult) {
+    protected void persistProcessResultTask(String taskName, ProcessResult processResult) {
         long jobId = this.jobInstanceDTO.getJobId();
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
         long version = this.jobInstanceDTO.getDispatchVersion();
@@ -265,7 +265,7 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
     }
 
-    protected TaskResult convertTaskToTaskResult(Task task){
+    protected TaskResult convertTaskToTaskResult(Task task) {
         TaskResult taskResult = new TaskResult();
         taskResult.setJobInstanceId(task.getInstanceId());
         taskResult.setCircleId(task.getCircleId());

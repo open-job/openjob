@@ -33,7 +33,7 @@ public class BroadcastTaskMaster extends AbstractDistributeTaskMaster {
     /**
      * Default max task num
      */
-    private final static Long DEFAULT_MAX_TASK_NUM = 1024L;
+    private static final Long DEFAULT_MAX_TASK_NUM = 1024L;
 
     public BroadcastTaskMaster(JobInstanceDTO jobInstanceDTO, ActorContext actorContext) {
         super(jobInstanceDTO, actorContext);

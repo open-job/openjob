@@ -71,7 +71,7 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
                 result = this.processorHandler.process(this.jobContext);
 
                 // Not broadcast
-                if (!ExecuteTypeEnum.isBroadcast(this.jobContext.getExecuteType())){
+                if (!ExecuteTypeEnum.isBroadcast(this.jobContext.getExecuteType())) {
                     this.processorHandler.postProcess(this.jobContext);
                 }
 

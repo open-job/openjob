@@ -356,7 +356,7 @@ public class JobServiceImpl implements JobService {
         } else if (TimeExpressionTypeEnum.isSecondDelay(request.getTimeExpressionType())) {
             // Second delay
             long delay = Optional.ofNullable(request.getTimeExpressionValue()).orElse(0L);
-            if (delay <= 0 || delay > 60) {
+            if (delay <= 0 || delay > TimeUnit.MINUTES.toSeconds(1)) {
                 CodeEnum.JOB_SECOND_DELAY_INTERVAL_INVALID.throwException();
             }
         }

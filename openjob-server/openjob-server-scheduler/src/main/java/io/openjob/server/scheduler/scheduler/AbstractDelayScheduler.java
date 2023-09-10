@@ -110,7 +110,7 @@ public abstract class AbstractDelayScheduler implements DelayScheduler {
         /**
          * Fail sleep
          */
-        protected void failSleep(){
+        protected void failSleep() {
             try {
                 Thread.sleep(2000L);
             } catch (InterruptedException e) {
