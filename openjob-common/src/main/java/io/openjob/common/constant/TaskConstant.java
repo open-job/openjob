@@ -22,6 +22,11 @@ public class TaskConstant {
     public static final String BROADCAST_NAME = "BROADCAST";
 
     /**
+     * Broadcast post task name
+     */
+    public static final String BROADCAST_POST_NAME = "BROADCAST_POST";
+
+    /**
      * Sharding task name
      */
     public static final String SHARDING_NAME = "SHARDING";

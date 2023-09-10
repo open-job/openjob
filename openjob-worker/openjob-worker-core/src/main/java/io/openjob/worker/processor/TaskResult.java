@@ -9,9 +9,11 @@ import lombok.Data;
  */
 @Data
 public class TaskResult {
-    private Long taskId;
-    private String taskUniqueId;
+    private Long jobInstanceId;
+    private Long circleId;
+    private String taskId;
+    private String parentTaskId;
     private String result;
     private String taskName;
-    private TaskStatusEnum status;
+    private Integer status;
 }

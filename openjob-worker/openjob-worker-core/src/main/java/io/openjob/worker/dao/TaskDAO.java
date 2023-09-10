@@ -196,6 +196,23 @@ public class TaskDAO {
     }
 
     /**
+     * Get list by task name
+     *
+     * @param instanceId instanceId
+     * @param circleId   circleId
+     * @param taskName   taskName
+     * @return List
+     */
+    public List<Task> getListByTaskName(Long instanceId, Long circleId, String taskName) {
+        try {
+            return taskPersistence.findListByTaskName(instanceId, circleId, taskName);
+        } catch (SQLException e) {
+            log.error("Task getListByTaskName failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Get redundant map task
      *
      * @param parentTaskId  parentTaskId

@@ -5,14 +5,18 @@ import akka.actor.ActorSelection;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.openjob.common.constant.CommonConstant;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.dao.TaskDAO;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.entity.Task;
+import io.openjob.worker.processor.ProcessResult;
+import io.openjob.worker.processor.TaskResult;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
 import io.openjob.worker.request.MasterCheckContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
@@ -194,6 +198,8 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
         JobContext jobContext = new JobContext();
         jobContext.setJobId(this.jobInstanceDTO.getJobId());
         jobContext.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        jobContext.setCircleId(this.circleIdGenerator.get());
+        jobContext.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         jobContext.setTaskId(this.acquireTaskId());
         jobContext.setJobParamType(this.jobInstanceDTO.getJobParamType());
         jobContext.setJobParams(this.jobInstanceDTO.getJobParams());
@@ -228,6 +234,47 @@ public abstract class AbstractDistributeTaskMaster extends AbstractTaskMaster {
 
         // Parent task id
         this.circleTaskId = this.taskIdGenerator.get();
+    }
+
+    protected void persistProcessResultTask(String taskName, ProcessResult processResult) {
+        long jobId = this.jobInstanceDTO.getJobId();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long version = this.jobInstanceDTO.getDispatchVersion();
+        long circleId = this.circleIdGenerator.get();
+
+        Task task = new Task();
+        task.setJobId(this.jobInstanceDTO.getJobId());
+        task.setInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        task.setDispatchVersion(version);
+        task.setMapTaskId(0L);
+        task.setCircleId(this.circleIdGenerator.get());
+        String uniqueId = TaskUtil.getRandomUniqueId(jobId, instanceId, version, circleId, this.taskIdGenerator.get());
+        task.setTaskId(uniqueId);
+        task.setTaskName(taskName);
+        task.setWorkerAddress(AddressUtil.getWorkerAddressByLocal(this.localWorkerAddress));
+
+        // Second delay
+        if (this.isSecondDelay()) {
+            task.setTaskParentId(this.circleTaskUniqueId);
+        } else {
+            task.setTaskParentId(TaskConstant.DEFAULT_PARENT_ID);
+        }
+
+        task.setStatus(processResult.getStatus().getStatus());
+        task.setResult(processResult.getResult());
+        TaskDAO.INSTANCE.batchAdd(Collections.singletonList(task));
+    }
+
+    protected TaskResult convertTaskToTaskResult(Task task) {
+        TaskResult taskResult = new TaskResult();
+        taskResult.setJobInstanceId(task.getInstanceId());
+        taskResult.setCircleId(task.getCircleId());
+        taskResult.setTaskId(task.getTaskId());
+        taskResult.setParentTaskId(task.getTaskParentId());
+        taskResult.setResult(task.getResult());
+        taskResult.setTaskName(task.getTaskName());
+        taskResult.setStatus(task.getStatus());
+        return taskResult;
     }
 
     @Override

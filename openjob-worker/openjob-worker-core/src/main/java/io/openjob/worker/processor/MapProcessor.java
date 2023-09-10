@@ -36,7 +36,7 @@ public interface MapProcessor extends JavaProcessor {
 
         // Empty task
         if (CollectionUtils.isEmpty(tasks)) {
-            return result;
+            throw new RuntimeException("Map task can not empty!");
         }
 
         JobContext jobContext = ThreadLocalUtil.getJobContext();
@@ -54,6 +54,7 @@ public interface MapProcessor extends JavaProcessor {
             mapTaskRequest.setJobId(jobContext.getJobId());
             mapTaskRequest.setJobInstanceId(jobContext.getJobInstanceId());
             mapTaskRequest.setTaskId(jobContext.getTaskId());
+            mapTaskRequest.setParentTaskName(jobContext.getTaskName());
             mapTaskRequest.setTaskName(taskName);
             mapTaskRequest.setTaskNum(0);
             mapTaskRequest.setInitValueId(initValueId.get());
