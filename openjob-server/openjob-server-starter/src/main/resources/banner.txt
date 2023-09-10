@@ -9,4 +9,3 @@ ${AnsiColor.GREEN}
  :: Website :: https://openjob.io
  :: Author  :: https://github.com/stelin
  :: Github  :: https://github.com/open-job/openjob
-
