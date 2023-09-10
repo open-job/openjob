@@ -102,6 +102,7 @@ public class DelayStatusListScheduler extends AbstractDelayScheduler {
                     break;
                 } catch (Throwable ex) {
                     log.error("Status list delay instance failed!", ex);
+                    this.failSleep();
                 }
             }
 

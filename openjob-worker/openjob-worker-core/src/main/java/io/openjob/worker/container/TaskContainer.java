@@ -17,9 +17,17 @@ public interface TaskContainer {
 
     /**
      * Stop
+     *
      * @param type type
      */
     void stop(Integer type);
+
+    /**
+     * Stop one task
+     *
+     * @param taskId taskId
+     */
+    void stopTask(String taskId);
 
     /**
      * Destroy

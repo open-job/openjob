@@ -1,11 +1,17 @@
 package io.openjob.worker.actor;
 
 import io.openjob.common.actor.BaseActor;
+import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.JobInstanceStopEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
 import io.openjob.common.request.ServerStopJobInstanceRequest;
 import io.openjob.common.request.ServerSubmitJobInstanceRequest;
 import io.openjob.common.response.Result;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.dto.JobInstanceDTO;
 import io.openjob.worker.master.MapReduceTaskMaster;
@@ -16,6 +22,7 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author stelin swoft@qq.com
@@ -28,9 +35,12 @@ public class TaskMasterActor extends BaseActor {
         return receiveBuilder()
                 .match(ServerSubmitJobInstanceRequest.class, this::submitJobInstance)
                 .match(ServerStopJobInstanceRequest.class, this::stopJobInstance)
+                .match(ServerStopInstanceTaskRequest.class, this::stopInstanceTask)
                 .match(ServerCheckTaskMasterRequest.class, this::checkJobInstance)
                 .match(ContainerBatchTaskStatusRequest.class, this::handleContainerTaskStatus)
                 .match(ProcessorMapTaskRequest.class, this::handleProcessorMapTask)
+                .match(ServerInstanceTaskListPullRequest.class, this::handlePullInstanceTaskList)
+                .match(ServerInstanceTaskChildListPullRequest.class, this::handlePullInstanceTaskChildList)
                 .build();
     }
 
@@ -44,11 +54,11 @@ public class TaskMasterActor extends BaseActor {
             throw new RuntimeException(String.format("Task master is running! jobInstanceId=%s", submitReq.getJobInstanceId()));
         }
 
-        getSender().tell(Result.success(new WorkerResponse()), getSelf());
-
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         jobInstanceDTO.setJobId(submitReq.getJobId());
         jobInstanceDTO.setJobInstanceId(submitReq.getJobInstanceId());
+        jobInstanceDTO.setCircleId(submitReq.getCircleId());
+        jobInstanceDTO.setDispatchVersion(submitReq.getDispatchVersion());
         jobInstanceDTO.setJobParamType(submitReq.getJobParamType());
         jobInstanceDTO.setJobParams(submitReq.getJobParams());
         jobInstanceDTO.setJobExtendParamsType(submitReq.getJobExtendParamsType());
@@ -63,9 +73,13 @@ public class TaskMasterActor extends BaseActor {
         jobInstanceDTO.setConcurrency(submitReq.getConcurrency());
         jobInstanceDTO.setTimeExpression(submitReq.getTimeExpression());
         jobInstanceDTO.setTimeExpressionType(submitReq.getTimeExpressionType());
+        jobInstanceDTO.setExecuteOnce(Optional.ofNullable(submitReq.getExecuteOnce()).orElse(CommonConstant.NO));
 
         TaskMaster taskMaster = TaskMasterPool.get(submitReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.submit();
+
+        // Result
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
     /**
@@ -75,13 +89,30 @@ public class TaskMasterActor extends BaseActor {
      */
     public void stopJobInstance(ServerStopJobInstanceRequest stopReq) {
         if (!TaskMasterPool.contains(stopReq.getJobInstanceId())) {
-            getSender().tell(Result.fail(String.format("Task master is not running! jobInstanceId=%s", stopReq.getJobInstanceId())), getSelf());
+            getSender().tell(Result.fail(String.format("Task master is not running and stop failed! jobInstanceId=%s", stopReq.getJobInstanceId())), getSelf());
             return;
         }
 
         JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
         TaskMaster taskMaster = TaskMasterPool.get(stopReq.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
         taskMaster.stop(JobInstanceStopEnum.NORMAL.getType());
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
+    }
+
+    /**
+     * Stop instance task
+     *
+     * @param request request
+     */
+    public void stopInstanceTask(ServerStopInstanceTaskRequest request) {
+        if (!TaskMasterPool.contains(request.getJobInstanceId())) {
+            getSender().tell(Result.fail(String.format("Task master is not running and stop task failed! jobInstanceId=%s", request.getJobInstanceId())), getSelf());
+            return;
+        }
+
+        JobInstanceDTO jobInstanceDTO = new JobInstanceDTO();
+        TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId(), (id) -> TaskMasterFactory.create(jobInstanceDTO, getContext()));
+        taskMaster.stopTask(request);
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
     }
 
@@ -126,5 +157,37 @@ public class TaskMasterActor extends BaseActor {
         }
 
         getSender().tell(Result.success(new WorkerResponse()), getSelf());
+    }
+
+    /**
+     * Pull instance task list
+     *
+     * @param request request
+     */
+    public void handlePullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
+        TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId());
+        if (Objects.isNull(taskMaster)) {
+            getSender().tell(Result.success(new WorkerInstanceTaskListPullResponse()), getSelf());
+            return;
+        }
+
+        WorkerInstanceTaskListPullResponse response = taskMaster.pullInstanceTaskList(request);
+        getSender().tell(Result.success(response), getSelf());
+    }
+
+    /**
+     * Handle pull instance task child list
+     *
+     * @param request request
+     */
+    public void handlePullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
+        TaskMaster taskMaster = TaskMasterPool.get(request.getJobInstanceId());
+        if (Objects.isNull(taskMaster)) {
+            getSender().tell(Result.success(new WorkerInstanceTaskChildListPullResponse()), getSelf());
+            return;
+        }
+
+        WorkerInstanceTaskChildListPullResponse response = taskMaster.pullInstanceTaskChildList(request);
+        getSender().tell(Result.success(response), getSelf());
     }
 }

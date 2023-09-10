@@ -5,6 +5,8 @@ ${AnsiColor.GREEN}
  | |_| | | |_) | |  __/ | | | |   | | | (_) | | |_) |
   \___/  | .__/   \___| |_| |_|  _/ |  \___/  |_.__/
          |_|                    |__/
- :: Version :: Openjob Server(v1.0.6) Spring Boot(v${spring-boot.version}) Akka(v2.6.19)
+ :: Version :: Openjob Server(v1.0.7) Spring Boot(v${spring-boot.version}) Akka(v2.6.19)
  :: Website :: https://openjob.io
+ :: Author  :: https://github.com/stelin
  :: Github  :: https://github.com/open-job/openjob
+

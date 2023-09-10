@@ -3,6 +3,7 @@ package io.openjob.server.scheduler.service;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.request.ServerCheckTaskMasterRequest;
 import io.openjob.common.response.WorkerResponse;
@@ -14,8 +15,10 @@ import io.openjob.server.common.util.ServerUtil;
 import io.openjob.server.repository.constant.JobStatusEnum;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
+import io.openjob.server.repository.dao.JobInstanceTaskDAO;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
+import io.openjob.server.repository.entity.JobInstanceTask;
 import io.openjob.server.scheduler.autoconfigure.SchedulerProperties;
 import io.openjob.server.scheduler.constant.SchedulerConstant;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
@@ -50,14 +53,20 @@ public class JobSchedulingService {
     private final JobInstanceDAO jobInstanceDAO;
     private final SchedulerWheel schedulerWheel;
     private final SchedulerProperties schedulerProperties;
+    private final JobInstanceTaskDAO jobInstanceTaskDAO;
 
 
     @Autowired
-    public JobSchedulingService(JobDAO jobDAO, JobInstanceDAO jobInstanceDAO, SchedulerWheel schedulerWheel, SchedulerProperties schedulerProperties) {
+    public JobSchedulingService(JobDAO jobDAO,
+                                JobInstanceDAO jobInstanceDAO,
+                                SchedulerWheel schedulerWheel,
+                                SchedulerProperties schedulerProperties,
+                                JobInstanceTaskDAO jobInstanceTaskDAO) {
         this.jobDAO = jobDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.schedulerWheel = schedulerWheel;
         this.schedulerProperties = schedulerProperties;
+        this.jobInstanceTaskDAO = jobInstanceTaskDAO;
     }
 
     /**
@@ -101,24 +110,11 @@ public class JobSchedulingService {
             }
 
             // Add time wheel.
-            timerTasks.add(this.convertToTimerTask(js));
+            timerTasks.add(this.convertToTimerTaskByFailover(js));
         });
 
         // Batch add time task to timing wheel.
         this.schedulerWheel.addTimerTask(timerTasks);
-    }
-
-    private Boolean checkTaskMaster(JobInstance js) {
-        try {
-            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
-            checkRequest.setJobInstanceId(js.getId());
-            checkRequest.setJobId(js.getJobId());
-            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
-            return true;
-        } catch (Throwable e) {
-            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
-            return false;
-        }
     }
 
     /**
@@ -132,21 +128,26 @@ public class JobSchedulingService {
         List<Job> jobs = jobDAO.listScheduledJobs(currentSlots, maxExecuteTime);
 
         // Create job instance.
-        this.createJobInstance(jobs);
+        this.createJobInstance(jobs, CommonConstant.NO);
 
         // Update job next execute time.
         jobs.forEach(j -> {
-            // Cron job
             if (TimeExpressionTypeEnum.isCron(j.getTimeExpressionType())) {
+                // Cron job
                 try {
                     calculateCronTimeExpression(j);
                 } catch (ParseException parseException) {
                     log.error("Cron expression({}) is invalid!", j.getTimeExpression());
                 }
-            }
+            } else if (TimeExpressionTypeEnum.isFixedRate(j.getTimeExpressionType())) {
+                // Fixed rate
+                Long timestamp = DateUtil.timestamp();
+                Long executeTime = j.getNextExecuteTime() > timestamp ? j.getNextExecuteTime() : timestamp;
+                Long nextTime = executeTime + Long.parseLong(j.getTimeExpression());
+                this.jobDAO.updateNextExecuteTime(j.getId(), nextTime, DateUtil.timestamp());
 
-            // One time
-            if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
+            } else if (TimeExpressionTypeEnum.isOneTime(j.getTimeExpressionType())) {
+                // One time
                 this.jobDAO.updateByStatusOrDeleted(j.getId(), JobStatusEnum.STOP.getStatus(), null, null);
             }
         });
@@ -158,7 +159,7 @@ public class JobSchedulingService {
      * @param executeRequestDTO executeRequestDTO
      * @return JobExecuteResponseDTO
      */
-    public JobExecuteResponseDTO execute(JobExecuteRequestDTO executeRequestDTO) {
+    public JobExecuteResponseDTO executeByOnce(JobExecuteRequestDTO executeRequestDTO) {
         Job job = this.jobDAO.getById(executeRequestDTO.getId());
         if (Objects.isNull(job)) {
             throw new RuntimeException("Job is not exist!");
@@ -167,7 +168,7 @@ public class JobSchedulingService {
         job.setParams(executeRequestDTO.getParams());
         job.setExtendParams(executeRequestDTO.getExtendParams());
         job.setNextExecuteTime(DateUtil.timestamp());
-        this.createJobInstance(Collections.singletonList(job));
+        this.createJobInstance(Collections.singletonList(job), CommonConstant.YES);
         return new JobExecuteResponseDTO();
     }
 
@@ -176,7 +177,7 @@ public class JobSchedulingService {
      *
      * @param jobs jobs
      */
-    private void createJobInstance(List<Job> jobs) {
+    private void createJobInstance(List<Job> jobs, Integer executeOnce) {
         List<AbstractTimerTask> timerTasks = new ArrayList<>();
 
         jobs.forEach(j -> {
@@ -194,6 +195,7 @@ public class JobSchedulingService {
             jobInstance.setUpdateTime(now);
             jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
             jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
+            jobInstance.setDispatchVersion(0L);
             jobInstance.setCompleteTime(0L);
             jobInstance.setLastReportTime(0L);
             jobInstance.setProcessorType(j.getProcessorType());
@@ -211,19 +213,26 @@ public class JobSchedulingService {
             jobInstance.setExtendParams(j.getExtendParams());
             jobInstance.setWorkflowId(j.getWorkflowId());
             jobInstance.setExecuteTime(j.getNextExecuteTime());
+            jobInstance.setExecuteOnce(executeOnce);
 
+            // Instance id
             Long instanceId = jobInstanceDAO.save(jobInstance);
             jobInstance.setId(instanceId);
 
-            timerTasks.add(this.convertToTimerTask(jobInstance));
+            // Execute once
+            SchedulerTimerTask schedulerTimerTask = this.convertToTimerTask(jobInstance);
+            schedulerTimerTask.setExecuteOnce(executeOnce);
+            timerTasks.add(schedulerTimerTask);
         });
 
         this.schedulerWheel.addTimerTask(timerTasks);
     }
 
-    private AbstractTimerTask convertToTimerTask(JobInstance js) {
+    private SchedulerTimerTask convertToTimerTask(JobInstance js) {
         SchedulerTimerTask schedulerTask = new SchedulerTimerTask(js.getId(), js.getSlotsId(), js.getExecuteTime());
         schedulerTask.setJobId(js.getJobId());
+        schedulerTask.setCircleId(TaskConstant.DEFAULT_CIRCLE_ID);
+        schedulerTask.setDispatchVersion(js.getDispatchVersion());
         schedulerTask.setJobParamType(js.getParamsType());
         schedulerTask.setJobParams(js.getParams());
         schedulerTask.setJobExtendParamsType(js.getExtendParamsType());
@@ -236,10 +245,12 @@ public class JobSchedulingService {
         schedulerTask.setFailRetryTimes(js.getFailRetryTimes());
         schedulerTask.setFailRetryInterval(js.getFailRetryInterval());
         schedulerTask.setExecuteTimeout(js.getExecuteTimeout());
+        schedulerTask.setDispatchVersion(js.getDispatchVersion());
         schedulerTask.setConcurrency(js.getConcurrency());
         schedulerTask.setTimeExpressionType(js.getTimeExpressionType());
         schedulerTask.setTimeExpression(js.getTimeExpression());
         schedulerTask.setExecuteStrategy(js.getExecuteStrategy());
+        schedulerTask.setExecuteOnce(js.getExecuteOnce());
         return schedulerTask;
     }
 
@@ -270,7 +281,7 @@ public class JobSchedulingService {
         j.setUpdateTime(now);
 
         if (nextExecuteTime < now + (SchedulerConstant.JOB_FIXED_DELAY / SchedulerConstant.UNIT_MS)) {
-            this.createJobInstance(Collections.singletonList(j));
+            this.createJobInstance(Collections.singletonList(j), CommonConstant.NO);
 
             // Update next execute time.
             j.setNextExecuteTime(this.calculateNextExecuteTime(j, nextExecuteTime));
@@ -278,5 +289,44 @@ public class JobSchedulingService {
 
         // Update
         jobDAO.updateNextExecuteTime(j.getId(), j.getNextExecuteTime(), j.getUpdateTime());
+    }
+
+    private SchedulerTimerTask convertToTimerTaskByFailover(JobInstance js) {
+        SchedulerTimerTask schedulerTimerTask = this.convertToTimerTask(js);
+
+        // Second delay to init circle id
+        if (TimeExpressionTypeEnum.isSecondDelay(js.getTimeExpressionType())) {
+            schedulerTimerTask.setCircleId(this.getDispatchCircleId(js.getJobId(), js.getId()));
+        }
+        return schedulerTimerTask;
+    }
+
+    /**
+     * Get dispatch circle id
+     *
+     * @param jobId      jobId
+     * @param instanceId instanceId
+     * @return Long
+     */
+    private Long getDispatchCircleId(Long jobId, Long instanceId) {
+        JobInstanceTask latestParentTask = this.jobInstanceTaskDAO.getLatestParentTask(instanceId, TaskConstant.DEFAULT_PARENT_ID);
+        if (Objects.isNull(latestParentTask)) {
+            return TaskConstant.DEFAULT_CIRCLE_ID;
+        }
+
+        return latestParentTask.getCircleId() + 1;
+    }
+
+    private Boolean checkTaskMaster(JobInstance js) {
+        try {
+            ServerCheckTaskMasterRequest checkRequest = new ServerCheckTaskMasterRequest();
+            checkRequest.setJobInstanceId(js.getId());
+            checkRequest.setJobId(js.getJobId());
+            FutureUtil.mustAsk(ServerUtil.getWorkerTaskMasterActor(js.getWorkerAddress()), checkRequest, WorkerResponse.class, 3000L);
+            return true;
+        } catch (Throwable e) {
+            log.info("Check worker failed! workerAddress={}", js.getWorkerAddress());
+            return false;
+        }
     }
 }

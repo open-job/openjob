@@ -9,11 +9,14 @@ import io.openjob.worker.container.TaskContainerFactory;
 import io.openjob.worker.container.TaskContainerPool;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.request.MasterBatchStartContainerRequest;
+import io.openjob.worker.request.MasterCheckContainerRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +47,9 @@ public class TaskContainerActor extends BaseActor {
                 .match(MasterStartContainerRequest.class, this::handleStartContainer)
                 .match(MasterBatchStartContainerRequest.class, this::handleBatchStartContainer)
                 .match(MasterStopContainerRequest.class, this::handleStopContainer)
+                .match(MasterStopInstanceTaskRequest.class, this::handleStopInstanceTask)
                 .match(MasterDestroyContainerRequest.class, this::handleDestroyContainer)
+                .match(MasterCheckContainerRequest.class, this::handleCheckContainer)
                 .build();
     }
 
@@ -80,6 +85,22 @@ public class TaskContainerActor extends BaseActor {
     }
 
     /**
+     * Handle stop instance task
+     *
+     * @param request request
+     */
+    public void handleStopInstanceTask(MasterStopInstanceTaskRequest request) {
+        TaskContainer taskContainer = TaskContainerPool.get(request.getJobInstanceId());
+        if (Objects.nonNull(taskContainer)) {
+            taskContainer.stopTask(request.getTaskId());
+        }
+
+        WorkerResponse workerResponse = new WorkerResponse();
+        workerResponse.setDeliveryId(request.getDeliveryId());
+        getSender().tell(Result.success(workerResponse), getSelf());
+    }
+
+    /**
      * Handle destroy container.
      *
      * @param destroyReq destroy request
@@ -96,14 +117,31 @@ public class TaskContainerActor extends BaseActor {
     }
 
     /**
+     * Handle check container
+     *
+     * @param checkRequest checkRequest
+     */
+    public void handleCheckContainer(MasterCheckContainerRequest checkRequest) {
+        Optional.ofNullable(TaskContainerPool.get(checkRequest.getJobInstanceId()))
+                .orElseThrow(() -> new RuntimeException(String.format("Task container is not exist!instanceId=%s", checkRequest.getJobInstanceId())));
+
+        getSender().tell(Result.success(new WorkerResponse()), getSelf());
+    }
+
+    /**
      * Handle start container.
      *
      * @param startReq start container.
      */
     private void startContainer(MasterStartContainerRequest startReq) {
         JobContext jobContext = new JobContext();
+        jobContext.setShardingId(startReq.getShardingId());
+        jobContext.setShardingParam(startReq.getShardingParam());
+        jobContext.setShardingNum(startReq.getShardingNum());
         jobContext.setJobId(startReq.getJobId());
         jobContext.setJobInstanceId(startReq.getJobInstanceId());
+        jobContext.setDispatchVersion(startReq.getDispatchVersion());
+        jobContext.setCircleId(startReq.getCircleId());
         jobContext.setTaskId(startReq.getTaskId());
         jobContext.setJobParamType(startReq.getJobParamType());
         jobContext.setJobParams(startReq.getJobParams());

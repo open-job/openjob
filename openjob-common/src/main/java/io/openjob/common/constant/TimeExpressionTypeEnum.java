@@ -48,6 +48,10 @@ public enum TimeExpressionTypeEnum {
         return CRON.getType().equals(type);
     }
 
+    public static Boolean isFixedRate(String type) {
+        return FIXED_RATE.getType().equals(type);
+    }
+
     public static Boolean isSecondDelay(String type) {
         return SECOND_DELAY.getType().equals(type);
     }

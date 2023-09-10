@@ -30,7 +30,7 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     @Transactional(rollbackFor = Exception.class)
     @Modifying
     @Query(value = "update JobInstance as j set j.status=?2,j.failStatus=?3,j.completeTime=?4,j.updateTime=?5 where j.id=?1")
-    Integer update(Long id, Integer status, Integer failStatus, Long completeTime, Long updateTime);
+    Integer updateStatus(Long id, Integer status, Integer failStatus, Long completeTime, Long updateTime);
 
     /**
      * Update for last report time.
@@ -47,16 +47,30 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Update by running
      *
-     * @param id             id
-     * @param workerAddress  worker address.
-     * @param status         status
-     * @param lastReportTime last report time.
+     * @param id              id
+     * @param workerAddress   worker address.
+     * @param status          status
+     * @param lastReportTime  last report time.
+     * @param dispatchVersion dispatchVersion
      * @return Integer
      */
     @Transactional(rollbackFor = Exception.class)
     @Modifying
-    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4 where j.id=?1")
-    Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime);
+    @Query(value = "update JobInstance as j set j.workerAddress=?2,j.status=?3,j.updateTime=?4,j.lastReportTime=?4,j.dispatchVersion=?5 where j.id=?1")
+    Integer updateByRunning(Long id, String workerAddress, Integer status, Long lastReportTime, Long dispatchVersion);
+
+    /**
+     * Update dispatch version
+     *
+     * @param id              id
+     * @param dispatchVersion dispatchVersion
+     * @return Integer
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Modifying
+    @Query(value = "update JobInstance  as j set j.dispatchVersion=?2 where j.id=?1")
+    Integer updateDispatchVersion(Long id, Long dispatchVersion);
+
 
     /**
      * Find failover list.
@@ -85,13 +99,14 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Find first by id and status.
      *
-     * @param jobId      jobId
-     * @param id         id
-     * @param statusList statusList
-     * @param deleted    deleted
+     * @param jobId       jobId
+     * @param id          id
+     * @param statusList  statusList
+     * @param deleted     deleted
+     * @param executeOnce executeOnce
      * @return JobInstance
      */
-    JobInstance findFirstByJobIdAndIdNotAndStatusInAndDeleted(Long jobId, Long id, List<Integer> statusList, Integer deleted);
+    JobInstance findFirstByJobIdAndIdNotAndStatusInAndDeletedAndExecuteOnce(Long jobId, Long id, List<Integer> statusList, Integer deleted, Integer executeOnce);
 
     /**
      * Find first by job id and deleted
@@ -101,6 +116,17 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
      * @return JobInstance
      */
     JobInstance findFirstByJobIdAndDeleted(Long jobId, Integer deleted);
+
+    /**
+     * Find first by job id and status and deleted
+     *
+     * @param jobId       jobId
+     * @param statusList  statusList
+     * @param deleted     deleted
+     * @param executeOnce executeOnce
+     * @return JobInstance
+     */
+    List<JobInstance> findByJobIdAndStatusInAndDeletedAndExecuteOnce(Long jobId, List<Integer> statusList, Integer deleted, Integer executeOnce);
 
     /**
      * Count total
@@ -114,12 +140,13 @@ public interface JobInstanceRepository extends JpaRepository<JobInstance, Long>,
     /**
      * Delete sever by create time and status
      *
-     * @param lastTime lastTime
+     * @param lastTime   lastTime
+     * @param statusList statusList
      * @return Long
      */
     @Modifying
     @Transactional(rollbackFor = Exception.class)
-    Long deleteByCreateTimeLessThanEqual(Long lastTime);
+    Long deleteByCreateTimeLessThanEqualAndStatusIn(Long lastTime, List<Integer> statusList);
 
     /**
      * Group by hour time

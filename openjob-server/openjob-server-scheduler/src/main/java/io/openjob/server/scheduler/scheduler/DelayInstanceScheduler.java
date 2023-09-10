@@ -91,8 +91,9 @@ public class DelayInstanceScheduler {
 
         Delay delay = this.delayData.getDelay(addRequest.getTopic());
         if (Objects.isNull(delay.getId())) {
-            log.warn("Topic({}) is not exist!", addRequest.getTopic());
-            throw new RuntimeException("");
+            String message = String.format("Topic(%s) is not exist!", addRequest.getTopic());
+            log.warn(message);
+            throw new RuntimeException(message);
         }
 
         addRequest.setTaskId(taskId);

@@ -40,7 +40,13 @@ public enum CodeEnum implements CodeExceptionAssert {
     SHELL_PROCESSOR_TYPE_INVALID(403, "Shell type type can not be empty!"),
     KETTLE_PROCESSOR_INFO_INVALID(404, "Kettle command can not be empty!"),
     KETTLE_PROCESSOR_TYPE_INVALID(405, "Kettle command type can not be empty!"),
-    SHARDING_PARAMS_INVALID(406, "Sharding params can not be empty!"),
+    SHARDING_PARAMS_INVALID(406, "Sharding params can not be empty or format invalid!"),
+    HTTP_PROCESSOR_STATUS_V_INVALID(420, "Http status value cat not be empty!"),
+    HTTP_PROCESSOR_JSON_KV_INVALID(421, "Http json kv cat not be empty!"),
+    HTTP_PROCESSOR_STRING_V_INVALID(422, "Http string value cat not be empty!"),
+    JOB_CRON_INTERVAL_INVALID(423, "Job cron interval invalid!"),
+    JOB_FIXED_RATE_INTERVAL_INVALID(424, "Job fixed rate interval invalid!"),
+    JOB_SECOND_DELAY_INTERVAL_INVALID(425, "Job second delay interval invalid!"),
 
     // Delay
     DELAY_TOPIC_EXIST(500, "Topic is exist!"),

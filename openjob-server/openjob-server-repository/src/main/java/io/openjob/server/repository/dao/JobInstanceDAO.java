@@ -40,6 +40,14 @@ public interface JobInstanceDAO {
     Integer updateStatusById(Long id, Integer status, Integer failStatus);
 
     /**
+     * Batch update status
+     *
+     * @param updateList updateList
+     * @return Integer
+     */
+    Integer batchUpdateStatus(List<JobInstance> updateList);
+
+    /**
      * Update
      *
      * @param ids            ids
@@ -83,9 +91,19 @@ public interface JobInstanceDAO {
      * @param workerAddress      worker address
      * @param instanceStatusEnum instance status
      * @param lastReportTime     last report time.
+     * @param dispatchVersion    dispatchVersion
      * @return Integer
      */
-    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime);
+    Integer updateByRunning(Long id, String workerAddress, InstanceStatusEnum instanceStatusEnum, Long lastReportTime, Long dispatchVersion);
+
+    /**
+     * Update dispatch version
+     *
+     * @param id              id
+     * @param dispatchVersion
+     * @return Integer
+     */
+    Integer updateDispatchVersion(Long id, Long dispatchVersion);
 
     /**
      * Get one by id and status.
@@ -95,7 +113,8 @@ public interface JobInstanceDAO {
      * @param statusList statusList
      * @return JobInstance
      */
-    JobInstance getOneByJobIdAndStatus(Long jobId, Long id, List<Integer> statusList);
+    JobInstance getOneByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, Long id, List<Integer> statusList);
+
 
     /**
      * Get first by job id
@@ -104,6 +123,15 @@ public interface JobInstanceDAO {
      * @return JobInstance
      */
     JobInstance getFirstByJobId(Long jobId);
+
+    /**
+     * Get first by job id and status
+     *
+     * @param jobId      jobId
+     * @param statusList statusList
+     * @return JobInstance
+     */
+    List<JobInstance> getListByJobIdAndStatusAndExcludeExecuteOnce(Long jobId, List<Integer> statusList);
 
     /**
      * Get page list.
@@ -135,10 +163,11 @@ public interface JobInstanceDAO {
     /**
      * Delete by create time and status
      *
-     * @param lastTime lastTime
+     * @param lastTime   lastTime
+     * @param statusList statusList
      * @return Long
      */
-    Long deleteByCreateTim(Long lastTime);
+    Long deleteByCreateTime(Long lastTime, List<Integer> statusList);
 
     /**
      * Group by hour time

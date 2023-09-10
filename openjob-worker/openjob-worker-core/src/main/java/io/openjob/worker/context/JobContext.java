@@ -1,7 +1,8 @@
 package io.openjob.worker.context;
 
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.dto.JobInstanceDTO;
-import io.openjob.worker.constant.WorkerConstant;
+import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.processor.TaskResult;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class JobContext {
     private String delayExtra;
     private Long jobId;
     private Long jobInstanceId;
+    private Long dispatchVersion;
     private Long taskId;
     private String jobParamType;
     private String jobParams;
@@ -82,10 +84,19 @@ public class JobContext {
     }
 
     /**
+     * Get task unique id
+     *
+     * @return String
+     */
+    public String getTaskUniqueId() {
+        return TaskUtil.getRandomUniqueId(this.jobId, this.getJobInstanceId(), this.dispatchVersion, this.circleId, this.taskId);
+    }
+
+    /**
      * @return Boolean
      */
     public Boolean isRoot() {
-        return WorkerConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
+        return TaskConstant.MAP_TASK_ROOT_NAME.equals(this.taskName);
     }
 
     /**

@@ -67,6 +67,10 @@ public class LogContentDTO {
         this.addField(LogFieldConstant.JOB_INSTANCE_TASK_ID, String.valueOf(taskId));
     }
 
+    public void addJobDispatchVersionTaskIdField(Long version) {
+        this.addField(LogFieldConstant.JOB_DISPATCH_VERSION, String.valueOf(version));
+    }
+
     public void addTaskIdField(String taskId) {
         this.addField(LogFieldConstant.TASK_ID, taskId);
     }

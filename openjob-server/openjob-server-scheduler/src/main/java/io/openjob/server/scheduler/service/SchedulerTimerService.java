@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -52,8 +53,10 @@ public class SchedulerTimerService {
      * @param task task
      */
     public void run(SchedulerTimerTask task) {
-        // Concurrency
-        if (ExecuteStrategyEnum.isConcurrency(task.getExecuteStrategy())) {
+        // Concurrency and execute once
+        Boolean concurrency = ExecuteStrategyEnum.isConcurrency(task.getExecuteStrategy());
+        Boolean executeOnce = CommonConstant.YES.equals(task.getExecuteOnce());
+        if (concurrency || executeOnce) {
             this.doRun(task, Collections.emptySet());
             return;
         }
@@ -75,9 +78,12 @@ public class SchedulerTimerService {
      * @param task task
      */
     public void doRun(SchedulerTimerTask task, Set<String> failoverList) {
+        Long dispatchVersion = DateUtil.milliLongTime();
         ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
         submitReq.setJobId(task.getJobId());
         submitReq.setJobInstanceId(task.getTaskId());
+        submitReq.setCircleId(task.getCircleId());
+        submitReq.setDispatchVersion(dispatchVersion);
         submitReq.setJobParamType(task.getJobParamType());
         submitReq.setJobParams(task.getJobParams());
         submitReq.setJobExtendParamsType(task.getJobExtendParamsType());
@@ -92,6 +98,7 @@ public class SchedulerTimerService {
         submitReq.setTimeExpressionType(task.getTimeExpressionType());
         submitReq.setTimeExpression(task.getTimeExpression());
         submitReq.setExecuteTimeout(task.getExecuteTimeout());
+        submitReq.setExecuteOnce(Optional.ofNullable(task.getExecuteOnce()).orElse(CommonConstant.NO));
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
@@ -109,6 +116,7 @@ public class SchedulerTimerService {
                     .updateByDispatcher(workerDTO.getAddress(),
                             task.getJobId(),
                             task.getTaskId(),
+                            dispatchVersion,
                             InstanceStatusEnum.RUNNING,
                             "Dispatch  task success!");
         } catch (Throwable ex) {
@@ -124,22 +132,28 @@ public class SchedulerTimerService {
     /**
      * Update by dispatcher.
      *
-     * @param workerAddress worker addres.
-     * @param jobId         job id.
-     * @param instanceId    instance id.
-     * @param statusEnum    status
-     * @param message       message
+     * @param workerAddress   worker address
+     * @param jobId           job id.
+     * @param instanceId      instance id.
+     * @param dispatchVersion dispatchVersion
+     * @param statusEnum      status
+     * @param message         message
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateByDispatcher(String workerAddress, Long jobId, Long instanceId, InstanceStatusEnum statusEnum, String message) {
+    public void updateByDispatcher(String workerAddress, Long jobId, Long instanceId, Long dispatchVersion, InstanceStatusEnum statusEnum, String message) {
         // Add instance log.
         this.addInstanceLog(jobId, instanceId, message);
 
         // Running to update.
         if (InstanceStatusEnum.RUNNING.getStatus().equals(statusEnum.getStatus())) {
-            //Fixed update last report time. otherwise repeat dispatch.
-            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp());
+            // Fixed update last report time. otherwise repeat dispatch.
+            // And update dispatch version.
+            this.jobInstanceDAO.updateByRunning(instanceId, workerAddress, statusEnum, DateUtil.timestamp(), dispatchVersion);
+            return;
         }
+
+        // Update dispatch version.
+        this.jobInstanceDAO.updateDispatchVersion(instanceId, dispatchVersion);
     }
 
     private void doDiscard(SchedulerTimerTask task) {
@@ -147,7 +161,7 @@ public class SchedulerTimerService {
                 InstanceStatusEnum.WAITING.getStatus(),
                 InstanceStatusEnum.RUNNING.getStatus()
         );
-        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatus(task.getJobId(), task.getTaskId(), statusList);
+        JobInstance jobInstance = this.jobInstanceDAO.getOneByJobIdAndStatusAndExcludeExecuteOnce(task.getJobId(), task.getTaskId(), statusList);
 
         // Exist one task.
         if (Objects.nonNull(jobInstance)) {

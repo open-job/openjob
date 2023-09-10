@@ -26,9 +26,9 @@ public class WorkerJobInstanceExecutor {
                 0L,
                 1,
                 32,
-                "Openjob-heartbeat-executor",
-                50,
-                "Openjob-heartbeat-consumer",
+                "Openjob-instance-executor",
+                20,
+                "Openjob-instance-consumer",
                 this.queue
         );
         consumer.start();

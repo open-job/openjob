@@ -36,7 +36,8 @@ public class LogUtil {
             logContent.addJobInstanceIdField(context.getJobInstanceId());
             logContent.addCircleIdField(context.getCircleId());
             logContent.addJobInstanceTaskIdField(context.getTaskId());
-            String taskId = TaskUtil.getRandomUniqueId(context.getJobId(), context.getJobInstanceId(), context.getCircleId(), context.getTaskId());
+            logContent.addJobDispatchVersionTaskIdField(context.getDispatchVersion());
+            String taskId = TaskUtil.getRandomUniqueId(context.getJobId(), context.getJobInstanceId(), context.getDispatchVersion(), context.getCircleId(), context.getTaskId());
             logContent.addTaskIdField(taskId);
             return logContent;
         }

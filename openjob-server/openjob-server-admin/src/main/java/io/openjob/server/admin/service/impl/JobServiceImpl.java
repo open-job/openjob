@@ -3,9 +3,13 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
+import io.openjob.common.constant.FailStatusEnum;
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
+import io.openjob.common.constant.ResponseModeEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.dto.ShellProcessorDTO;
+import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.JsonUtil;
 import io.openjob.server.admin.constant.AdminConstant;
 import io.openjob.server.admin.constant.CodeEnum;
@@ -37,21 +41,28 @@ import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dto.JobPageDTO;
 import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
+import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.scheduler.dto.JobExecuteRequestDTO;
+import io.openjob.server.scheduler.dto.JobInstanceStopRequestDTO;
+import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import io.openjob.server.scheduler.service.JobSchedulingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -67,20 +78,28 @@ public class JobServiceImpl implements JobService {
     private final JobInstanceDAO jobInstanceDAO;
     private final RefreshData refreshData;
     private final JobSchedulingService jobSchedulingService;
+    private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobServiceImpl(JobDAO jobDAO, AppDAO appDAO, JobInstanceDAO jobInstanceDAO, RefreshData refreshData, JobSchedulingService jobSchedulingService) {
+    public JobServiceImpl(JobDAO jobDAO,
+                          AppDAO appDAO,
+                          JobInstanceDAO jobInstanceDAO,
+                          RefreshData refreshData,
+                          JobSchedulingService jobSchedulingService,
+                          JobInstanceScheduler jobInstanceScheduler) {
         this.jobDAO = jobDAO;
         this.appDAO = appDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.refreshData = refreshData;
         this.jobSchedulingService = jobSchedulingService;
+        this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public AddJobVO add(AddJobRequest addJobRequest) {
-        // Pre handle request
-        this.preHandleJob(addJobRequest);
+        // Valid and init job.
+        this.validAndInitJob(addJobRequest);
 
         if (!TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType())) {
             addJobRequest.setTimeExpression(String.valueOf(addJobRequest.getTimeExpressionValue()));
@@ -89,20 +108,31 @@ public class JobServiceImpl implements JobService {
         // Running status to parse next execute time.
         Job job = BeanMapperUtil.map(addJobRequest, Job.class);
         if (TimeExpressionTypeEnum.isCron(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
-            job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression()));
+            job.setNextExecuteTime(this.parseTimeExpression(job.getTimeExpression(), null));
         } else if (TimeExpressionTypeEnum.isOneTime(addJobRequest.getTimeExpressionType())) {
             job.setNextExecuteTime(Long.valueOf(addJobRequest.getTimeExpression()));
+        } else if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType())) {
+            job.setNextExecuteTime(DateUtil.timestamp());
+        } else if (TimeExpressionTypeEnum.isFixedRate(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
+            job.setNextExecuteTime(DateUtil.timestamp() + Long.parseLong(addJobRequest.getTimeExpression()));
         }
 
         long id = this.jobDAO.save(job);
+        job.setId(id);
+
+        // Second delay to create job instance
+        if (TimeExpressionTypeEnum.isSecondDelay(addJobRequest.getTimeExpressionType()) && JobStatusEnum.isRunning(job.getStatus())) {
+            this.createSecondJobInstance(job);
+        }
+
         return new AddJobVO().setId(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UpdateJobVO update(UpdateJobRequest updateJobRequest) {
-        // Pre handle job
-        this.preHandleJob(updateJobRequest);
+        // Valid and init job.
+        this.validAndInitJob(updateJobRequest);
 
         if (!TimeExpressionTypeEnum.isCron(updateJobRequest.getTimeExpressionType())) {
             updateJobRequest.setTimeExpression(String.valueOf(updateJobRequest.getTimeExpressionValue()));
@@ -113,17 +143,25 @@ public class JobServiceImpl implements JobService {
 
         // Condition
         boolean isUpdateCron = TimeExpressionTypeEnum.isCron(updateJob.getTimeExpressionType());
+        boolean isUpdateFixRate = TimeExpressionTypeEnum.isFixedRate(updateJob.getTimeExpressionType());
         boolean isRunningStatus = JobStatusEnum.isRunning(updateJob.getStatus());
 
         // Parse time expression
         if (isRunningStatus && isUpdateCron) {
-            updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression()));
+            updateJob.setNextExecuteTime(this.parseTimeExpression(updateJob.getTimeExpression(), null));
         } else if (TimeExpressionTypeEnum.isOneTime(updateJobRequest.getTimeExpressionType())) {
             updateJob.setNextExecuteTime(Long.valueOf(updateJobRequest.getTimeExpression()));
+        } else if (isRunningStatus && isUpdateFixRate) {
+            updateJob.setNextExecuteTime(DateUtil.timestamp() + Long.parseLong(updateJobRequest.getTimeExpression()));
         }
 
         // Update
         this.jobDAO.update(updateJob);
+
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(updateJobRequest.getTimeExpressionType())) {
+            this.updateJobBySecond(this.jobDAO.getById(updateJob.getId()));
+        }
 
         // Refresh cluster version.
         this.refreshData.refreshSystemClusterVersion();
@@ -141,20 +179,30 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UpdateJobStatusVO updateStatus(UpdateJobStatusRequest request) {
         Long nextExecuteTime = null;
         Job originJob = this.jobDAO.getById(request.getId());
         if (TimeExpressionTypeEnum.isCron(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
-            nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression());
+            nextExecuteTime = this.parseTimeExpression(originJob.getTimeExpression(), null);
+        } else if (TimeExpressionTypeEnum.isFixedRate(originJob.getTimeExpressionType()) && JobStatusEnum.isRunning(request.getStatus())) {
+            nextExecuteTime = DateUtil.timestamp() + Long.parseLong(originJob.getTimeExpression());
         }
 
         this.jobDAO.updateByStatusOrDeleted(request.getId(), request.getStatus(), null, nextExecuteTime);
+
+        // Second delay
+        if (TimeExpressionTypeEnum.isSecondDelay(originJob.getTimeExpressionType())) {
+            Job newJob = this.jobDAO.getById(request.getId());
+            this.updateJobBySecond(newJob);
+        }
+
         return new UpdateJobStatusVO();
     }
 
     @Override
     public ExecuteJobVO execute(ExecuteJobRequest request) {
-        this.jobSchedulingService.execute(BeanMapperUtil.map(request, JobExecuteRequestDTO.class));
+        this.jobSchedulingService.executeByOnce(BeanMapperUtil.map(request, JobExecuteRequestDTO.class));
         return new ExecuteJobVO();
     }
 
@@ -227,11 +275,12 @@ public class JobServiceImpl implements JobService {
     }
 
     /**
-     * Check job
+     * Valid job
      *
      * @param request request
      */
-    private void preHandleJob(AddJobRequest request) {
+    private void validAndInitJob(AddJobRequest request) {
+        // Processor type valid
         if (ProcessorTypeEnum.isShell(request.getProcessorType())) {
             // Shell
             if (StringUtils.isBlank(request.getShellProcessorType())) {
@@ -260,32 +309,132 @@ public class JobServiceImpl implements JobService {
             shellProcessorDTO.setContent(request.getKettleProcessorInfo());
             shellProcessorDTO.setType(request.getKettleProcessorType());
             request.setProcessorInfo(JsonUtil.encode(shellProcessorDTO));
+        } else if (ProcessorTypeEnum.isHttp(request.getProcessorType())) {
+            AddJobRequest.HttpProcessorRequest httpProcessor = request.getHttpProcessor();
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                CodeEnum.HTTP_PROCESSOR_STATUS_V_INVALID.assertIsFalse(StringUtils.isEmpty(httpProcessor.getValue()));
+            }
+
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                Boolean kvEmpty = StringUtils.isBlank(httpProcessor.getKey()) || StringUtils.isBlank(httpProcessor.getValue());
+                CodeEnum.HTTP_PROCESSOR_JSON_KV_INVALID.assertIsFalse(kvEmpty);
+            }
+
+            if (ResponseModeEnum.isStatus(httpProcessor.getResponseMode())) {
+                CodeEnum.HTTP_PROCESSOR_STRING_V_INVALID.assertIsFalse(StringUtils.isEmpty(httpProcessor.getValue()));
+            }
+            request.setProcessorInfo(JsonUtil.encode(httpProcessor));
         }
 
-        // ShardingParams
+        // Execute type valid
         if (ExecuteTypeEnum.isSharding(request.getExecuteType())) {
-            if (StringUtils.isBlank(request.getShardingParams())) {
-                CodeEnum.SHARDING_PARAMS_INVALID.throwException();
-            }
+            // ShardingParams
+            CodeEnum.SHARDING_PARAMS_INVALID.assertIsFalse(StringUtils.isBlank(request.getShardingParams()));
+
+            // Format
+            Arrays.stream(request.getShardingParams().split(",")).forEach(p -> {
+                String[] split = p.split("=");
+                CodeEnum.SHARDING_PARAMS_INVALID.assertIsTrue(split.length == 2 && NumberUtils.isDigits(split[0]));
+            });
 
             request.setParams(request.getShardingParams());
         }
+
+        // Time expression type valid
+        if (TimeExpressionTypeEnum.isCron(request.getTimeExpressionType())) {
+            // Cron
+            long one = this.parseTimeExpression(request.getTimeExpression(), null);
+            long two = this.parseTimeExpression(request.getTimeExpression(), new Date(one * 1000L));
+            if ((two - one) < TimeUnit.MINUTES.toSeconds(1)) {
+                CodeEnum.JOB_CRON_INTERVAL_INVALID.throwException();
+            }
+        } else if (TimeExpressionTypeEnum.isFixedRate(request.getTimeExpressionType())) {
+            // Fixed rate
+            if (TimeUnit.MINUTES.toSeconds(1) >= request.getTimeExpressionValue()) {
+                CodeEnum.JOB_FIXED_RATE_INTERVAL_INVALID.throwException();
+            }
+        } else if (TimeExpressionTypeEnum.isSecondDelay(request.getTimeExpressionType())) {
+            // Second delay
+            long delay = Optional.ofNullable(request.getTimeExpressionValue()).orElse(0L);
+            if (delay <= 0 || delay > TimeUnit.MINUTES.toSeconds(1)) {
+                CodeEnum.JOB_SECOND_DELAY_INTERVAL_INVALID.throwException();
+            }
+        }
+    }
+
+    /**
+     * Update job
+     *
+     * @param updateJob updateJob
+     */
+    private void updateJobBySecond(Job updateJob) {
+        List<Integer> statusAry = Arrays.asList(InstanceStatusEnum.WAITING.getStatus(), InstanceStatusEnum.RUNNING.getStatus());
+        Optional.ofNullable(this.jobInstanceDAO.getListByJobIdAndStatusAndExcludeExecuteOnce(updateJob.getId(), statusAry))
+                .orElseGet(ArrayList::new)
+                .forEach(ji -> {
+                    // Running status
+                    if (InstanceStatusEnum.isRunning(ji.getStatus())) {
+                        JobInstanceStopRequestDTO stopRequest = new JobInstanceStopRequestDTO();
+                        stopRequest.setJobInstanceId(ji.getId());
+                        this.jobInstanceScheduler.stop(stopRequest);
+                        return;
+                    }
+
+                    // Waiting status
+                    this.jobInstanceDAO.updateStatusById(ji.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
+                });
+
+        // Job running status
+        // Dispatch scheduler for new configuration
+        if (JobStatusEnum.isRunning(updateJob.getStatus())) {
+            this.createSecondJobInstance(updateJob);
+        }
+    }
+
+    /**
+     * Create job instance
+     *
+     * @param job job
+     */
+    private void createSecondJobInstance(Job job) {
+        Long timestamp = DateUtil.timestamp();
+        JobInstance jobInstance = BeanMapperUtil.map(job, JobInstance.class);
+
+        // Fixed save to update bug
+        jobInstance.setId(null);
+        jobInstance.setJobId(job.getId());
+        jobInstance.setDeleteTime(0L);
+        jobInstance.setDeleted(CommonConstant.NO);
+        jobInstance.setStatus(InstanceStatusEnum.WAITING.getStatus());
+        jobInstance.setFailStatus(FailStatusEnum.NONE.getStatus());
+        jobInstance.setDispatchVersion(0L);
+        jobInstance.setCompleteTime(0L);
+        jobInstance.setLastReportTime(0L);
+        jobInstance.setWorkerAddress("");
+        jobInstance.setExecuteTime(timestamp);
+        jobInstance.setCreateTime(timestamp);
+        jobInstance.setUpdateTime(timestamp);
+        jobInstance.setExecuteOnce(CommonConstant.NO);
+        this.jobInstanceDAO.save(jobInstance);
     }
 
     /**
      * Parse time expression
      *
      * @param timeExpression timeExpression
+     * @param afterDate      afterDate
      * @return Long
      */
-    private Long parseTimeExpression(String timeExpression) {
+    private Long parseTimeExpression(String timeExpression, Date afterDate) {
+        Date date = Optional.ofNullable(afterDate).orElseGet(Date::new);
+
         try {
             CronExpression cronExpression = new CronExpression(timeExpression);
-            return cronExpression.getNextValidTimeAfter(new Date()).toInstant().getEpochSecond();
+            return cronExpression.getNextValidTimeAfter(date).toInstant().getEpochSecond();
         } catch (ParseException e) {
             CodeEnum.TIME_EXPRESSION_INVALID.throwException();
             log.error("Parse time expression failed! timeExpression=" + timeExpression, e);
-            return null;
+            return 0L;
         }
     }
 }
