@@ -1,8 +1,10 @@
 package io.openjob.worker.container;
 
+import io.openjob.common.constant.ExecuteTypeEnum;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.ProcessorTypeEnum;
 import io.openjob.common.constant.TaskStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.ExceptionUtil;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.processor.ProcessResult;
@@ -67,7 +69,11 @@ public class ThreadTaskProcessor implements TaskProcessor, Runnable {
             if (Objects.nonNull(this.processorHandler)) {
                 this.processorHandler.preProcess(this.jobContext);
                 result = this.processorHandler.process(this.jobContext);
-                this.processorHandler.postProcess(this.jobContext);
+
+                // Not broadcast
+                if (!ExecuteTypeEnum.isBroadcast(this.jobContext.getExecuteType())){
+                    this.processorHandler.postProcess(this.jobContext);
+                }
 
                 logger.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());
                 log.info("Task processor completed! jobInstanceId={}", this.jobContext.getJobInstanceId());

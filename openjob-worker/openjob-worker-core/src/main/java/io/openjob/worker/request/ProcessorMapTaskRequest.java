@@ -14,6 +14,7 @@ public class ProcessorMapTaskRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
     private Long taskId;
+    private String parentTaskName;
     private String taskName;
     private Integer initValueId;
     private Integer taskNum;

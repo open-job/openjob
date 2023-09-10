@@ -54,6 +54,7 @@ public interface MapProcessor extends JavaProcessor {
             mapTaskRequest.setJobId(jobContext.getJobId());
             mapTaskRequest.setJobInstanceId(jobContext.getJobInstanceId());
             mapTaskRequest.setTaskId(jobContext.getTaskId());
+            mapTaskRequest.setParentTaskName(jobContext.getTaskName());
             mapTaskRequest.setTaskName(taskName);
             mapTaskRequest.setTaskNum(0);
             mapTaskRequest.setInitValueId(initValueId.get());
