@@ -36,7 +36,7 @@ public interface MapProcessor extends JavaProcessor {
 
         // Empty task
         if (CollectionUtils.isEmpty(tasks)) {
-            return result;
+            throw new RuntimeException("Map task can not empty!");
         }
 
         JobContext jobContext = ThreadLocalUtil.getJobContext();
