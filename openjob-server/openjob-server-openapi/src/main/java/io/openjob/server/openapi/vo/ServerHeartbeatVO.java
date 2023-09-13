@@ -19,7 +19,7 @@ public class ServerHeartbeatVO {
     private HeartbeatSystemVO systemResponse;
 
     @Data
-    public static class HeartbeatSystemVO{
+    public static class HeartbeatSystemVO {
 
         @ApiModelProperty("Cluster version")
         private Long clusterVersion;
