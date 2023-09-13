@@ -3,8 +3,8 @@ package io.openjob.server.admin.service.impl;
 import com.google.common.collect.Lists;
 import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.ExecuteTypeEnum;
-import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
+import io.openjob.common.constant.TimeExpressionTypeEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.server.admin.request.job.DeleteJobInstanceRequest;
@@ -23,10 +23,13 @@ import io.openjob.server.common.util.PageUtil;
 import io.openjob.server.common.vo.PageVO;
 import io.openjob.server.log.dao.LogDAO;
 import io.openjob.server.log.dto.ProcessorLogDTO;
+import io.openjob.server.repository.constant.JobStatusEnum;
+import io.openjob.server.repository.dao.AppDAO;
 import io.openjob.server.repository.dao.JobDAO;
 import io.openjob.server.repository.dao.JobInstanceDAO;
 import io.openjob.server.repository.dao.JobInstanceLogDAO;
 import io.openjob.server.repository.dto.JobInstancePageDTO;
+import io.openjob.server.repository.entity.App;
 import io.openjob.server.repository.entity.Job;
 import io.openjob.server.repository.entity.JobInstance;
 import io.openjob.server.repository.entity.JobInstanceLog;
@@ -35,12 +38,12 @@ import io.openjob.server.scheduler.dto.JobInstanceStopResponseDTO;
 import io.openjob.server.scheduler.scheduler.JobInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -50,6 +53,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class JobInstanceServiceImpl implements JobInstanceService {
+
+    private final AppDAO appDAO;
     private final LogDAO logDAO;
     private final JobDAO jobDAO;
     private final JobInstanceDAO jobInstanceDAO;
@@ -57,11 +62,17 @@ public class JobInstanceServiceImpl implements JobInstanceService {
     private final JobInstanceScheduler jobInstanceScheduler;
 
     @Autowired
-    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO, LogDAO logDAO, JobInstanceLogDAO jobInstanceLogDAO, JobDAO jobDAO, JobInstanceScheduler jobInstanceScheduler) {
+    public JobInstanceServiceImpl(JobInstanceDAO jobInstanceDAO,
+                                  LogDAO logDAO,
+                                  JobInstanceLogDAO jobInstanceLogDAO,
+                                  JobDAO jobDAO,
+                                  JobInstanceScheduler jobInstanceScheduler,
+                                  AppDAO appDAO) {
+        this.appDAO = appDAO;
+        this.jobDAO = jobDAO;
         this.logDAO = logDAO;
         this.jobInstanceDAO = jobInstanceDAO;
         this.jobInstanceLogDAO = jobInstanceLogDAO;
-        this.jobDAO = jobDAO;
         this.jobInstanceScheduler = jobInstanceScheduler;
     }
 
@@ -74,28 +85,32 @@ public class JobInstanceServiceImpl implements JobInstanceService {
             return PageUtil.empty(pageDTO);
         }
 
+        // App map
+        List<Long> appIds = pageDTO.getList().stream().map(JobInstance::getAppId).collect(Collectors.toList());
+        Map<Long, App> appMap = this.appDAO.getByIds(appIds).stream().collect(Collectors.toMap(App::getId, a -> a));
+
         // Job map
         List<Long> jobIds = pageDTO.getList().stream().map(JobInstance::getJobId).distinct().collect(Collectors.toList());
         Map<Long, Job> jobMap = this.jobDAO.getByIds(jobIds).stream().collect(Collectors.toMap(Job::getId, j -> j));
         return PageUtil.convert(pageDTO, n -> {
             ListJobInstanceVO listJobInstanceVO = BeanMapperUtil.map(n, ListJobInstanceVO.class);
-            Job job = jobMap.get(n.getJobId());
-            if (Objects.nonNull(job)) {
-                listJobInstanceVO.setJobName(job.getName());
-            }
+            Optional.ofNullable(jobMap.get(n.getJobId())).ifPresent(j -> listJobInstanceVO.setJobName(j.getName()));
+            Optional.ofNullable(appMap.get(n.getAppId())).ifPresent(a -> listJobInstanceVO.setAppName(a.getName()));
             return listJobInstanceVO;
         });
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StopJobInstanceVO stopInstance(StopJobInstanceRequest killRequest) {
         JobInstanceStopRequestDTO jobInstanceStopRequestDTO = new JobInstanceStopRequestDTO();
         jobInstanceStopRequestDTO.setJobInstanceId(killRequest.getId());
         JobInstanceStopResponseDTO stop = this.jobInstanceScheduler.stop(jobInstanceStopRequestDTO);
 
-        // Stop success to update status.
-        if (CommonConstant.INT_ZERO.equals(stop.getType())) {
-            this.jobInstanceDAO.updateStatusById(killRequest.getId(), InstanceStatusEnum.STOP.getStatus(), FailStatusEnum.NONE.getStatus());
+        // Second delay to stop job
+        JobInstance jobInstance = this.jobInstanceDAO.getById(killRequest.getId());
+        if (TimeExpressionTypeEnum.isSecondDelay(jobInstance.getTimeExpressionType())) {
+            this.jobDAO.updateByStatusOrDeleted(jobInstance.getJobId(), JobStatusEnum.STOP.getStatus(), null, null);
         }
 
         // Response
@@ -126,7 +141,7 @@ public class JobInstanceServiceImpl implements JobInstanceService {
 
         Integer isComplete = CommonConstant.NO;
         try {
-            String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), 0L, 0L);
+            String taskId = TaskUtil.getRandomUniqueId(request.getJobId(), request.getJobInstanceId(), request.getDispatchVersion(), 1L, 1L);
             List<ProcessorLogDTO> processorLogs = this.logDAO.queryByScroll(taskId, request.getTime(), request.getSize());
 
             if (!CollectionUtils.isEmpty(processorLogs)) {

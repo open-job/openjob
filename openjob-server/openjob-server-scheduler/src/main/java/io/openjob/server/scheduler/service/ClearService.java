@@ -1,5 +1,6 @@
 package io.openjob.server.scheduler.service;
 
+import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.util.DateUtil;
 import io.openjob.server.common.ClusterContext;
@@ -84,7 +85,7 @@ public class ClearService {
         Integer logKeepDays = jobKeepDays >= delayKeepDays ? jobKeepDays : delayKeepDays;
 
         // Job instance
-        Long jobInstanceCount = this.jobInstanceDAO.deleteByCreateTim(timestamp - oneDay * jobKeepDays);
+        Long jobInstanceCount = this.jobInstanceDAO.deleteByCreateTime(timestamp - oneDay * jobKeepDays, InstanceStatusEnum.COMPLETE);
 
         // Delay instance
         Long delayInstanceCount = this.delayInstanceDAO.deleteByCreateTimeAndNotStatus(

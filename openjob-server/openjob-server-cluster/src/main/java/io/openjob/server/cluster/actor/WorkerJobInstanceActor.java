@@ -1,8 +1,9 @@
 package io.openjob.server.cluster.actor;
 
 import io.openjob.common.actor.BaseActor;
-import io.openjob.common.request.WorkerJobInstanceLogRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
 import io.openjob.server.cluster.service.JobInstanceService;
@@ -31,7 +32,7 @@ public class WorkerJobInstanceActor extends BaseActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(WorkerJobInstanceStatusRequest.class, this::handleStatus)
-                .match(WorkerJobInstanceLogRequest.class, this::handleInstanceLog)
+                .match(WorkerJobInstanceTaskBatchRequest.class, this::handleTask)
                 .build();
     }
 
@@ -50,16 +51,16 @@ public class WorkerJobInstanceActor extends BaseActor {
     }
 
     /**
-     * Handle instance log.
+     * Handle task
      *
-     * @param logRequest log request.
+     * @param batchRequest batchRequest
      */
-    public void handleInstanceLog(WorkerJobInstanceLogRequest logRequest) {
-        // Handle instance log.
-        this.instanceService.handleInstanceLog(logRequest);
+    public void handleTask(WorkerJobInstanceTaskBatchRequest batchRequest) {
+        // Handle instance task
+        this.instanceService.handleInstanceTasks(batchRequest);
 
         // Response
-        ServerResponse serverResponse = new ServerResponse(logRequest.getDeliveryId());
+        ServerResponse serverResponse = new ServerResponse(batchRequest.getDeliveryId());
         getSender().tell(Result.success(serverResponse), getSelf());
     }
 }

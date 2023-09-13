@@ -11,6 +11,8 @@ public class Task {
     private Long id;
     private Long jobId;
     private Long instanceId;
+    private Long dispatchVersion;
+    private Long mapTaskId;
     private Long circleId;
     private String taskId;
     private String taskName;

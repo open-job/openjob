@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class ContainerTaskStatusRequest implements Serializable {
     private Long jobId;
     private Long jobInstanceId;
+    private Long dispatchVersion;
     private Long taskId;
     private Long circleId;
     private Integer status;
@@ -27,11 +28,12 @@ public class ContainerTaskStatusRequest implements Serializable {
     public ContainerTaskStatusRequest() {
         this.jobId = 0L;
         this.jobInstanceId = 0L;
+        this.dispatchVersion = 0L;
         this.taskId = 0L;
         this.circleId = 0L;
     }
 
     public String getTaskUniqueId() {
-        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.circleId, this.taskId);
+        return TaskUtil.getRandomUniqueId(this.jobId, this.jobInstanceId, this.dispatchVersion, this.circleId, this.taskId);
     }
 }

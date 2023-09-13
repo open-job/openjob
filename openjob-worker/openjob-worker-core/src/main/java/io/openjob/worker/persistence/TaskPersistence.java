@@ -56,6 +56,29 @@ public interface TaskPersistence {
      */
     Integer countTask(Long instanceId, Long circleId, List<Integer> statusList) throws SQLException;
 
+
+    /**
+     * Count task by status list and exclude id.
+     *
+     * @param instanceId    instanceId
+     * @param circleId      circleId
+     * @param statusList    statusList
+     * @param excludeTaskId excludeTaskId
+     * @return count
+     * @throws SQLException SQLException
+     */
+    Integer countTaskAndExcludeId(Long instanceId, Long circleId, List<Integer> statusList, String excludeTaskId) throws SQLException;
+
+    /**
+     * Update status by id
+     *
+     * @param taskId taskId
+     * @param status status
+     * @return Integer
+     * @throws SQLException SQLException
+     */
+    Integer updateStatusByTaskId(String taskId, Integer status) throws SQLException;
+
     /**
      * Batch update by task id.
      *
@@ -78,6 +101,26 @@ public interface TaskPersistence {
     Integer batchUpdateStatusAndWorkerAddressByTaskId(List<String> taskIds, Integer status, String workerAddress) throws SQLException;
 
     /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param lastMapTaskId lastMapTaskId
+     * @return Integer
+     * @throws SQLException SQLException
+     */
+    Integer deleteRedundantMapTask(String parentTaskId, Long lastMapTaskId) throws SQLException;
+
+    /**
+     * Get redundant map task
+     *
+     * @param parentTaskId  parentTaskId
+     * @param mapTaskIdList mapTaskIdList
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Long> getMapTaskList(String parentTaskId, List<Long> mapTaskIdList) throws SQLException;
+
+    /**
      * Find list by page size
      *
      * @param instanceId instance id
@@ -87,6 +130,37 @@ public interface TaskPersistence {
      * @throws SQLException SQLException
      */
     List<Task> findListBySize(Long instanceId, Long circleId, Long size) throws SQLException;
+
+    /**
+     * Find list by task id
+     *
+     * @param instanceId instanceId
+     * @param circleId   circleId
+     * @param taskName   taskName
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> findListByTaskName(Long instanceId, Long circleId, String taskName) throws SQLException;
+
+    /**
+     * Find circle parent task list
+     *
+     * @param instanceId   instanceId
+     * @param circleId     circleId
+     * @param parentTaskId parentTaskId
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> findCircleParentTaskList(Long instanceId, Long circleId, String parentTaskId) throws SQLException;
+
+    /**
+     * Find child task list
+     *
+     * @param taskId taskId
+     * @return List
+     * @throws SQLException SQLException
+     */
+    List<Task> findChildTaskList(String taskId) throws SQLException;
 
     /**
      * Batch update exception by worker address list.

@@ -5,12 +5,14 @@ import akka.persistence.AbstractPersistentActorWithAtLeastOnceDelivery;
 import io.openjob.common.constant.StatusEnum;
 import io.openjob.common.request.WorkerDelayStatusRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.response.Result;
 import io.openjob.common.response.ServerResponse;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import io.openjob.worker.util.WorkerUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +42,11 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         return receiveBuilder()
                 .match(ContainerBatchTaskStatusRequest.class, this::handleBatchTaskStatus)
                 .match(WorkerJobInstanceStatusRequest.class, this::handleJobInstanceStatus)
+                .match(WorkerJobInstanceTaskBatchRequest.class, this::handleBatchJobInstanceTask)
                 .match(WorkerDelayStatusRequest.class, this::handleDelayStatus)
                 .match(MasterDestroyContainerRequest.class, this::handleDestroyContainer)
                 .match(MasterStopContainerRequest.class, this::handleStopContainer)
+                .match(MasterStopInstanceTaskRequest.class, this::handleStopInstanceTask)
                 .match(Result.class, this::handleResult)
                 .build();
     }
@@ -70,6 +74,19 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         deliver(serverWorkerActor, deliveryId -> {
             jobInstanceStatusReq.setDeliveryId(deliveryId);
             return jobInstanceStatusReq;
+        });
+    }
+
+    /**
+     * Handle job instance task batch request.
+     *
+     * @param jobInstanceTaskBatchRequest job instance task batch request
+     */
+    public void handleBatchJobInstanceTask(WorkerJobInstanceTaskBatchRequest jobInstanceTaskBatchRequest) {
+        ActorSelection serverWorkerActor = WorkerUtil.getServerWorkerJobInstanceActor();
+        deliver(serverWorkerActor, deliveryId -> {
+            jobInstanceTaskBatchRequest.setDeliveryId(deliveryId);
+            return jobInstanceTaskBatchRequest;
         });
     }
 
@@ -109,6 +126,19 @@ public class WorkerPersistentActor extends AbstractPersistentActorWithAtLeastOnc
         deliver(workerContainerActor, deliveryId -> {
             stopRequest.setDeliveryId(deliveryId);
             return stopRequest;
+        });
+    }
+
+    /**
+     * Handle stop instance task
+     *
+     * @param stopTaskRequest stopTaskRequest
+     */
+    public void handleStopInstanceTask(MasterStopInstanceTaskRequest stopTaskRequest) {
+        ActorSelection workerContainerActor = WorkerUtil.getWorkerContainerActor(stopTaskRequest.getWorkerAddress());
+        deliver(workerContainerActor, deliveryId -> {
+            stopTaskRequest.setDeliveryId(deliveryId);
+            return stopTaskRequest;
         });
     }
 

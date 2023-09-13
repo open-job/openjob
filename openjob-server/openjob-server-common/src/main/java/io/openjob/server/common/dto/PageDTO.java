@@ -2,6 +2,7 @@ package io.openjob.server.common.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,5 +37,6 @@ public class PageDTO<T> {
         this.page = 1;
         this.size = 10;
         this.total = 0L;
+        this.list = new ArrayList<>();
     }
 }

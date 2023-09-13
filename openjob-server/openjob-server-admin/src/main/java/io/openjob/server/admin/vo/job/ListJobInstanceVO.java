@@ -18,6 +18,9 @@ public class ListJobInstanceVO {
     @ApiModelProperty(value = "App primary id")
     private Long appId;
 
+    @ApiModelProperty(value = "App name")
+    private String appName;
+
     @ApiModelProperty(value = "Job id")
     private Long jobId;
 
@@ -38,6 +41,9 @@ public class ListJobInstanceVO {
 
     @ApiModelProperty(value = "Execute type: standalone, broadcast, MR")
     private String executeType;
+
+    @ApiModelProperty(value = "Dispatch version")
+    private Long dispatchVersion;
 
     @ApiModelProperty(value = "Job params type")
     private String paramsType;
@@ -68,6 +74,9 @@ public class ListJobInstanceVO {
 
     @ApiModelProperty(value = "Job execute strategy")
     private Integer executeStrategy;
+
+    @ApiModelProperty(value = "Execute once")
+    private Integer executeOnce;
 
     @ApiModelProperty(value = "Job status 1=running 2=stop, default(1)")
     private Integer status;

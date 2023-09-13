@@ -27,6 +27,7 @@ public class WorkerConstant {
     public static final String WORKER_HEARTBEAT_ACTOR_NUM = "openjob.worker.heartbeat.actor.num";
     public static final String WORKER_TASK_MASTER_ACTOR_NUM = "openjob.worker.task.master.actor.num";
     public static final String WORKER_TASK_CONTAINER_ACTOR_NUM = "openjob.worker.task.container.actor.num";
+    public static final String WORKER_TASK_MAP_BATCH_SIZE = "openjob.worker.task.map.batch.size";
     public static final String WORKER_TASK_PERSISTENT_ACTOR_NUM = "openjob.worker.persistent.actor.num";
     public static final String WORKER_HEARTBEAT_INTERVAL = "openjob.worker.heartbeat.interval";
     public static final String WORKER_HEARTBEAT_FAIL_TIMES = "openjob.worker.heartbeat.fail.times";
@@ -35,6 +36,7 @@ public class WorkerConstant {
     public static final String WORKER_DELAY_PULL_SLEEP = "openjob.worker.delay.pull.sleep";
     public static final String WORKER_DELAY_PULL_STEP = "openjob.worker.delay.pull.step";
     public static final String WORKER_DELAY_TIMEOUT = "openjob.worker.delay.timeout";
+
 
     /**
      * Default worker config.
@@ -45,6 +47,7 @@ public class WorkerConstant {
     public static final Integer DEFAULT_WORKER_HEARTBEAT_ACTOR_NUM = 1;
     public static final Integer DEFAULT_WORKER_TASK_MASTER_ACTOR_NUM = 32;
     public static final Integer DEFAULT_WORKER_TASK_CONTAINER_ACTOR_NUM = 32;
+    public static final Integer DEFAULT_WORKER_TASK_MAP_BATCH_SIZE = 128;
     public static final Integer DEFAULT_WORKER_PERSISTENT_ACTOR_NUM = 2;
 
     /**
@@ -58,12 +61,8 @@ public class WorkerConstant {
     public static final Long DEFAULT_WORKER_DELAY_PULL_STEP = 500L;
     public static final Long DEFAULT_WORKER_DELAY_TIMEOUT = 3000L;
 
-
     /**
-     * Task
+     * Check worker retry times
      */
-    public static final String MAP_TASK_ROOT_NAME = "MR_TASK_ROOT";
-    public static final String MAP_TASK_REDUCE_NAME = "MR_TASK_REDUCE";
-
-    public static final String BROADCAST_NAME = "BROADCAST_TASK";
+    public static final Integer CHECK_WORKER_RETRY_TIMES = 3;
 }

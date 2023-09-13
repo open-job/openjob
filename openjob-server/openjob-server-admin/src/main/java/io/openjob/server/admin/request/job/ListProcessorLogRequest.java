@@ -18,6 +18,10 @@ public class ListProcessorLogRequest {
     private Long jobId;
 
     @NotNull
+    @ApiModelProperty(value = "Dispatch version", required = true)
+    private Long dispatchVersion;
+
+    @NotNull
     @ApiModelProperty(value = "Job instance id", required = true)
     private Long jobInstanceId;
 

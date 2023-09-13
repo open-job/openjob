@@ -22,6 +22,11 @@ public class WorkerJobInstanceTaskRequest implements Serializable {
     private Long jobInstanceId;
 
     /**
+     * Dispatch version
+     */
+    private Long dispatchVersion;
+
+    /**
      * Only for second delay task.
      */
     private Long circleId;

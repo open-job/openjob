@@ -1,5 +1,10 @@
 package io.openjob.worker.master;
 
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
 import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 
 /**
@@ -45,4 +50,27 @@ public interface TaskMaster {
      * @param type type
      */
     void stop(Integer type);
+
+    /**
+     * Pull instance task
+     *
+     * @param request request
+     * @return WorkerInstanceTaskListPullResponse
+     */
+    WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request);
+
+    /**
+     * Pull instance child task
+     *
+     * @param request request
+     * @return WorkerInstanceTaskChildListPullResponse
+     */
+    WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request);
+
+    /**
+     * Stop task
+     *
+     * @param request request
+     */
+    void stopTask(ServerStopInstanceTaskRequest request);
 }

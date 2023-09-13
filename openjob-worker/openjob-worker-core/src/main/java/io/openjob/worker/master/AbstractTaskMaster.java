@@ -7,10 +7,18 @@ import io.openjob.common.constant.CommonConstant;
 import io.openjob.common.constant.FailStatusEnum;
 import io.openjob.common.constant.InstanceStatusEnum;
 import io.openjob.common.constant.JobInstanceStopEnum;
+import io.openjob.common.constant.TaskConstant;
 import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.constant.TimeExpressionTypeEnum;
+import io.openjob.common.request.ServerInstanceTaskChildListPullRequest;
+import io.openjob.common.request.ServerInstanceTaskListPullRequest;
+import io.openjob.common.request.ServerStopInstanceTaskRequest;
 import io.openjob.common.request.WorkerJobInstanceStatusRequest;
+import io.openjob.common.request.WorkerJobInstanceTaskBatchRequest;
 import io.openjob.common.request.WorkerJobInstanceTaskRequest;
+import io.openjob.common.response.WorkerInstanceTaskChildListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskListPullResponse;
+import io.openjob.common.response.WorkerInstanceTaskResponse;
 import io.openjob.common.util.DateUtil;
 import io.openjob.common.util.TaskUtil;
 import io.openjob.worker.constant.WorkerAkkaConstant;
@@ -22,12 +30,16 @@ import io.openjob.worker.request.ContainerBatchTaskStatusRequest;
 import io.openjob.worker.request.MasterDestroyContainerRequest;
 import io.openjob.worker.request.MasterStartContainerRequest;
 import io.openjob.worker.request.MasterStopContainerRequest;
+import io.openjob.worker.request.MasterStopInstanceTaskRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,7 +55,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
 
     protected AtomicLong taskIdGenerator = new AtomicLong(0);
 
-    protected AtomicLong circleIdGenerator = new AtomicLong(0);
+    protected AtomicLong circleIdGenerator = new AtomicLong(1);
 
     protected JobInstanceDTO jobInstanceDTO;
 
@@ -78,6 +90,16 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     protected AtomicInteger stopping = new AtomicInteger(0);
 
     /**
+     * Circle task unique id
+     */
+    protected String circleTaskUniqueId = "";
+
+    /**
+     * Circle task id
+     */
+    protected Long circleTaskId;
+
+    /**
      * New AbstractTaskMaster
      *
      * @param jobInstanceDTO job instance context.
@@ -94,6 +116,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected void init() {
+        // Second delay
+        if (this.isSecondDelay()) {
+            this.circleIdGenerator.set(this.jobInstanceDTO.getCircleId());
+        }
+    }
+
+    @Override
+    public void submit() {
 
     }
 
@@ -105,50 +135,36 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         // Remove task from manager
         this.removeTaskFromManager();
 
-        // Not second delay task.
-        if (!TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType())) {
+        // Stop complete: any task to destroy task container
+        // Normal complete: not second delay task or execute once to destroy task container
+        if (this.stopping.get() > 0 || !this.isSecondDelay() || CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
+            // When task complete reset status.
+            this.running.set(false);
+
+            // Destroy task container
             this.destroyTaskContainer();
             return;
         }
 
         // Circle second delay task.
         if (NumberUtils.INTEGER_ZERO.equals(this.stopping.get())) {
-            this.circleSecondDelayTask();
+            this.doCircleSecondDelayTask();
         }
     }
 
     @Override
     public void updateStatus(ContainerBatchTaskStatusRequest batchRequest) {
-        // Distribute task.
-        // Submit to queue.
-        if (!(this instanceof StandaloneTaskMaster)) {
-            DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
-            return;
-        }
-
-        // Update list
-        List<Task> updateList = batchRequest.getTaskStatusList().stream().map(s -> {
-            String taskUniqueId = s.getTaskUniqueId();
-            return new Task(taskUniqueId, s.getStatus(), s.getResult());
-        }).collect(Collectors.toList());
-
-        // Update by status.
-        updateList.stream().collect(Collectors.groupingBy(Task::getStatus))
-                .forEach((status, groupList) -> taskDAO.batchUpdateStatusByTaskId(groupList, status));
-
-        // Standalone task.
-        // Do Complete task.
-        if (this.isTaskComplete(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get())) {
-            try {
-                this.completeTask();
-            } catch (InterruptedException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
+        // Handle status
+        DistributeStatusHandler.handle(batchRequest.getTaskStatusList());
     }
 
     @Override
     public Boolean getRunning() {
+        // Second delay always running
+        if (this.isSecondDelay()) {
+            return true;
+        }
+
         return this.running.get();
     }
 
@@ -156,9 +172,6 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     public void stop(Integer type) {
         // Update status
         this.stopping.set(type);
-
-        // Remove from task master pool.
-        TaskMasterPool.remove(this.jobInstanceDTO.getJobInstanceId());
 
         // Stop task container.
         this.containerWorkers.forEach(w -> {
@@ -170,15 +183,88 @@ public abstract class AbstractTaskMaster implements TaskMaster {
             WorkerActorSystem.atLeastOnceDelivery(request, null);
         });
 
-        // Remove task from manager
-        this.removeTaskFromManager();
-
-        // Complete task
+        // Complete task.
         try {
             this.completeTask();
-        } catch (Throwable e) {
-            log.error("Stop and complete task failed!", e);
+        } catch (InterruptedException interruptedException) {
+            log.error("Stop complete task failed!", interruptedException);
         }
+    }
+
+    @Override
+    public WorkerInstanceTaskListPullResponse pullInstanceTaskList(ServerInstanceTaskListPullRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+
+        // Second delay and not new circle running
+        if (this.isSecondDelay() && request.getCircleId() >= this.circleIdGenerator.get()) {
+            return new WorkerInstanceTaskListPullResponse();
+        }
+
+        WorkerInstanceTaskListPullResponse response = new WorkerInstanceTaskListPullResponse();
+        List<Task> tasks = this.taskDAO.findCircleParentTaskList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), TaskConstant.DEFAULT_PARENT_ID);
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
+    }
+
+    @Override
+    public WorkerInstanceTaskChildListPullResponse pullInstanceTaskChildList(ServerInstanceTaskChildListPullRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return new WorkerInstanceTaskChildListPullResponse();
+        }
+
+        WorkerInstanceTaskChildListPullResponse response = new WorkerInstanceTaskChildListPullResponse();
+        List<Task> tasks = this.taskDAO.findChildTaskList(request.getTaskId());
+
+        // Response
+        List<WorkerInstanceTaskResponse> taskResponses = Optional.ofNullable(tasks).orElseGet(ArrayList::new)
+                .stream().map(this::convert2WorkerInstanceTaskResponse).collect(Collectors.toList());
+        response.setTaskList(taskResponses);
+        return response;
+    }
+
+    @Override
+    public void stopTask(ServerStopInstanceTaskRequest request) {
+        // Dispatch version difference
+        if (!this.jobInstanceDTO.getDispatchVersion().equals(request.getDispatchVersion())) {
+            return;
+        }
+
+        // Circle id difference
+        if (!request.getCircleId().equals(this.circleIdGenerator.get())) {
+            return;
+        }
+
+        // Not exist
+        Task task = this.taskDAO.getByTaskId(request.getTaskId());
+        if (Objects.isNull(task)) {
+            return;
+        }
+
+        // Not running
+        if (!TaskStatusEnum.isRunning(task.getStatus())) {
+            return;
+        }
+
+        MasterStopInstanceTaskRequest stopRequest = new MasterStopInstanceTaskRequest();
+        stopRequest.setJobInstanceId(request.getJobInstanceId());
+        stopRequest.setDispatchVersion(request.getDispatchVersion());
+        stopRequest.setCircleId(request.getCircleId());
+        stopRequest.setTaskId(request.getTaskId());
+        stopRequest.setWorkerAddress(task.getWorkerAddress());
+        WorkerActorSystem.atLeastOnceDelivery(stopRequest, null);
     }
 
     @Override
@@ -209,13 +295,14 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Long acquireTaskId() {
-        return taskIdGenerator.getAndIncrement();
+        return taskIdGenerator.incrementAndGet();
     }
 
     protected MasterStartContainerRequest getMasterStartContainerRequest() {
         MasterStartContainerRequest startReq = this.getJobMasterStartContainerRequest();
         startReq.setJobId(this.jobInstanceDTO.getJobId());
         startReq.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        startReq.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         startReq.setTaskId(this.acquireTaskId());
         startReq.setCircleId(circleIdGenerator.get());
         return startReq;
@@ -225,6 +312,8 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         Task task = new Task();
         task.setJobId(startRequest.getJobId());
         task.setInstanceId(startRequest.getJobInstanceId());
+        task.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
+        task.setMapTaskId(Optional.ofNullable(startRequest.getMapTaskId()).orElse(0L));
         task.setCircleId(startRequest.getCircleId());
         task.setTaskId(startRequest.getTaskUniqueId());
         task.setTaskParentId(startRequest.getParentTaskUniqueId());
@@ -238,6 +327,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         MasterStartContainerRequest containerRequest = this.getJobMasterStartContainerRequest();
         containerRequest.setJobId(task.getJobId());
         containerRequest.setJobInstanceId(task.getInstanceId());
+        containerRequest.setDispatchVersion(this.jobInstanceDTO.getDispatchVersion());
         containerRequest.setTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskId()));
         containerRequest.setParentTaskId(TaskUtil.getRandomUniqueIdLastId(task.getTaskParentId()));
         containerRequest.setCircleId(task.getCircleId());
@@ -269,6 +359,7 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         taskRequest.setJobId(task.getJobId());
         taskRequest.setJobInstanceId(task.getInstanceId());
         taskRequest.setCircleId(task.getCircleId());
+        taskRequest.setDispatchVersion(task.getDispatchVersion());
         taskRequest.setTaskId(task.getTaskId());
         taskRequest.setTaskName(task.getTaskName());
         taskRequest.setParentTaskId(task.getTaskParentId());
@@ -285,19 +376,45 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         return nonFinishCount <= 0;
     }
 
-    @SuppressWarnings("all")
+    /**
+     * Job instance status and tasks
+     */
     protected void doCompleteTask() {
-        long circleId = this.circleIdGenerator.get();
-        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        // Second delay to do circle status
+        if (this.isSecondDelay()) {
+            this.doCircleSecondStatus();
+        } else {
+            // Job instance status
+            this.doJobInstanceStatus();
+        }
 
-        // Instance status and fail status
-        int instanceStatus = this.getInstanceStatus();
-        int failStatus = this.getFailStatus();
+        // Job instance tasks
+        this.doJobInstanceTasks();
+    }
 
+    protected void doCircleSecondStatus() {
+        // Execute once
+        if (CommonConstant.YES.equals(this.jobInstanceDTO.getExecuteOnce())) {
+            this.doJobInstanceStatus();
+        }
+    }
+
+    protected void doJobInstanceStatus() {
+        WorkerJobInstanceStatusRequest instanceRequest = new WorkerJobInstanceStatusRequest();
+        instanceRequest.setCircleId(this.circleIdGenerator.get());
+        instanceRequest.setJobInstanceId(this.jobInstanceDTO.getJobInstanceId());
+        instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
+        instanceRequest.setStatus(this.getInstanceStatus());
+        instanceRequest.setFailStatus(this.getFailStatus());
+        WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
+    }
+
+    @SuppressWarnings("all")
+    protected void doJobInstanceTasks() {
         long size = 100;
         long page = CommonConstant.FIRST_PAGE;
         while (true) {
-            List<Task> queryTask = TaskDAO.INSTANCE.getList(instanceId, circleId, size);
+            List<Task> queryTask = TaskDAO.INSTANCE.getList(this.jobInstanceDTO.getJobInstanceId(), this.circleIdGenerator.get(), size);
 
             // Empty query.
             if (CollectionUtils.isEmpty(queryTask)) {
@@ -309,16 +426,9 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                     .map(this::convertToTaskRequest)
                     .collect(Collectors.toList());
 
-            WorkerJobInstanceStatusRequest instanceRequest = new WorkerJobInstanceStatusRequest();
-            instanceRequest.setCircleId(circleId);
-            instanceRequest.setJobInstanceId(instanceId);
-            instanceRequest.setJobId(this.jobInstanceDTO.getJobId());
-            instanceRequest.setStatus(instanceStatus);
-            instanceRequest.setFailStatus(failStatus);
-            instanceRequest.setTaskRequestList(taskRequestList);
-            instanceRequest.setPage(page);
-
-            WorkerActorSystem.atLeastOnceDelivery(instanceRequest, null);
+            WorkerJobInstanceTaskBatchRequest workerJobInstanceTaskBatchRequest = new WorkerJobInstanceTaskBatchRequest();
+            workerJobInstanceTaskBatchRequest.setTaskRequestList(taskRequestList);
+            WorkerActorSystem.atLeastOnceDelivery(workerJobInstanceTaskBatchRequest, null);
 
             // Delete tasks.
             List<String> deleteTaskIds = queryTask.stream().map(Task::getTaskId).collect(Collectors.toList());
@@ -338,6 +448,24 @@ public abstract class AbstractTaskMaster implements TaskMaster {
                 break;
             }
         }
+    }
+
+    protected Integer getCircleTaskStatus() {
+        // Normal stop
+        if (JobInstanceStopEnum.isNormal(this.stopping.get())) {
+            return TaskStatusEnum.STOP.getStatus();
+        }
+
+        // Timeout stop
+        if (JobInstanceStopEnum.isTimeout(this.stopping.get())) {
+            return TaskStatusEnum.FAILED.getStatus();
+        }
+
+        // Not stop
+        long circleId = this.circleIdGenerator.get();
+        long instanceId = this.jobInstanceDTO.getJobInstanceId();
+        long failedCount = TaskDAO.INSTANCE.countTask(instanceId, circleId, Collections.singletonList(TaskStatusEnum.FAILED.getStatus()));
+        return failedCount > 0 ? TaskStatusEnum.FAILED.getStatus() : TaskStatusEnum.SUCCESS.getStatus();
     }
 
     protected Integer getInstanceStatus() {
@@ -363,24 +491,33 @@ public abstract class AbstractTaskMaster implements TaskMaster {
     }
 
     protected Integer getTaskStatus(Integer status) {
-        // Normal stop
+        // Normal stop and not finish
         if (JobInstanceStopEnum.isNormal(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
             return TaskStatusEnum.STOP.getStatus();
         }
 
-        // Timeout stop
+        // Timeout stop and not finish
         if (JobInstanceStopEnum.isTimeout(this.stopping.get()) && TaskStatusEnum.isNotFinishStatus(status)) {
             return TaskStatusEnum.FAILED.getStatus();
         }
         return status;
     }
 
-    protected void circleSecondDelayTask() throws InterruptedException {
+    protected void doCircleSecondDelayTask() throws InterruptedException {
         long instanceId = this.jobInstanceDTO.getJobInstanceId();
+
+        // When task complete reset status.
+        this.running.set(false);
 
         // Second delay task.
         long delayTime = Long.parseLong(this.jobInstanceDTO.getTimeExpression());
         Thread.sleep(delayTime * 1000L);
+
+        // Rest task id
+        this.taskIdGenerator.set(0L);
+
+        // Reset circle task id
+        this.circleTaskId = null;
 
         // Next circle id.
         long jobId = this.jobInstanceDTO.getJobId();
@@ -388,5 +525,37 @@ public abstract class AbstractTaskMaster implements TaskMaster {
         log.info("Second delay task begin jobId={} instanceId={} circleId={}", jobId, instanceId, nextCircleId);
 
         this.submit();
+    }
+
+    /**
+     * Convert to WorkerInstanceTaskResponse
+     *
+     * @param task task
+     * @return WorkerInstanceTaskResponse
+     */
+    protected WorkerInstanceTaskResponse convert2WorkerInstanceTaskResponse(Task task) {
+        WorkerInstanceTaskResponse response = new WorkerInstanceTaskResponse();
+        response.setJobId(task.getJobId());
+        response.setJobInstanceId(task.getInstanceId());
+        response.setDispatchVersion(task.getDispatchVersion());
+        response.setCircleId(task.getCircleId());
+        response.setTaskId(task.getTaskId());
+        response.setParentTaskId(task.getTaskParentId());
+        response.setTaskName(task.getTaskName());
+        response.setStatus(task.getStatus());
+        response.setResult(task.getResult());
+        response.setWorkerAddress(task.getWorkerAddress());
+        response.setCreateTime(task.getCreateTime());
+        response.setUpdateTime(task.getUpdateTime());
+        return response;
+    }
+
+    /**
+     * Whether is second delay
+     *
+     * @return Boolean
+     */
+    protected Boolean isSecondDelay() {
+        return TimeExpressionTypeEnum.isSecondDelay(this.jobInstanceDTO.getTimeExpressionType());
     }
 }

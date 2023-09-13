@@ -99,6 +99,7 @@ public class DelayDeleteListScheduler extends AbstractDelayScheduler {
                     break;
                 } catch (Throwable ex) {
                     log.error("Delete list delay instance failed!", ex);
+                    this.failSleep();
                 }
             }
 

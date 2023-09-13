@@ -6,7 +6,8 @@ import io.openjob.common.constant.TaskStatusEnum;
 import io.openjob.common.response.WorkerResponse;
 import io.openjob.common.util.FutureUtil;
 import io.openjob.common.util.KryoUtil;
-import io.openjob.worker.OpenjobWorker;
+import io.openjob.worker.config.OpenjobConfig;
+import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.context.JobContext;
 import io.openjob.worker.init.WorkerActorSystem;
 import io.openjob.worker.request.ProcessorMapTaskRequest;
@@ -15,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author stelin swoft@qq.com
@@ -29,35 +31,48 @@ public interface MapProcessor extends JavaProcessor {
      * @param taskName task name.
      * @return ProcessResult
      */
-    default ProcessResult map(List<? extends Object> tasks, String taskName) {
+    default ProcessResult map(List<?> tasks, String taskName) {
         ProcessResult result = new ProcessResult(false);
 
+        // Empty task
         if (CollectionUtils.isEmpty(tasks)) {
-            return result;
+            throw new RuntimeException("Map task can not empty!");
         }
 
         JobContext jobContext = ThreadLocalUtil.getJobContext();
         ActorSelection masterSelection = WorkerActorSystem.getActorSystem().actorSelection(jobContext.getMasterActorPath());
 
-        int batchSize = 100;
+        // Batch size
+        int batchSize = OpenjobConfig.getInteger(WorkerConstant.WORKER_TASK_MAP_BATCH_SIZE, WorkerConstant.DEFAULT_WORKER_TASK_MAP_BATCH_SIZE);
+        @SuppressWarnings("unchecked")
         List<List<Object>> splitTasks = Lists.partition((List<Object>) tasks, batchSize);
-        splitTasks.forEach((batchTasks) -> {
+
+        AtomicInteger index = new AtomicInteger(1);
+        AtomicInteger initValueId = new AtomicInteger(1);
+        splitTasks.forEach((bt) -> {
             ProcessorMapTaskRequest mapTaskRequest = new ProcessorMapTaskRequest();
             mapTaskRequest.setJobId(jobContext.getJobId());
             mapTaskRequest.setJobInstanceId(jobContext.getJobInstanceId());
             mapTaskRequest.setTaskId(jobContext.getTaskId());
+            mapTaskRequest.setParentTaskName(jobContext.getTaskName());
             mapTaskRequest.setTaskName(taskName);
+            mapTaskRequest.setTaskNum(0);
+            mapTaskRequest.setInitValueId(initValueId.get());
+
+            // Last partition to set task num
+            if (splitTasks.size() == index.get()) {
+                mapTaskRequest.setTaskNum(tasks.size());
+            }
 
             List<byte[]> byteList = new ArrayList<>();
-            batchTasks.forEach(t -> byteList.add(KryoUtil.serialize(t)));
+            bt.forEach(t -> byteList.add(KryoUtil.serialize(t)));
             mapTaskRequest.setTasks(byteList);
 
-            try {
-                WorkerResponse workerResponse = FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 10000L);
-                result.setStatus(TaskStatusEnum.SUCCESS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // Map task
+            FutureUtil.mustAsk(masterSelection, mapTaskRequest, WorkerResponse.class, 5000L);
+            result.setStatus(TaskStatusEnum.SUCCESS);
+            index.getAndIncrement();
+            initValueId.addAndGet(batchSize);
         });
         return result;
     }
