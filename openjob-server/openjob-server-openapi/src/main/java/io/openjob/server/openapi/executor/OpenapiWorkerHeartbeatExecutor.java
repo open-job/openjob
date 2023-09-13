@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class WorkerHeartbeatExecutor {
+public class OpenapiWorkerHeartbeatExecutor {
     private final TaskQueue<WorkerHeartbeatRequest> queue;
 
     /**
      * New
      */
-    public WorkerHeartbeatExecutor() {
+    public OpenapiWorkerHeartbeatExecutor() {
         this.queue = new TaskQueue<>(0L, 64);
 
         //Consumer

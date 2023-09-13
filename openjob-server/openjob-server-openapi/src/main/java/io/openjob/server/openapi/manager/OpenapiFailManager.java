@@ -32,15 +32,15 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class FailManager {
+public class OpenapiFailManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final ClusterProperties clusterProperties;
-    private final RefreshManager refreshManager;
+    private final OpenapiRefreshManager refreshManager;
     private final Scheduler scheduler;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshManager refreshManager, Scheduler scheduler) {
+    public OpenapiFailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, OpenapiRefreshManager refreshManager, Scheduler scheduler) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.clusterProperties = clusterProperties;

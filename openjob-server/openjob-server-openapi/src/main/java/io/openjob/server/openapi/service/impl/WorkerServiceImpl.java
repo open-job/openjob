@@ -9,8 +9,8 @@ import io.openjob.server.common.util.SlotsUtil;
 import io.openjob.server.openapi.autoconfigure.ClusterProperties;
 import io.openjob.server.openapi.dto.WorkerFailDTO;
 import io.openjob.server.openapi.dto.WorkerJoinDTO;
-import io.openjob.server.openapi.executor.WorkerHeartbeatExecutor;
-import io.openjob.server.openapi.manager.RefreshManager;
+import io.openjob.server.openapi.executor.OpenapiWorkerHeartbeatExecutor;
+import io.openjob.server.openapi.manager.OpenapiRefreshManager;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
 import io.openjob.server.openapi.request.WorkerStartRequest;
 import io.openjob.server.openapi.request.WorkerStopRequest;
@@ -50,16 +50,16 @@ public class WorkerServiceImpl implements WorkerService {
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
     private final ClusterProperties clusterProperties;
-    private final RefreshManager refreshManager;
-    private final WorkerHeartbeatExecutor workerHeartbeatExecutor;
+    private final OpenapiRefreshManager refreshManager;
+    private final OpenapiWorkerHeartbeatExecutor workerHeartbeatExecutor;
     private final JobInstanceDAO jobInstanceDAO;
 
     @Autowired
     public WorkerServiceImpl(WorkerDAO workerDAO,
                              AppDAO appDAO,
                              ClusterProperties clusterProperties,
-                             RefreshManager refreshManager,
-                             WorkerHeartbeatExecutor workerHeartbeatExecutor,
+                             OpenapiRefreshManager refreshManager,
+                             OpenapiWorkerHeartbeatExecutor workerHeartbeatExecutor,
                              JobInstanceDAO jobInstanceDAO) {
         this.workerDAO = workerDAO;
         this.appDAO = appDAO;

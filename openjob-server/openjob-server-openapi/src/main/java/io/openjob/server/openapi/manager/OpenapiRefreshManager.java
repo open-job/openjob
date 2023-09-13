@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class RefreshManager {
+public class OpenapiRefreshManager {
 
     private final SystemDAO systemDAO;
     private final ServerDAO serverDAO;
@@ -37,7 +37,7 @@ public class RefreshManager {
     private final WorkerDAO workerDAO;
 
     @Autowired
-    public RefreshManager(SystemDAO systemDAO, ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO) {
+    public OpenapiRefreshManager(SystemDAO systemDAO, ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, WorkerDAO workerDAO) {
         this.systemDAO = systemDAO;
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;

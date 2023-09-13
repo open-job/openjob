@@ -28,17 +28,17 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class JoinManager {
+public class OpenapiJoinManager {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
-    private final RefreshManager refreshManager;
+    private final OpenapiRefreshManager refreshManager;
     private final ClusterProperties clusterProperties;
 
     /**
      * Refresh status.
      */
     @Autowired
-    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshManager refreshManager, ClusterProperties clusterProperties) {
+    public OpenapiJoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, OpenapiRefreshManager refreshManager, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.refreshManager = refreshManager;
