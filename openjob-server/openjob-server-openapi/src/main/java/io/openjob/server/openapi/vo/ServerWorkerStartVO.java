@@ -1,5 +1,6 @@
 package io.openjob.server.openapi.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Set;
@@ -11,18 +12,12 @@ import java.util.Set;
 @Data
 public class ServerWorkerStartVO {
 
-    /**
-     * App id
-     */
+    @ApiModelProperty(value = "App id", required = true)
     private Long appId;
 
-    /**
-     * App name
-     */
+    @ApiModelProperty(value = "App name", required = true)
     private String appName;
 
-    /**
-     * Online workers  and exclude start worker.
-     */
+    @ApiModelProperty(value = "Online workers  and exclude start worker.", required = true)
     private Set<String> workerAddressList;
 }

@@ -10,17 +10,13 @@ import javax.validation.constraints.NotBlank;
  * @since 1.0.0
  */
 @Data
-public class WorkerStopRequest {
+public class WorkerJobInstanceTaskLogFieldRequest {
 
     @NotBlank
-    @ApiModelProperty("Worker key")
-    private String workerKey;
+    @ApiModelProperty(value = "name", required = true)
+    private String name;
 
     @NotBlank
-    @ApiModelProperty("App name")
-    private String appName;
-
-    @NotBlank
-    @ApiModelProperty("worker address")
-    private String address;
+    @ApiModelProperty(value = "value", required = true)
+    private String value;
 }

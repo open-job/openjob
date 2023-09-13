@@ -23,7 +23,7 @@ import javax.validation.Valid;
  * @since 1.0.0
  */
 @RestController
-@Api(value = "Delay-instance", tags = "Delay-instance")
+@Api(value = "worker", tags = "worker")
 @RequestMapping("/openapi/worker")
 @Slf4j
 public class OpenWorkerController {
@@ -34,7 +34,13 @@ public class OpenWorkerController {
         this.workerService = workerService;
     }
 
-    @ApiOperation("Client needs to report client information every time it starts.")
+    /**
+     * Client needs to report client information every time it starts.
+     *
+     * @param workerStartRequest worker start request
+     * @return Result
+     */
+    @ApiOperation("Worker start")
     @PostMapping("/start")
     public Result<ServerWorkerStartVO> workerStart(@Valid @RequestBody WorkerStartRequest workerStartRequest) {
         ServerWorkerStartVO result = this.workerService.workerStart(workerStartRequest);
@@ -43,18 +49,24 @@ public class OpenWorkerController {
         return Result.success(result);
     }
 
-    @ApiOperation("Client needs to notify the server every time it goes offline.")
+    /**
+     * Client needs to notify the server every time it goes offline.
+     *
+     * @param workerStopRequest worker stop request
+     * @return Result
+     */
+    @ApiOperation("Worker stop")
     @PostMapping("/stop")
-    public Result<ServerWorkerStopVO> workerStop(WorkerStopRequest workerStopRequest) {
+    public Result<ServerWorkerStopVO> workerStop(@Valid @RequestBody WorkerStopRequest workerStopRequest) {
         ServerWorkerStopVO result = this.workerService.workerStop(workerStopRequest);
 
         log.info("Worker stop success! address={}", workerStopRequest.getAddress());
         return Result.success(result);
     }
 
-    @ApiOperation("Worker heartbeat request.")
+    @ApiOperation("worker heartbeat")
     @PostMapping("/heartbeat")
-    public Result<ServerHeartbeatVO> heartbeat(WorkerHeartbeatRequest workerHeartbeatRequest) {
+    public Result<ServerHeartbeatVO> heartbeat(@Valid @RequestBody WorkerHeartbeatRequest workerHeartbeatRequest) {
         ServerHeartbeatVO result = this.workerService.workerHeartbeat(workerHeartbeatRequest);
         return Result.success(result);
     }
