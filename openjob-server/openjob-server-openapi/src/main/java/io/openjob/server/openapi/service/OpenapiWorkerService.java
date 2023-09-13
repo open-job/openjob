@@ -10,7 +10,7 @@ import io.openjob.server.openapi.vo.ServerWorkerStopVO;
 import java.util.List;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
 public interface OpenapiWorkerService {

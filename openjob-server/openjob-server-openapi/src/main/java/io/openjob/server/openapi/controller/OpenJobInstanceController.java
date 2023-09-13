@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
 @RestController

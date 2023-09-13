@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
 @RestController

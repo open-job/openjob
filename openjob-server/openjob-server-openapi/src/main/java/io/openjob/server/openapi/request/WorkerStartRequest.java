@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
 @Data
