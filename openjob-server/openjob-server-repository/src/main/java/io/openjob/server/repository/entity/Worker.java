@@ -23,7 +23,7 @@ public class Worker {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native",parameters = {@Parameter(name = "sequence_name", value = "worker_id")})
+    @GenericGenerator(name = "native", strategy = "native", parameters = {@Parameter(name = "sequence_name", value = "worker_id")})
     private Long id;
 
     /**
