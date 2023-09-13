@@ -13,7 +13,7 @@ import java.util.List;
  * @author zhenghongyang <sakuraovq@gmail.com>
  * @since 1.0.0
  */
-public interface WorkerService {
+public interface OpenapiWorkerService {
 
     /**
      * Worker start

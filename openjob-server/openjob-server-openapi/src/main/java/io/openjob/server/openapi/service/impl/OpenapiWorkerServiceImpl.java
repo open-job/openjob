@@ -14,7 +14,7 @@ import io.openjob.server.openapi.manager.OpenapiRefreshManager;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
 import io.openjob.server.openapi.request.WorkerStartRequest;
 import io.openjob.server.openapi.request.WorkerStopRequest;
-import io.openjob.server.openapi.service.WorkerService;
+import io.openjob.server.openapi.service.OpenapiWorkerService;
 import io.openjob.server.openapi.util.ClusterUtil;
 import io.openjob.server.openapi.vo.ServerHeartbeatVO;
 import io.openjob.server.openapi.vo.ServerWorkerStartVO;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Log4j2
-public class WorkerServiceImpl implements WorkerService {
+public class OpenapiWorkerServiceImpl implements OpenapiWorkerService {
 
     private final WorkerDAO workerDAO;
     private final AppDAO appDAO;
@@ -55,12 +55,12 @@ public class WorkerServiceImpl implements WorkerService {
     private final JobInstanceDAO jobInstanceDAO;
 
     @Autowired
-    public WorkerServiceImpl(WorkerDAO workerDAO,
-                             AppDAO appDAO,
-                             ClusterProperties clusterProperties,
-                             OpenapiRefreshManager refreshManager,
-                             OpenapiWorkerHeartbeatExecutor workerHeartbeatExecutor,
-                             JobInstanceDAO jobInstanceDAO) {
+    public OpenapiWorkerServiceImpl(WorkerDAO workerDAO,
+                                    AppDAO appDAO,
+                                    ClusterProperties clusterProperties,
+                                    OpenapiRefreshManager refreshManager,
+                                    OpenapiWorkerHeartbeatExecutor workerHeartbeatExecutor,
+                                    JobInstanceDAO jobInstanceDAO) {
         this.workerDAO = workerDAO;
         this.appDAO = appDAO;
         this.clusterProperties = clusterProperties;

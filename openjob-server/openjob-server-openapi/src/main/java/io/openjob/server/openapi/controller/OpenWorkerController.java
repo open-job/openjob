@@ -4,7 +4,7 @@ import io.openjob.common.response.Result;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
 import io.openjob.server.openapi.request.WorkerStartRequest;
 import io.openjob.server.openapi.request.WorkerStopRequest;
-import io.openjob.server.openapi.service.WorkerService;
+import io.openjob.server.openapi.service.OpenapiWorkerService;
 import io.openjob.server.openapi.vo.ServerHeartbeatVO;
 import io.openjob.server.openapi.vo.ServerWorkerStartVO;
 import io.openjob.server.openapi.vo.ServerWorkerStopVO;
@@ -28,9 +28,9 @@ import javax.validation.Valid;
 @Slf4j
 public class OpenWorkerController {
 
-    private final WorkerService workerService;
+    private final OpenapiWorkerService workerService;
 
-    public OpenWorkerController(WorkerService workerService) {
+    public OpenWorkerController(OpenapiWorkerService workerService) {
         this.workerService = workerService;
     }
 

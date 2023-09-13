@@ -4,7 +4,7 @@ import io.openjob.common.OpenjobSpringContext;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
-import io.openjob.server.openapi.service.WorkerService;
+import io.openjob.server.openapi.service.OpenapiWorkerService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
         @Override
         public void run() {
             try {
-                OpenjobSpringContext.getBean(WorkerService.class).batchHeartbeat(this.tasks);
+                OpenjobSpringContext.getBean(OpenapiWorkerService.class).batchHeartbeat(this.tasks);
             } catch (Throwable throwable) {
                 log.error("Worker heartbeat failed!", throwable);
             }
