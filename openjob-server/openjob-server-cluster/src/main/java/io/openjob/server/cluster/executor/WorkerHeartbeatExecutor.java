@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.executor;
 
-import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.task.TaskQueue;
+import io.openjob.server.cluster.dto.WorkerHeartbeatReqDTO;
 import io.openjob.server.cluster.task.WorkerHeartConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class WorkerHeartbeatExecutor {
-    private final TaskQueue<WorkerHeartbeatRequest> queue;
+    private final TaskQueue<WorkerHeartbeatReqDTO> queue;
 
     /**
      * New
@@ -39,7 +39,7 @@ public class WorkerHeartbeatExecutor {
      *
      * @param request request
      */
-    public void submit(WorkerHeartbeatRequest request) {
+    public void submit(WorkerHeartbeatReqDTO request) {
         try {
             this.queue.submit(request);
         } catch (InterruptedException e) {

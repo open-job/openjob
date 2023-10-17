@@ -1,9 +1,12 @@
 package io.openjob.server.openapi.service.impl;
 
+import io.openjob.server.cluster.dto.WorkerHeartbeatReqDTO;
+import io.openjob.server.cluster.dto.WorkerHeartbeatRespDTO;
 import io.openjob.server.cluster.dto.WorkerStartReqDTO;
 import io.openjob.server.cluster.dto.WorkerStartRespDTO;
 import io.openjob.server.cluster.dto.WorkerStopReqDTO;
 import io.openjob.server.cluster.dto.WorkerStopRespDTO;
+import io.openjob.server.cluster.manager.WorkerHeartbeatManager;
 import io.openjob.server.cluster.manager.WorkerManager;
 import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
@@ -25,10 +28,12 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class OpenapiWorkerServiceImpl implements OpenapiWorkerService {
     private final WorkerManager workerManager;
+    private final WorkerHeartbeatManager workerHeartbeatManager;
 
     @Autowired
-    public OpenapiWorkerServiceImpl(WorkerManager workerManager) {
+    public OpenapiWorkerServiceImpl(WorkerManager workerManager, WorkerHeartbeatManager workerHeartbeatManager) {
         this.workerManager = workerManager;
+        this.workerHeartbeatManager = workerHeartbeatManager;
     }
 
     @Override
@@ -47,6 +52,7 @@ public class OpenapiWorkerServiceImpl implements OpenapiWorkerService {
 
     @Override
     public ServerHeartbeatVO workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatRequest) {
-        return null;
+        WorkerHeartbeatRespDTO workerHeartbeatRespDTO = this.workerHeartbeatManager.workerHeartbeat(BeanMapperUtil.map(workerHeartbeatRequest, WorkerHeartbeatReqDTO.class));
+        return BeanMapperUtil.map(workerHeartbeatRespDTO, ServerHeartbeatVO.class);
     }
 }
