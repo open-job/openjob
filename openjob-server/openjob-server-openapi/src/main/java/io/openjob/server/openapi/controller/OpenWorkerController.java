@@ -44,7 +44,6 @@ public class OpenWorkerController {
     @PostMapping("/start")
     public Result<ServerWorkerStartVO> workerStart(@Valid @RequestBody WorkerStartRequest workerStartRequest) {
         ServerWorkerStartVO result = this.workerService.workerStart(workerStartRequest);
-
         log.info("Worker register success! address={}", workerStartRequest.getAddress());
         return Result.success(result);
     }
@@ -59,7 +58,6 @@ public class OpenWorkerController {
     @PostMapping("/stop")
     public Result<ServerWorkerStopVO> workerStop(@Valid @RequestBody WorkerStopRequest workerStopRequest) {
         ServerWorkerStopVO result = this.workerService.workerStop(workerStopRequest);
-
         log.info("Worker stop success! address={}", workerStopRequest.getAddress());
         return Result.success(result);
     }

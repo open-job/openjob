@@ -7,8 +7,6 @@ import io.openjob.server.openapi.vo.ServerHeartbeatVO;
 import io.openjob.server.openapi.vo.ServerWorkerStartVO;
 import io.openjob.server.openapi.vo.ServerWorkerStopVO;
 
-import java.util.List;
-
 /**
  * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
@@ -38,11 +36,4 @@ public interface OpenapiWorkerService {
      * @return Current server all worker address
      */
     ServerHeartbeatVO workerHeartbeat(WorkerHeartbeatRequest workerHeartbeatRequest);
-
-    /**
-     * Batch save heartbeats
-     *
-     * @param requests requests
-     */
-    void batchHeartbeat(List<WorkerHeartbeatRequest> requests);
 }

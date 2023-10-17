@@ -10,8 +10,8 @@ import io.openjob.common.util.FutureUtil;
 import io.openjob.server.cluster.autoconfigure.ClusterProperties;
 import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.NodePongDTO;
-import io.openjob.server.cluster.manager.FailManager;
-import io.openjob.server.cluster.manager.JoinManager;
+import io.openjob.server.cluster.common.FailCommon;
+import io.openjob.server.cluster.common.JoinCommon;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.common.constant.AkkaConfigConstant;
@@ -38,21 +38,21 @@ import java.util.Objects;
 @Log4j2
 @Service
 public class HealthService {
-    private final FailManager failManager;
+    private final FailCommon failCommon;
     private final ServerReportsDAO serverReportsDAO;
     private final ClusterProperties clusterProperties;
     private final JobSlotsDAO jobSlotsDAO;
-    private final JoinManager joinManager;
+    private final JoinCommon joinCommon;
 
     private final ActorSystem actorSystem;
 
     @Autowired
-    public HealthService(ServerReportsDAO serverReportsDAO, FailManager failManager, ClusterProperties clusterProperties, JobSlotsDAO jobSlotsDAO, JoinManager joinManager, ActorSystem actorSystem) {
+    public HealthService(ServerReportsDAO serverReportsDAO, FailCommon failCommon, ClusterProperties clusterProperties, JobSlotsDAO jobSlotsDAO, JoinCommon joinCommon, ActorSystem actorSystem) {
         this.serverReportsDAO = serverReportsDAO;
-        this.failManager = failManager;
+        this.failCommon = failCommon;
         this.clusterProperties = clusterProperties;
         this.jobSlotsDAO = jobSlotsDAO;
-        this.joinManager = joinManager;
+        this.joinCommon = joinCommon;
         this.actorSystem = actorSystem;
     }
 
@@ -123,7 +123,7 @@ public class HealthService {
 
         // Offline
         if (reportsCount > this.clusterProperties.getNodeFailTimes()) {
-            this.failManager.fail(failNode);
+            this.failCommon.fail(failNode);
         }
     }
 
@@ -155,7 +155,7 @@ public class HealthService {
             Config config = this.actorSystem.settings().config();
             Integer bindPort = config.getInt(AkkaConfigConstant.AKKA_CANONICAL_PORT);
             String bindHostname = config.getString(AkkaConfigConstant.AKKA_CANONICAL_HOSTNAME);
-            this.joinManager.join(bindHostname, bindPort);
+            this.joinCommon.join(bindHostname, bindPort);
         }
     }
 }

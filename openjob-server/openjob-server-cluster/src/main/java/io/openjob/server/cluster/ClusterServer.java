@@ -8,7 +8,7 @@ import akka.actor.Props;
 import akka.routing.RoundRobinPool;
 import com.typesafe.config.Config;
 import io.openjob.common.constant.AkkaConstant;
-import io.openjob.server.cluster.manager.FailManager;
+import io.openjob.server.cluster.common.FailCommon;
 import io.openjob.server.cluster.service.ClusterService;
 import io.openjob.server.cluster.service.JoinService;
 import io.openjob.server.common.ClusterContext;
@@ -29,16 +29,16 @@ public class ClusterServer {
     private final ActorSystem actorSystem;
     private final SchedulerProperties schedulerProperties;
     private final JoinService joinService;
-    private final FailManager failManager;
+    private final FailCommon failCommon;
     private final ClusterService clusterService;
 
     @Autowired
-    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService, FailManager failManager, ClusterService clusterService) {
+    public ClusterServer(ActorSystem actorSystem, SchedulerProperties schedulerProperties, JoinService joinService, FailCommon failCommon, ClusterService clusterService) {
         this.actorSystem = actorSystem;
         this.schedulerProperties = schedulerProperties;
         this.joinService = joinService;
 
-        this.failManager = failManager;
+        this.failCommon = failCommon;
         this.clusterService = clusterService;
     }
 
@@ -148,7 +148,7 @@ public class ClusterServer {
                 .addTask(CoordinatedShutdown.PhaseServiceUnbind(),
                         "coordinated-shutdown-hook",
                         () -> {
-                            this.failManager.shutdown(ClusterContext.getCurrentNode());
+                            this.failCommon.shutdown(ClusterContext.getCurrentNode());
                             return Future.successful(Done.done());
                         });
     }
