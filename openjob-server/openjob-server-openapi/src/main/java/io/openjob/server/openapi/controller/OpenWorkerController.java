@@ -4,7 +4,7 @@ import io.openjob.common.response.Result;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
 import io.openjob.server.openapi.request.WorkerStartRequest;
 import io.openjob.server.openapi.request.WorkerStopRequest;
-import io.openjob.server.openapi.service.OpenapiWorkerService;
+import io.openjob.server.openapi.service.OpenWorkerService;
 import io.openjob.server.openapi.vo.ServerHeartbeatVO;
 import io.openjob.server.openapi.vo.ServerWorkerStartVO;
 import io.openjob.server.openapi.vo.ServerWorkerStopVO;
@@ -28,10 +28,10 @@ import javax.validation.Valid;
 @Slf4j
 public class OpenWorkerController {
 
-    private final OpenapiWorkerService workerService;
+    private final OpenWorkerService openWorkerService;
 
-    public OpenWorkerController(OpenapiWorkerService workerService) {
-        this.workerService = workerService;
+    public OpenWorkerController(OpenWorkerService openWorkerService) {
+        this.openWorkerService = openWorkerService;
     }
 
     /**
@@ -43,7 +43,7 @@ public class OpenWorkerController {
     @ApiOperation("Worker start")
     @PostMapping("/start")
     public Result<ServerWorkerStartVO> workerStart(@Valid @RequestBody WorkerStartRequest workerStartRequest) {
-        ServerWorkerStartVO result = this.workerService.workerStart(workerStartRequest);
+        ServerWorkerStartVO result = this.openWorkerService.workerStart(workerStartRequest);
         log.info("Worker register success! address={}", workerStartRequest.getAddress());
         return Result.success(result);
     }
@@ -57,7 +57,7 @@ public class OpenWorkerController {
     @ApiOperation("Worker stop")
     @PostMapping("/stop")
     public Result<ServerWorkerStopVO> workerStop(@Valid @RequestBody WorkerStopRequest workerStopRequest) {
-        ServerWorkerStopVO result = this.workerService.workerStop(workerStopRequest);
+        ServerWorkerStopVO result = this.openWorkerService.workerStop(workerStopRequest);
         log.info("Worker stop success! address={}", workerStopRequest.getAddress());
         return Result.success(result);
     }
@@ -65,7 +65,7 @@ public class OpenWorkerController {
     @ApiOperation("worker heartbeat")
     @PostMapping("/heartbeat")
     public Result<ServerHeartbeatVO> heartbeat(@Valid @RequestBody WorkerHeartbeatRequest workerHeartbeatRequest) {
-        ServerHeartbeatVO result = this.workerService.workerHeartbeat(workerHeartbeatRequest);
+        ServerHeartbeatVO result = this.openWorkerService.workerHeartbeat(workerHeartbeatRequest);
         return Result.success(result);
     }
 }

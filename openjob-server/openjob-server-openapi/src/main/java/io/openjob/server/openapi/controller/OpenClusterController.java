@@ -2,7 +2,7 @@ package io.openjob.server.openapi.controller;
 
 import io.openjob.common.response.Result;
 import io.openjob.server.openapi.request.ClusterOnlineRequest;
-import io.openjob.server.openapi.service.ClusterService;
+import io.openjob.server.openapi.service.OpenClusterService;
 import io.openjob.server.openapi.vo.ClusterOnlineVO;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +21,15 @@ import javax.validation.Valid;
 @Api(value = "Cluster", tags = "Cluster")
 @RequestMapping("/openapi/cluster")
 public class OpenClusterController {
-    private final ClusterService clusterService;
+    private final OpenClusterService openClusterService;
 
     @Autowired
-    public OpenClusterController(ClusterService clusterService) {
-        this.clusterService = clusterService;
+    public OpenClusterController(OpenClusterService openClusterService) {
+        this.openClusterService = openClusterService;
     }
 
     @GetMapping("/online")
     public Result<ClusterOnlineVO> add(@Valid @ModelAttribute ClusterOnlineRequest clusterOnlineRequest) {
-        return Result.success(this.clusterService.online(clusterOnlineRequest));
+        return Result.success(this.openClusterService.online(clusterOnlineRequest));
     }
 }

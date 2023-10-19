@@ -3,7 +3,7 @@ package io.openjob.server.openapi.service.impl;
 import io.openjob.common.context.Node;
 import io.openjob.server.common.ClusterContext;
 import io.openjob.server.openapi.request.ClusterOnlineRequest;
-import io.openjob.server.openapi.service.ClusterService;
+import io.openjob.server.openapi.service.OpenClusterService;
 import io.openjob.server.openapi.vo.ClusterOnlineVO;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @since 1.0.3
  */
 @Service
-public class ClusterServiceImpl implements ClusterService {
+public class OpenClusterServiceImpl implements OpenClusterService {
     @Override
     public ClusterOnlineVO online(ClusterOnlineRequest clusterOnlineRequest) {
         ClusterOnlineVO clusterOnlineVO = new ClusterOnlineVO();

@@ -11,7 +11,7 @@ import io.openjob.server.openapi.vo.ServerWorkerStopVO;
  * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
-public interface OpenapiWorkerService {
+public interface OpenWorkerService {
 
     /**
      * Worker start

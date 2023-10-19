@@ -12,7 +12,7 @@ import io.openjob.server.common.util.BeanMapperUtil;
 import io.openjob.server.openapi.request.WorkerHeartbeatRequest;
 import io.openjob.server.openapi.request.WorkerStartRequest;
 import io.openjob.server.openapi.request.WorkerStopRequest;
-import io.openjob.server.openapi.service.OpenapiWorkerService;
+import io.openjob.server.openapi.service.OpenWorkerService;
 import io.openjob.server.openapi.vo.ServerHeartbeatVO;
 import io.openjob.server.openapi.vo.ServerWorkerStartVO;
 import io.openjob.server.openapi.vo.ServerWorkerStopVO;
@@ -26,12 +26,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Log4j2
-public class OpenapiWorkerServiceImpl implements OpenapiWorkerService {
+public class OpenWorkerServiceImpl implements OpenWorkerService {
     private final WorkerManager workerManager;
     private final WorkerHeartbeatManager workerHeartbeatManager;
 
     @Autowired
-    public OpenapiWorkerServiceImpl(WorkerManager workerManager, WorkerHeartbeatManager workerHeartbeatManager) {
+    public OpenWorkerServiceImpl(WorkerManager workerManager, WorkerHeartbeatManager workerHeartbeatManager) {
         this.workerManager = workerManager;
         this.workerHeartbeatManager = workerHeartbeatManager;
     }
