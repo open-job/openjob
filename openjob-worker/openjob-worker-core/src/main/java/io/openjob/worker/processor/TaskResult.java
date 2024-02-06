@@ -1,6 +1,5 @@
 package io.openjob.worker.processor;
 
-import io.openjob.common.constant.TaskStatusEnum;
 import lombok.Data;
 
 /**

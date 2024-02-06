@@ -1,9 +1,11 @@
 package io.openjob.server.openapi.request;
 
+import io.openjob.common.constant.ProtocolTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author zhenghongyang sakuraovq@gmail.com
@@ -13,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 public class WorkerStartRequest {
 
     @NotBlank
-    @ApiModelProperty("Worker key")
+    @ApiModelProperty("Worker unique id.")
     private String workerKey;
 
     @NotBlank
@@ -21,6 +23,7 @@ public class WorkerStartRequest {
     private String appName;
 
     @NotBlank
+    @Pattern(regexp = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}$", message = "must be in format 'IP:PORT'")
     @ApiModelProperty("Worker address")
     private String address;
 
@@ -28,9 +31,8 @@ public class WorkerStartRequest {
     @ApiModelProperty("Worker agent version")
     private String version;
 
-    @NotBlank
-    @ApiModelProperty("Worker current protocol type")
-    private String protocolType;
+    @ApiModelProperty("Worker current protocol type, http is default.")
+    private String protocolType = ProtocolTypeEnum.HTTP.getType();
 
     @ApiModelProperty("metric")
     private Metric metric;

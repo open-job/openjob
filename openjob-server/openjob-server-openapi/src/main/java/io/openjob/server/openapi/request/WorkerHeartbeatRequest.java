@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -23,7 +24,8 @@ public class WorkerHeartbeatRequest {
     private String appName;
 
     @NotBlank
-    @ApiModelProperty("Worker internet address")
+    @Pattern(regexp = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}$", message = "must be in format 'IP:PORT'")
+    @ApiModelProperty("Worker address.")
     private String address;
 
     @NotBlank

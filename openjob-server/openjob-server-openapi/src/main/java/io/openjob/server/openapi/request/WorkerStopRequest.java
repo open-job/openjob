@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author zhenghongyang sakuraovq@gmail.com
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 public class WorkerStopRequest {
 
     @NotBlank
-    @ApiModelProperty("Worker key")
+    @ApiModelProperty("Worker unique id.")
     private String workerKey;
 
     @NotBlank
@@ -21,6 +22,7 @@ public class WorkerStopRequest {
     private String appName;
 
     @NotBlank
+    @Pattern(regexp = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}$", message = "must be in format 'IP:PORT'")
     @ApiModelProperty("worker address")
     private String address;
 }
