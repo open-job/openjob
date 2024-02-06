@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class WorkerJobInstanceStatusRequest {
+
     @NotNull
     @ApiModelProperty("Job id.")
     private Long jobId;
@@ -22,9 +23,8 @@ public class WorkerJobInstanceStatusRequest {
     @ApiModelProperty("Job instance id.")
     private Long jobInstanceId;
 
-    @NotNull
     @ApiModelProperty("Current circleId. Only for second delay task.")
-    private Long circleId;
+    private Long circleId = 0L;
 
     /**
      * @see InstanceStatusEnum
@@ -43,8 +43,4 @@ public class WorkerJobInstanceStatusRequest {
     @NotBlank
     @ApiModelProperty("Result")
     private String result;
-
-    @NotNull
-    @ApiModelProperty("Delivery id.")
-    private Long deliveryId;
 }

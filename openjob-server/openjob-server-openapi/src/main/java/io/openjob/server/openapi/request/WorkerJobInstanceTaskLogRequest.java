@@ -15,7 +15,7 @@ import java.util.List;
 public class WorkerJobInstanceTaskLogRequest {
 
     @NotNull
-    @ApiModelProperty(value = "field list", required = true)
+    @ApiModelProperty(value = "Field list", required = true)
     private List<List<WorkerJobInstanceTaskLogFieldRequest>> fieldList;
 
     @Data
