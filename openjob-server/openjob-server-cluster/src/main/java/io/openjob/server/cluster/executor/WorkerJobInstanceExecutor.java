@@ -1,7 +1,7 @@
 package io.openjob.server.cluster.executor;
 
-import io.openjob.common.request.WorkerJobInstanceStatusRequest;
 import io.openjob.common.task.TaskQueue;
+import io.openjob.server.cluster.dto.WorkerJobInstanceStatusReqDTO;
 import io.openjob.server.cluster.task.WorkerJobInstanceConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class WorkerJobInstanceExecutor {
-    private final TaskQueue<WorkerJobInstanceStatusRequest> queue;
+    private final TaskQueue<WorkerJobInstanceStatusReqDTO> queue;
 
     /**
      * New
@@ -39,7 +39,7 @@ public class WorkerJobInstanceExecutor {
      *
      * @param request request
      */
-    public void submit(WorkerJobInstanceStatusRequest request) {
+    public void submit(WorkerJobInstanceStatusReqDTO request) {
         try {
             this.queue.submit(request);
         } catch (InterruptedException e) {

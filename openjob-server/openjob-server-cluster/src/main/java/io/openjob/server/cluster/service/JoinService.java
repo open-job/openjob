@@ -1,6 +1,6 @@
 package io.openjob.server.cluster.service;
 
-import io.openjob.server.cluster.manager.JoinManager;
+import io.openjob.server.cluster.common.JoinCommon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class JoinService {
-    private final JoinManager joinManager;
+    private final JoinCommon joinCommon;
 
     @Autowired
-    public JoinService(JoinManager joinManager) {
-        this.joinManager = joinManager;
+    public JoinService(JoinCommon joinCommon) {
+        this.joinCommon = joinCommon;
     }
 
     /**
@@ -26,6 +26,6 @@ public class JoinService {
      * @param port     port
      */
     public void join(String hostname, Integer port) {
-        this.joinManager.join(hostname, port);
+        this.joinCommon.join(hostname, port);
     }
 }

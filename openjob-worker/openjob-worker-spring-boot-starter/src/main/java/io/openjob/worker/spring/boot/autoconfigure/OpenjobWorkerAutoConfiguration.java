@@ -6,6 +6,7 @@ import io.openjob.worker.constant.WorkerConstant;
 import io.openjob.worker.delay.OpenjobDelayTemplate;
 import io.openjob.worker.spring.boot.OpenjobSpringWorker;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,7 +14,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 /**
@@ -22,7 +22,8 @@ import java.util.Objects;
  */
 @Configuration
 @EnableConfigurationProperties(value = {OpenjobWorkerProperties.class})
-public class OpenjobWorkerAutoConfiguration {
+public class OpenjobWorkerAutoConfiguration implements InitializingBean {
+
     private final OpenjobWorkerProperties properties;
 
     @Autowired
@@ -30,11 +31,8 @@ public class OpenjobWorkerAutoConfiguration {
         this.properties = properties;
     }
 
-    /**
-     * Init
-     */
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         // Server address
         if (StringUtils.isEmpty(System.getProperty(WorkerConstant.SERVER_ADDRESS))
                 && Objects.nonNull(this.properties.getServer().getAddress())) {
