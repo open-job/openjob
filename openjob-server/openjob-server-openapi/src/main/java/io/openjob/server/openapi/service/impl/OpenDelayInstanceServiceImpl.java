@@ -7,13 +7,13 @@ import io.openjob.server.scheduler.dto.DelayInstanceAddRequestDTO;
 import io.openjob.server.scheduler.dto.DelayInstanceAddResponseDTO;
 import io.openjob.server.scheduler.scheduler.DelayInstanceScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * @author stelin swoft@qq.com
  * @since 1.0.0
  */
-@Component
+@Service
 public class OpenDelayInstanceServiceImpl implements OpenDelayInstanceService {
     private final DelayInstanceScheduler delayInstanceScheduler;
 

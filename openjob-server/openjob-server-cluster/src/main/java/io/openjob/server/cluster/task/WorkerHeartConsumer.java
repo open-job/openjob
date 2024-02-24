@@ -1,10 +1,10 @@
 package io.openjob.server.cluster.task;
 
 import io.openjob.common.OpenjobSpringContext;
-import io.openjob.common.request.WorkerHeartbeatRequest;
 import io.openjob.common.task.BaseConsumer;
 import io.openjob.common.task.TaskQueue;
-import io.openjob.server.cluster.service.WorkerHeartbeatService;
+import io.openjob.server.cluster.dto.WorkerHeartbeatReqDTO;
+import io.openjob.server.cluster.manager.WorkerHeartbeatManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  * @since 1.0.3
  */
 @Slf4j
-public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
+public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatReqDTO> {
 
     public WorkerHeartConsumer(Long id,
                                Integer consumerCoreThreadNum,
@@ -22,12 +22,12 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
                                String consumerThreadName,
                                Integer pollSize,
                                String pollThreadName,
-                               TaskQueue<WorkerHeartbeatRequest> queues) {
+                               TaskQueue<WorkerHeartbeatReqDTO> queues) {
         super(id, consumerCoreThreadNum, consumerMaxThreadNum, consumerThreadName, pollSize, pollThreadName, queues, 2000L, 1000L);
     }
 
     @Override
-    public void consume(Long id, List<WorkerHeartbeatRequest> tasks) {
+    public void consume(Long id, List<WorkerHeartbeatReqDTO> tasks) {
         this.consumerExecutor.submit(new WorkerHeartbeatConsumerRunnable(tasks));
     }
 
@@ -35,16 +35,16 @@ public class WorkerHeartConsumer extends BaseConsumer<WorkerHeartbeatRequest> {
      * Worker heartbeat runnable
      */
     private static class WorkerHeartbeatConsumerRunnable implements Runnable {
-        private final List<WorkerHeartbeatRequest> tasks;
+        private final List<WorkerHeartbeatReqDTO> tasks;
 
-        private WorkerHeartbeatConsumerRunnable(List<WorkerHeartbeatRequest> tasks) {
+        private WorkerHeartbeatConsumerRunnable(List<WorkerHeartbeatReqDTO> tasks) {
             this.tasks = tasks;
         }
 
         @Override
         public void run() {
             try {
-                OpenjobSpringContext.getBean(WorkerHeartbeatService.class).batchHeartbeat(this.tasks);
+                OpenjobSpringContext.getBean(WorkerHeartbeatManager.class).batchHeartbeat(this.tasks);
             } catch (Throwable throwable) {
                 log.error("Worker heartbeat failed!", throwable);
             }

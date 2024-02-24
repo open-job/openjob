@@ -1,4 +1,4 @@
-package io.openjob.server.cluster.manager;
+package io.openjob.server.cluster.common;
 
 import com.google.common.collect.Maps;
 import io.openjob.common.OpenjobSpringContext;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class FailManager {
+public class FailCommon {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final ClusterProperties clusterProperties;
@@ -41,7 +41,7 @@ public class FailManager {
     private final Scheduler scheduler;
 
     @Autowired
-    public FailManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshData refreshData, Scheduler scheduler) {
+    public FailCommon(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, ClusterProperties clusterProperties, RefreshData refreshData, Scheduler scheduler) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.clusterProperties = clusterProperties;

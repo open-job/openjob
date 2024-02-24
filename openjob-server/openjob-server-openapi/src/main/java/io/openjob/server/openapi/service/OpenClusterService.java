@@ -7,7 +7,7 @@ import io.openjob.server.openapi.vo.ClusterOnlineVO;
  * @author stelin swoft@qq.com
  * @since 1.0.3
  */
-public interface ClusterService {
+public interface OpenClusterService {
 
     /**
      * online

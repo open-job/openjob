@@ -15,7 +15,7 @@ import java.util.Date;
 public class DateUtilTest {
     @Test
     public void testFormatDateByTimestamp() {
-        Integer dateTime = DateUtil.formatDateByTimestamp(DateUtil.timestamp());
+        Integer dateTime = DateUtil.formatDateByTimestamp(DateUtil.timestamp()* 1000);
         Integer HourTime = DateUtil.formatHourByTimestamp(DateUtil.timestamp());
 
         Assertions.assertNotNull(dateTime);

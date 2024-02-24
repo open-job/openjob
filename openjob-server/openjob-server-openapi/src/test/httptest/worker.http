@@ -1,0 +1,35 @@
+### Worker start
+POST http://localhost:8080/openapi/worker/start
+Content-Type: application/json
+
+{
+  "address": "127.0.0.2:8088",
+  "appName": "openjob",
+  "metric": {},
+  "version": "1.0.6",
+  "workerKey": "SZ2C7FNQRkktQdv"
+}
+
+### Worker start
+POST http://localhost:8080/openapi/worker/stop
+Content-Type: application/json
+
+{
+  "address": "127.0.0.2:8088",
+  "appName": "openjob",
+  "workerKey": "SZ2C7FNQRkktQdv"
+}
+
+
+### Worker heartbeat
+POST http://localhost:8080/openapi/worker/heartbeat
+Content-Type: application/json
+
+{
+  "address": "127.0.0.2:8088",
+  "appId": 1,
+  "appName": "openjob",
+  "runningJobInstanceIds": [
+  ],
+  "version": "1.0.6"
+}

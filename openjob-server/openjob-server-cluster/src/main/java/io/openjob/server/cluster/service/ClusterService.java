@@ -8,7 +8,7 @@ import io.openjob.server.cluster.dto.NodePingDTO;
 import io.openjob.server.cluster.dto.NodeShutdownDTO;
 import io.openjob.server.cluster.dto.WorkerFailDTO;
 import io.openjob.server.cluster.dto.WorkerJoinDTO;
-import io.openjob.server.cluster.manager.FailManager;
+import io.openjob.server.cluster.common.FailCommon;
 import io.openjob.server.cluster.data.RefreshData;
 import io.openjob.server.cluster.util.ClusterUtil;
 import io.openjob.server.common.ClusterContext;
@@ -32,7 +32,7 @@ public class ClusterService {
     private final RefreshData refreshData;
     private final Scheduler scheduler;
     private final ClusterProperties clusterProperties;
-    private final FailManager failManager;
+    private final FailCommon failCommon;
 
     /**
      * Refresh status.
@@ -41,11 +41,11 @@ public class ClusterService {
     private final AtomicBoolean nodeRunning = new AtomicBoolean(false);
 
     @Autowired
-    public ClusterService(RefreshData refreshData, Scheduler scheduler, ClusterProperties clusterProperties, FailManager failManager) {
+    public ClusterService(RefreshData refreshData, Scheduler scheduler, ClusterProperties clusterProperties, FailCommon failCommon) {
         this.refreshData = refreshData;
         this.scheduler = scheduler;
         this.clusterProperties = clusterProperties;
-        this.failManager = failManager;
+        this.failCommon = failCommon;
     }
 
     /**
@@ -161,7 +161,7 @@ public class ClusterService {
         stopNode.setAkkaAddress(shutdown.getAkkaAddress());
         stopNode.setIp(shutdown.getIp());
         stopNode.setServerId(shutdown.getServerId());
-        this.failManager.fail(stopNode);
+        this.failCommon.fail(stopNode);
     }
 
     /**

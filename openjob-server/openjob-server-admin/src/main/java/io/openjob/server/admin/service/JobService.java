@@ -17,7 +17,7 @@ import io.openjob.server.admin.vo.job.UpdateJobVO;
 import io.openjob.server.common.vo.PageVO;
 
 /**
- * @author zhenghongyang <sakuraovq@gmail.com>
+ * @author zhenghongyang sakuraovq@gmail.com
  * @since 1.0.0
  */
 public interface JobService {

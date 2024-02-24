@@ -1,4 +1,4 @@
-package io.openjob.server.cluster.manager;
+package io.openjob.server.cluster.common;
 
 import com.google.common.collect.Maps;
 import io.openjob.common.OpenjobSpringContext;
@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class JoinManager {
+public class JoinCommon {
     private final ServerDAO serverDAO;
     private final JobSlotsDAO jobSlotsDAO;
     private final RefreshData refreshData;
@@ -39,7 +39,7 @@ public class JoinManager {
      * Refresh status.
      */
     @Autowired
-    public JoinManager(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshData refreshData, ClusterProperties clusterProperties) {
+    public JoinCommon(ServerDAO serverDAO, JobSlotsDAO jobSlotsDAO, RefreshData refreshData, ClusterProperties clusterProperties) {
         this.serverDAO = serverDAO;
         this.jobSlotsDAO = jobSlotsDAO;
         this.refreshData = refreshData;
