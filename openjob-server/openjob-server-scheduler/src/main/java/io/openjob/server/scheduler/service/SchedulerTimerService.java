@@ -79,26 +79,7 @@ public class SchedulerTimerService {
      */
     public void doRun(SchedulerTimerTask task, Set<String> failoverList) {
         Long dispatchVersion = DateUtil.milliLongTime();
-        ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
-        submitReq.setJobId(task.getJobId());
-        submitReq.setJobInstanceId(task.getTaskId());
-        submitReq.setCircleId(task.getCircleId());
-        submitReq.setDispatchVersion(dispatchVersion);
-        submitReq.setJobParamType(task.getJobParamType());
-        submitReq.setJobParams(task.getJobParams());
-        submitReq.setJobExtendParamsType(task.getJobExtendParamsType());
-        submitReq.setJobExtendParams(task.getJobExtendParams());
-        submitReq.setWorkflowId(task.getWorkflowId());
-        submitReq.setProcessorType(task.getProcessorType());
-        submitReq.setProcessorInfo(task.getProcessorInfo());
-        submitReq.setExecuteType(task.getExecuteType());
-        submitReq.setFailRetryTimes(task.getFailRetryTimes());
-        submitReq.setFailRetryInterval(task.getFailRetryInterval());
-        submitReq.setConcurrency(task.getConcurrency());
-        submitReq.setTimeExpressionType(task.getTimeExpressionType());
-        submitReq.setTimeExpression(task.getTimeExpression());
-        submitReq.setExecuteTimeout(task.getExecuteTimeout());
-        submitReq.setExecuteOnce(Optional.ofNullable(task.getExecuteOnce()).orElse(CommonConstant.NO));
+        ServerSubmitJobInstanceRequest submitReq = this.getServerSubmitJobInstanceRequest(task, dispatchVersion);
 
         WorkerDTO workerDTO = WorkerUtil.selectWorkerByAppId(task.getAppid(), failoverList);
         if (Objects.isNull(workerDTO)) {
@@ -201,5 +182,29 @@ public class SchedulerTimerService {
         jobInstanceLog.setDeleteTime(0L);
         jobInstanceLog.setUpdateTime(timestamp);
         this.jobInstanceLogDAO.save(jobInstanceLog);
+    }
+
+    private ServerSubmitJobInstanceRequest getServerSubmitJobInstanceRequest(SchedulerTimerTask task, Long dispatchVersion) {
+        ServerSubmitJobInstanceRequest submitReq = new ServerSubmitJobInstanceRequest();
+        submitReq.setJobId(task.getJobId());
+        submitReq.setJobInstanceId(task.getTaskId());
+        submitReq.setCircleId(task.getCircleId());
+        submitReq.setDispatchVersion(dispatchVersion);
+        submitReq.setJobParamType(task.getJobParamType());
+        submitReq.setJobParams(task.getJobParams());
+        submitReq.setJobExtendParamsType(task.getJobExtendParamsType());
+        submitReq.setJobExtendParams(task.getJobExtendParams());
+        submitReq.setWorkflowId(task.getWorkflowId());
+        submitReq.setProcessorType(task.getProcessorType());
+        submitReq.setProcessorInfo(task.getProcessorInfo());
+        submitReq.setExecuteType(task.getExecuteType());
+        submitReq.setFailRetryTimes(task.getFailRetryTimes());
+        submitReq.setFailRetryInterval(task.getFailRetryInterval());
+        submitReq.setConcurrency(task.getConcurrency());
+        submitReq.setTimeExpressionType(task.getTimeExpressionType());
+        submitReq.setTimeExpression(task.getTimeExpression());
+        submitReq.setExecuteTimeout(task.getExecuteTimeout());
+        submitReq.setExecuteOnce(Optional.ofNullable(task.getExecuteOnce()).orElse(CommonConstant.NO));
+        return submitReq;
     }
 }
